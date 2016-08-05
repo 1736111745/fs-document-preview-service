@@ -1,0 +1,5 @@
+build:
+    script:
+       - pwd
+       - mvn cobertura:cobertura sonar:sonar
+       - mvn clean

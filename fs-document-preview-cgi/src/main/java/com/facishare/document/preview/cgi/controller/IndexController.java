@@ -31,19 +31,16 @@ public class IndexController{
         printWriter.println(inputArguments.toString());
         printWriter.println("===================OS===================");
         OperatingSystemMXBean osm = ManagementFactory.getOperatingSystemMXBean();
-        //获取操作系统相关信息
         printWriter.println("osm.getArch():"+osm.getArch());
         printWriter.println("osm.getAvailableProcessors():"+osm.getAvailableProcessors());
         printWriter.println("osm.getName():"+osm.getName());
         printWriter.println("osm.getVersion():"+osm.getVersion());
         printWriter.println("UserName："+props.getProperty("user.name"));
         printWriter.println("UserHome："+props.getProperty("user.home"));
-        //获取整个虚拟机内存使用情况
         printWriter.println("=======================Memory============================");
         MemoryMXBean mm= ManagementFactory.getMemoryMXBean();
         printWriter.println("getHeapMemoryUsage "+mm.getHeapMemoryUsage());
         printWriter.println("getNonHeapMemoryUsage "+mm.getNonHeapMemoryUsage());
-        //获取运行时信息  
         printWriter.println("=======================Java RunTime============================");
         printWriter.println("Java Version: "+props.getProperty("java.version"));
         printWriter.println("Java Home: "+props.getProperty("java.home"));

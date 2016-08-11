@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="LOG_DIR" value="logs"/>
+    <property name="COMMON_PATTERN" value="%date{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{0} - %msg%n"/>
+    <!-- - - - - - - - appender - - - - - - -  -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>${COMMON_PATTERN}</pattern>
+        </layout>
+    </appender>
+
+    <appender name="log-common-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/fs-log.log</file>
+        <encoder>
+            <pattern>${COMMON_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_DIR}/fs-log-%d{yyyy-MM-dd}.log</FileNamePattern>
+            <MaxHistory>30</MaxHistory>
+            <CleanHistoryOnStart>true</CleanHistoryOnStart>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="trace" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${LOG_DIR}/fs-trace.log</File>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>logs/fs-trace.%d{yyyy-MM-dd}.log</FileNamePattern>
+            <MaxHistory>1</MaxHistory>
+            <CleanHistoryOnStart>true</CleanHistoryOnStart>
+        </rollingPolicy>
+    </appender>
+
+    <!-- - - - - - - - logger - - - - - - -  -->
+    <logger name="com.facishare.document.preview.cgi" level="INFO" additivity="true">
+        <appender-ref ref="log-common-file"/>
+    </logger>
+    <logger name="com.github.trace" level="INFO" additivity="false">
+        <appender-ref ref="trace" />
+    </logger>
+    <root level="INFO">
+        <appender-ref ref="console" />
+    </root>
+</configuration>

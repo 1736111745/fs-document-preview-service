@@ -39,7 +39,7 @@ public class PreviewController {
             String fileName = file.getOriginalFilename();
             String filePath = dataDir + "/Sample/" + fileName;
             FileUtils.writeByteArrayToFile(new File(filePath), file.getBytes());
-            String resultFileName=SampleUUID.getUUID()+".html";
+            String resultFileName = SampleUUID.getUUID() + ".html";
             String resultFilePath = resultDir + resultFileName;
             int code = ConvertorHelper.doConvert(filePath, resultFilePath);
             LOG.info("code:{}", code);
@@ -47,11 +47,6 @@ public class PreviewController {
         }
         return "error";
     }
-
-
-
-
-
     @RequestMapping("/preview/{filePath:.+}")
     public void doPreview(@PathVariable String filePath,HttpServletResponse response) throws IOException {
         String resultDir = dataDir + "/Result/";

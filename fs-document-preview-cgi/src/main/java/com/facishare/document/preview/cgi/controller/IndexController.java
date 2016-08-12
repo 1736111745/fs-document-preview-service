@@ -1,10 +1,11 @@
 package com.facishare.document.preview.cgi.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -22,8 +23,10 @@ import java.util.Properties;
 @Controller
 @RequestMapping("/")
 public class IndexController{
+    private static final Logger LOG = LoggerFactory.getLogger(PreviewController.class);
     @RequestMapping(method = RequestMethod.GET)
-    public void index(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void index(HttpServletResponse response) throws IOException {
+        LOG.info("hello!");
         PrintWriter printWriter=response.getWriter();
         Properties props=System.getProperties(); //系统属性
         List<String> inputArguments = ManagementFactory.getRuntimeMXBean().getInputArguments();

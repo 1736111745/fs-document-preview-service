@@ -121,92 +121,92 @@
         </dependency>
         <!--start 永中office-->
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
+            <groupId>batik-anim</groupId>
             <artifactId>batik-anim</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
+            <groupId>batik-awt-util</groupId>
             <artifactId>batik-awt-util</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-bridge</artifactId>
+            <groupId>batik-awt-util</groupId>
+            <artifactId>batik-awt-util</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
+            <groupId>batik-codec</groupId>
             <artifactId>batik-codec</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
+            <groupId>batik-css</groupId>
             <artifactId>batik-css</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
+            <groupId>batik-dom</groupId>
             <artifactId>batik-dom</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
+            <groupId>batik-ext</groupId>
             <artifactId>batik-ext</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
+            <groupId>batik-extension</groupId>
             <artifactId>batik-extension</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
+            <groupId>batik-gui-util</groupId>
             <artifactId>batik-gui-util</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
+            <groupId>batik-gvt</groupId>
             <artifactId>batik-gvt</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
+            <groupId>batik-parser</groupId>
             <artifactId>batik-parser</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
+            <groupId>batik-script</groupId>
             <artifactId>batik-script</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
+            <groupId>batik-svg-dom</groupId>
             <artifactId>batik-svg-dom</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
+            <groupId>batik-svggen</groupId>
             <artifactId>batik-svggen</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
+            <groupId>batik-swing</groupId>
             <artifactId>batik-swing</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
+            <groupId>batik-transcoder</groupId>
             <artifactId>batik-transcoder</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
+            <groupId>batik-util</groupId>
             <artifactId>batik-util</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
+            <groupId>batik-xml</groupId>
             <artifactId>batik-xml</artifactId>
             <version>1.0.0</version>
         </dependency>
@@ -216,19 +216,19 @@
             <version>145</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.medialib.codec</groupId>
+            <groupId>clibwrapper_jiio</groupId>
             <artifactId>clibwrapper_jiio</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons.codec</groupId>
+            <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.6.0</version>
+            <version>1.6</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons.logging</groupId>
+            <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>1.1.0</version>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>EMedia</groupId>
@@ -251,32 +251,32 @@
             <version>2.0.0-RC2</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.media.jai</groupId>
+            <groupId>jai_codec</groupId>
             <artifactId>jai_codec</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.media.jai</groupId>
+            <groupId>jai_core</groupId>
             <artifactId>jai_core</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.media.jai</groupId>
+            <groupId>jai_imageio</groupId>
             <artifactId>jai_imageio</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.jpedal.jbig2</groupId>
+            <groupId>jpedal</groupId>
             <artifactId>jpedal</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.mozilla</groupId>
+            <groupId>js</groupId>
             <artifactId>js</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.mail</groupId>
+            <groupId>mail</groupId>
             <artifactId>mail</artifactId>
             <version>1.0.0</version>
         </dependency>
@@ -291,22 +291,22 @@
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.hyperic</groupId>
+            <groupId>sigar</groupId>
             <artifactId>sigar</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.swt</groupId>
+            <groupId>swt</groupId>
             <artifactId>swt</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.xmlcommons</groupId>
+            <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.w3c</groupId>
+            <groupId>xml-apis-ext</groupId>
             <artifactId>xml-apis-ext</artifactId>
             <version>1.0.0</version>
         </dependency>

@@ -31,9 +31,13 @@ public class PreviewController {
     @ReloadableProperty("data-dir")
     private String dataDir="";
 
+    @ReloadableProperty("temp-dir")
+    private static String tempDir="";
+
     @RequestMapping(value = "/upload",method= RequestMethod.POST,produces = "text/plain;charset=UTF-8")
     @ResponseBody
     public String doUpload(@RequestParam("file") MultipartFile file) throws ServletException, IOException {
+        LOG.info("tempDir:{}",tempDir);
         if (!file.isEmpty()) {
             String resultDir = dataDir + "/Result/";
             String fileName = file.getOriginalFilename();
@@ -41,7 +45,7 @@ public class PreviewController {
             FileUtils.writeByteArrayToFile(new File(filePath), file.getBytes());
             String resultFileName = SampleUUID.getUUID() + ".html";
             String resultFilePath = resultDir + resultFileName;
-            int code = ConvertorHelper.doConvert(filePath, resultFilePath);
+            int code = ConvertorHelper.doConvert(filePath, resultFilePath,tempDir);
             LOG.info("code:{}", code);
             return resultFileName;
         }

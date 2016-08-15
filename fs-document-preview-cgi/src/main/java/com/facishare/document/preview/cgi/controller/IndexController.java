@@ -26,7 +26,6 @@ public class IndexController{
     private static final Logger LOG = LoggerFactory.getLogger(PreviewController.class);
     @RequestMapping(method = RequestMethod.GET)
     public void index(HttpServletResponse response) throws IOException {
-        LOG.info("hello!");
         PrintWriter printWriter=response.getWriter();
         Properties props=System.getProperties(); //系统属性
         List<String> inputArguments = ManagementFactory.getRuntimeMXBean().getInputArguments();

@@ -1,72 +1,26 @@
 package com.facishare.document.preview.cgi.convertor;
 
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+
 /**
- * Created by liuq on 16/8/8.
+ * Created by liuq on 16/8/13.
  */
+public class ConvertorPool extends GenericObjectPool {
 
-import application.dcs.Convert;
+    private static ConvertorPool instance;
 
-import java.util.ArrayList;
-import java.util.List;
+    private ConvertorPool(GenericObjectPoolConfig config) {
+        super(new ConvertorFactory(), config);
+    }
 
-public class ConvertorPool {
-    private final static String root=Thread.currentThread().getContextClassLoader().getResource("").getPath();
-    private final static String configDir= root+"Config";
-    private ConvertorPool() {}
-    private static ConvertorPool instance = null;
-    private List<ConvertorObject> pool = new ArrayList<>();
-    private static final int maxSize = 10;
-    private int availSize = 0;
-    private int current = 0;
-    public static ConvertorPool getInstance() {
+    public static synchronized ConvertorPool getInstance() {
         if (instance == null) {
-            instance = new ConvertorPool();
+            GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
+            poolConfig.setMaxTotal(20);
+            poolConfig.setMinIdle(1);
+            instance = new ConvertorPool(poolConfig);
         }
         return instance;
     }
-    //获取池内一个转换实例
-    public synchronized ConvertorObject getConvertor() {
-        if (availSize > 0) {
-            return getIdleConvertor();
-        } else if (pool.size() < maxSize) {
-            return createNewConvertor();
-        } else {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return getConvertor();
-        }
-    }
-    //使用完成需要还给池内
-    public synchronized void releaseConvertor(ConvertorObject convertorObject) {
-        for (ConvertorObject co : pool) {
-            if (co == convertorObject) {
-                co.setAvailable(true);
-                availSize++;
-                notify();
-                break;
-            }
-        }
-    }
-    private synchronized ConvertorObject getIdleConvertor() {
-        for (ConvertorObject co : pool) {
-            if (co.isAvailable()) {
-                co.setAvailable(false);
-                availSize--;
-                return co;
-            }
-        }
-        return null;
-    }
-    private synchronized ConvertorObject createNewConvertor() {
-        ConvertorObject co = new ConvertorObject();
-        co.setId(++current);
-        co.setConvertor(new Convert(configDir));
-        co.setAvailable(false);
-        pool.add(co);
-        return co;
-    }
 }
-

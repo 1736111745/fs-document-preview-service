@@ -1,0 +1,53 @@
+package com.facishare.document.preview.cgi.convertor;
+
+
+import application.dcs.Convert;
+import com.github.autoconf.spring.reloadable.ReloadableProperty;
+import org.apache.commons.pool2.BasePooledObjectFactory;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+
+/**
+ * Created by liuq on 16/8/8.
+ */
+
+public class ConvertorFactory extends BasePooledObjectFactory<Convert> {
+    private final  static String root=Thread.currentThread().getContextClassLoader().getResource("").getPath();
+    private final  static String configDir= root+"Config";
+    @ReloadableProperty("temp-dir")
+    private  String tempDir="";
+    @Override
+    public Convert create() throws Exception {
+        Convert convert = new Convert(configDir);
+        convert.setAcceptTracks(true);
+        if (tempDir != "") {
+            convert.setTempPath(tempDir);
+        }
+        convert.setAutoDeleteTempFiles(true);
+        convert.setHtmlTitle("文档预览");
+        convert.setHtmlEncoding("UTF-8");
+        convert.setConvertForPhone(true);
+        convert.setAutoDeleteTempFiles(true);
+        return convert;
+    }
+
+    @Override
+    public PooledObject<Convert> wrap(Convert convert) {
+        return new DefaultPooledObject<>(convert);
+    }
+
+    @Override
+    public void passivateObject(PooledObject<Convert> object)
+    {
+
+    }
+    @Override
+    public boolean validateObject(PooledObject<Convert> object) {
+        return true;
+    }
+    @Override
+    public void destroyObject(PooledObject<Convert> object) {
+        object.getObject().close();
+    }
+}
+

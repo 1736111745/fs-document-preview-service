@@ -1,6 +1,7 @@
 package com.facishare.document.preview.cgi.controller;
 
-import com.facishare.document.preview.cgi.convertor.ConvertorHelper;
+import application.dcs.Convert;
+import com.facishare.document.preview.cgi.convertor.ConvertorPool;
 import com.facishare.document.preview.cgi.utils.SampleUUID;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import org.apache.commons.io.FileUtils;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
@@ -32,12 +32,11 @@ public class PreviewController {
     private String dataDir="";
 
     @ReloadableProperty("temp-dir")
-    private static String tempDir="";
-
+    private  String tempDir="";
+    
     @RequestMapping(value = "/upload",method= RequestMethod.POST,produces = "text/plain;charset=UTF-8")
     @ResponseBody
-    public String doUpload(@RequestParam("file") MultipartFile file) throws ServletException, IOException {
-        LOG.info("tempDir:{}",tempDir);
+    public String doUpload(@RequestParam("file") MultipartFile file) throws Exception {
         if (!file.isEmpty()) {
             String resultDir = dataDir + "/Result/";
             String fileName = file.getOriginalFilename();
@@ -45,7 +44,9 @@ public class PreviewController {
             FileUtils.writeByteArrayToFile(new File(filePath), file.getBytes());
             String resultFileName = SampleUUID.getUUID() + ".html";
             String resultFilePath = resultDir + resultFileName;
-            int code = ConvertorHelper.doConvert(filePath, resultFilePath,tempDir);
+            Convert convert = (Convert) ConvertorPool.getInstance().borrowObject();
+            int code= filePath.toLowerCase().contains(".pdf") ? convert.convertPdfToHtml(filePath, resultFilePath) : convert.convertMStoHtmlOfSvg(filePath, resultFilePath);
+            ConvertorPool.getInstance().returnObject(convert);
             LOG.info("code:{}", code);
             return resultFileName;
         }

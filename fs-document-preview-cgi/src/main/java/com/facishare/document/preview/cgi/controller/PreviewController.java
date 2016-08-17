@@ -67,7 +67,7 @@ public class PreviewController {
             ConvertorHelper convertorHelper = new ConvertorHelper(employeeInfo);
             htmlFilePath = convertorHelper.doConvert(filePath, bytes, fileName);
             if (htmlFilePath != "") {
-                dao.create(htmlFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length);
+                dao.create(filePath,htmlFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length);
                 outPut(response, htmlFilePath);
             } else {
                 LOG.warn("path:{} can't do preview", filePath);

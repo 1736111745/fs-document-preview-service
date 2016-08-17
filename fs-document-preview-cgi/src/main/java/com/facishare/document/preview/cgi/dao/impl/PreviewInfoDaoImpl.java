@@ -24,7 +24,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     private DatastoreExt datastoreExt;
 
     @Override
-    public void create(String filePath, String ea, int employeeId,long docSize) {
+    public void create(String path,String filePath, String ea, int employeeId,long docSize) {
         PreviewInfo previewInfo = new PreviewInfo();
         String htmlName = FilenameUtils.getBaseName(filePath);
         File file=new File(filePath);
@@ -39,7 +39,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         previewInfo.setEa(ea);
         previewInfo.setEmployeeId(employeeId);
         previewInfo.setHtmlFilePath(filePath);
-        previewInfo.setPath(filePath);
+        previewInfo.setPath(path);
         datastoreExt.insert("PreviewInfo", previewInfo);
         datastoreExt.ensureIndexes();
     }

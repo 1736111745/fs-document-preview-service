@@ -7,7 +7,7 @@ import com.facishare.document.preview.cgi.model.PreviewInfo;
  */
 public interface PreviewInfoDao {
 
-    void create(String filePath,String ea,int employeeId,long docSize);
+    void create(String path,String filePath,String ea,int employeeId,long docSize);
 
     PreviewInfo getInfo(String condition,int type);
 }

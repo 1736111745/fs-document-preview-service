@@ -13,6 +13,9 @@
     <aop:aspectj-autoproxy/>
     <bean id="fileProxy" class="com.facishare.document.preview.cgi.utils.FileStorageProxy"/>
     <bean id="dao" class="com.facishare.document.preview.cgi.dao.impl.PreviewInfoDaoImpl"/>
+    <bean id="authFilter" class="com.facishare.document.preview.cgi.filter.AuthFilter"/>
+    <bean id="authHelper" class="com.facishare.document.preview.cgi.utils.AuthHelper"/>
     <import resource="classpath:spring/spring-cms.xml"/>
     <import resource="fs-fileproxy.xml"/>
+    <import resource="classpath:spring/fs-dps-dubbo.xml"/>
 </beans>

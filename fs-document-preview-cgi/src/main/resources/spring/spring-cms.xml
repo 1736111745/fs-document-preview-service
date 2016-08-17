@@ -10,5 +10,5 @@
           p:ignoreResourceNotFound="true"
           p:ignoreUnresolvablePlaceholders="false"
           p:location="classpath:application.properties"
-          p:configName="fs-dps-config"/>
+          p:configName="fs-dps-config,dubbo-common"/>
 </beans>

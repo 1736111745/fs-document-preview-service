@@ -52,7 +52,7 @@ public class PreviewController {
         LOG.info("begin preview,filePath:{},fileName:{}", filePath, fileName);
         //检查下服务器上是否转换过
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        String htmlFilePath = "";
+        String htmlFilePath;
         PreviewInfo previewInfo = dao.getInfo(filePath, 1);
         if (previewInfo != null) {
             htmlFilePath = previewInfo.getHtmlFilePath();

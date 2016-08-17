@@ -2,6 +2,8 @@ package com.facishare.document.preview.cgi.filter;
 
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.utils.AuthHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -13,17 +15,20 @@ import java.io.IOException;
 /**
  * Created by liuq on 16/8/15.
  */
+@Component
 public class AuthFilter extends OncePerRequestFilter {
+
+    @Autowired
+    AuthHelper authHelper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
 
         if (request.getRequestURI().equals("/")) {
             filterChain.doFilter(request, response);
         }
         else {
-            EmployeeInfo employeeInfo = AuthHelper.getAuthinfo(request);
+            EmployeeInfo employeeInfo = authHelper.getAuthinfo(request);
             if (employeeInfo == null) {
                 response.setStatus(403);
                 return;

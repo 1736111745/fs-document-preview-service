@@ -11,12 +11,10 @@ import com.facishare.fsi.proxy.service.NFileStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * Created by liuq on 16/8/15.
  */
-@Component
 public class FileStorageProxy {
 
     public static final Logger LOG = LoggerFactory.getLogger(FileStorageProxy.class);

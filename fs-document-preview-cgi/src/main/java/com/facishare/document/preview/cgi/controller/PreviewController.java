@@ -1,17 +1,20 @@
 package com.facishare.document.preview.cgi.controller;
 
-import application.dcs.Convert;
-import com.facishare.document.preview.cgi.convertor.ConvertorPool;
-import com.facishare.document.preview.cgi.utils.SampleUUID;
+import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
+import com.facishare.document.preview.cgi.model.EmployeeInfo;
+import com.facishare.document.preview.cgi.model.PreviewInfo;
+import com.facishare.document.preview.cgi.utils.ConvertorHelper;
+import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.LineIterator;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
@@ -26,56 +29,74 @@ import java.nio.channels.FileChannel;
 @Controller
 @RequestMapping("/dps")
 public class PreviewController {
+    @Autowired
+    FileStorageProxy fileStorageProxy;
+    @Autowired
+    PreviewInfoDao dao;
     private static final Logger LOG = LoggerFactory.getLogger(PreviewController.class);
 
-    @ReloadableProperty("data-dir")
-    private String dataDir="";
+    @ReloadableProperty("allowPreviewExtension")
+    private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
 
-    @ReloadableProperty("temp-dir")
-    private  String tempDir="";
-    
-    @RequestMapping(value = "/upload",method= RequestMethod.POST,produces = "text/plain;charset=UTF-8")
-    @ResponseBody
-    public String doUpload(@RequestParam("file") MultipartFile file) throws Exception {
-        if (!file.isEmpty()) {
-            String resultDir = dataDir + "/Result/";
-            String fileName = file.getOriginalFilename();
-            String filePath = dataDir + "/Sample/" + fileName;
-            FileUtils.writeByteArrayToFile(new File(filePath), file.getBytes());
-            String resultFileName = SampleUUID.getUUID() + ".html";
-            String resultFilePath = resultDir + resultFileName;
-            Convert convert = (Convert) ConvertorPool.getInstance().borrowObject();
-            int code= filePath.toLowerCase().contains(".pdf") ? convert.convertPdfToHtml(filePath, resultFilePath) : convert.convertMStoHtmlOfSvg(filePath, resultFilePath);
-            ConvertorPool.getInstance().returnObject(convert);
-            LOG.info("code:{}", code);
-            return resultFileName;
+    @RequestMapping("/preview")
+    public void doPreview(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        String filePath = request.getParameter("path").trim();
+        String fileName = request.getParameter("name").trim();
+        String extension = FilenameUtils.getExtension(filePath);
+        if (allowPreviewExtension.indexOf(extension) == -1) {
+            response.setStatus(403);
+            return;
         }
-        return "error";
-    }
-    @RequestMapping("/preview/{filePath:.+}")
-    public void doPreview(@PathVariable String filePath,HttpServletResponse response) throws IOException {
-        String resultDir = dataDir + "/Result/";
-        String resultFilePath = resultDir + filePath;
-        outPut(response, resultFilePath);
+        fileName = (fileName == "" || fileName == null) ? filePath : fileName;
+        LOG.info("begin preview,filePath:{},fileName:{}", filePath, fileName);
+        //检查下服务器上是否转换过
+        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+        String htmlFilePath = "";
+        PreviewInfo previewInfo = dao.getInfo(filePath, 1);
+        if (previewInfo != null) {
+            htmlFilePath = previewInfo.getHtmlFilePath();
+            outPut(response, htmlFilePath);
+        } else {
+            byte[] bytes = fileStorageProxy.GetBytesByPath(filePath, employeeInfo);
+            if (bytes == null) {
+                LOG.warn("can't get bytes from path:{}", filePath);
+                response.setStatus(404);
+                return;
+            }
+            ConvertorHelper convertorHelper = new ConvertorHelper(employeeInfo);
+            htmlFilePath = convertorHelper.doConvert(filePath, bytes, fileName);
+            if (htmlFilePath != "") {
+                dao.create(htmlFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length);
+                outPut(response, htmlFilePath);
+            } else {
+                LOG.warn("path:{} can't do preview", filePath);
+                response.setStatus(500);
+                return;
+            }
+        }
     }
 
-    //@RequestMapping("preview/{type}/{folder}.files/{filename:.+}")
-    @RequestMapping("/preview/{folder}.files/{filename:.+}")
-    public void getStatic(@PathVariable String folder, @PathVariable String filename, HttpServletResponse response) throws IOException {
-        folder=folder+".files";
-        String resultDir = dataDir + "/Result/";
-        String filePath = resultDir + "/" + folder + "/" + filename;
-        if (filename.contains(".png")) {
+    @RequestMapping("/{folder}.files/{fileName:.+}")
+    public void getStatic(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
+        String htmlName = folder;
+        PreviewInfo previewInfo = dao.getInfo(htmlName, 0);
+        String htmlFilePath = previewInfo.getHtmlFilePath();
+        File file = new File(htmlFilePath);
+        String folderName = folder + ".files";
+        String parent = file.getParent() + "/" + folderName;
+        String filePath = parent + "/" + fileName;
+        if (fileName.toLowerCase().contains(".png")) {
             response.setContentType("image/png");
-        } else if (filename.contains(".js")) {
+        } else if (fileName.toLowerCase().contains(".js")) {
             response.setContentType("application/javascript");
-        } else if (filename.contains(".css")) {
+        } else if (fileName.toLowerCase().contains(".css")) {
             response.setContentType("text/css");
         }
-        outPut(response,filePath);
+        outPut(response, filePath);
     }
 
-    private void outPut(HttpServletResponse response,String filePath) throws IOException {
+    private void outPut(HttpServletResponse response, String filePath) throws IOException {
         FileChannel fc = new RandomAccessFile(filePath, "r").getChannel();
         MappedByteBuffer mbb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
         byte[] buffer = new byte[(int) fc.size()];
@@ -86,20 +107,6 @@ public class PreviewController {
         out.close();
         mbb.force();
         fc.close();
-    }
-
-    private static String getHtml(File file) throws IOException {
-        StringBuffer sb = new StringBuffer();
-        LineIterator it = FileUtils.lineIterator(file, "UTF-8");
-        try {
-            while (it.hasNext()) {
-                String line = it.nextLine();
-                sb.append(line);
-            }
-        } finally {
-            LineIterator.closeQuietly(it);
-        }
-        return sb.toString();
     }
 }
 

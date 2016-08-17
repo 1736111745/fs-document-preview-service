@@ -11,5 +11,8 @@
     <context:component-scan base-package="com.facishare.document.preview.cgi"/>
     <mvc:annotation-driven />
     <aop:aspectj-autoproxy/>
+    <bean id="fileProxy" class="com.facishare.document.preview.cgi.utils.FileStorageProxy"/>
+    <bean id="dao" class="com.facishare.document.preview.cgi.dao.impl.PreviewInfoDaoImpl"/>
     <import resource="classpath:spring/spring-cms.xml"/>
+    <import resource="fs-fileproxy.xml"/>
 </beans>

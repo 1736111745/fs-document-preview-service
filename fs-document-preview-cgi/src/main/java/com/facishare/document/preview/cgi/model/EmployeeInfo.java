@@ -10,6 +10,7 @@ public class EmployeeInfo {
     private int ei;
     private String employeeFullName;
     private String employeeAccount;
+    private String sourceUser;
     public int getEi() {
         return ei;
     }
@@ -57,4 +58,9 @@ public class EmployeeInfo {
     public void setEmployeeAccount(String employeeAccount) {
         this.employeeAccount = employeeAccount;
     }
+
+    public String getSourceUser() {
+        return "E." + employeeId;
+    }
+
 }

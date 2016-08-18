@@ -117,12 +117,12 @@
         function convert() {
             $("#loading").show();
             var queryString=window.location.search;
-            var url="/preview/convert"+queryString;
+            var url="/dps/preview/convert"+queryString;
             $.ajax({url:url,success:function(result){
                 $("#loading").hide();
                 if(result.successed) {
                     var path = getQueryStringByName("path");
-                    window.location.href = "/preview/show?path=" + path;
+                    window.location.href = "/dps/preview/show?path=" + path;
                 }
                 else
                 {

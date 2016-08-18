@@ -105,7 +105,7 @@ public class PreviewController {
             outPut(response, previewInfo.getHtmlFilePath());
     }
 
-    @RequestMapping("/{folder}.files/{fileName:.+}")
+    @RequestMapping("/preview/{folder}.files/{fileName:.+}")
     public void getStatic(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
         String htmlName = folder;
         PreviewInfo previewInfo = dao.getInfoByHtmlName(htmlName);

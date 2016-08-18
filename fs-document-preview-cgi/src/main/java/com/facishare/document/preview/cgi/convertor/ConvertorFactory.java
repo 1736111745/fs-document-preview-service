@@ -27,6 +27,7 @@ public class ConvertorFactory extends BasePooledObjectFactory<Convert> {
         convert.setHtmlEncoding("UTF-8");
         convert.setConvertForPhone(true);
         convert.setAutoDeleteTempFiles(true);
+        convert.setTimeout(60*5);
         return convert;
     }
 

@@ -10,7 +10,7 @@
 <meta charset="utf-8">
 <head>
     <title>文档预览</title>
-    <script src="<%=request.getContextPath() %>/script/jquery-1.11.1.min.js" type="text/javascript"></script>
+    <script src="/dps/script/jquery-1.11.1.min.js" type="text/javascript"></script>
     <style>
         body {
             font-family: Verdana;

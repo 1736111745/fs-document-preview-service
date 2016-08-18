@@ -32,7 +32,7 @@ public class ConvertorHelper {
             String tempFilePath = pathHelper.getTempFilePath(path, bytes);
             String htmlFilePath = pathHelper.getHtmlFilePath(path);
             convert.setHtmlName(fileName);
-            int code = path.toLowerCase().contains(".pdf") ? convert.convertPdfToHtml(tempFilePath, htmlFilePath) : convert.convertMSToHtmlOfPic(tempFilePath, htmlFilePath);
+            int code = path.toLowerCase().contains(".pdf") ? convert.convertPdfToHtml(tempFilePath, htmlFilePath) : convert.convertMStoHtmlOfSvg(tempFilePath, htmlFilePath);
             FileUtils.deleteQuietly(new File(tempFilePath));
             String takeInfo = stopWatch.stop();
             LOG.info("code:{},takeInfo:{}", code, takeInfo);

@@ -1,7 +1,9 @@
 package com.facishare.document.preview.cgi.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
+import com.facishare.document.preview.cgi.model.JsonResponseEntity;
 import com.facishare.document.preview.cgi.model.PreviewInfo;
 import com.facishare.document.preview.cgi.utils.ConvertorHelper;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
@@ -13,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,7 +31,7 @@ import java.nio.channels.FileChannel;
  * Created by liuq on 16/8/5.
  */
 @Controller
-@RequestMapping("/dps")
+@RequestMapping("/")
 public class PreviewController {
     @Autowired
     FileStorageProxy fileStorageProxy;
@@ -39,48 +43,72 @@ public class PreviewController {
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
 
     @RequestMapping("/preview")
-    public void doPreview(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public String doPreview(HttpServletRequest request, HttpServletResponse response) {
+        return "preview";
+    }
 
-        String filePath = request.getParameter("path").trim();
-        String fileName = request.getParameter("name").trim();
-        String extension = FilenameUtils.getExtension(filePath);
-        if (allowPreviewExtension.indexOf(extension) == -1) {
-            response.setStatus(403);
-            return;
+    @ResponseBody
+    @RequestMapping(value = "/preview/convert", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String convert(HttpServletRequest request) throws Exception {
+        String path = safteGetRequestParameter(request, "path");
+        String fileName = safteGetRequestParameter(request, "name");
+        JsonResponseEntity jsonResponseEntity = new JsonResponseEntity();
+        if (path == "") {
+            jsonResponseEntity.setSuccessed(false);
+            jsonResponseEntity.setErrorMsg("参数错误!");
+            return JSONObject.toJSONString(jsonResponseEntity);
         }
-        fileName = (fileName == "" || fileName == null) ? filePath : fileName;
-        LOG.info("begin preview,filePath:{},fileName:{}", filePath, fileName);
+        String extension = FilenameUtils.getExtension(path);
+        if (allowPreviewExtension.indexOf(extension) == -1) {
+            jsonResponseEntity.setSuccessed(false);
+            jsonResponseEntity.setErrorMsg("该文件不可以预览!");
+            return JSONObject.toJSONString(jsonResponseEntity);
+        }
+        fileName = (fileName == "" || fileName == null) ? path : fileName;
+        LOG.info("begin preview,path:{},fileName:{}", path, fileName);
         //检查下服务器上是否转换过
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        String htmlFilePath;
-        PreviewInfo previewInfo = dao.getInfo(filePath, 1);
-        if (previewInfo != null) {
-            htmlFilePath = previewInfo.getHtmlFilePath();
-            outPut(response, htmlFilePath);
+        boolean hasConverted = dao.hasConverted(path);
+        if (hasConverted) {
+            jsonResponseEntity.setSuccessed(true);
+            return JSONObject.toJSONString(jsonResponseEntity);
         } else {
-            byte[] bytes = fileStorageProxy.GetBytesByPath(filePath, employeeInfo);
+            byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo);
             if (bytes == null) {
-                LOG.warn("can't get bytes from path:{}", filePath);
-                response.setStatus(404);
-                return;
+                LOG.warn("can't get bytes from path:{}", path);
+                jsonResponseEntity.setSuccessed(false);
+                jsonResponseEntity.setErrorMsg("该文件找不到或者损坏!");
+                return JSONObject.toJSONString(jsonResponseEntity);
             }
             ConvertorHelper convertorHelper = new ConvertorHelper(employeeInfo);
-            htmlFilePath = convertorHelper.doConvert(filePath, bytes, fileName);
+            String htmlFilePath = convertorHelper.doConvert(path, bytes, fileName);
             if (htmlFilePath != "") {
-                dao.create(filePath,htmlFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length);
-                outPut(response, htmlFilePath);
+                dao.create(path, htmlFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length);
+                jsonResponseEntity.setSuccessed(true);
+                return JSONObject.toJSONString(jsonResponseEntity);
             } else {
-                LOG.warn("path:{} can't do preview", filePath);
-                response.setStatus(500);
-                return;
+                LOG.warn("path:{} can't do preview", path);
+                jsonResponseEntity.setSuccessed(false);
+                jsonResponseEntity.setErrorMsg("很抱歉,该文件无法预览!");
+                return JSONObject.toJSONString(jsonResponseEntity);
             }
         }
+    }
+
+    @RequestMapping("/preview/show")
+    public void preivew(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String path = request.getParameter("path").trim();
+        PreviewInfo previewInfo = dao.getInfoByPath(path);
+        if (previewInfo == null || previewInfo.getHtmlFilePath() == "")
+            response.setStatus(404);
+        else
+            outPut(response, previewInfo.getHtmlFilePath());
     }
 
     @RequestMapping("/{folder}.files/{fileName:.+}")
     public void getStatic(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
         String htmlName = folder;
-        PreviewInfo previewInfo = dao.getInfo(htmlName, 0);
+        PreviewInfo previewInfo = dao.getInfoByHtmlName(htmlName);
         String htmlFilePath = previewInfo.getHtmlFilePath();
         File file = new File(htmlFilePath);
         String folderName = folder + ".files";
@@ -107,6 +135,11 @@ public class PreviewController {
         out.close();
         mbb.force();
         fc.close();
+    }
+
+    private String safteGetRequestParameter(HttpServletRequest request, String paramName) {
+        String value = request.getParameter(paramName) == null ? "" : request.getParameter(paramName).trim();
+        return value;
     }
 }
 

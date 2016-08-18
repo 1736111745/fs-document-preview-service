@@ -24,14 +24,14 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     private DatastoreExt datastoreExt;
 
     @Override
-    public void create(String path,String filePath, String ea, int employeeId,long docSize) {
+    public void create(String path, String filePath, String ea, int employeeId, long docSize) {
         PreviewInfo previewInfo = new PreviewInfo();
         String htmlName = FilenameUtils.getBaseName(filePath);
-        File file=new File(filePath);
+        File file = new File(filePath);
         previewInfo.setDocSize(docSize);
-        File htmlDir=new File(file.getParent());
-        BigInteger dirHtmlLength=FileUtils.sizeOfDirectoryAsBigInteger(htmlDir);
-        previewInfo.setHtmlSize(dirHtmlLength.longValue()+file.length());
+        File htmlDir = new File(file.getParent());
+        BigInteger dirHtmlLength = FileUtils.sizeOfDirectoryAsBigInteger(htmlDir);
+        previewInfo.setHtmlSize(dirHtmlLength.longValue() + file.length());
         previewInfo.setHtmlName(htmlName);
         previewInfo.setCreateTime(new Date());
         int yyyyMMdd = Integer.parseInt(PathHelper.getFormatDateStr("yyyyMMdd"));
@@ -45,12 +45,23 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     }
 
     @Override
-    public PreviewInfo getInfo(String condition,int type) {
+    public PreviewInfo getInfoByPath(String path) {
         Query<PreviewInfo> query = datastoreExt.createQuery(PreviewInfo.class);
-        if (type == 0)
-            query.criteria("htmlName").equal(condition);
-        else
-            query.criteria("path").equals(condition);
+        query.criteria("path").equal(path);
         return query.get();
+    }
+
+    @Override
+    public PreviewInfo getInfoByHtmlName(String htmlName) {
+        Query<PreviewInfo> query = datastoreExt.createQuery(PreviewInfo.class);
+        query.criteria("htmlName").equal(htmlName);
+        return query.get();
+    }
+
+    @Override
+    public boolean hasConverted(String path) {
+        Query<PreviewInfo> query = datastoreExt.createQuery(PreviewInfo.class);
+        query.criteria("path").equal(path);
+        return query.countAll() > 0;
     }
 }

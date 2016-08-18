@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -26,9 +27,9 @@ public class IndexController{
     private static final Logger LOG = LoggerFactory.getLogger(PreviewController.class);
     @RequestMapping(method = RequestMethod.GET)
     public void index(HttpServletResponse response) throws IOException {
-//        Cookie cookie = new Cookie("FSAuthX", "0G60AEUkLW4000343w3bRA0g1CKFthRDMVZyxb2xk8RPaToBhzJa2L0pTyY3Hr7UbO8rHEefF6mPARxQdPwYR2eqWSQ2O1DCUekJzGsICDAJYB45Hw0l4VTzuzzKgiYPserHWmxF0wZmEpQOyojVxgSFubVPbOeJTu9NgrJJtkRFOrF0FMUO1zRAZNdhDWLcUWjTkJ5fYr22zYqctWeiyYtwhAIhsrszP36JTwAMxRo7G97wpP4g2WvmHj13");
-//        cookie.setMaxAge(24 * 60 * 60 * 30);
-//        response.addCookie(cookie);
+        Cookie cookie = new Cookie("FSAuthX", "0G60AEUkLW4000343w3bRA0g1CKFthRDMVZyxb2xk8RPaToBhzJa2L0pTyY3Hr7UbO8rHEefF6mPARxQdPwYR2eqWSQ2O1DCUekJzGsICDAJYB45Hw0l4VTzuzzKgiYPserHWmxF0wZmEpQOyojVxgSFubVPbOeJTu9NgrJJtkRFOrF0FMUO1zRAZNdhDWLcUWjTkJ5fYr22zYqctWeiyYtwhAIhsrszP36JTwAMxRo7G97wpP4g2WvmHj13");
+        cookie.setMaxAge(24 * 60 * 60 * 30);
+        response.addCookie(cookie);
 
         PrintWriter printWriter=response.getWriter();
         Properties props=System.getProperties(); //系统属性
@@ -55,9 +56,4 @@ public class IndexController{
         printWriter.println("Time:"+df.format(new Date()));// new Date()为获取当前系统时间
     }
 
-    @RequestMapping(value="/preview")
-    public String preview()
-    {
-        return "preview";
-    }
 }

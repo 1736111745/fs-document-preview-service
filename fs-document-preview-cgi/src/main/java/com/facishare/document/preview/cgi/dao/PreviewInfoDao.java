@@ -9,5 +9,9 @@ public interface PreviewInfoDao {
 
     void create(String path,String filePath,String ea,int employeeId,long docSize);
 
-    PreviewInfo getInfo(String condition,int type);
+    PreviewInfo getInfoByPath(String path);
+
+    PreviewInfo getInfoByHtmlName(String htmlName);
+
+    boolean hasConverted(String path);
 }

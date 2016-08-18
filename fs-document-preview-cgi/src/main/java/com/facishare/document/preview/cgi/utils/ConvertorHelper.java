@@ -36,7 +36,7 @@ public class ConvertorHelper {
             FileUtils.deleteQuietly(new File(tempFilePath));
             String takeInfo = stopWatch.stop();
             LOG.info("code:{},takeInfo:{}", code, takeInfo);
-            return htmlFilePath;
+            return code==0?htmlFilePath:"";
         } catch (Exception e) {
             LOG.error("error info:" + e.getStackTrace());
             return "";

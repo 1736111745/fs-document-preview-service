@@ -32,14 +32,14 @@ public class SampleUUID {
     public static void main(String[] args) {
         Convert convert = new Convert(configDir);
         convert.setAcceptTracks(true);
-        convert.setTempPath(new PathHelper().getConvertTempPath());
-        convert.setAutoDeleteTempFiles(true);
+        //convert.setTempPath(new PathHelper().getConvertTempPath());
+        //convert.setAutoDeleteTempFiles(true);
         convert.setHtmlTitle("文档预览");
         convert.setShowTitle(true);
         convert.setShowPic(true);
         convert.setHtmlEncoding("UTF-8");
         convert.setConvertForPhone(true);
-        convert.setAutoDeleteTempFiles(true);
-        convert.convertMStoHtmlOfSvg("/Users/liuq/Temp/temp/tempfile/stxviv2p.doc","/Users/liuq/Temp/normal/dps/aaaa.html");
+        //convert.setAutoDeleteTempFiles(true);
+        convert.convertMStoHtmlOfSvg("/Users/liuq/Downloads/a.doc","/Users/liuq/temp/bbb.html");
     }
 }

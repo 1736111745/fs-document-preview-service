@@ -9,8 +9,8 @@ import com.facishare.document.preview.cgi.model.PreviewInfo;
 import com.facishare.document.preview.cgi.model.PreviewWayEntity;
 import com.facishare.document.preview.cgi.utils.ConvertorHelper;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
-import com.fxiaoke.common.release.GrayRelease;
-import com.fxiaoke.common.release.GrayReleaseBiz;
+import com.fxiaoke.release.FsGrayRelease;
+import com.fxiaoke.release.FsGrayReleaseBiz;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -45,7 +45,7 @@ public class PreviewController {
     FileTokenDao fileTokenDao;
 
     private static final Logger LOG = LoggerFactory.getLogger(PreviewController.class);
-    private static GrayReleaseBiz biz = GrayRelease.getInstance("dps");
+    private FsGrayReleaseBiz gray = FsGrayRelease.getInstance("dps");
 
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
@@ -56,7 +56,7 @@ public class PreviewController {
         PreviewWayEntity entity = new PreviewWayEntity();
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
-        boolean newway = biz.isAllow("newway", user);
+        boolean newway = gray.isAllow("newway", user);
         if (newway) {
             entity.setNewWay(true);
             String byTokenUrl = "/dps/prewview/bytoken/{0}";

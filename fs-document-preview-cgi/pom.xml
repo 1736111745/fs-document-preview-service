@@ -521,8 +521,8 @@
         </dependency>
         <dependency>
             <groupId>com.fxiaoke.common</groupId>
-            <artifactId>gray-release</artifactId>
-            <version>1.0.3</version>
+            <artifactId>fs-common-gray-release</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
     </dependencies>

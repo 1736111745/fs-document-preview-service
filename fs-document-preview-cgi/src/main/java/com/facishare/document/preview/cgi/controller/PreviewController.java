@@ -125,7 +125,6 @@ public class PreviewController {
         } else if (fileName.toLowerCase().contains(".svg")) {
             response.setContentType("image/svg+xml");
         }
-        response.setContentLength((int) file.length());
         outPut(response, filePath);
     }
 

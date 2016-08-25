@@ -1,7 +1,6 @@
 package com.facishare.document.preview.cgi.filter;
 
 import com.alibaba.fastjson.JSON;
-import com.facishare.document.preview.cgi.controller.PreviewController;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.utils.AuthHelper;
 import org.slf4j.Logger;
@@ -21,7 +20,7 @@ import java.io.IOException;
  */
 @Component
 public class AuthFilter extends OncePerRequestFilter {
-    private static final Logger LOG = LoggerFactory.getLogger(PreviewController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AuthFilter.class);
     @Autowired
     AuthHelper authHelper;
 

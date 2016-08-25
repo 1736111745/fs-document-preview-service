@@ -40,6 +40,7 @@ public class PreviewController {
     PreviewInfoDao previewInfoDao;
     @Autowired
     FileTokenDao fileTokenDao;
+
     private static final Logger LOG = LoggerFactory.getLogger(PreviewController.class);
 
     @ReloadableProperty("allowPreviewExtension")

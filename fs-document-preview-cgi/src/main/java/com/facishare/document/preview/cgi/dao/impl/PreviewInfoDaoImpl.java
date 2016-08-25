@@ -7,6 +7,8 @@ import com.github.mongo.support.DatastoreExt;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.mongodb.morphia.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +21,8 @@ import java.util.Date;
  */
 @Repository
 public class PreviewInfoDaoImpl implements PreviewInfoDao {
+
+    private static final Logger LOG = LoggerFactory.getLogger(PreviewInfoDaoImpl.class);
 
     @Autowired
     private DatastoreExt dpsDataStore;

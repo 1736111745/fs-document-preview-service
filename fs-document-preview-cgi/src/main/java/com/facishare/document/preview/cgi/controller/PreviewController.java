@@ -101,8 +101,10 @@ public class PreviewController {
         PreviewInfo previewInfo = dao.getInfoByPath(path);
         if (previewInfo == null || previewInfo.getHtmlFilePath() == "")
             response.setStatus(404);
-        else
+        else {
+            response.setContentType("text/html");
             outPut(response, previewInfo.getHtmlFilePath());
+        }
     }
 
     @RequestMapping("/preview/{folder}.files/{fileName:.+}")

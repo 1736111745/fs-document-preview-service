@@ -59,8 +59,8 @@ public class PreviewController {
         boolean newway = gray.isAllow("newway", user);
         if (newway) {
             entity.setNewWay(true);
-            String byTokenUrl = "/dps/prewview/bytoken/{0}";
-            String byPathUrl = "/dps/prewview/bypath/{0}";
+            String byTokenUrl = "/dps/prewview/token/{0}";
+            String byPathUrl = "/dps/prewview/path/{0}";
             entity.setPreviewByPathUrlFormat(byPathUrl);
             entity.setPreviewByTokenUrlFormat(byTokenUrl);
         } else
@@ -69,7 +69,7 @@ public class PreviewController {
         return json;
     }
 
-    @RequestMapping("/preview/bypath/{path}")
+    @RequestMapping("/preview/path/{path}")
     public void preivewByPath(@PathVariable String path, HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (path.equals("")) {
             response.getWriter().println("参数错误!");
@@ -84,7 +84,7 @@ public class PreviewController {
         doPreview(path, request, response);
     }
 
-    @RequestMapping("/preview/bytoken/{token}")
+    @RequestMapping("/preview/token/{token}")
     public void preivewByToken(@PathVariable String token, HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (token.equals("")) {
             response.getWriter().println("参数错误!");
@@ -136,7 +136,7 @@ public class PreviewController {
         }
     }
 
-    @RequestMapping("/preview/{folder}.files/{fileName:.+}")
+    @RequestMapping("/preview/*/{folder}.files/{fileName:.+}")
     public void getStatic(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
         String htmlName = folder;
         PreviewInfo previewInfo = previewInfoDao.getInfoByHtmlName(htmlName);

@@ -28,6 +28,12 @@ public class FileToken {
     private Date createTime;
     @Property(FileTokenFields.warehouseType)
     private String warehouseType;
+    @Property(FileTokenFields.downloadUser)
+    private String downloadUser;
+    @Property(FileTokenFields.downloadSecurityGroup)
+    private String downloadSecurityGroup;
+    @Property(FileTokenFields.zippedFilesStructure)
+    private String zippedFilesStructure;
 
     public ObjectId get_id() {
         return _id;
@@ -80,7 +86,29 @@ public class FileToken {
     public String getFilePath() {
         return filePath;
     }
+    public String getDownloadUser() {
+        return downloadUser;
+    }
 
+    public void setDownloadUser(String downloadUser) {
+        this.downloadUser = downloadUser;
+    }
+
+    public String getDownloadSecurityGroup() {
+        return downloadSecurityGroup;
+    }
+
+    public void setDownloadSecurityGroup(String downloadSecurityGroup) {
+        this.downloadSecurityGroup = downloadSecurityGroup;
+    }
+
+    public String getZippedFilesStructure() {
+        return zippedFilesStructure;
+    }
+
+    public void setZippedFilesStructure(String zippedFilesStructure) {
+        this.zippedFilesStructure = zippedFilesStructure;
+    }
     public void setFilePath(String filePath) {
         this.filePath = filePath;
     }

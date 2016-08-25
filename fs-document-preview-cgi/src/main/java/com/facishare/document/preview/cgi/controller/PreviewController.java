@@ -3,8 +3,8 @@ package com.facishare.document.preview.cgi.controller;
 import com.alibaba.fastjson.JSON;
 import com.facishare.document.preview.cgi.dao.FileTokenDao;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
-import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.model.DownloadFileTokens;
+import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfo;
 import com.facishare.document.preview.cgi.utils.ConvertorHelper;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
@@ -25,8 +25,6 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-
-import static com.facishare.document.preview.cgi.model.FileTokenFields.fileName;
 
 /**
  * Created by liuq on 16/8/5.
@@ -49,8 +47,7 @@ public class PreviewController {
     @RequestMapping("/preview/bypath")
     public void preivewByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String path = safteGetRequestParameter(request, "path");
-        String fileName = safteGetRequestParameter(request, "name");
-        if (path == "" || fileName == "") {
+        if (path.equals("")) {
             response.getWriter().println("参数错误!");
             return;
         }
@@ -59,22 +56,21 @@ public class PreviewController {
             response.getWriter().println("该文件不可以预览!");
             return;
         }
-        LOG.info("begin preview by path,path:{},fileName:{}", path, fileName);
-        doPreview(path,request, response);
+        LOG.info("begin preview by path,path:{}", path);
+        doPreview(path, request, response);
     }
 
     @RequestMapping("/preview/bytoken")
     public void preivewByToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String token = safteGetRequestParameter(request, "token");
-        String fileName = safteGetRequestParameter(request, "name");
-        if (token == "" || fileName == "") {
+        if (token.equals("")) {
             response.getWriter().println("参数错误!");
             return;
         }
-        LOG.info("begin preview by token,path:{},fileName:{}", token, fileName);
+        LOG.info("begin preview by token,path:{}", token);
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         DownloadFileTokens fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
-        if (fileToken == null || fileToken.getFileType().toLowerCase() != "preview") {
+        if (fileToken == null || !fileToken.getFileType().toLowerCase().equals("preview")) {
             {
                 if (fileToken == null) {
                     LOG.warn("token not exsist!");
@@ -86,12 +82,12 @@ public class PreviewController {
             }
         }
         String path = fileToken.getFilePath();
-        doPreview(path, request,response);
+        doPreview(path, request, response);
     }
 
     private void doPreview(String path, HttpServletRequest request, HttpServletResponse response) throws Exception {
         PreviewInfo previewInfo = previewInfoDao.getInfoByPath(path);
-        if (previewInfo == null || previewInfo.getHtmlFilePath() == "") {
+        if (previewInfo == null || previewInfo.getHtmlFilePath().equals("")) {
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo);
             if (bytes == null) {
@@ -99,7 +95,7 @@ public class PreviewController {
                 return;
             }
             ConvertorHelper convertorHelper = new ConvertorHelper(employeeInfo);
-            String htmlFilePath = convertorHelper.doConvert(path, bytes, fileName);
+            String htmlFilePath = convertorHelper.doConvert(path, bytes);
             if (htmlFilePath != "") {
                 previewInfoDao.create(path, htmlFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length);
                 response.setContentType("text/html");

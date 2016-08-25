@@ -22,7 +22,7 @@ public class ConvertorHelper {
         this.employeeInfo = employeeInfo;
     }
 
-    public String doConvert(String path, byte[] bytes, String fileName) throws Exception {
+    public String doConvert(String path, byte[] bytes) throws Exception {
         Convert convert = (Convert) ConvertorPool.getInstance().borrowObject();
         try {
             Slf4JStopWatch stopWatch = new Slf4JStopWatch();

@@ -1,9 +1,7 @@
 package com.facishare.document.preview.cgi.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
-import com.facishare.document.preview.cgi.model.JsonResponseEntity;
 import com.facishare.document.preview.cgi.model.PreviewInfo;
 import com.facishare.document.preview.cgi.utils.ConvertorHelper;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
@@ -15,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,63 +43,45 @@ public class PreviewController {
         return "preview";
     }
 
-    @ResponseBody
-    @RequestMapping(value = "/preview/convert", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String convert(HttpServletRequest request) throws Exception {
+    @RequestMapping("/preview/show")
+    public void preivew(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String path = safteGetRequestParameter(request, "path");
         String fileName = safteGetRequestParameter(request, "name");
-        JsonResponseEntity jsonResponseEntity = new JsonResponseEntity();
         if (path == "") {
-            jsonResponseEntity.setSuccessed(false);
-            jsonResponseEntity.setErrorMsg("参数错误!");
-            return JSONObject.toJSONString(jsonResponseEntity);
+            response.getWriter().println("参数错误!");
+            return;
         }
         String extension = FilenameUtils.getExtension(path);
         if (allowPreviewExtension.indexOf(extension) == -1) {
-            jsonResponseEntity.setSuccessed(false);
-            jsonResponseEntity.setErrorMsg("该文件不可以预览!");
-            return JSONObject.toJSONString(jsonResponseEntity);
+            response.getWriter().println("该文件不可以预览!");
+            return;
         }
         fileName = (fileName == "" || fileName == null) ? path : fileName;
         LOG.info("begin preview,path:{},fileName:{}", path, fileName);
-        //检查下服务器上是否转换过
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        boolean hasConverted = dao.hasConverted(path);
-        if (hasConverted) {
-            jsonResponseEntity.setSuccessed(true);
-            return JSONObject.toJSONString(jsonResponseEntity);
-        } else {
+        PreviewInfo previewInfo = dao.getInfoByPath(path);
+        if (previewInfo == null || previewInfo.getHtmlFilePath() == "") {
             byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo);
             if (bytes == null) {
-                LOG.warn("can't get bytes from path:{}", path);
-                jsonResponseEntity.setSuccessed(false);
-                jsonResponseEntity.setErrorMsg("该文件找不到或者损坏!");
-                return JSONObject.toJSONString(jsonResponseEntity);
+                response.getWriter().println("该文件找不到或者损坏!");
+                return;
             }
             ConvertorHelper convertorHelper = new ConvertorHelper(employeeInfo);
             String htmlFilePath = convertorHelper.doConvert(path, bytes, fileName);
             if (htmlFilePath != "") {
                 dao.create(path, htmlFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length);
-                jsonResponseEntity.setSuccessed(true);
-                return JSONObject.toJSONString(jsonResponseEntity);
+                response.setContentType("text/html");
+                outPut(response, htmlFilePath);
+                return;
             } else {
                 LOG.warn("path:{} can't do preview", path);
-                jsonResponseEntity.setSuccessed(false);
-                jsonResponseEntity.setErrorMsg("很抱歉,该文件无法预览!");
-                return JSONObject.toJSONString(jsonResponseEntity);
+                response.getWriter().println("很抱歉,该文件不能正常预览!");
+                return;
             }
-        }
-    }
-
-    @RequestMapping("/preview/show")
-    public void preivew(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String path = request.getParameter("path").trim();
-        PreviewInfo previewInfo = dao.getInfoByPath(path);
-        if (previewInfo == null || previewInfo.getHtmlFilePath() == "")
-            response.setStatus(404);
-        else {
+        } else {
             response.setContentType("text/html");
             outPut(response, previewInfo.getHtmlFilePath());
+            return;
         }
     }
 

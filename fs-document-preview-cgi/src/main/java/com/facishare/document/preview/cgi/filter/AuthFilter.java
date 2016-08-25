@@ -34,7 +34,7 @@ public class AuthFilter extends OncePerRequestFilter {
             EmployeeInfo employeeInfo = authHelper.getAuthinfo(request);
             if (employeeInfo == null) {
                 LOG.info("url:{}",request.getRequestURI());
-                response.setStatus(403);
+                response.getWriter().println("访问受限:无登录信息!");
                 return;
             } else {
                 request.setAttribute("Auth", employeeInfo);

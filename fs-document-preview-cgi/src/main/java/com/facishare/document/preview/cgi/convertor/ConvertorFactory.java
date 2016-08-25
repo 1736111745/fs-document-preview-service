@@ -22,7 +22,7 @@ public class ConvertorFactory extends BasePooledObjectFactory<Convert> {
         convert.setTempPath(new PathHelper().getConvertTempPath());
         convert.setAutoDeleteTempFiles(true);
         convert.setHtmlTitle("文档预览");
-        convert.setShowTitle(true);
+        convert.setShowTitle(false);
         convert.setShowPic(true);
         convert.setHtmlEncoding("UTF-8");
         convert.setConvertForPhone(true);

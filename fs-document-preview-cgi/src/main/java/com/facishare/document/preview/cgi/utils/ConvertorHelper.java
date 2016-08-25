@@ -31,12 +31,11 @@ public class ConvertorHelper {
             PathHelper pathHelper = new PathHelper(employeeInfo);
             String tempFilePath = pathHelper.getTempFilePath(path, bytes);
             String htmlFilePath = pathHelper.getHtmlFilePath(path);
-            convert.setHtmlName(fileName);
             int code = path.toLowerCase().contains(".pdf") ? convert.convertPdfToHtml(tempFilePath, htmlFilePath) : convert.convertMStoHtmlOfSvg(tempFilePath, htmlFilePath);
             FileUtils.deleteQuietly(new File(tempFilePath));
             String takeInfo = stopWatch.stop();
             LOG.info("code:{},takeInfo:{}", code, takeInfo);
-            return code==0||code==7?htmlFilePath:"";
+            return code==0?htmlFilePath:"";
         } catch (Exception e) {
             LOG.error("error info:" + e.getStackTrace());
             return "";

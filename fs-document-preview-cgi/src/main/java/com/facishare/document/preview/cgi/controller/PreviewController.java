@@ -6,8 +6,11 @@ import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.DownloadFileTokens;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfo;
+import com.facishare.document.preview.cgi.model.PreviewWayEntity;
 import com.facishare.document.preview.cgi.utils.ConvertorHelper;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
+import com.fxiaoke.common.release.GrayRelease;
+import com.fxiaoke.common.release.GrayReleaseBiz;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -16,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,13 +45,32 @@ public class PreviewController {
     FileTokenDao fileTokenDao;
 
     private static final Logger LOG = LoggerFactory.getLogger(PreviewController.class);
+    private static GrayReleaseBiz biz = GrayRelease.getInstance("qixin-online-notification");
 
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
 
-    @RequestMapping("/preview/bypath")
-    public void preivewByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String path = safteGetRequestParameter(request, "path");
+    @ResponseBody
+    @RequestMapping(value = "/preview/getway", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String getPreviewWay(HttpServletRequest request, HttpServletResponse response) {
+        PreviewWayEntity entity = new PreviewWayEntity();
+        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+        String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
+        boolean newway = biz.isAllow("newway", user);
+        if (newway) {
+            entity.setNewWay(true);
+            String byTokenUrl = "/dps/prewview/bytoken/{0}";
+            String byPathUrl = "/dps/prewview/bypath/{0}";
+            entity.setPreviewByPathUrlFormat(byPathUrl);
+            entity.setPreviewByTokenUrlFormat(byTokenUrl);
+        } else
+            entity.setNewWay(false);
+        String json = JSON.toJSONString(entity);
+        return json;
+    }
+
+    @RequestMapping("/preview/bypath/{path}")
+    public void preivewByPath(@PathVariable String path, HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (path.equals("")) {
             response.getWriter().println("参数错误!");
             return;
@@ -60,9 +84,8 @@ public class PreviewController {
         doPreview(path, request, response);
     }
 
-    @RequestMapping("/preview/bytoken")
-    public void preivewByToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String token = safteGetRequestParameter(request, "token");
+    @RequestMapping("/preview/bytoken/{token}")
+    public void preivewByToken(@PathVariable String token, HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (token.equals("")) {
             response.getWriter().println("参数错误!");
             return;
@@ -147,9 +170,5 @@ public class PreviewController {
         fc.close();
     }
 
-    private String safteGetRequestParameter(HttpServletRequest request, String paramName) {
-        String value = request.getParameter(paramName) == null ? "" : request.getParameter(paramName).trim();
-        return value;
-    }
 }
 

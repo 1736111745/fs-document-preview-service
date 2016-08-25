@@ -113,7 +113,6 @@ public class PreviewController {
         PreviewInfo previewInfo = dao.getInfoByHtmlName(htmlName);
         String htmlFilePath = previewInfo.getHtmlFilePath();
         File file = new File(htmlFilePath);
-        response.setContentLength((int)file.length());
         String folderName = folder + ".files";
         String parent = file.getParent() + "/" + folderName;
         String filePath = parent + "/" + fileName;
@@ -123,11 +122,10 @@ public class PreviewController {
             response.setContentType("application/javascript");
         } else if (fileName.toLowerCase().contains(".css")) {
             response.setContentType("text/css");
-        }
-        else if(fileName.toLowerCase().contains(".svg"))
-        {
+        } else if (fileName.toLowerCase().contains(".svg")) {
             response.setContentType("image/svg+xml");
         }
+        response.setContentLength((int) file.length());
         outPut(response, filePath);
     }
 

@@ -45,7 +45,7 @@ public class PreviewController {
     FileTokenDao fileTokenDao;
 
     private static final Logger LOG = LoggerFactory.getLogger(PreviewController.class);
-    private static GrayReleaseBiz biz = GrayRelease.getInstance("qixin-online-notification");
+    private static GrayReleaseBiz biz = GrayRelease.getInstance("dps");
 
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";

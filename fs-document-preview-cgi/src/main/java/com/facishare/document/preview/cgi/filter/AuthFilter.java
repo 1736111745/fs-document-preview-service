@@ -1,5 +1,6 @@
 package com.facishare.document.preview.cgi.filter;
 
+import com.alibaba.fastjson.JSON;
 import com.facishare.document.preview.cgi.controller.PreviewController;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.utils.AuthHelper;
@@ -36,6 +37,7 @@ public class AuthFilter extends OncePerRequestFilter {
                 LOG.info("url:{}",request.getRequestURI());
                 response.getWriter().println("访问受限:无登录信息!");
             } else {
+                LOG.info("employee info:{}", JSON.toJSONString(employeeInfo));
                 request.setAttribute("Auth", employeeInfo);
                 filterChain.doFilter(request, response);
             }

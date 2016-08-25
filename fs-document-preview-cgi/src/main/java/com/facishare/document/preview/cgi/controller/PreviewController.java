@@ -1,7 +1,10 @@
 package com.facishare.document.preview.cgi.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.facishare.document.preview.cgi.dao.FileTokenDao;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
+import com.facishare.document.preview.cgi.model.FileToken;
 import com.facishare.document.preview.cgi.model.PreviewInfo;
 import com.facishare.document.preview.cgi.utils.ConvertorHelper;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
@@ -23,6 +26,8 @@ import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
+import static com.facishare.document.preview.cgi.model.FileTokenFields.fileName;
+
 /**
  * Created by liuq on 16/8/5.
  */
@@ -32,22 +37,19 @@ public class PreviewController {
     @Autowired
     FileStorageProxy fileStorageProxy;
     @Autowired
-    PreviewInfoDao dao;
+    PreviewInfoDao previewInfoDao;
+    @Autowired
+    FileTokenDao fileTokenDao;
     private static final Logger LOG = LoggerFactory.getLogger(PreviewController.class);
 
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
 
-    @RequestMapping("/preview")
-    public String doPreview(HttpServletRequest request, HttpServletResponse response) {
-        return "preview";
-    }
-
-    @RequestMapping("/preview/show")
-    public void preivew(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @RequestMapping("/preview/bypath")
+    public void preivewByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String path = safteGetRequestParameter(request, "path");
         String fileName = safteGetRequestParameter(request, "name");
-        if (path == "") {
+        if (path == "" || fileName == "") {
             response.getWriter().println("参数错误!");
             return;
         }
@@ -56,11 +58,40 @@ public class PreviewController {
             response.getWriter().println("该文件不可以预览!");
             return;
         }
-        fileName = (fileName == "" || fileName == null) ? path : fileName;
-        LOG.info("begin preview,path:{},fileName:{}", path, fileName);
+        LOG.info("begin preview by path,path:{},fileName:{}", path, fileName);
+        doPreview(path,request, response);
+    }
+
+    @RequestMapping("/preview/bytoken")
+    public void preivewByToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String token = safteGetRequestParameter(request, "token");
+        String fileName = safteGetRequestParameter(request, "name");
+        if (token == "" || fileName == "") {
+            response.getWriter().println("参数错误!");
+            return;
+        }
+        LOG.info("begin preview by token,path:{},fileName:{}", token, fileName);
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        PreviewInfo previewInfo = dao.getInfoByPath(path);
+        FileToken fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
+        if (fileToken == null || fileToken.getFileType().toLowerCase() != "preview") {
+            {
+                if (fileToken == null) {
+                    LOG.warn("token not exsist!");
+                } else {
+                    LOG.warn("token type isn't right!json:{}", JSON.toJSONString(fileToken));
+                }
+                response.getWriter().println("参数错误!");
+                return;
+            }
+        }
+        String path = fileToken.getFilePath();
+        doPreview(path, request,response);
+    }
+
+    private void doPreview(String path, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        PreviewInfo previewInfo = previewInfoDao.getInfoByPath(path);
         if (previewInfo == null || previewInfo.getHtmlFilePath() == "") {
+            EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo);
             if (bytes == null) {
                 response.getWriter().println("该文件找不到或者损坏!");
@@ -69,7 +100,7 @@ public class PreviewController {
             ConvertorHelper convertorHelper = new ConvertorHelper(employeeInfo);
             String htmlFilePath = convertorHelper.doConvert(path, bytes, fileName);
             if (htmlFilePath != "") {
-                dao.create(path, htmlFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length);
+                previewInfoDao.create(path, htmlFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length);
                 response.setContentType("text/html");
                 outPut(response, htmlFilePath);
                 return;
@@ -88,7 +119,7 @@ public class PreviewController {
     @RequestMapping("/preview/{folder}.files/{fileName:.+}")
     public void getStatic(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
         String htmlName = folder;
-        PreviewInfo previewInfo = dao.getInfoByHtmlName(htmlName);
+        PreviewInfo previewInfo = previewInfoDao.getInfoByHtmlName(htmlName);
         String htmlFilePath = previewInfo.getHtmlFilePath();
         File file = new File(htmlFilePath);
         String folderName = folder + ".files";

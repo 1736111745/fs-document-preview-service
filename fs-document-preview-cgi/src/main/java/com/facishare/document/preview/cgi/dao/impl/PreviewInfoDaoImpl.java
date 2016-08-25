@@ -21,7 +21,7 @@ import java.util.Date;
 public class PreviewInfoDaoImpl implements PreviewInfoDao {
 
     @Autowired
-    private DatastoreExt datastoreExt;
+    private DatastoreExt dpsDataStore;
 
     @Override
     public void create(String path, String filePath, String ea, int employeeId, long docSize) {
@@ -40,28 +40,22 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         previewInfo.setEmployeeId(employeeId);
         previewInfo.setHtmlFilePath(filePath);
         previewInfo.setPath(path);
-        datastoreExt.insert("PreviewInfo", previewInfo);
-        datastoreExt.ensureIndexes();
+        dpsDataStore.insert("PreviewInfo", previewInfo);
+        dpsDataStore.ensureIndexes();
     }
 
     @Override
     public PreviewInfo getInfoByPath(String path) {
-        Query<PreviewInfo> query = datastoreExt.createQuery(PreviewInfo.class);
+        Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("path").equal(path);
         return query.get();
     }
 
     @Override
     public PreviewInfo getInfoByHtmlName(String htmlName) {
-        Query<PreviewInfo> query = datastoreExt.createQuery(PreviewInfo.class);
+        Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("htmlName").equal(htmlName);
         return query.get();
     }
 
-    @Override
-    public boolean hasConverted(String path) {
-        Query<PreviewInfo> query = datastoreExt.createQuery(PreviewInfo.class);
-        query.criteria("path").equal(path);
-        return query.countAll() > 0;
-    }
 }

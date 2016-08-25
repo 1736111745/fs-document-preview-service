@@ -25,7 +25,6 @@ public class FileStorageProxy {
     @Autowired
     GFileStorageService gFileStorageService;
 
-
     public byte[] GetBytesByPath(String path, EmployeeInfo employeeInfo) {
         try {
             if (path.startsWith("G_")) {
@@ -54,4 +53,5 @@ public class FileStorageProxy {
             return null;
         }
     }
+
 }

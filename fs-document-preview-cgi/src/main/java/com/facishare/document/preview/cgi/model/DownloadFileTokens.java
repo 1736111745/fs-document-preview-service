@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * Created by liuq on 16/8/25.
  */
-public class FileToken {
+public class DownloadFileTokens {
     @Id
     private ObjectId _id;
     @Property(FileTokenFields.EA)

@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.facishare.document.preview.cgi.dao.FileTokenDao;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
-import com.facishare.document.preview.cgi.model.FileToken;
+import com.facishare.document.preview.cgi.model.DownloadFileTokens;
 import com.facishare.document.preview.cgi.model.PreviewInfo;
 import com.facishare.document.preview.cgi.utils.ConvertorHelper;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
@@ -73,7 +73,7 @@ public class PreviewController {
         }
         LOG.info("begin preview by token,path:{},fileName:{}", token, fileName);
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        FileToken fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
+        DownloadFileTokens fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
         if (fileToken == null || fileToken.getFileType().toLowerCase() != "preview") {
             {
                 if (fileToken == null) {

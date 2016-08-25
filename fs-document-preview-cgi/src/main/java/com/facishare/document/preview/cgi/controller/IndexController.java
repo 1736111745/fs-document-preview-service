@@ -1,5 +1,7 @@
 package com.facishare.document.preview.cgi.controller;
 
+import com.facishare.document.preview.cgi.dao.FileTokenDao;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,6 +23,8 @@ import java.util.Properties;
 @Controller
 @RequestMapping("/")
 public class IndexController{
+    @Autowired
+    FileTokenDao fileTokenDao;
     @RequestMapping(method = RequestMethod.GET)
     public void index(HttpServletResponse response) throws IOException {
         PrintWriter printWriter=response.getWriter();

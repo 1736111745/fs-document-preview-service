@@ -1,10 +1,7 @@
 package com.facishare.document.preview.cgi.filter;
 
-import com.alibaba.fastjson.JSON;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.utils.AuthHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -20,7 +17,6 @@ import java.io.IOException;
  */
 @Component
 public class AuthFilter extends OncePerRequestFilter {
-    private static final Logger LOG = LoggerFactory.getLogger(AuthFilter.class);
     @Autowired
     AuthHelper authHelper;
 
@@ -33,10 +29,8 @@ public class AuthFilter extends OncePerRequestFilter {
         else {
             EmployeeInfo employeeInfo = authHelper.getAuthinfo(request);
             if (employeeInfo == null) {
-                LOG.info("url:{}",request.getRequestURI());
                 response.getWriter().println("访问受限:无登录信息!");
             } else {
-                LOG.info("employee info:{}", JSON.toJSONString(employeeInfo));
                 request.setAttribute("Auth", employeeInfo);
                 filterChain.doFilter(request, response);
             }

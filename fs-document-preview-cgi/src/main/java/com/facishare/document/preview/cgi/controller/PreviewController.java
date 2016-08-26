@@ -69,7 +69,7 @@ public class PreviewController {
         return json;
     }
 
-    @RequestMapping("/preview/path/{path}")
+    @RequestMapping("/preview/path/{path:.+}")
     public void preivewByPath(@PathVariable String path, HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (path.equals("")) {
             response.getWriter().println("参数错误!");

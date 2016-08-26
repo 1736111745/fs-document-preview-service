@@ -22,7 +22,6 @@ public class ConvertorFactory extends BasePooledObjectFactory<Convert> {
         convert.setAutoDeleteTempFiles(true);
         convert.setHtmlTitle("文档预览");
         convert.setShowTitle(false);
-        //convert.setViewAll(true);
         convert.setShowPic(true);
         convert.setHtmlEncoding("UTF-8");
         convert.setConvertForPhone(true);

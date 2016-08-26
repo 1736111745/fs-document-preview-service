@@ -36,7 +36,7 @@
 			.thumbnail img {
 				display: block;
 				margin: auto;
-				width: 100%;
+				max-width: 100%;
 				padding: 2px;
 				border: solid 1px #eee;
 				display: block;

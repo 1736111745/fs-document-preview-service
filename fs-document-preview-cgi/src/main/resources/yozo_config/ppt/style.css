@@ -1,10 +1,16 @@
 ﻿html,body{
-	height: 100%;
+	
 	overflow: hidden;
 }
-body {background: #f8f8f8;}
+body {background: #f8f8f8;
+/*解决在火狐浏览器上面用户可以选择的问题*/
+-moz-user-select: none; 
+cursor: default;
+margin:0px
+    
+}
 #sidebar {position: absolute;background: #f8f8f8;top: 40px;bottom: 0;left: -16%;width: 16%;overflow: auto;transition: left .45s cubic-bezier(.23, 1, .32, 1); overflow-x: hidden;}
-#mainbody {position: absolute;left: 0px;right: 0px;top: 40px;background-position: center;background-repeat: no-repeat;background-size: contain;border: solid 10px transparent;transition: left .45s cubic-bezier(.23, 1, .32, 1);}
+#mainbody {position: absolute;left: 0px;right: 0px;bottom:0px;top: 40px;background-position: center;background-repeat: no-repeat;background-size: contain;border: solid 10px transparent;transition: left .45s cubic-bezier(.23, 1, .32, 1);overflow:auto}
 .thumbnail {margin: 10px 10px 0;text-align: center;}
 .thumbnail img {display: block; margin: auto; max-width: 100%;padding: 2px;border: solid 1px #eee;display: block; border-radius: 5px;cursor: pointer;box-sizing: border-box;}
 .thumbnail.active img {border-color: darkorange;box-shadow: 0 0 0 2px darkorange;cursor: default;}
@@ -27,13 +33,12 @@ body {background: #f8f8f8;}
     position: absolute;
     width: 35%;
     height: 100%;
-    top: 0;
+    top:0px;
     z-index: 500;
-    background-image:url(about:blank);
+     background-image:url(about:blank);
     display: block;
 }
 .ppt-turn-right-mask {
-    
     right: 15%;
     cursor: url("arr_right.cur"), auto;
 }
@@ -43,17 +48,19 @@ body {background: #f8f8f8;}
 }
 @media (min-width: 960px) {
 	.playimg{width:70%;}
-	#sidebar {display: block;left: 0;}
-	#mainbody {left: 16%;}
-	#sideBtn{display: none;}
+	
+	
+	
 	
 }
 @media( max-width:960px){
-	.playimg{width:90%}
-	.ppt-turn-left-mask, .ppt-turn-right-mask{width:45%}
-.ppt-turn-right-mask {right: 5%;}
-.ppt-turn-left-mask{left:5%;}
-	}
+	.playimg{width:100%;vertical-align: middle;}
+	.ppt-turn-left-mask, .ppt-turn-right-mask{width:50%}
+	.ppt-turn-right-mask {right: 0%;}
+	.ppt-turn-left-mask{left:0%;}
+	#mainbody{border:0px}
+	
+}
 .media #sidebar {display: block;left: 0;}
 .media #mainbody {left: 16%;}
 .media #sideBtn{display: none;}

@@ -18,7 +18,6 @@ public class ConvertorFactory extends BasePooledObjectFactory<Convert> {
     @Override
     public Convert create() throws Exception {
         Convert convert = new Convert(configDir);
-        convert.setAcceptTracks(true);
         convert.setTempPath(new PathHelper().getConvertTempPath());
         convert.setAutoDeleteTempFiles(true);
         convert.setHtmlTitle("文档预览");

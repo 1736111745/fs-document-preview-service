@@ -34,8 +34,8 @@ public class AuthFilter extends OncePerRequestFilter {
                 response.setStatus(403);
             } else {
                 request.setAttribute("Auth", employeeInfo);
-                filterChain.doFilter(request, response);
             }
+            filterChain.doFilter(request, response);
         }
     }
 }

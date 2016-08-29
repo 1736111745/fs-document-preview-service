@@ -22,7 +22,7 @@ public class ConvertorHelper {
         this.employeeInfo = employeeInfo;
     }
 
-    public String doConvert(String path, byte[] bytes) throws Exception {
+    public String doConvert(String path, String name,byte[] bytes) throws Exception {
         Convert convert = (Convert) ConvertorPool.getInstance().borrowObject();
         try {
             Slf4JStopWatch stopWatch = new Slf4JStopWatch();
@@ -31,6 +31,7 @@ public class ConvertorHelper {
             PathHelper pathHelper = new PathHelper(employeeInfo);
             String tempFilePath = pathHelper.getTempFilePath(path, bytes);
             String htmlFilePath = pathHelper.getHtmlFilePath(path);
+            convert.setHtmlName(name);
             int code = path.toLowerCase().contains(".pdf") ? convert.convertPdfToHtml(tempFilePath, htmlFilePath) : convert.convertMStoHtmlOfSvg(tempFilePath, htmlFilePath);
             FileUtils.deleteQuietly(new File(tempFilePath));
             String takeInfo = stopWatch.stop();

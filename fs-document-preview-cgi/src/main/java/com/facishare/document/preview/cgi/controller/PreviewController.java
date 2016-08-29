@@ -58,39 +58,43 @@ public class PreviewController {
         String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
         boolean newway = gray.isAllow("newway", user);
         if (newway) {
-            entity.setNewWay(true);
-            String byTokenUrl = "/dps/prewview/token/{0}";
-            String byPathUrl = "/dps/prewview/path/{0}";
+            entity.setWay(1);
+            String byTokenUrl = "/dps/prewview/bytoken?token={0}&name={1}";
+            String byPathUrl = "/dps/prewview/bypath?path={0}&name={1}";
             entity.setPreviewByPathUrlFormat(byPathUrl);
             entity.setPreviewByTokenUrlFormat(byTokenUrl);
         } else
-            entity.setNewWay(false);
+            entity.setWay(0);
         String json = JSON.toJSONString(entity);
         return json;
     }
 
-    @RequestMapping("/preview/path/{path:.+}")
-    public void preivewByPath(@PathVariable String path, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @RequestMapping("/preview/bypath")
+    public void preivewByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String path = safteGetRequestParameter(request, "path");
+        String name = safteGetRequestParameter(request, "name");
         if (path.equals("")) {
             response.getWriter().println("参数错误!");
             return;
         }
+        name = name.equals("") ? path : name;
         String extension = FilenameUtils.getExtension(path);
         if (allowPreviewExtension.indexOf(extension) == -1) {
             response.getWriter().println("该文件不可以预览!");
             return;
         }
-        LOG.info("begin preview by path,path:{}", path);
-        doPreview(path, request, response);
+        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+        doPreview(path, name, employeeInfo, response);
     }
 
-    @RequestMapping("/preview/token/{token}")
-    public void preivewByToken(@PathVariable String token, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @RequestMapping("/preview/bytoken")
+    public void preivewByToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String token = safteGetRequestParameter(request, "token");
+        String name = safteGetRequestParameter(request, "name");
         if (token.equals("")) {
             response.getWriter().println("参数错误!");
             return;
         }
-        LOG.info("begin preview by token,path:{}", token);
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         DownloadFileTokens fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
         if (fileToken == null || !fileToken.getFileType().toLowerCase().equals("preview")) {
@@ -105,20 +109,20 @@ public class PreviewController {
             }
         }
         String path = fileToken.getFilePath();
-        doPreview(path, request, response);
+        name = name.equals("") ? fileToken.getFileName() : name;
+        doPreview(path, name, employeeInfo, response);
     }
 
-    private void doPreview(String path, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    private void doPreview(String path, String name, EmployeeInfo employeeInfo, HttpServletResponse response) throws Exception {
         PreviewInfo previewInfo = previewInfoDao.getInfoByPath(path);
         if (previewInfo == null || previewInfo.getHtmlFilePath().equals("")) {
-            EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo);
             if (bytes == null) {
                 response.getWriter().println("该文件找不到或者损坏!");
                 return;
             }
             ConvertorHelper convertorHelper = new ConvertorHelper(employeeInfo);
-            String htmlFilePath = convertorHelper.doConvert(path, bytes);
+            String htmlFilePath = convertorHelper.doConvert(path,name, bytes);
             if (htmlFilePath != "") {
                 previewInfoDao.create(path, htmlFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length);
                 response.setContentType("text/html");
@@ -168,6 +172,11 @@ public class PreviewController {
         out.close();
         mbb.force();
         fc.close();
+    }
+
+    private String safteGetRequestParameter(HttpServletRequest request, String paramName) {
+        String value = request.getParameter(paramName) == null ? "" : request.getParameter(paramName).trim();
+        return value;
     }
 
 }

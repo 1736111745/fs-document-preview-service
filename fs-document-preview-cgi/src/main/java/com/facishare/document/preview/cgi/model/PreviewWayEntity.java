@@ -5,17 +5,10 @@ package com.facishare.document.preview.cgi.model;
  */
 public class PreviewWayEntity {
 
-    private boolean isNewWay;
+    private int way;
     private String previewByPathUrlFormat;
     private String previewByTokenUrlFormat;
 
-    public boolean isNewWay() {
-        return isNewWay;
-    }
-
-    public void setNewWay(boolean newWay) {
-        isNewWay = newWay;
-    }
 
     public String getPreviewByPathUrlFormat() {
         return previewByPathUrlFormat;
@@ -31,5 +24,13 @@ public class PreviewWayEntity {
 
     public void setPreviewByTokenUrlFormat(String previewByTokenUrlFormat) {
         this.previewByTokenUrlFormat = previewByTokenUrlFormat;
+    }
+
+    public int getWay() {
+        return way;
+    }
+
+    public void setWay(int way) {
+        this.way = way;
     }
 }

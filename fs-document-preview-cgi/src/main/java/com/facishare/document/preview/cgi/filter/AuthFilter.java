@@ -26,10 +26,7 @@ public class AuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         }
         else {
-            EmployeeInfo employeeInfo=new EmployeeInfo();
-            employeeInfo.setEa("fssdetest");
-            employeeInfo.setEmployeeId(2461);
-            //EmployeeInfo employeeInfo = authHelper.getAuthinfo(request);
+            EmployeeInfo employeeInfo = authHelper.getAuthinfo(request);
             if (employeeInfo == null) {
                 response.setStatus(403);
             } else {

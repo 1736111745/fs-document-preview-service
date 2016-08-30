@@ -35,7 +35,7 @@ public class ConvertorHelper {
             int code = path.toLowerCase().contains(".pdf") ? convert.convertPdfToHtml(tempFilePath, htmlFilePath) : convert.convertMStoHtmlOfSvg(tempFilePath, htmlFilePath);
             FileUtils.deleteQuietly(new File(tempFilePath));
             stopWatch.stop();
-            LOG.info("code:{},cost:{} ms", code, stopWatch.getElapsedTime());
+            LOG.info("file:{},code:{},cost:{} ms", path,code, stopWatch.getElapsedTime());
             return code==0?htmlFilePath:"";
         } catch (Exception e) {
             LOG.error("error info:" + e.getStackTrace());

@@ -51,7 +51,7 @@ public class PreviewController {
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
 
     @ResponseBody
-    @RequestMapping(value = "/preview/getway", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/preview/getPreviewConfig", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getPreviewWay(HttpServletRequest request, HttpServletResponse response) {
         PreviewWayEntity entity = new PreviewWayEntity();
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
@@ -59,8 +59,8 @@ public class PreviewController {
         boolean newway = gray.isAllow("newway", user);
         if (newway) {
             entity.setWay(1);
-            String byTokenUrl = "/dps/prewview/bytoken?token={0}&name={1}";
-            String byPathUrl = "/dps/prewview/bypath?path={0}&name={1}";
+            String byTokenUrl = "/dps/preview/bytoken?token={0}&name={1}";
+            String byPathUrl = "/dps/preview/bypath?path={0}&name={1}";
             entity.setPreviewByPathUrlFormat(byPathUrl);
             entity.setPreviewByTokenUrlFormat(byTokenUrl);
         } else

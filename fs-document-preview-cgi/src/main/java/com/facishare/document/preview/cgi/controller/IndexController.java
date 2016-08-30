@@ -19,6 +19,7 @@ import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -80,6 +81,6 @@ public class IndexController{
         arg.setSourceUser(employeeInfo.getSourceUser());
         NUploadFileDirect.Result result = nFileStorageService.nUploadFileDirect(arg, employeeInfo.getEa());
         String npath = result.getFinalNPath();
-        response.sendRedirect("/dps/preview/bypath?path=" + npath + "&name=" + FilenameUtils.getBaseName(fileName));
+        response.sendRedirect("/dps/preview/bypath?path=" + npath + "&name=" + URLEncoder.encode(fileName));
     }
 }

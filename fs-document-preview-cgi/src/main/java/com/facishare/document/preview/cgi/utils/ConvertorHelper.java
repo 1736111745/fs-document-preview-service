@@ -39,7 +39,7 @@ public class ConvertorHelper {
             FileUtils.deleteQuietly(new File(tempFilePath));
             stopWatch.stop();
             LOG.info("end convert!");
-            LOG.info("file:{},length:{},code:{},cost:{} ms", path,bytes.length,code, stopWatch.getElapsedTime());
+            LOG.info("file:{},length:{},code:{},cost:{} ms", path,bytes.length/1024,code, stopWatch.getElapsedTime());
             return code==0?htmlFilePath:"";
         } catch (Exception e) {
             LOG.error("error info:" + e.getStackTrace());

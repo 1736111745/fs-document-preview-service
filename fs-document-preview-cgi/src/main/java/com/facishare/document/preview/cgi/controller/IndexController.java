@@ -30,9 +30,10 @@ import java.util.Properties;
  */
 @Controller
 @RequestMapping("/")
-public class IndexController{
+public class IndexController {
     @Autowired
     FileTokenDao fileTokenDao;
+
     @RequestMapping(method = RequestMethod.GET)
     public void index(HttpServletResponse response) throws IOException {
         PrintWriter printWriter = response.getWriter();
@@ -59,9 +60,9 @@ public class IndexController{
         printWriter.println();
         printWriter.println("Time:" + df.format(new Date()));
     }
+
     @RequestMapping("/demo")
-    public String demo()
-    {
+    public String demo() {
         return "demo";
     }
 
@@ -69,7 +70,7 @@ public class IndexController{
     NFileStorageService nFileStorageService;
 
     @RequestMapping("/upload")
-    public void upload(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request,HttpServletResponse response) throws IOException {
+    public void upload(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws IOException {
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String fileName = file.getOriginalFilename();
         String ext = FilenameUtils.getExtension(fileName);
@@ -82,5 +83,10 @@ public class IndexController{
         NUploadFileDirect.Result result = nFileStorageService.nUploadFileDirect(arg, employeeInfo.getEa());
         String npath = result.getFinalNPath();
         response.sendRedirect("/dps/preview/bypath?path=" + npath + "&name=" + URLEncoder.encode(fileName));
+    }
+
+    @RequestMapping("/scroll")
+    public String scroll() {
+        return "scroll";
     }
 }

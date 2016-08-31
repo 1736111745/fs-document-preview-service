@@ -23,8 +23,11 @@ public class ConvertorHelper {
     }
 
     public String doConvert(String path, String name,byte[] bytes) throws Exception {
+        LOG.info("begin get convertor!");
         Convert convert = (Convert) ConvertorPool.getInstance().borrowObject();
+        LOG.info("end get convertor!");
         try {
+            LOG.info("begin convert!");
             Slf4JStopWatch stopWatch = new Slf4JStopWatch();
             stopWatch.setTimeThreshold(0);
             stopWatch.start();
@@ -35,6 +38,7 @@ public class ConvertorHelper {
             int code = path.toLowerCase().contains(".pdf") ? convert.convertPdfToHtml(tempFilePath, htmlFilePath) : convert.convertMStoHtmlOfSvg(tempFilePath, htmlFilePath);
             FileUtils.deleteQuietly(new File(tempFilePath));
             stopWatch.stop();
+            LOG.info("end convert!");
             LOG.info("file:{},code:{},cost:{} ms", path,code, stopWatch.getElapsedTime());
             return code==0?htmlFilePath:"";
         } catch (Exception e) {

@@ -52,7 +52,7 @@ public class PreviewController {
 
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewConfig", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getPreviewWay(HttpServletRequest request, HttpServletResponse response) {
+    public String getPreviewWay(HttpServletRequest request) {
         PreviewWayEntity entity = new PreviewWayEntity();
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
@@ -78,7 +78,7 @@ public class PreviewController {
             return;
         }
         name = name.equals("") ? path : name;
-        String extension = FilenameUtils.getExtension(path);
+        String extension = FilenameUtils.getExtension(path).toLowerCase();
         if (allowPreviewExtension.indexOf(extension) == -1) {
             response.getWriter().println("该文件不可以预览!");
             return;

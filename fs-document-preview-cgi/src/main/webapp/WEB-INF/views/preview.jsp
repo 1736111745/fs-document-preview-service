@@ -33,7 +33,7 @@
         function convert() {
             $.isLoading({text: "文档加载中..."});
             var queryString=window.location.search;
-            var url="/preview/convert"+queryString;
+            var url="/dps/preview/convert"+queryString;
             $.ajax({url:url,success:function(result){
                 $.isLoading.hide();
                 if(result.successed) {

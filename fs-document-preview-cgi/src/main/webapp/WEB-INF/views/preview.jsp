@@ -35,7 +35,7 @@
             var queryString=window.location.search;
             var url="/dps/preview/convert"+queryString;
             $.ajax({url:url,success:function(result){
-                $.isLoading.hide();
+                $.isLoading("hide");
                 if(result.successed) {
                     var path=result.filePath;
                     var name=result.fileName;

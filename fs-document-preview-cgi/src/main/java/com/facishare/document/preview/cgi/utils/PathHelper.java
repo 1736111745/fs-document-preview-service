@@ -19,6 +19,7 @@ public class PathHelper {
     private String dataDir;
 
     private EmployeeInfo employeeInfo;
+
     public PathHelper(EmployeeInfo employeeInfo) {
         ConfigFactory.getConfig("fs-dps-config", config -> {
             dataDir = config.get("dataDir");
@@ -27,7 +28,14 @@ public class PathHelper {
         this.employeeInfo = employeeInfo;
     }
 
-    public PathHelper(){}
+    public PathHelper() {
+    }
+
+
+    public String getDataDir()
+    {
+        return this.dataDir;
+    }
 
     public String getConvertTempPath() {
         ConfigFactory.getConfig("fs-dps-config", config -> {
@@ -39,7 +47,7 @@ public class PathHelper {
     }
 
 
-    public String getTempFilePath(String path,byte[] bytes) throws IOException {
+    public String getTempFilePath(String path, byte[] bytes) throws IOException {
         String extension = FilenameUtils.getExtension(path).toLowerCase();
         String tempFileName = SampleUUID.getUUID() + "." + extension;
         String tempFilePath = String.format("%s/tempfile/%s", tempDir, tempFileName);
@@ -84,7 +92,7 @@ public class PathHelper {
         return filePath;
     }
 
-    public static   String getFormatDateStr(String f) {
+    public static String getFormatDateStr(String f) {
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat(f);
         String yyMM = format.format(date);

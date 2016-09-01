@@ -13,4 +13,5 @@ public interface PreviewInfoDao {
 
     PreviewInfo getInfoByHtmlName(String htmlName);
 
+    boolean hasConverted(String path);
 }

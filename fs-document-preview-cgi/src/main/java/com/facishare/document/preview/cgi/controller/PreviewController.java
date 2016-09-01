@@ -1,12 +1,10 @@
 package com.facishare.document.preview.cgi.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.facishare.document.preview.cgi.dao.FileTokenDao;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
-import com.facishare.document.preview.cgi.model.DownloadFileTokens;
-import com.facishare.document.preview.cgi.model.EmployeeInfo;
-import com.facishare.document.preview.cgi.model.PreviewInfo;
-import com.facishare.document.preview.cgi.model.PreviewWayEntity;
+import com.facishare.document.preview.cgi.model.*;
 import com.facishare.document.preview.cgi.utils.ConvertorHelper;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.fxiaoke.release.FsGrayRelease;
@@ -86,7 +84,53 @@ public class PreviewController {
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         doPreview(path, name, employeeInfo, response);
     }
-
+    @ResponseBody
+    @RequestMapping(value = "/preview/convert", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String convert(HttpServletRequest request) throws Exception {
+        String path = safteGetRequestParameter(request, "path");
+        String fileName = safteGetRequestParameter(request, "name");
+        JsonResponseEntity jsonResponseEntity = new JsonResponseEntity();
+        if (path == "") {
+            jsonResponseEntity.setSuccessed(false);
+            jsonResponseEntity.setErrorMsg("参数错误!");
+            return JSONObject.toJSONString(jsonResponseEntity);
+        }
+        String extension = FilenameUtils.getExtension(path);
+        if (allowPreviewExtension.indexOf(extension) == -1) {
+            jsonResponseEntity.setSuccessed(false);
+            jsonResponseEntity.setErrorMsg("该文件不可以预览!");
+            return JSONObject.toJSONString(jsonResponseEntity);
+        }
+        fileName = (fileName == "" || fileName == null) ? path : fileName;
+        LOG.info("begin preview,path:{},fileName:{}", path, fileName);
+        //检查下服务器上是否转换过
+        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+        boolean hasConverted = previewInfoDao.hasConverted(path);
+        if (hasConverted) {
+            jsonResponseEntity.setSuccessed(true);
+            return JSONObject.toJSONString(jsonResponseEntity);
+        } else {
+            byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo);
+            if (bytes == null) {
+                LOG.warn("can't get bytes from path:{}", path);
+                jsonResponseEntity.setSuccessed(false);
+                jsonResponseEntity.setErrorMsg("该文件找不到或者损坏!");
+                return JSONObject.toJSONString(jsonResponseEntity);
+            }
+            ConvertorHelper convertorHelper = new ConvertorHelper(employeeInfo);
+            String htmlFilePath = convertorHelper.doConvert(path, fileName, bytes);
+            if (htmlFilePath != "") {
+                previewInfoDao.create(path, htmlFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length);
+                jsonResponseEntity.setSuccessed(true);
+                return JSONObject.toJSONString(jsonResponseEntity);
+            } else {
+                LOG.warn("path:{} can't do preview", path);
+                jsonResponseEntity.setSuccessed(false);
+                jsonResponseEntity.setErrorMsg("很抱歉,该文件无法预览!");
+                return JSONObject.toJSONString(jsonResponseEntity);
+            }
+        }
+    }
     @RequestMapping("/preview/bytoken")
     public void preivewByToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String token = safteGetRequestParameter(request, "token");

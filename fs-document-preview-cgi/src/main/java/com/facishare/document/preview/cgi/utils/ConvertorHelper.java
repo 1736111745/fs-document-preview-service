@@ -1,7 +1,7 @@
 package com.facishare.document.preview.cgi.utils;
 
 import application.dcs.Convert;
-import application.dcs.IPICConvertor;
+import application.dcs.IHtmlConvertor;
 import com.facishare.document.preview.cgi.convertor.ConvertorPool;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import org.apache.commons.io.FileUtils;
@@ -37,12 +37,12 @@ public class ConvertorHelper {
             String htmlFilePath = pathHelper.getHtmlFilePath(path);
             convert.setHtmlName(name);
             LOG.info("begin get IPICConvertor");
-            IPICConvertor ipicConvertor=convert.convertMStoPic(tempFilePath);
+            IHtmlConvertor ipicConvertor=convert.convertMStoHtml(tempFilePath);
             LOG.info("end get IPICConvertor");
             String targetFileDir=pathHelper.getDataDir();
-            LOG.info("begin convert!");
-            ipicConvertor.convertToSVG(0,1,targetFileDir);
-            LOG.info("end convert!");
+            LOG.info("begin convertToSVG!");
+            ipicConvertor.convertToHtml(targetFileDir+"/a.html",0,1);
+            LOG.info("end convertToSVG!");
             int code = path.toLowerCase().contains(".pdf") ? convert.convertPdfToHtml(tempFilePath, htmlFilePath) : convert.convertMStoHtmlOfSvg(tempFilePath, htmlFilePath);
             FileUtils.deleteQuietly(new File(tempFilePath));
             stopWatch.stop();

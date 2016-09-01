@@ -35,7 +35,7 @@
             var queryString=window.location.search;
             var url="/preview/convert"+queryString;
             $.ajax({url:url,success:function(result){
-                $("#loading").hide();
+                $.isLoading.hide();
                 if(result.successed) {
                     var path=result.filePath;
                     var name=result.fileName;

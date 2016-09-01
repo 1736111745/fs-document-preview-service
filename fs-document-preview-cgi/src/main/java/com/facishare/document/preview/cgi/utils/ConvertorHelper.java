@@ -40,14 +40,9 @@ public class ConvertorHelper {
             IPICConvertor ipicConvertor=convert.convertMStoPic(tempFilePath);
             LOG.info("end get IPICConvertor");
             String targetFileDir=pathHelper.getDataDir();
-            int pageCount=ipicConvertor.getPageCount();
-            for(int i=0;i<pageCount;i++) {
-
-                LOG.info("begin convert:{}", i);
-                ipicConvertor.convertToJPG(i, i, 1f, targetFileDir);
-                LOG.info("end convert:{}", i);
-            }
-
+            LOG.info("begin convert!");
+            ipicConvertor.convertToSVG(0,1,targetFileDir);
+            LOG.info("end convert!");
             int code = path.toLowerCase().contains(".pdf") ? convert.convertPdfToHtml(tempFilePath, htmlFilePath) : convert.convertMStoHtmlOfSvg(tempFilePath, htmlFilePath);
             FileUtils.deleteQuietly(new File(tempFilePath));
             stopWatch.stop();

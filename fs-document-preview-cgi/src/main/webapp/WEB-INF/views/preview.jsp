@@ -39,7 +39,7 @@
                 if(result.successed) {
                     var path=result.filePath;
                     var name=result.fileName;
-                    window.location.href = "/preview/show?path="+path+"&name="+name;
+                    window.location.href = "/dps/preview/show?path="+path+"&name="+name;
                 }
                 else
                 {

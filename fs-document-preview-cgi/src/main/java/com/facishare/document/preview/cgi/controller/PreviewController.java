@@ -151,6 +151,8 @@ public class PreviewController {
                 if (htmlFilePath != "") {
                     previewInfoDao.create(path, htmlFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length);
                     jsonResponseEntity.setSuccessed(true);
+                    jsonResponseEntity.setFileName(name);
+                    jsonResponseEntity.setFilePath(path);
                     return JSONObject.toJSONString(jsonResponseEntity);
                 } else {
                     LOG.warn("path:{} can't do preview", path);

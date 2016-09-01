@@ -64,7 +64,9 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
 
     @Override
     public boolean hasConverted(String path) {
-        return false;
+        Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+        query.criteria("path").equal(path);
+        return query.countAll() > 0;
     }
 
 }

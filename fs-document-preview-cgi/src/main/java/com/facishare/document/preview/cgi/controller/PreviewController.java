@@ -48,6 +48,17 @@ public class PreviewController {
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
 
+
+    @RequestMapping(value = "/preview/bypath", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String previewByPath() {
+        return "preview";
+    }
+
+    @RequestMapping(value = "/preview/bytoken", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String previewByToken() {
+        return "preview";
+    }
+
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewConfig", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getPreviewWay(HttpServletRequest request) {
@@ -67,94 +78,88 @@ public class PreviewController {
         return json;
     }
 
-    @RequestMapping("/preview/bypath")
+    @RequestMapping("/preview/show")
     public void preivewByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String path = safteGetRequestParameter(request, "path");
         String name = safteGetRequestParameter(request, "name");
         if (path.equals("")) {
             response.getWriter().println("参数错误!");
             return;
+        } else {
+            EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+            doPreview(path, name, employeeInfo, response);
         }
-        name = name.equals("") ? path : name;
-        String extension = FilenameUtils.getExtension(path).toLowerCase();
-        if (allowPreviewExtension.indexOf(extension) == -1) {
-            response.getWriter().println("该文件不可以预览!");
-            return;
-        }
-        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        doPreview(path, name, employeeInfo, response);
     }
+
     @ResponseBody
     @RequestMapping(value = "/preview/convert", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String convert(HttpServletRequest request) throws Exception {
         String path = safteGetRequestParameter(request, "path");
-        String fileName = safteGetRequestParameter(request, "name");
+        String token = safteGetRequestParameter(request, "token");
+        String name = safteGetRequestParameter(request, "name");
         JsonResponseEntity jsonResponseEntity = new JsonResponseEntity();
-        if (path == "") {
+        if (path.equals("") && token.equals("")) {
             jsonResponseEntity.setSuccessed(false);
             jsonResponseEntity.setErrorMsg("参数错误!");
             return JSONObject.toJSONString(jsonResponseEntity);
-        }
-        String extension = FilenameUtils.getExtension(path);
-        if (allowPreviewExtension.indexOf(extension) == -1) {
-            jsonResponseEntity.setSuccessed(false);
-            jsonResponseEntity.setErrorMsg("该文件不可以预览!");
-            return JSONObject.toJSONString(jsonResponseEntity);
-        }
-        fileName = (fileName == "" || fileName == null) ? path : fileName;
-        LOG.info("begin preview,path:{},fileName:{}", path, fileName);
-        //检查下服务器上是否转换过
-        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        boolean hasConverted = previewInfoDao.hasConverted(path);
-        if (hasConverted) {
-            jsonResponseEntity.setSuccessed(true);
-            return JSONObject.toJSONString(jsonResponseEntity);
         } else {
-            byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo);
-            if (bytes == null) {
-                LOG.warn("can't get bytes from path:{}", path);
+            EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+            if (!token.equals("")) {
+                DownloadFileTokens fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
+                if (fileToken == null || !fileToken.getFileType().toLowerCase().equals("preview")) {
+                    {
+                        if (fileToken == null) {
+                            LOG.warn("token not exsist!");
+                        } else {
+                            LOG.warn("token type isn't right!json:{}", JSON.toJSONString(fileToken));
+                        }
+                        jsonResponseEntity.setSuccessed(false);
+                        jsonResponseEntity.setErrorMsg("参数错误!");
+                        return JSONObject.toJSONString(jsonResponseEntity);
+                    }
+                } else {
+                    path = fileToken.getFilePath();
+                    name = name.equals("") ? fileToken.getFileName() : name;
+                }
+            }
+            else
+            {
+                name = name.equals("") ? path:name;
+            }
+            String extension = FilenameUtils.getExtension(path);
+            if (allowPreviewExtension.indexOf(extension) == -1) {
                 jsonResponseEntity.setSuccessed(false);
-                jsonResponseEntity.setErrorMsg("该文件找不到或者损坏!");
+                jsonResponseEntity.setErrorMsg("该文件不可以预览!");
                 return JSONObject.toJSONString(jsonResponseEntity);
             }
-            ConvertorHelper convertorHelper = new ConvertorHelper(employeeInfo);
-            String htmlFilePath = convertorHelper.doConvert(path, fileName, bytes);
-            if (htmlFilePath != "") {
-                previewInfoDao.create(path, htmlFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length);
+            boolean hasConverted = previewInfoDao.hasConverted(path);
+            if (hasConverted) {
                 jsonResponseEntity.setSuccessed(true);
+                jsonResponseEntity.setFileName(name);
+                jsonResponseEntity.setFilePath(path);
                 return JSONObject.toJSONString(jsonResponseEntity);
             } else {
-                LOG.warn("path:{} can't do preview", path);
-                jsonResponseEntity.setSuccessed(false);
-                jsonResponseEntity.setErrorMsg("很抱歉,该文件无法预览!");
-                return JSONObject.toJSONString(jsonResponseEntity);
-            }
-        }
-    }
-    @RequestMapping("/preview/bytoken")
-    public void preivewByToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String token = safteGetRequestParameter(request, "token");
-        String name = safteGetRequestParameter(request, "name");
-        if (token.equals("")) {
-            response.getWriter().println("参数错误!");
-            return;
-        }
-        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        DownloadFileTokens fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
-        if (fileToken == null || !fileToken.getFileType().toLowerCase().equals("preview")) {
-            {
-                if (fileToken == null) {
-                    LOG.warn("token not exsist!");
-                } else {
-                    LOG.warn("token type isn't right!json:{}", JSON.toJSONString(fileToken));
+                byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo);
+                if (bytes == null) {
+                    LOG.warn("can't get bytes from path:{}", path);
+                    jsonResponseEntity.setSuccessed(false);
+                    jsonResponseEntity.setErrorMsg("该文件找不到或者损坏!");
+                    return JSONObject.toJSONString(jsonResponseEntity);
                 }
-                response.getWriter().println("参数错误!");
-                return;
+                ConvertorHelper convertorHelper = new ConvertorHelper(employeeInfo);
+                String htmlFilePath = convertorHelper.doConvert(path, name, bytes);
+                if (htmlFilePath != "") {
+                    previewInfoDao.create(path, htmlFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length);
+                    jsonResponseEntity.setSuccessed(true);
+                    return JSONObject.toJSONString(jsonResponseEntity);
+                } else {
+                    LOG.warn("path:{} can't do preview", path);
+                    jsonResponseEntity.setSuccessed(false);
+                    jsonResponseEntity.setErrorMsg("很抱歉,该文件无法预览!");
+                    return JSONObject.toJSONString(jsonResponseEntity);
+                }
             }
         }
-        String path = fileToken.getFilePath();
-        name = name.equals("") ? fileToken.getFileName() : name;
-        doPreview(path, name, employeeInfo, response);
     }
 
     private void doPreview(String path, String name, EmployeeInfo employeeInfo, HttpServletResponse response) throws Exception {
@@ -166,7 +171,7 @@ public class PreviewController {
                 return;
             }
             ConvertorHelper convertorHelper = new ConvertorHelper(employeeInfo);
-            String htmlFilePath = convertorHelper.doConvert(path,name, bytes);
+            String htmlFilePath = convertorHelper.doConvert(path, name, bytes);
             if (htmlFilePath != "") {
                 previewInfoDao.create(path, htmlFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length);
                 response.setContentType("text/html");

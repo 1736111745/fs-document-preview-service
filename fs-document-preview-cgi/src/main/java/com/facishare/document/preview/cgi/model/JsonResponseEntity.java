@@ -7,6 +7,25 @@ import java.io.Serializable;
  */
 public class JsonResponseEntity implements Serializable {
     private boolean successed;
+    private String filePath;
+    private String fileName;
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
     private String errorMsg;
 
     public boolean isSuccessed() {

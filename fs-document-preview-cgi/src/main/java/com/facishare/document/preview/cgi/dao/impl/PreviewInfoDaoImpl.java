@@ -62,4 +62,9 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         return query.get();
     }
 
+    @Override
+    public boolean hasConverted(String path) {
+        return false;
+    }
+
 }

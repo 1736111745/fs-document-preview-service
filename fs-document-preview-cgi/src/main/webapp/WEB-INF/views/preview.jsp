@@ -11,11 +11,11 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta Name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/dps/static/bootstrap-combined.min.css" rel="stylesheet">
-    <link href="/dps/static/font-awesome.css" rel="stylesheet">
-    <link href="/dps/static/style.css" rel="stylesheet">
-    <script type="text/javascript" src="/dps/static/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="/dps/static/jquery.isloading.min.js"></script>
+    <link href="/static/bootstrap-combined.min.css" rel="stylesheet">
+    <link href="/static/font-awesome.css" rel="stylesheet">
+    <link href="/static/style.css" rel="stylesheet">
+    <script type="text/javascript" src="/static/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="/static/jquery.isloading.min.js"></script>
     <style>body {
         font: 14px "宋体", "Arial Narrow", HELVETICA;
         background: #fff;
@@ -33,13 +33,13 @@
         function convert() {
             $.isLoading({text: "文档加载中..."});
             var queryString=window.location.search;
-            var url="/dps/preview/convert"+queryString;
+            var url="/preview/convert"+queryString;
             $.ajax({url:url,success:function(result){
                 $.isLoading("hide");
                 if(result.successed) {
                     var path=result.filePath;
                     var name=result.fileName;
-                    window.location.href = "/dps/preview/show?path="+path+"&name="+name;
+                    window.location.href = "/preview/show?path="+path+"&name="+name;
                 }
                 else
                 {

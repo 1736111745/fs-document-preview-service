@@ -36,10 +36,10 @@ public class ConvertorHelper {
             String htmlFilePath = pathHelper.getHtmlFilePath(path);
             convert.setHtmlName(name);
             LOG.info("begin get IPICConvertor");
-            IPICConvertor ipicConvertor=convert.convertMStoPic(tempFilePath);
+            IPICConvertor ipicConvertor = convert.convertMStoPic(tempFilePath);
             LOG.info("end get IPICConvertor");
             int resultcode = ipicConvertor.resultCode();
-            if(resultcode == 0) {
+            if (resultcode == 0) {
                 LOG.info("begin get svg");
                 ipicConvertor.convertToSVG(0, 2, pathHelper.getDataDir());
                 LOG.info("end get svg");

@@ -41,8 +41,8 @@ public class ConvertorHelper {
             int resultcode = ipicConvertor.resultCode();
             if(resultcode == 0) {
                 LOG.info("begin get gif");
-                ipicConvertor.convertToGIF(0, 2, 0.5f, pathHelper.getDataDir());
-                LOG.info("end get git");
+                int code=ipicConvertor.convertToJPG(0, 2, 1f, pathHelper.getDataDir());
+                LOG.info("end get git,code:{}",code);
             }
             ipicConvertor.close();;
 

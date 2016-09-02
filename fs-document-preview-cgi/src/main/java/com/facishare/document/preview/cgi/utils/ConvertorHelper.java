@@ -37,11 +37,12 @@ public class ConvertorHelper {
             convert.setHtmlName(name);
             LOG.info("begin get IPICConvertor");
             IPICConvertor ipicConvertor=convert.convertMStoPic(tempFilePath);
+            int pageCount=ipicConvertor.getPageCount();
             LOG.info("end get IPICConvertor");
             int resultcode = ipicConvertor.resultCode();
             if(resultcode == 0) {
                 LOG.info("begin get gif");
-                int code=ipicConvertor.convertToJPG(0, 2, 1f, pathHelper.getDataDir());
+                int code=ipicConvertor.convertToSVG(0,2,pathHelper.getDataDir());
                 LOG.info("end get git,code:{}",code);
             }
             ipicConvertor.close();;

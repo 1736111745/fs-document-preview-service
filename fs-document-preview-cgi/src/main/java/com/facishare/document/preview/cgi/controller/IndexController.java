@@ -5,6 +5,8 @@ import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.fsi.proxy.model.warehouse.n.fileupload.NUploadFileDirect;
 import com.facishare.fsi.proxy.service.NFileStorageService;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +35,7 @@ import java.util.Properties;
 public class IndexController {
     @Autowired
     FileTokenDao fileTokenDao;
-
+    private static final Logger LOG = LoggerFactory.getLogger(PreviewController.class);
     @RequestMapping(method = RequestMethod.GET)
     public void index(HttpServletResponse response) throws IOException {
         PrintWriter printWriter = response.getWriter();
@@ -72,10 +74,12 @@ public class IndexController {
     @RequestMapping("/upload")
     public void upload(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
+            LOG.info("begin upload");
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             String fileName = file.getOriginalFilename();
             String ext = FilenameUtils.getExtension(fileName);
             byte[] bytes = file.getBytes();
+            LOG.info("end upload");
             NUploadFileDirect.Arg arg = new NUploadFileDirect.Arg();
             arg.setData(bytes);
             arg.setEa(employeeInfo.getEa());

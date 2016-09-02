@@ -1,7 +1,7 @@
 package com.facishare.document.preview.cgi.utils;
 
 import application.dcs.Convert;
-import application.dcs.IPICConvertor;
+import application.dcs.IHtmlConvertor;
 import com.facishare.document.preview.cgi.convertor.ConvertorPool;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import org.apache.commons.io.FileUtils;
@@ -36,13 +36,13 @@ public class ConvertorHelper {
             String htmlFilePath = pathHelper.getHtmlFilePath(path);
             convert.setHtmlName(name);
             LOG.info("begin get IPICConvertor");
-            IPICConvertor ipicConvertor=convert.convertMStoPic(tempFilePath);
+            IHtmlConvertor ipicConvertor=convert.convertMStoHtml(tempFilePath);
             LOG.info("end get IPICConvertor");
             int resultcode = ipicConvertor.resultCode();
             if(resultcode == 0) {
                 LOG.info("begin get gif");
-                int code=ipicConvertor.convertToSVG(0,2,pathHelper.getDataDir());
-                LOG.info("end get git,code:{}",code);
+                ipicConvertor.convertToHtml(pathHelper.getDataDir(), 0, 2);
+                LOG.info("end get git,code:{}", 1);
             }
             ipicConvertor.close();;
 

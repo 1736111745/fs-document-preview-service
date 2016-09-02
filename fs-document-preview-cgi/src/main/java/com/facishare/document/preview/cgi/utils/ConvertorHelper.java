@@ -41,7 +41,7 @@ public class ConvertorHelper {
             int resultcode = ipicConvertor.resultCode();
             if(resultcode == 0) {
                 LOG.info("begin get gif");
-                ipicConvertor.convertToHtml(pathHelper.getDataDir(), 0, 2);
+                ipicConvertor.convertToHtml(pathHelper.getDataDir()+"a.html", 0, 2);
                 LOG.info("end get git,code:{}", 1);
             }
             ipicConvertor.close();;

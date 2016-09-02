@@ -1,7 +1,7 @@
 package com.facishare.document.preview.cgi.utils;
 
 import application.dcs.Convert;
-import application.dcs.IHtmlConvertor;
+import application.dcs.IPICConvertor;
 import com.facishare.document.preview.cgi.convertor.ConvertorPool;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import org.apache.commons.io.FileUtils;
@@ -36,15 +36,14 @@ public class ConvertorHelper {
             String htmlFilePath = pathHelper.getHtmlFilePath(path);
             convert.setHtmlName(name);
             LOG.info("begin get IPICConvertor");
-            IHtmlConvertor ipicConvertor=convert.convertMStoHtml(tempFilePath);
+            IPICConvertor ipicConvertor=convert.convertMStoPic(tempFilePath);
             LOG.info("end get IPICConvertor");
             int resultcode = ipicConvertor.resultCode();
             if(resultcode == 0) {
-                LOG.info("begin get gif");
-                ipicConvertor.convertToHtml(pathHelper.getDataDir()+"/excel.html", 0, 2);
-                LOG.info("end get git,code:{}", 1);
+                LOG.info("begin get svg");
+                ipicConvertor.convertToSVG(0, 2, pathHelper.getDataDir());
+                LOG.info("end get svg");
             }
-            ipicConvertor.close();;
 
             int code = path.toLowerCase().contains(".pdf") ? convert.convertPdfToHtml(tempFilePath, htmlFilePath) : convert.convertMStoHtmlOfSvg(tempFilePath, htmlFilePath);
             FileUtils.deleteQuietly(new File(tempFilePath));

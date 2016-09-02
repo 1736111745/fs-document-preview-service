@@ -71,18 +71,25 @@ public class IndexController {
 
     @RequestMapping("/upload")
     public void upload(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        String fileName = file.getOriginalFilename();
-        String ext = FilenameUtils.getExtension(fileName);
-        byte[] bytes = file.getBytes();
-        NUploadFileDirect.Arg arg = new NUploadFileDirect.Arg();
-        arg.setData(bytes);
-        arg.setEa(employeeInfo.getEa());
-        arg.setFileExt(ext);
-        arg.setSourceUser(employeeInfo.getSourceUser());
-        NUploadFileDirect.Result result = nFileStorageService.nUploadFileDirect(arg, employeeInfo.getEa());
-        String npath = result.getFinalNPath();
-        response.sendRedirect("/dps/preview/bypath?path=" + npath + "&name=" + URLEncoder.encode(fileName));
+        try {
+            EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+            String fileName = file.getOriginalFilename();
+            String ext = FilenameUtils.getExtension(fileName);
+            byte[] bytes = file.getBytes();
+            NUploadFileDirect.Arg arg = new NUploadFileDirect.Arg();
+            arg.setData(bytes);
+            arg.setEa(employeeInfo.getEa());
+            arg.setFileExt(ext);
+            arg.setSourceUser(employeeInfo.getSourceUser());
+            NUploadFileDirect.Result result = nFileStorageService.nUploadFileDirect(arg, employeeInfo.getEa());
+            String npath = result.getFinalNPath();
+            response.sendRedirect("/dps/preview/bypath?path=" + npath + "&name=" + URLEncoder.encode(fileName));
+        }
+        catch (Exception e)
+        {
+            throw e;
+        }
+
     }
 
     @RequestMapping("/scroll")

@@ -87,7 +87,7 @@ public class IndexController {
             arg.setSourceUser(employeeInfo.getSourceUser());
             NUploadFileDirect.Result result = nFileStorageService.nUploadFileDirect(arg, employeeInfo.getEa());
             String npath = result.getFinalNPath();
-            response.sendRedirect("/dps/preview/bypath?path=" + npath + "&name=" + URLEncoder.encode(fileName));
+            response.sendRedirect("/preview/bypath?path=" + npath + "&name=" + URLEncoder.encode(fileName));
         }
         catch (Exception e)
         {

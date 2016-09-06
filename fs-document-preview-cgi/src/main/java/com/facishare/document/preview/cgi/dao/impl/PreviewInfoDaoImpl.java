@@ -2,19 +2,22 @@ package com.facishare.document.preview.cgi.dao.impl;
 
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.PreviewInfo;
+import com.facishare.document.preview.cgi.model.SvgFileInfo;
+import com.facishare.document.preview.cgi.utils.DateUtil;
 import com.facishare.document.preview.cgi.utils.PathHelper;
 import com.github.mongo.support.DatastoreExt;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.mongodb.morphia.query.Query;
+import org.mongodb.morphia.query.UpdateOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.io.File;
-import java.math.BigInteger;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by liuq on 16/8/16.
@@ -28,45 +31,74 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     private DatastoreExt dpsDataStore;
 
     @Override
-    public void create(String path, String filePath, String ea, int employeeId, long docSize) {
-        PreviewInfo previewInfo = new PreviewInfo();
-        String htmlName = FilenameUtils.getBaseName(filePath);
-        File file = new File(filePath);
-        previewInfo.setDocSize(docSize);
-        File htmlDir = new File(file.getParent());
-        BigInteger dirHtmlLength = FileUtils.sizeOfDirectoryAsBigInteger(htmlDir);
-        previewInfo.setHtmlSize(dirHtmlLength.longValue() + file.length());
-        previewInfo.setHtmlName(htmlName);
-        previewInfo.setCreateTime(new Date());
-        int yyyyMMdd = Integer.parseInt(PathHelper.getFormatDateStr("yyyyMMdd"));
-        previewInfo.setCreateYYMMDD(yyyyMMdd);
-        previewInfo.setEa(ea);
-        previewInfo.setEmployeeId(employeeId);
-        previewInfo.setHtmlFilePath(filePath);
-        previewInfo.setPath(path);
-        dpsDataStore.insert("PreviewInfo", previewInfo);
-        dpsDataStore.ensureIndexes();
+    public void create(String path, String baseDir, String svgFilePath, String ea, int employeeId, long docSize) throws IOException {
+        String svgFileName = FilenameUtils.getName(svgFilePath);
+        Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+        query.criteria("path").equal(path);
+        PreviewInfo previewInfo = query.get();
+        if (previewInfo == null) {
+            previewInfo = new PreviewInfo();
+            previewInfo.setDocSize(docSize);
+            previewInfo.setCreateTime(new Date());
+            int yyyyMMdd = Integer.parseInt(DateUtil.getFormatDateStr("yyyyMMdd"));
+            previewInfo.setCreateYYMMDD(yyyyMMdd);
+            previewInfo.setEa(ea);
+            previewInfo.setEmployeeId(employeeId);
+            previewInfo.setBaseDir(baseDir);
+            previewInfo.setPath(path);
+            List<String> svgs = new ArrayList<>();
+            svgs.add(svgFileName);
+            previewInfo.setSvgList(svgs);
+            dpsDataStore.insert("PreviewInfo", previewInfo);
+            dpsDataStore.ensureIndexes();
+        } else {
+            List<String> svgs = previewInfo.getSvgList();
+            if (svgs == null) {
+                svgs = new ArrayList<>();
+                svgs.add(svgFileName);
+                previewInfo.setSvgList(svgs);
+                UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
+                update.set("svgList", svgs);
+                dpsDataStore.findAndModify(query, update);
+            } else {
+                if (!svgs.contains(svgFileName)) {
+                    svgs.add(svgFileName);
+                    previewInfo.setSvgList(svgs);
+                    UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
+                    update.set("svgList", svgs);
+                    dpsDataStore.findAndModify(query, update);
+                }
+            }
+        }
     }
 
     @Override
+    public SvgFileInfo getSvgFilePath(String path, int page, String ea) throws IOException {
+        SvgFileInfo svgFileInfo = new SvgFileInfo();
+        Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+        query.criteria("path").equal(path);
+        PreviewInfo previewInfo = getInfoByPath(path);
+        if (previewInfo != null) {
+            String baseDir = previewInfo.getBaseDir();
+            svgFileInfo.setBaseDir(baseDir);
+            String svgFileName = previewInfo.getSvgList().stream().filter(x -> x.equals((page + 1) + ".svg")).findFirst().orElse("");
+            if (!svgFileName.equals("")) {
+                String filePath = baseDir + "/" + svgFileName;
+                svgFileInfo.setFilePath(filePath);
+            } else {
+                svgFileInfo.setFilePath("");
+            }
+        } else {
+            String baseDir = new PathHelper(ea).getSvgFolder(path);
+            svgFileInfo.setBaseDir(baseDir);
+            svgFileInfo.setFilePath("");
+        }
+        return svgFileInfo;
+    }
+
     public PreviewInfo getInfoByPath(String path) {
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("path").equal(path);
         return query.get();
     }
-
-    @Override
-    public PreviewInfo getInfoByHtmlName(String htmlName) {
-        Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
-        query.criteria("htmlName").equal(htmlName);
-        return query.get();
-    }
-
-    @Override
-    public boolean hasConverted(String path) {
-        Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
-        query.criteria("path").equal(path);
-        return query.countAll() > 0;
-    }
-
 }

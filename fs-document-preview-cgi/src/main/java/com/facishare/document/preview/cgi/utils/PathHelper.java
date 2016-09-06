@@ -1,14 +1,11 @@
 package com.facishare.document.preview.cgi.utils;
 
-import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.github.autoconf.ConfigFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created by liuq on 16/8/16.
@@ -17,15 +14,14 @@ public class PathHelper {
 
     private String tempDir;
     private String dataDir;
+    private String ea;
 
-    private EmployeeInfo employeeInfo;
-
-    public PathHelper(EmployeeInfo employeeInfo) {
+    public PathHelper(String ea) {
         ConfigFactory.getConfig("fs-dps-config", config -> {
             dataDir = config.get("dataDir");
             tempDir = config.get("tempDir");
         });
-        this.employeeInfo = employeeInfo;
+        this.ea = ea;
     }
 
     public PathHelper() {
@@ -38,10 +34,6 @@ public class PathHelper {
     }
 
     public String getConvertTempPath() {
-        ConfigFactory.getConfig("fs-dps-config", config -> {
-            dataDir = config.get("dataDir");
-            tempDir = config.get("tempDir");
-        });
         String convertorTempPath = String.format("%s/convertor/", tempDir);
         return convertorTempPath;
     }
@@ -55,10 +47,10 @@ public class PathHelper {
         return tempFilePath;
     }
 
-    public String getHtmlFilePath(String path) throws IOException {
-        String yyyyMM = getFormatDateStr("yyyyMM");
-        String dd = getFormatDateStr("dd");
-        String hh = getFormatDateStr("HH");
+    public String getSvgFolder(String path) throws IOException {
+        String yyyyMM = DateUtil.getFormatDateStr("yyyyMM");
+        String dd = DateUtil.getFormatDateStr("dd");
+        String hh = DateUtil.getFormatDateStr("HH");
         //创建根目录
         String extension = FilenameUtils.getExtension(path).toLowerCase();
         String type;
@@ -82,20 +74,11 @@ public class PathHelper {
                 type = "other";
                 break;
         }
-        String dirPath = String.format("%s/%s/%s/%s/%s/%s/%s", dataDir, "dps", yyyyMM, dd, hh, employeeInfo.getEa(), type);
+        String dirPath = String.format("%s/%s/%s/%s/%s/%s/%s/%s", dataDir, "dps", yyyyMM, dd, hh, ea, type,SampleUUID.getUUID());
         File dir = new File(dirPath);
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        String fileName = SampleUUID.getUUID() + ".html";
-        String filePath = dirPath + "/" + fileName;
-        return filePath;
-    }
-
-    public static String getFormatDateStr(String f) {
-        Date date = new Date();
-        SimpleDateFormat format = new SimpleDateFormat(f);
-        String yyMM = format.format(date);
-        return yyMM;
+        return dirPath;
     }
 }

@@ -7,5 +7,5 @@
 
     <dubbo:registry address="${dubbo.registry.address}" />
     <dubbo:application name="fs-dps" />
-    <dubbo:reference id="assService" interface="com.facishare.asm.api.service.ActiveSessionUserService" protocol="dubbo"/>
+    <dubbo:reference id="assService" interface="com.facishare.asm.api.service.ActiveSessionAuthorizeService" protocol="dubbo"/>
 </beans>

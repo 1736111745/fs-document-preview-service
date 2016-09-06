@@ -1,17 +1,15 @@
 package com.facishare.document.preview.cgi.dao;
 
-import com.facishare.document.preview.cgi.model.PreviewInfo;
+import com.facishare.document.preview.cgi.model.SvgFileInfo;
+
+import java.io.IOException;
 
 /**
  * Created by liuq on 16/8/16.
  */
 public interface PreviewInfoDao {
 
-    void create(String path,String filePath,String ea,int employeeId,long docSize);
+    void create(String path,String baseDir, String svgFilePath, String ea, int employeeId, long docSize) throws IOException;
 
-    PreviewInfo getInfoByPath(String path);
-
-    PreviewInfo getInfoByHtmlName(String htmlName);
-
-    boolean hasConverted(String path);
+    SvgFileInfo getSvgFilePath(String path, int page, String ea) throws IOException;
 }

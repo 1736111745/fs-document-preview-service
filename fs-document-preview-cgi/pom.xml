@@ -168,7 +168,7 @@
         <dependency>
             <groupId>batik-codec</groupId>
             <artifactId>batik-codec</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.2</version>
         </dependency>
         <dependency>
             <groupId>batik-css</groupId>
@@ -218,7 +218,7 @@
         <dependency>
             <groupId>batik-svggen</groupId>
             <artifactId>batik-svggen</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.2</version>
         </dependency>
         <dependency>
             <groupId>batik-swing</groupId>
@@ -343,7 +343,7 @@
         <dependency>
             <groupId>Yozo_Office</groupId>
             <artifactId>Yozo_Office</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.2</version>
         </dependency>
         <dependency>
             <groupId>zip4j_1.3.2</groupId>

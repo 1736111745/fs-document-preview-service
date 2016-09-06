@@ -3,7 +3,7 @@ package com.facishare.document.preview.cgi.utils;
 
 import com.facishare.asm.api.auth.AuthXC;
 import com.facishare.asm.api.model.CookieToAuth;
-import com.facishare.asm.api.service.ActiveSessionUserService;
+import com.facishare.asm.api.service.ActiveSessionAuthorizeService;
 import com.facishare.common.web.util.WebUtil;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import org.slf4j.Logger;
@@ -19,7 +19,7 @@ import java.util.Arrays;
  */
 public class AuthHelper {
     @Autowired
-    ActiveSessionUserService assService;
+    ActiveSessionAuthorizeService assService;
     private static final Logger LOG= LoggerFactory.getLogger(AuthHelper.class);
     public  EmployeeInfo getAuthinfo(HttpServletRequest request) {
         String cookieValue = getCookie(request);

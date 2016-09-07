@@ -48,6 +48,7 @@
             return result[1];
         }
         function loadSvg(pageIndex) {
+            if(pageIndex>=pageCount) return;
 //            $.isLoading({text: "文档加载中..."});
             $.ajax({
                 type: 'get',

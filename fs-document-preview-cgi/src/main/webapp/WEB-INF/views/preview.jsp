@@ -66,7 +66,10 @@
             $(window).scroll(function () {
                 var $body = $("body");
                 /*判断窗体高度与竖向滚动位移大小相加 是否 超过内容页高度*/
-                if ($(window).scrollTop()+$(window).height()>=$(document).height()*0.75) {
+                var h1=$(window).scrollTop()+$(window).height();
+                var h2=$(document).height();
+                console.log("h1:"+h1+",h2:"+h2);
+                if (h1-h2>40) {
                     if(loaded>0&&maxPageIndex>loaded)
                     loadSvg(loaded);
                 }

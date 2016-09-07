@@ -12,9 +12,7 @@ import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Created by liuq on 16/9/7.
@@ -25,22 +23,16 @@ public class DocPageCalculator {
         String extension= FilenameUtils.getExtension(filePath).toLowerCase();
         switch (extension) {
             case "doc":
-                pageCount = parseWord97(filePath);
-                break;
             case "docx":
-                pageCount = parseWord2007(filePath);
+                pageCount = parseWord(filePath);
                 break;
             case "xls":
-                pageCount = parseExcel97(filePath);
-                break;
             case "xlsx":
-                pageCount = parseExcel2007(filePath);
+                pageCount = parseExcel(filePath);
                 break;
             case "ppt":
-                pageCount = parsePPT97(filePath);
-                break;
             case "pptx":
-                pageCount = parsePPT2007(filePath);
+                pageCount = parsePPT(filePath);
                 break;
             case "pdf":
                 pageCount = parsePDF(filePath);
@@ -49,12 +41,44 @@ public class DocPageCalculator {
         return pageCount;
     }
 
+
+
+
+    private static int  checkFileVersion(String filePath) throws IOException {
+        InputStream inp = new FileInputStream(filePath);
+
+        if (!inp.markSupported()) {
+            inp = new PushbackInputStream(inp, 8);
+        }
+
+        if (POIFSFileSystem.hasPOIFSHeader(inp)) {
+            return 2003;
+        }
+        if (POIXMLDocument.hasOOXMLHeader(inp)) {
+            return 2007;
+        }
+        return 2003;
+    }
+
+    private static int parseWord(String filePath) throws Exception {
+        int version=checkFileVersion(filePath);
+        return version==2003?parseWord2003(filePath):parseWord2007(filePath);
+    }
+    private static int parseExcel(String filePath) throws Exception {
+        int version=checkFileVersion(filePath);
+        return version==2003?parseExcel2003(filePath):parseExcel2007(filePath);
+    }
+    private static int parsePPT(String filePath) throws Exception {
+        int version=checkFileVersion(filePath);
+        return version==2003?parsePPT2003(filePath):parsePPT2007(filePath);
+    }
+
     private static int parseWord2007(String filePath) throws Exception {
         XWPFDocument docx = new XWPFDocument(POIXMLDocument.openPackage(filePath));
         return docx.getProperties().getExtendedProperties().getUnderlyingProperties().getPages();//总页数
     }
 
-    private static int parseWord97(String filePath) throws Exception {
+    private static int parseWord2003(String filePath) throws Exception {
         WordExtractor doc = new WordExtractor(new FileInputStream(filePath));
         return doc.getSummaryInformation().getPageCount();//总页数
     }
@@ -64,7 +88,7 @@ public class DocPageCalculator {
         return workbook.getNumberOfSheets();
     }
 
-    private static int parseExcel97(String filePath) throws Exception {
+    private static int parseExcel2003(String filePath) throws Exception {
         HSSFWorkbook hs = new HSSFWorkbook(new POIFSFileSystem(new FileInputStream(filePath)));
         return hs.getNumberOfSheets();
     }
@@ -74,7 +98,7 @@ public class DocPageCalculator {
         return ppt.getSlides().size();
     }
 
-    private static int parsePPT97(String filePath) throws Exception {
+    private static int parsePPT2003(String filePath) throws Exception {
         SlideShow ppt = new HSLFSlideShow(new FileInputStream(filePath));
         return ppt.getSlides().size();
     }
@@ -84,8 +108,8 @@ public class DocPageCalculator {
         return doc.getNumberOfPages();
     }
 
-//    public static void main(String[] args) throws Exception {
-//        String file="/Users/liuq/Downloads/批量下载/numbers生成的Excel文档.xlsx";
-//        int pageCount=GetDocPageCount(file);
-//    }
+    public static void main(String[] args) throws Exception {
+        String file="/Users/liuq/Downloads/b.doc";
+        int pageCount=GetDocPageCount(file);
+    }
 }

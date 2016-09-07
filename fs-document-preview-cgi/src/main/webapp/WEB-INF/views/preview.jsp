@@ -13,10 +13,10 @@
     <meta Name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/static/bootstrap-combined.min.css" rel="stylesheet">
     <link href="/static/font-awesome.css" rel="stylesheet">
-    <link href="/static/style.css" rel="stylesheet">
+    <%--<link href="/static/style.css" rel="stylesheet">--%>
     <link href="/static/doc.css?v=1" rel="stylesheet">
     <script type="text/javascript" src="/static/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="/static/jquery.isloading.min.js"></script>
+    <%--<script type="text/javascript" src="/static/jquery.isloading.min.js"></script>--%>
     <style>body {
         font: 14px "宋体", "Arial Narrow", HELVETICA;
         background: #fff;
@@ -48,7 +48,7 @@
             return result[1];
         }
         function loadSvg(pageIndex) {
-            $.isLoading({text: "文档加载中..."});
+//            $.isLoading({text: "文档加载中..."});
             $.ajax({
                 type: 'get',
                 dataType: 'json',
@@ -58,7 +58,7 @@
                     console.log("load " + pageIndex);
                 },
                 success: function (data) {
-                    $.isLoading("hide");
+//                    $.isLoading("hide");
                     if (data.successed) {
                         var html = $("<DIV class='word-page' STYLE='max-width:793px' id='doc0'><DIV class='word-content'><embed src='/preview/" + data.svgFile + "' width='100%' height='100%' type='image/svg+xml'></embed></DIV></DIV>");
                         $("#content").append(html);

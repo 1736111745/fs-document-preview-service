@@ -78,8 +78,8 @@ public class PreviewController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/preview/getPageCount", method = RequestMethod.GET)
-    public int getPageCount(HttpServletRequest request) throws Exception {
+    @RequestMapping(value = "/preview/getPageCount", method = RequestMethod.GET,produces = "text/plain;charset=UTF-8")
+    public String getPageCount(HttpServletRequest request) throws Exception {
         String path = safteGetRequestParameter(request, "path");
         String token = safteGetRequestParameter(request, "token");
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
@@ -92,7 +92,7 @@ public class PreviewController {
             }
         }
         if (path.isEmpty())
-            return -1;
+            return "-1";
         else {
             int pageCount = previewInfoDao.getPageCount(path);
             if (pageCount == 0) {
@@ -100,7 +100,7 @@ public class PreviewController {
                 ConvertorHelper convertorHelper = new ConvertorHelper(employeeInfo);
                 pageCount = convertorHelper.getPageCount(path, bytes);
             }
-            return pageCount;
+            return "pageCount";
         }
     }
 

@@ -18,18 +18,18 @@
     <script type="text/javascript" src="/static/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="/static/jquery.isloading.min.js"></script>
     <style>body {
-    font: 14px "宋体", "Arial Narrow", HELVETICA;
-    background: #fff;
-    -webkit-text-size-adjust: 100%;
+        font: 14px "宋体", "Arial Narrow", HELVETICA;
+        background: #fff;
+        -webkit-text-size-adjust: 100%;
     }
     </style>
     <script>
-        var path=getQueryStringByName("path");
-        var loaded=0;
-        var maxPageIndex=9999;
-        function getQueryStringByName(name){
-            var result = location.search.match(new RegExp("[\?\&]" + name+ "=([^\&]+)","i"));
-            if(result == null || result.length < 1) {
+        var path = getQueryStringByName("path");
+        var loaded = 0;
+        var maxPageIndex = 9999;
+        function getQueryStringByName(name) {
+            var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
+            if (result == null || result.length < 1) {
                 return "";
             }
             return result[1];
@@ -42,39 +42,41 @@
                 async: false,
                 url: '/preview/getsvg?path=' + path + '&page=' + pageIndex,
                 beforeSend: function () {
-                    console.log("load "+pageIndex);
+                    console.log("load " + pageIndex);
                 },
                 success: function (data) {
                     $.isLoading("hide");
-                    if(data.successed) {
+                    if (data.successed) {
                         var html = $("<DIV class='word-page' STYLE='max-width:793px' id='doc0'><DIV class='word-content'><embed src='/preview/" + data.svgFile + "' width='100%' height='100%' type='image/svg+xml'></embed></DIV></DIV>");
                         $("#content").append(html);
                         loaded++;
                     }
-                    else
-                    {
-                        maxPageIndex=loaded;
+                    else {
+                        maxPageIndex = loaded;
                     }
                 },
                 complete: function () {
-                    console.log('mission complete.')
                 }
             });
         }
         $(document).ready(function () {
-            loadSvg(loaded);
+            loadTopN(3);
             $(window).scroll(function () {
                 var $body = $("body");
                 /*判断窗体高度与竖向滚动位移大小相加 是否 超过内容页高度*/
-                var h1=$(window).scrollTop()+$(window).height();
-                var h2=$(document).height();
-                console.log("h1:"+h1+",h2:"+h2);
-                if (h1>0.75*h2) {
-                    if(loaded>0&&maxPageIndex>loaded)
-                    loadSvg(loaded);
+                var h1 = $(window).scrollTop() + $(window).height();
+                var h2 = $(document).height();
+                console.log("h1:" + h1 + ",h2:" + h2);
+                if (h1 > 0.75 * h2) {
+                    if (loaded > 0 && maxPageIndex > loaded)
+                        loadSvg(loaded);
                 }
             });
         });
+        function loadTopN(n) {
+            for (var i = 0; i < n; i++)
+                loadSvg(loaded);
+        }
     </script>
 <body class="word-body">
 <div id="load-overlay">

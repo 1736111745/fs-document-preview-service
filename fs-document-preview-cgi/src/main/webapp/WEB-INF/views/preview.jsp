@@ -39,7 +39,7 @@
             $.ajax({
                 type: 'get',
                 dataType: 'json',
-                async: true,
+                async: truex,
                 url: '/preview/getsvg?path=' + path + '&page=' + pageIndex,
                 beforeSend: function () {
                     console.log("load "+pageIndex);

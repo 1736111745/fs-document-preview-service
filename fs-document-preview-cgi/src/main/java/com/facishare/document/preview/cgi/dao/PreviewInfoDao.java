@@ -9,7 +9,7 @@ import java.io.IOException;
  */
 public interface PreviewInfoDao {
 
-    void create(String path,String baseDir, String svgFilePath, String ea, int employeeId, long docSize) throws IOException;
+    void create(String path,String baseDir, String svgFilePath, String ea, int employeeId, long docSize,int pageCount) throws IOException;
 
     SvgFileInfo getSvgBaseDir(String path, int page, String ea) throws IOException;
 

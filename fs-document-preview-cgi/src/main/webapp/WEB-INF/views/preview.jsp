@@ -26,7 +26,20 @@
     <script>
         var path = getQueryStringByName("path");
         var loaded = 0;
-        var maxPageIndex = 9999;
+        var pageCount = 0;
+
+        function getPageCount() {
+            $.ajax({
+                type: 'get',
+                dataType: 'text',
+                async: false,
+                url: '/preview/getPageCount?path=' + path,
+                success: function (data) {
+                    pageCount = parseInt(data);
+                }
+            });
+        }
+
         function getQueryStringByName(name) {
             var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
             if (result == null || result.length < 1) {
@@ -59,8 +72,12 @@
                 }
             });
         }
-        $(document).ready(function () {
-            loadTopN(3);
+        function loadFirst() {
+            getPageCount();
+            var topN = pageCount > 3 ? 3 : pageCount;
+            loadTopN(topN);
+        }
+        function scrollEvent() {
             $(window).scroll(function () {
                 var $body = $("body");
                 /*判断窗体高度与竖向滚动位移大小相加 是否 超过内容页高度*/
@@ -68,10 +85,14 @@
                 var h2 = $(document).height();
                 console.log("h1:" + h1 + ",h2:" + h2);
                 if (h1 > 0.75 * h2) {
-                    if (loaded > 0 && maxPageIndex > loaded)
+                    if (loaded > 0 && pageCount > loaded)
                         loadSvg(loaded);
                 }
             });
+        }
+        $(document).ready(function () {
+            loadFirst();
+            scrollEvent();
         });
         function loadTopN(n) {
             for (var i = 0; i < n; i++)

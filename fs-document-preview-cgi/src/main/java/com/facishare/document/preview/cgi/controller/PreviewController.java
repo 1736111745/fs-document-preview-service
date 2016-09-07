@@ -6,14 +6,14 @@ import com.facishare.document.preview.cgi.dao.FileTokenDao;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.*;
 import com.facishare.document.preview.cgi.utils.ConvertorHelper;
+import com.facishare.document.preview.cgi.utils.DocPageCalculator;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.cgi.utils.PathHelper;
 import com.fxiaoke.release.FsGrayRelease;
 import com.fxiaoke.release.FsGrayReleaseBiz;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
@@ -103,10 +103,8 @@ public class PreviewController {
                 PathHelper pathHelper = new PathHelper(employeeInfo.getEa());
                 byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo);
                 String tempFilePath = pathHelper.getTempFilePath(path, bytes);
-                FileInputStream finput = new FileInputStream(tempFilePath);
-                POIFSFileSystem fs = new POIFSFileSystem( finput );
-                HSSFWorkbook hs = new HSSFWorkbook(fs);
-                pageCount=hs.getNumberOfSheets();
+                pageCount = DocPageCalculator.GetDocPageCount(tempFilePath);
+                FileUtils.deleteQuietly(new File(tempFilePath));
             }
             return String.valueOf(pageCount);
         }
@@ -119,6 +117,8 @@ public class PreviewController {
         String path = safteGetRequestParameter(request, "path");
         String page = safteGetRequestParameter(request, "page");
         String token = safteGetRequestParameter(request, "token");
+        String pageCount=safteGetRequestParameter(request, "pageCount");
+        int pageCnt=pageCount.isEmpty()?0:Integer.parseInt(pageCount);
         String name = safteGetRequestParameter(request, "name");
         int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
         JsonResponseEntity jsonResponseEntity = new JsonResponseEntity();
@@ -170,7 +170,7 @@ public class PreviewController {
                 ConvertorHelper convertorHelper = new ConvertorHelper(employeeInfo);
                 String svgFilePath = convertorHelper.doConvert(path, svgFileInfo.getBaseDir(), name, bytes, pageIndex);
                 if (!svgFilePath.equals("")) {
-                    previewInfoDao.create(path, svgFileInfo.getBaseDir(), svgFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length);
+                    previewInfoDao.create(path, svgFileInfo.getBaseDir(), svgFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length,pageCnt);
                     jsonResponseEntity.setSuccessed(true);
                     jsonResponseEntity.setSvgFile(svgFilePath);
                     return JSONObject.toJSONString(jsonResponseEntity);

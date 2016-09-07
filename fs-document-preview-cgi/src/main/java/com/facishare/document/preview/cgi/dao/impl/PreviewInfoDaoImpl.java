@@ -31,7 +31,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     private DatastoreExt dpsDataStore;
 
     @Override
-    public void create(String path, String baseDir, String svgFilePath, String ea, int employeeId, long docSize) throws IOException {
+    public void create(String path, String baseDir, String svgFilePath, String ea, int employeeId, long docSize,int pageCount) throws IOException {
         String svgFileName = FilenameUtils.getName(svgFilePath);
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("path").equal(path);
@@ -47,6 +47,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
             previewInfo.setEmployeeId(employeeId);
             previewInfo.setBaseDir(baseDir);
             previewInfo.setPath(path);
+            previewInfo.setPageCount(pageCount);
             List<String> svgs = new ArrayList<>();
             svgs.add(svgFileName);
             previewInfo.setSvgList(svgs);
@@ -107,16 +108,14 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
 
     @Override
     public int getPageCount(String path) {
-        PreviewInfo previewInfo=getInfoByPath(path);
-        if(previewInfo==null)
-        {
+        PreviewInfo previewInfo = getInfoByPath(path);
+        if (previewInfo == null) {
             return 0;
-        }
-        else
+        } else
             return previewInfo.getPageCount();
     }
 
-    public PreviewInfo getInfoByPath(String path) {
+    private PreviewInfo getInfoByPath(String path) {
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("path").equal(path);
         return query.get();

@@ -53,7 +53,7 @@
                 type: 'get',
                 dataType: 'json',
                 async: false,
-                url: '/preview/getsvg?path=' + path + '&page=' + pageIndex,
+                url: '/preview/getsvg?path=' + path + '&page=' + pageIndex+"&pageCount="+pageCount,
                 beforeSend: function () {
                     console.log("load " + pageIndex);
                 },

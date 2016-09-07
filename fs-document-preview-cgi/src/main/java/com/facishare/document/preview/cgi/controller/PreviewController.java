@@ -79,7 +79,7 @@ public class PreviewController {
 
 
     @ResponseBody
-    @RequestMapping(value = "/preview/getsvg", method = RequestMethod.GET, produces = "image/svg+xml;charset=UTF-8")
+    @RequestMapping(value = "/preview/getsvg", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String convert(HttpServletRequest request) throws Exception {
         String path = safteGetRequestParameter(request, "path");
         String page = safteGetRequestParameter(request, "page");

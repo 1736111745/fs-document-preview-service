@@ -7,10 +7,13 @@ import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.*;
 import com.facishare.document.preview.cgi.utils.ConvertorHelper;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
+import com.facishare.document.preview.cgi.utils.PathHelper;
 import com.fxiaoke.release.FsGrayRelease;
 import com.fxiaoke.release.FsGrayReleaseBiz;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
@@ -96,9 +100,13 @@ public class PreviewController {
         else {
             int pageCount = previewInfoDao.getPageCount(path);
             if (pageCount == 0) {
+                PathHelper pathHelper = new PathHelper(employeeInfo.getEa());
                 byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo);
-                ConvertorHelper convertorHelper = new ConvertorHelper(employeeInfo);
-                pageCount = convertorHelper.getPageCount(path, bytes);
+                String tempFilePath = pathHelper.getTempFilePath(path, bytes);
+                FileInputStream finput = new FileInputStream(tempFilePath);
+                POIFSFileSystem fs = new POIFSFileSystem( finput );
+                HSSFWorkbook hs = new HSSFWorkbook(fs);
+                pageCount=hs.getNumberOfSheets();
             }
             return String.valueOf(pageCount);
         }

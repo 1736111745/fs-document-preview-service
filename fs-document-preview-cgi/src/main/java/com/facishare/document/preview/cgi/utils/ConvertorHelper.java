@@ -5,6 +5,7 @@ import application.dcs.IPICConvertor;
 import com.facishare.document.preview.cgi.convertor.ConvertorPool;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
@@ -58,12 +59,12 @@ public class ConvertorHelper {
         LOG.info("begin get convertor!");
         Convert convert = (Convert) ConvertorPool.getInstance().borrowObject();
         LOG.info("end get convertor!");
+        PathHelper pathHelper = new PathHelper(employeeInfo.getEa());
+        String tempFilePath = pathHelper.getTempFilePath(path, bytes);
         try {
             Slf4JStopWatch stopWatch = new Slf4JStopWatch();
             stopWatch.setTimeThreshold(0);
             stopWatch.start();
-            PathHelper pathHelper = new PathHelper(employeeInfo.getEa());
-            String tempFilePath = pathHelper.getTempFilePath(path, bytes);
             convert.setHtmlName(name);
             LOG.info("begin get IPICConvertor");
             IPICConvertor ipicConvertor = convert.convertMStoPic(tempFilePath);
@@ -88,6 +89,7 @@ public class ConvertorHelper {
             LOG.error("error info:" + e.getStackTrace());
             return "";
         } finally {
+            FileUtils.deleteQuietly(new File(tempFilePath));
             ConvertorPool.getInstance().returnObject(convert);
         }
     }

@@ -14,4 +14,6 @@ public interface PreviewInfoDao {
     SvgFileInfo getSvgBaseDir(String path, int page, String ea) throws IOException;
 
     String getSvgBaseDir(String folderName);
+
+    int getPageCount(String path);
 }

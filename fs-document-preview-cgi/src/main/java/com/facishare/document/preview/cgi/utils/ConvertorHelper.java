@@ -29,6 +29,31 @@ public class ConvertorHelper {
         this.employeeInfo = employeeInfo;
     }
 
+    public int getPageCount(String path, byte[] bytes) throws Exception {
+        LOG.info("begin get convertor!");
+        Convert convert = (Convert) ConvertorPool.getInstance().borrowObject();
+        LOG.info("end get convertor!");
+        try {
+            Slf4JStopWatch stopWatch = new Slf4JStopWatch();
+            stopWatch.setTimeThreshold(0);
+            stopWatch.start();
+            PathHelper pathHelper = new PathHelper(employeeInfo.getEa());
+            String tempFilePath = pathHelper.getTempFilePath(path, bytes);
+            LOG.info("begin get IPICConvertor");
+            IPICConvertor ipicConvertor = convert.convertMStoPic(tempFilePath);
+            LOG.info("end get IPICConvertor");
+            LOG.info("begin get page count");
+            int pageCount=ipicConvertor.getPageCount();
+            LOG.info("end get page count");
+            return pageCount;
+        } catch (Exception e) {
+            LOG.error("error info:" + e.getStackTrace());
+            return -1;
+        } finally {
+            ConvertorPool.getInstance().returnObject(convert);
+        }
+    }
+
     public String doConvert(String path, String baseDir, String name, byte[] bytes, int page) throws Exception {
         LOG.info("begin get convertor!");
         Convert convert = (Convert) ConvertorPool.getInstance().borrowObject();

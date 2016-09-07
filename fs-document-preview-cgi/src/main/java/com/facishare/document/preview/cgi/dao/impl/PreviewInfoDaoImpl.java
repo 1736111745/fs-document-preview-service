@@ -105,6 +105,17 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         return previewInfo.getBaseDir();
     }
 
+    @Override
+    public int getPageCount(String path) {
+        PreviewInfo previewInfo=getInfoByPath(path);
+        if(previewInfo==null)
+        {
+            return 0;
+        }
+        else
+            return previewInfo.getPageCount();
+    }
+
     public PreviewInfo getInfoByPath(String path) {
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("path").equal(path);

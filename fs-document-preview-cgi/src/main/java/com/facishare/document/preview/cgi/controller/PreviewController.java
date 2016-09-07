@@ -77,6 +77,33 @@ public class PreviewController {
         return json;
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/preview/getPageCount", method = RequestMethod.GET)
+    public int getPageCount(HttpServletRequest request) throws Exception {
+        String path = safteGetRequestParameter(request, "path");
+        String token = safteGetRequestParameter(request, "token");
+        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+        if (!token.equals("")) {
+            DownloadFileTokens fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
+            if (fileToken != null && fileToken.getFileType().toLowerCase().equals("preview")) {
+                {
+                    path = fileToken.getFilePath() == null ? "" : fileToken.getFilePath().trim();
+                }
+            }
+        }
+        if (path.isEmpty())
+            return -1;
+        else {
+            int pageCount = previewInfoDao.getPageCount(path);
+            if (pageCount == 0) {
+                byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo);
+                ConvertorHelper convertorHelper = new ConvertorHelper(employeeInfo);
+                pageCount = convertorHelper.getPageCount(path, bytes);
+            }
+            return pageCount;
+        }
+    }
+
 
     @ResponseBody
     @RequestMapping(value = "/preview/getsvg", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -85,7 +112,7 @@ public class PreviewController {
         String page = safteGetRequestParameter(request, "page");
         String token = safteGetRequestParameter(request, "token");
         String name = safteGetRequestParameter(request, "name");
-        int pageIndex=page.isEmpty()?0:Integer.parseInt(page);
+        int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
         JsonResponseEntity jsonResponseEntity = new JsonResponseEntity();
         if (path.equals("") && token.equals("")) {
             jsonResponseEntity.setSuccessed(false);
@@ -119,7 +146,7 @@ public class PreviewController {
                 jsonResponseEntity.setErrMsg("该文件不可以预览!");
                 return JSONObject.toJSONString(jsonResponseEntity);
             }
-            SvgFileInfo svgFileInfo= previewInfoDao.getSvgBaseDir(path,pageIndex,employeeInfo.getEa());
+            SvgFileInfo svgFileInfo = previewInfoDao.getSvgBaseDir(path, pageIndex, employeeInfo.getEa());
             if (!svgFileInfo.getFilePath().equals("")) {
                 jsonResponseEntity.setSuccessed(true);
                 jsonResponseEntity.setSvgFile(svgFileInfo.getFilePath());
@@ -133,9 +160,9 @@ public class PreviewController {
                     return JSONObject.toJSONString(jsonResponseEntity);
                 }
                 ConvertorHelper convertorHelper = new ConvertorHelper(employeeInfo);
-                String svgFilePath = convertorHelper.doConvert(path,svgFileInfo.getBaseDir(), name, bytes, pageIndex);
+                String svgFilePath = convertorHelper.doConvert(path, svgFileInfo.getBaseDir(), name, bytes, pageIndex);
                 if (!svgFilePath.equals("")) {
-                    previewInfoDao.create(path,svgFileInfo.getBaseDir(),svgFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length);
+                    previewInfoDao.create(path, svgFileInfo.getBaseDir(), svgFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length);
                     jsonResponseEntity.setSuccessed(true);
                     jsonResponseEntity.setSvgFile(svgFilePath);
                     return JSONObject.toJSONString(jsonResponseEntity);

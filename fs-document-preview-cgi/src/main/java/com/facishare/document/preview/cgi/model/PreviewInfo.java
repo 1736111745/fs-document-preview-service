@@ -25,6 +25,8 @@ public class PreviewInfo {
 
     private String ea;
 
+    private int pageCount;
+
     public String getFolderName() {
         return folderName;
     }
@@ -113,5 +115,13 @@ public class PreviewInfo {
 
     public void setBaseDir(String baseDir) {
         this.baseDir = baseDir;
+    }
+
+    public int getPageCount() {
+        return pageCount;
+    }
+
+    public void setPageCount(int pageCount) {
+        this.pageCount = pageCount;
     }
 }

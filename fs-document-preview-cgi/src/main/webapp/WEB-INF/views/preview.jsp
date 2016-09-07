@@ -69,7 +69,7 @@
                 var h1=$(window).scrollTop()+$(window).height();
                 var h2=$(document).height();
                 console.log("h1:"+h1+",h2:"+h2);
-                if (h1-h2>40) {
+                if (h1>0.75*h2) {
                     if(loaded>0&&maxPageIndex>loaded)
                     loadSvg(loaded);
                 }

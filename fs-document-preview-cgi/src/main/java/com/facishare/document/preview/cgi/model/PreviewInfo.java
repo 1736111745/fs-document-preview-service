@@ -25,6 +25,16 @@ public class PreviewInfo {
 
     private String ea;
 
+    public String getFolderName() {
+        return folderName;
+    }
+
+    public void setFolderName(String folderName) {
+        this.folderName = folderName;
+    }
+
+    private String folderName;
+
     private String baseDir;
 
     private long employeeId;

@@ -39,6 +39,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         if (previewInfo == null) {
             previewInfo = new PreviewInfo();
             previewInfo.setDocSize(docSize);
+            previewInfo.setFolderName(FilenameUtils.getBaseName(baseDir));
             previewInfo.setCreateTime(new Date());
             int yyyyMMdd = Integer.parseInt(DateUtil.getFormatDateStr("yyyyMMdd"));
             previewInfo.setCreateYYMMDD(yyyyMMdd);
@@ -73,7 +74,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     }
 
     @Override
-    public SvgFileInfo getSvgFilePath(String path, int page, String ea) throws IOException {
+    public SvgFileInfo getSvgBaseDir(String path, int page, String ea) throws IOException {
         SvgFileInfo svgFileInfo = new SvgFileInfo();
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("path").equal(path);
@@ -83,7 +84,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
             svgFileInfo.setBaseDir(baseDir);
             String svgFileName = previewInfo.getSvgList().stream().filter(x -> x.equals((page + 1) + ".svg")).findFirst().orElse("");
             if (!svgFileName.equals("")) {
-                String filePath = baseDir + "/" + svgFileName;
+                String filePath = previewInfo.getFolderName() + "/" + svgFileName;
                 svgFileInfo.setFilePath(filePath);
             } else {
                 svgFileInfo.setFilePath("");
@@ -94,6 +95,14 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
             svgFileInfo.setFilePath("");
         }
         return svgFileInfo;
+    }
+
+    @Override
+    public String getSvgBaseDir(String folderName) {
+        Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+        query.criteria("folderName").equal(folderName);
+        PreviewInfo previewInfo= query.get();
+        return previewInfo.getBaseDir();
     }
 
     public PreviewInfo getInfoByPath(String path) {

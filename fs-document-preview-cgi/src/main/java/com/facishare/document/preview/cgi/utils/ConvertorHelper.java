@@ -5,10 +5,13 @@ import application.dcs.IPICConvertor;
 import com.facishare.document.preview.cgi.convertor.ConvertorPool;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
+import org.apache.commons.io.FilenameUtils;
 import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.File;
 
 
 /**
@@ -26,7 +29,7 @@ public class ConvertorHelper {
         this.employeeInfo = employeeInfo;
     }
 
-    public String doConvert(String path, String baseDir,String name, byte[] bytes,int page) throws Exception {
+    public String doConvert(String path, String baseDir, String name, byte[] bytes, int page) throws Exception {
         LOG.info("begin get convertor!");
         Convert convert = (Convert) ConvertorPool.getInstance().borrowObject();
         LOG.info("end get convertor!");
@@ -47,7 +50,13 @@ public class ConvertorHelper {
                 stopWatch.stop();
                 LOG.info("end get svg");
                 LOG.info("file:{},page:{},length:{},code:{},cost:{} ms", path, page, bytes.length / 1024, code, stopWatch.getElapsedTime());
-                return code == 0 ? baseDir + "/" + (page+1) + ".svg" : "";
+                String svgFilePath = baseDir + "/" + (page + 1) + ".svg";
+                File file = new File(svgFilePath);
+                if (file.exists()) {
+                    return FilenameUtils.getBaseName(baseDir) + "/" + (page + 1) + ".svg";
+                } else {
+                    return "";
+                }
             } else
                 return "";
         } catch (Exception e) {

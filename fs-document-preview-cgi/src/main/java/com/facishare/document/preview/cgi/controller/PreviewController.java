@@ -10,9 +10,7 @@ import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.fxiaoke.release.FsGrayRelease;
 import com.fxiaoke.release.FsGrayReleaseBiz;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.LineIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
@@ -122,11 +119,10 @@ public class PreviewController {
                 jsonResponseEntity.setErrMsg("该文件不可以预览!");
                 return JSONObject.toJSONString(jsonResponseEntity);
             }
-            SvgFileInfo svgFileInfo= previewInfoDao.getSvgFilePath(path,pageIndex,employeeInfo.getEa());
+            SvgFileInfo svgFileInfo= previewInfoDao.getSvgBaseDir(path,pageIndex,employeeInfo.getEa());
             if (!svgFileInfo.getFilePath().equals("")) {
                 jsonResponseEntity.setSuccessed(true);
-                String svgData=getHtml(svgFileInfo.getFilePath());
-                jsonResponseEntity.setSvgData(svgData);
+                jsonResponseEntity.setSvgFile(svgFileInfo.getFilePath());
                 return JSONObject.toJSONString(jsonResponseEntity);
             } else {
                 byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo);
@@ -139,11 +135,9 @@ public class PreviewController {
                 ConvertorHelper convertorHelper = new ConvertorHelper(employeeInfo);
                 String svgFilePath = convertorHelper.doConvert(path,svgFileInfo.getBaseDir(), name, bytes, pageIndex);
                 if (!svgFilePath.equals("")) {
-
                     previewInfoDao.create(path,svgFileInfo.getBaseDir(),svgFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length);
                     jsonResponseEntity.setSuccessed(true);
-                    String svgData=getHtml(svgFilePath);
-                    jsonResponseEntity.setSvgData(svgData);
+                    jsonResponseEntity.setSvgFile(svgFilePath);
                     return JSONObject.toJSONString(jsonResponseEntity);
                 } else {
                     LOG.warn("path:{} can't do preview", path);
@@ -155,25 +149,20 @@ public class PreviewController {
         }
     }
 
-    @RequestMapping("/preview/{folder}.files/{fileName:.+}")
+    @RequestMapping("/preview/{folder}/{fileName:.+}")
     public void getStatic(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
-//        String htmlName = folder;
-//        PreviewInfo previewInfo = previewInfoDao.getInfoByHtmlName(htmlName);
-//        String htmlFilePath = previewInfo.getHtmlFilePath();
-//        File file = new File(htmlFilePath);
-//        String folderName = folder + ".files";
-//        String parent = file.getParent() + "/" + folderName;
-//        String filePath = parent + "/" + fileName;
-//        if (fileName.toLowerCase().contains(".png")) {
-//            response.setContentType("image/png");
-//        } else if (fileName.toLowerCase().contains(".js")) {
-//            response.setContentType("application/javascript");
-//        } else if (fileName.toLowerCase().contains(".css")) {
-//            response.setContentType("text/css");
-//        } else if (fileName.toLowerCase().contains(".svg")) {
-//            response.setContentType("image/svg+xml");
-//        }
-//        outPut(response, filePath);
+        String baseDir = previewInfoDao.getSvgBaseDir(folder);
+        String filePath = baseDir + "/" + fileName;
+        if (fileName.toLowerCase().contains(".png")) {
+            response.setContentType("image/png");
+        } else if (fileName.toLowerCase().contains(".js")) {
+            response.setContentType("application/javascript");
+        } else if (fileName.toLowerCase().contains(".css")) {
+            response.setContentType("text/css");
+        } else if (fileName.toLowerCase().contains(".svg")) {
+            response.setContentType("image/svg+xml");
+        }
+        outPut(response, filePath);
     }
 
     private void outPut(HttpServletResponse response, String filePath) throws IOException {
@@ -193,19 +182,19 @@ public class PreviewController {
         String value = request.getParameter(paramName) == null ? "" : request.getParameter(paramName).trim();
         return value;
     }
-    private static String getHtml(String filePath) throws IOException {
-        StringBuffer sb = new StringBuffer();
-        File file=new File(filePath);
-        LineIterator it = FileUtils.lineIterator(file, "UTF-8");
-        try {
-            while (it.hasNext()) {
-                String line = it.nextLine();
-                sb.append(line);
-            }
-        } finally {
-            LineIterator.closeQuietly(it);
-        }
-        return sb.toString();
-    }
+//    private static String getHtml(String filePath) throws IOException {
+//        StringBuffer sb = new StringBuffer();
+//        File file=new File(filePath);
+//        LineIterator it = FileUtils.lineIterator(file, "UTF-8");
+//        try {
+//            while (it.hasNext()) {
+//                String line = it.nextLine();
+//                sb.append(line);
+//            }
+//        } finally {
+//            LineIterator.closeQuietly(it);
+//        }
+//        return sb.toString();
+//    }
 }
 

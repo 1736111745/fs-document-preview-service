@@ -11,5 +11,7 @@ public interface PreviewInfoDao {
 
     void create(String path,String baseDir, String svgFilePath, String ea, int employeeId, long docSize) throws IOException;
 
-    SvgFileInfo getSvgFilePath(String path, int page, String ea) throws IOException;
+    SvgFileInfo getSvgBaseDir(String path, int page, String ea) throws IOException;
+
+    String getSvgBaseDir(String folderName);
 }

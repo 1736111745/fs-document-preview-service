@@ -14,7 +14,7 @@
     <link href="/static/bootstrap-combined.min.css" rel="stylesheet">
     <link href="/static/font-awesome.css" rel="stylesheet">
     <link href="/static/style.css" rel="stylesheet">
-    <link href="/static/doc.css" rel="stylesheet">
+    <link href="/static/doc.css?v=1" rel="stylesheet">
     <script type="text/javascript" src="/static/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="/static/jquery.isloading.min.js"></script>
     <style>body {

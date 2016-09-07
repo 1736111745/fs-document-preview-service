@@ -44,7 +44,7 @@ public class ConvertorHelper {
             IPICConvertor ipicConvertor = convert.convertMStoPic(tempFilePath);
             LOG.info("end get IPICConvertor");
             LOG.info("begin get page count");
-            int pageCount=ipicConvertor.getPageCount();
+            int pageCount = ipicConvertor.getPageCount();
             LOG.info("end get page count");
             return pageCount;
         } catch (Exception e) {
@@ -61,6 +61,7 @@ public class ConvertorHelper {
         LOG.info("end get convertor!");
         PathHelper pathHelper = new PathHelper(employeeInfo.getEa());
         String tempFilePath = pathHelper.getTempFilePath(path, bytes);
+        String extension = FilenameUtils.getExtension(path).toLowerCase();
         try {
             Slf4JStopWatch stopWatch = new Slf4JStopWatch();
             stopWatch.setTimeThreshold(0);
@@ -72,14 +73,15 @@ public class ConvertorHelper {
             int resultcode = ipicConvertor.resultCode();
             if (resultcode == 0) {
                 LOG.info("begin get svg,svg folder:{}", baseDir);
-                int code = ipicConvertor.convertToSVG(page, page, baseDir);
+                int code = extension == "pdf" ? ipicConvertor.convertToJPG(page, page, 1f, baseDir) : ipicConvertor.convertToSVG(page, page, baseDir);
                 stopWatch.stop();
                 LOG.info("end get svg");
                 LOG.info("file:{},page:{},length:{},code:{},cost:{} ms", path, page, bytes.length / 1024, code, stopWatch.getElapsedTime());
-                String svgFilePath = baseDir + "/" + (page + 1) + ".svg";
+                String fileName = extension == "pdf" ? (page + 1) + ".jpg" : (page + 1) + ".svg";
+                String svgFilePath = baseDir + "/" + fileName;
                 File file = new File(svgFilePath);
                 if (file.exists()) {
-                    return FilenameUtils.getBaseName(baseDir) + "/" + (page + 1) + ".svg";
+                    return FilenameUtils.getBaseName(baseDir) + "/" + fileName;
                 } else {
                     return "";
                 }

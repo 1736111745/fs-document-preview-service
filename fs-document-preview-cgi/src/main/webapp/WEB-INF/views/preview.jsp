@@ -66,7 +66,7 @@
             $(window).scroll(function () {
                 var $body = $("body");
                 /*判断窗体高度与竖向滚动位移大小相加 是否 超过内容页高度*/
-                if (($(window).height() + $(window).scrollTop()) >= $body.height()) {
+                if ($(window).scrollTop()+$(window).height()>=$(document).height()*0.75) {
                     if(loaded>0&&maxPageIndex>loaded)
                     loadSvg(loaded);
                 }

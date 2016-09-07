@@ -83,4 +83,9 @@ public class DocPageCalculator {
         PDDocument doc = PDDocument.load(new File(filePath));
         return doc.getNumberOfPages();
     }
+
+//    public static void main(String[] args) throws Exception {
+//        String file="/Users/liuq/Downloads/批量下载/numbers生成的Excel文档.xlsx";
+//        int pageCount=GetDocPageCount(file);
+//    }
 }

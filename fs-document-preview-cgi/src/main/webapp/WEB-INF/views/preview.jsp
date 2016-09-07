@@ -47,9 +47,9 @@
                 success: function (data) {
                     $.isLoading("hide");
                     if(data.successed) {
-                        loaded++;
                         var html = $("<DIV class='word-page' STYLE='max-width:793px' id='doc0'><DIV class='word-content'><embed src='/preview/" + data.svgFile + "' width='100%' height='100%' type='image/svg+xml'></embed></DIV></DIV>");
                         $("#content").append(html);
+                        loaded++;
                     }
                     else
                     {

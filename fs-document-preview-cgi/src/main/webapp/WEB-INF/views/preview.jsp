@@ -35,13 +35,13 @@
             return result[1];
         }
         function loadSvg(pageIndex) {
+            $.isLoading({text: "文档加载中..."});
             $.ajax({
                 type: 'get',
                 dataType: 'json',
-                async: false,
+                async: true,
                 url: '/preview/getsvg?path=' + path + '&page=' + pageIndex,
                 beforeSend: function () {
-                    $.isLoading({text: "文档加载中..."});
                     console.log("load "+pageIndex);
                 },
                 success: function (data) {

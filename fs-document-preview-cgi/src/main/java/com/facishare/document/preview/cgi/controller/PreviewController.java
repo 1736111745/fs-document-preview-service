@@ -100,7 +100,7 @@ public class PreviewController {
                 ConvertorHelper convertorHelper = new ConvertorHelper(employeeInfo);
                 pageCount = convertorHelper.getPageCount(path, bytes);
             }
-            return "pageCount";
+            return String.valueOf(pageCount);
         }
     }
 

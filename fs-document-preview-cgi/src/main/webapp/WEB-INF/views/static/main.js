@@ -10,7 +10,7 @@ function getPageCount() {
         type: 'get',
         dataType: 'text',
         async: false,
-        url: '/preview/getPageCount?path=' + path,
+        url: window.contextPath+'/preview/getPageCount?path=' + path,
         success: function (data) {
             pageCount = parseInt(data);
         }
@@ -31,16 +31,16 @@ function loadSvg(pageIndex) {
         type: 'get',
         dataType: 'json',
         async: false,
-        url: '/preview/getsvg?path=' + path + '&page=' + pageIndex + "&pageCount=" + pageCount,
+        url: window.contextPath + '/preview/getsvg?path=' + path + '&page=' + pageIndex + "&pageCount=" + pageCount,
         beforeSend: function () {
             console.log("load " + pageIndex);
         },
         success: function (data) {
 //                    $.isLoading("hide");
             if (data.successed) {
-                var dataSrc = "<embed src='/preview/" + data.filePath + "' width='100%' height='100%' type='image/svg+xml'></embed>"
+                var dataSrc = "<embed src='"+window.contextPath+"/preview/" + data.filePath + "' width='100%' height='100%' type='image/svg+xml'></embed>"
                 if (data.type == 2) {
-                    dataSrc = "<img src='/preview/" + data.filePath + "' width='100%' height='100%'>";
+                    dataSrc = "<img src='"+window.contextPath+"/preview/" + data.filePath + "' width='100%' height='100%'>";
                 }
                 var html = $("<DIV class='word-page' STYLE='max-width:793px' id='doc0'><DIV class='word-content'>" + dataSrc + "</DIV></DIV>");
                 $("#content").append(html);

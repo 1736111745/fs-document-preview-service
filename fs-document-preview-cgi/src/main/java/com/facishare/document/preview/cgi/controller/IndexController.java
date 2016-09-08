@@ -4,6 +4,7 @@ import com.facishare.document.preview.cgi.dao.FileTokenDao;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.fsi.proxy.model.warehouse.n.fileupload.NUploadFileDirect;
 import com.facishare.fsi.proxy.service.NFileStorageService;
+import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,7 @@ public class IndexController {
     @Autowired
     FileTokenDao fileTokenDao;
     private static final Logger LOG = LoggerFactory.getLogger(PreviewController.class);
+
     @RequestMapping(method = RequestMethod.GET)
     public void index(HttpServletResponse response) throws IOException {
         PrintWriter printWriter = response.getWriter();
@@ -72,7 +74,7 @@ public class IndexController {
     NFileStorageService nFileStorageService;
 
     @RequestMapping("/upload")
-    public void upload(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public String upload(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             LOG.info("begin upload");
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
@@ -87,10 +89,8 @@ public class IndexController {
             arg.setSourceUser(employeeInfo.getSourceUser());
             NUploadFileDirect.Result result = nFileStorageService.nUploadFileDirect(arg, employeeInfo.getEa());
             String npath = result.getFinalNPath();
-            response.sendRedirect("/preview/bypath?path=" + npath + "&name=" + URLEncoder.encode(fileName));
-        }
-        catch (Exception e)
-        {
+            return "redirect:/preview/bypath?path=" + npath + "&name=" + URLEncoder.encode(fileName, CharEncoding.UTF_8);
+        } catch (Exception e) {
             throw e;
         }
 

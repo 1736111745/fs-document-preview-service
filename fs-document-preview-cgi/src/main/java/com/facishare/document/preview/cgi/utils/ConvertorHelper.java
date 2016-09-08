@@ -80,7 +80,7 @@ public class ConvertorHelper {
                 String fileName = extension.equals("pdf") ? (page + 1) + ".png" : (page + 1) + ".svg";
                 String imageFilePath = baseDir + "/" + fileName;
                 LOG.info("begin get svg/jpg,svg folder:{}", baseDir);
-                int code = extension.equals("pdf") ? convertPdf2Image(tempFilePath, imageFilePath, page) : ipicConvertor.convertToSVG(page, page, baseDir);
+                int code = extension.equals("pdf") ? convertPdf2Image(tempFilePath, imageFilePath, page) : ipicConvertor.convertToSVG(page, page,1f, baseDir);
                 stopWatch.stop();
                 LOG.info("end get svg/jpg");
                 LOG.info("file:{},page:{},length:{},code:{},cost:{} ms", path, page, bytes.length / 1024, code, stopWatch.getElapsedTime());
@@ -104,15 +104,18 @@ public class ConvertorHelper {
 
     private int convertPdf2Image(String filePath, String savePath, int pageIndex) throws IOException {
         PDDocument doc = PDDocument.load(new File(filePath));
-        BufferedImage image = new PDFRenderer(doc).renderImage(pageIndex);
+        BufferedImage image = new PDFRenderer(doc).renderImage(pageIndex,0.5f);
         File f = new File(savePath);
         try {
-            ImageIO.write(image, "png", f);
+            ImageIO.write(image, "jpg", f);
             image.flush();
             return 0;
         } catch (IOException e) {
             LOG.error("error info:" + e.getStackTrace());
             return -1;
+        }
+        finally {
+            doc.close();
         }
     }
 }

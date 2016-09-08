@@ -149,7 +149,7 @@ public class PreviewController {
                 name = name.equals("") ? path : name;
             }
             String extension = FilenameUtils.getExtension(path).toLowerCase();
-            int type=extension=="pdf"?2:1;
+            int type=extension.equals("pdf")?2:1;
             if (allowPreviewExtension.indexOf(extension) == -1) {
                 jsonResponseEntity.setSuccessed(false);
                 jsonResponseEntity.setErrMsg("该文件不可以预览!");

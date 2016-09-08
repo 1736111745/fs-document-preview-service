@@ -7,12 +7,17 @@ import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 
 /**
@@ -72,14 +77,14 @@ public class ConvertorHelper {
             LOG.info("end get IPICConvertor");
             int resultcode = ipicConvertor.resultCode();
             if (resultcode == 0) {
-                LOG.info("begin get svg,svg folder:{}", baseDir);
-                int code = extension == "pdf" ? ipicConvertor.convertToJPG(page, page, 1f, baseDir) : ipicConvertor.convertToSVG(page, page, baseDir);
+                String fileName = extension.equals("pdf") ? (page + 1) + ".png" : (page + 1) + ".svg";
+                String imageFilePath = baseDir + "/" + fileName;
+                LOG.info("begin get svg/jpg,svg folder:{}", baseDir);
+                int code = extension.equals("pdf") ? convertPdf2Image(tempFilePath, imageFilePath, page) : ipicConvertor.convertToSVG(page, page, baseDir);
                 stopWatch.stop();
-                LOG.info("end get svg");
+                LOG.info("end get svg/jpg");
                 LOG.info("file:{},page:{},length:{},code:{},cost:{} ms", path, page, bytes.length / 1024, code, stopWatch.getElapsedTime());
-                String fileName = extension == "pdf" ? (page + 1) + ".jpg" : (page + 1) + ".svg";
-                String svgFilePath = baseDir + "/" + fileName;
-                File file = new File(svgFilePath);
+                File file = new File(imageFilePath);
                 if (file.exists()) {
                     return FilenameUtils.getBaseName(baseDir) + "/" + fileName;
                 } else {
@@ -93,6 +98,21 @@ public class ConvertorHelper {
         } finally {
             FileUtils.deleteQuietly(new File(tempFilePath));
             ConvertorPool.getInstance().returnObject(convert);
+        }
+    }
+
+
+    private int convertPdf2Image(String filePath, String savePath, int pageIndex) throws IOException {
+        PDDocument doc = PDDocument.load(new File(filePath));
+        BufferedImage image = new PDFRenderer(doc).renderImage(pageIndex);
+        File f = new File(savePath);
+        try {
+            ImageIO.write(image, "png", f);
+            image.flush();
+            return 0;
+        } catch (IOException e) {
+            LOG.error("error info:" + e.getStackTrace());
+            return -1;
         }
     }
 }

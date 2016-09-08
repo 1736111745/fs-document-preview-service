@@ -148,7 +148,8 @@ public class PreviewController {
             } else {
                 name = name.equals("") ? path : name;
             }
-            String extension = FilenameUtils.getExtension(path);
+            String extension = FilenameUtils.getExtension(path).toLowerCase();
+            int type=extension=="pdf"?2:1;
             if (allowPreviewExtension.indexOf(extension) == -1) {
                 jsonResponseEntity.setSuccessed(false);
                 jsonResponseEntity.setErrMsg("该文件不可以预览!");
@@ -157,7 +158,8 @@ public class PreviewController {
             SvgFileInfo svgFileInfo = previewInfoDao.getSvgBaseDir(path, pageIndex, employeeInfo.getEa());
             if (!svgFileInfo.getFilePath().equals("")) {
                 jsonResponseEntity.setSuccessed(true);
-                jsonResponseEntity.setSvgFile(svgFileInfo.getFilePath());
+                jsonResponseEntity.setType(type);
+                jsonResponseEntity.setFilePath(svgFileInfo.getFilePath());
                 return JSONObject.toJSONString(jsonResponseEntity);
             } else {
                 byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo);
@@ -172,7 +174,8 @@ public class PreviewController {
                 if (!svgFilePath.equals("")) {
                     previewInfoDao.create(path, svgFileInfo.getBaseDir(), svgFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length,pageCnt);
                     jsonResponseEntity.setSuccessed(true);
-                    jsonResponseEntity.setSvgFile(svgFilePath);
+                    jsonResponseEntity.setFilePath(svgFilePath);
+                    jsonResponseEntity.setType(type);
                     return JSONObject.toJSONString(jsonResponseEntity);
                 } else {
                     LOG.warn("path:{} can't do preview", path);

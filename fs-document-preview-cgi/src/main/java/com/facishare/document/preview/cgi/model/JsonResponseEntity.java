@@ -7,7 +7,8 @@ import java.io.Serializable;
  */
 public class JsonResponseEntity implements Serializable {
     private boolean successed;
-    private String svgFile;
+    private String filePath;
+    private int type;
     private String errMsg;
 
     public boolean isSuccessed() {
@@ -18,12 +19,12 @@ public class JsonResponseEntity implements Serializable {
         this.successed = successed;
     }
 
-    public String getSvgFile() {
-        return svgFile;
+    public String getFilePath() {
+        return filePath;
     }
 
-    public void setSvgFile(String svgFile) {
-        this.svgFile = svgFile;
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
     public String getErrMsg() {
@@ -32,5 +33,13 @@ public class JsonResponseEntity implements Serializable {
 
     public void setErrMsg(String errMsg) {
         this.errMsg = errMsg;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

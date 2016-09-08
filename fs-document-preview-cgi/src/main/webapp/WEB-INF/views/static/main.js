@@ -26,7 +26,6 @@ function getQueryStringByName(name) {
 }
 function loadSvg(pageIndex) {
     if (pageIndex >= pageCount) return;
-//            $.isLoading({text: "文档加载中..."});
     $.ajax({
         type: 'get',
         dataType: 'json',
@@ -36,13 +35,14 @@ function loadSvg(pageIndex) {
             console.log("load " + pageIndex);
         },
         success: function (data) {
-//                    $.isLoading("hide");
             if (data.successed) {
+                var maxWidth=793;
                 var dataSrc = "<embed src='"+window.contextPath+"/preview/" + data.filePath + "' width='100%' height='100%' type='image/svg+xml'></embed>"
                 if (data.type == 2) {
+                    maxWidth=893
                     dataSrc = "<img src='"+window.contextPath+"/preview/" + data.filePath + "' width='100%' height='100%'>";
                 }
-                var html = $("<DIV class='word-page' STYLE='max-width:793px' id='doc0'><DIV class='word-content'>" + dataSrc + "</DIV></DIV>");
+                var html = $("<DIV class='word-page' STYLE='max-width:"+maxWidth+"px' id='doc0'><DIV class='word-content'>" + dataSrc + "</DIV></DIV>");
                 $("#content").append(html);
                 loaded++;
             }

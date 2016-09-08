@@ -11,7 +11,7 @@
     <title>文件上传</title>
 </head>
 <body>
-<form action="/upload" enctype="multipart/form-data" method="post">
+<form action="<%=request.getContextPath()%>/upload" enctype="multipart/form-data" method="post">
 <input type="file" name="file"><input type="submit" value="提交">
 </form>
 </body>

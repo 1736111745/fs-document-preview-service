@@ -77,7 +77,7 @@ public class ConvertorHelper {
             LOG.info("end get IPICConvertor");
             int resultcode = ipicConvertor.resultCode();
             if (resultcode == 0) {
-                String fileName = extension.equals("pdf") ? (page + 1) + ".png" : (page + 1) + ".svg";
+                String fileName = extension.equals("pdf") ? (page + 1) + ".jpg" : (page + 1) + ".svg";
                 String imageFilePath = baseDir + "/" + fileName;
                 LOG.info("begin get svg/jpg,svg folder:{}", baseDir);
                 int code = extension.equals("pdf") ? convertPdf2Image(tempFilePath, imageFilePath, page) : ipicConvertor.convertToSVG(page, page,1f, baseDir);
@@ -100,6 +100,7 @@ public class ConvertorHelper {
             ConvertorPool.getInstance().returnObject(convert);
         }
     }
+
 
 
     private int convertPdf2Image(String filePath, String savePath, int pageIndex) throws IOException {

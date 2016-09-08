@@ -191,8 +191,8 @@ public class PreviewController {
     public void getStatic(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
         String baseDir = previewInfoDao.getSvgBaseDir(folder);
         String filePath = baseDir + "/" + fileName;
-        if (fileName.toLowerCase().contains(".png")) {
-            response.setContentType("image/png");
+        if (fileName.toLowerCase().contains(".jpg")) {
+            response.setContentType("image/jpg");
         } else if (fileName.toLowerCase().contains(".js")) {
             response.setContentType("application/javascript");
         } else if (fileName.toLowerCase().contains(".css")) {

@@ -10,7 +10,7 @@ function getPageCount() {
         type: 'get',
         dataType: 'text',
         async: false,
-        url: window.contextPath+'/preview/getPageCount?path=' + path,
+        url: window.contextPath + '/preview/getPageCount?path=' + path,
         success: function (data) {
             pageCount = parseInt(data);
         }
@@ -24,25 +24,25 @@ function getQueryStringByName(name) {
     }
     return result[1];
 }
+
 function loadSvg(pageIndex) {
     if (pageIndex >= pageCount) return;
     $.ajax({
         type: 'get',
         dataType: 'json',
-        async: true,
+        async: false,
         url: window.contextPath + '/preview/getsvg?path=' + path + '&page=' + pageIndex + "&pageCount=" + pageCount,
         beforeSend: function () {
             console.log("load " + pageIndex);
         },
         success: function (data) {
             if (data.successed) {
-                var maxWidth=793;
-                var dataSrc = "<embed src='"+window.contextPath+"/preview/" + data.filePath + "' width='100%' height='100%' type='image/svg+xml'></embed>"
+                var maxWidth = 793;
+                dataSrc = "<img src='" + window.contextPath + "/preview/" + data.filePath + "' width='100%' height='100%'>";
                 if (data.type == 2) {
-                    maxWidth=893
-                    dataSrc = "<img src='"+window.contextPath+"/preview/" + data.filePath + "' width='100%' height='100%'>";
+                    maxWidth = 893
                 }
-                var html = $("<DIV class='word-page' STYLE='max-width:"+maxWidth+"px' id='doc0'><DIV class='word-content'>" + dataSrc + "</DIV></DIV>");
+                var html = $("<div class='word-page' STYLE='max-width:" + maxWidth + "px' id='doc0'><div class='word-content'>" + dataSrc + "</div></div>");
                 $("#content").append(html);
                 loaded++;
             }
@@ -54,6 +54,7 @@ function loadSvg(pageIndex) {
         }
     });
 }
+
 function loadFirst() {
     getPageCount();
     var topN = pageCount > 3 ? 3 : pageCount;

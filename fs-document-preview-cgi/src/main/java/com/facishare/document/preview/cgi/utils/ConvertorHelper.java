@@ -5,7 +5,6 @@ import application.dcs.IPICConvertor;
 import com.facishare.document.preview.cgi.convertor.ConvertorPool;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
@@ -51,8 +50,7 @@ public class ConvertorHelper {
                 String fileName = extension.equals("pdf") ? (page + 1) + ".png" : (page + 1) + ".svg";
                 String imageFilePath = baseDir + "/" + fileName;
                 LOG.info("begin get svg/png,svg folder:{}", baseDir);
-                //// TODO: 16/9/8 研究pdf转弯后图片的清晰度 
-                int code = extension.equals("pdf") ? ipicConvertor.convertToPNG(page,page,2f,baseDir) : ipicConvertor.convertToSVG(page, page,0.5f, baseDir);
+                int code = extension.equals("pdf") ? ipicConvertor.convertToPNG(page,page,2f,baseDir) : ipicConvertor.convertToSVG(page, page,1f, baseDir);
                 ipicConvertor.close();
                 stopWatch.stop();
                 LOG.info("end get svg/png");
@@ -69,7 +67,7 @@ public class ConvertorHelper {
             LOG.error("error info:" + e.getStackTrace());
             return "";
         } finally {
-            FileUtils.deleteQuietly(new File(tempFilePath));
+            //FileUtils.deleteQuietly(new File(tempFilePath));
             ConvertorPool.getInstance().returnObject(convert);
         }
     }

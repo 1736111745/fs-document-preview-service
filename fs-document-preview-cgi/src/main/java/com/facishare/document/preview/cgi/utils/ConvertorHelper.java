@@ -51,7 +51,8 @@ public class ConvertorHelper {
                 String fileName = extension.equals("pdf") ? (page + 1) + ".png" : (page + 1) + ".svg";
                 String imageFilePath = baseDir + "/" + fileName;
                 LOG.info("begin get svg/png,svg folder:{}", baseDir);
-                int code = extension.equals("pdf") ? ipicConvertor.convertToPNG(page,page,1f,baseDir) : ipicConvertor.convertToSVG(page, page,1f, baseDir);
+                //// TODO: 16/9/8 研究pdf转弯后图片的清晰度 
+                int code = extension.equals("pdf") ? ipicConvertor.convertToPNG(page,page,2f,baseDir) : ipicConvertor.convertToSVG(page, page,1f, baseDir);
                 stopWatch.stop();
                 LOG.info("end get svg/png");
                 LOG.info("file:{},page:{},length:{},code:{},cost:{} ms", path, page, bytes.length / 1024, code, stopWatch.getElapsedTime());

@@ -29,7 +29,7 @@ function loadSvg(pageIndex) {
     $.ajax({
         type: 'get',
         dataType: 'json',
-        async: false,
+        async: true,
         url: window.contextPath + '/preview/getsvg?path=' + path + '&page=' + pageIndex + "&pageCount=" + pageCount,
         beforeSend: function () {
             console.log("load " + pageIndex);

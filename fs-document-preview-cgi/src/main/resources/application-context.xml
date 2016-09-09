@@ -17,6 +17,7 @@
     <bean id="fileTokenDao" class="com.facishare.document.preview.cgi.dao.impl.FileTokenDaoImpl"/>
     <bean id="authFilter" class="com.facishare.document.preview.cgi.filter.AuthFilter"/>
     <bean id="authHelper" class="com.facishare.document.preview.cgi.utils.AuthHelper"/>
+    <bean id="docConvertor" class="com.facishare.document.preview.cgi.convertor.DocConvertor"/>
     <import resource="classpath:spring/spring-cms.xml"/>
     <import resource="fs-fileproxy.xml"/>
     <import resource="classpath:spring/fs-dps-dubbo.xml"/>

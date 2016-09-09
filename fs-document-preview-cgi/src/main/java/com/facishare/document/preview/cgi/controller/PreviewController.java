@@ -2,10 +2,10 @@ package com.facishare.document.preview.cgi.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.facishare.document.preview.cgi.convertor.DocConvertor;
 import com.facishare.document.preview.cgi.dao.FileTokenDao;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.*;
-import com.facishare.document.preview.cgi.utils.ConvertorHelper;
 import com.facishare.document.preview.cgi.utils.DocPageCalculator;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.cgi.utils.PathHelper;
@@ -44,6 +44,8 @@ public class PreviewController {
     PreviewInfoDao previewInfoDao;
     @Autowired
     FileTokenDao fileTokenDao;
+    @Autowired
+    DocConvertor docConvertor;
 
     private static final Logger LOG = LoggerFactory.getLogger(PreviewController.class);
     private FsGrayReleaseBiz gray = FsGrayRelease.getInstance("dps");
@@ -149,7 +151,7 @@ public class PreviewController {
                 name = name.equals("") ? path : name;
             }
             String extension = FilenameUtils.getExtension(path).toLowerCase();
-            int type=extension.equals("pdf")?2:1;
+            int type = extension.equals("pdf") ? 2 : 1;
             if (allowPreviewExtension.indexOf(extension) == -1) {
                 jsonResponseEntity.setSuccessed(false);
                 jsonResponseEntity.setErrMsg("该文件不可以预览!");
@@ -169,12 +171,11 @@ public class PreviewController {
                     jsonResponseEntity.setErrMsg("该文件找不到或者损坏!");
                     return JSONObject.toJSONString(jsonResponseEntity);
                 }
-                ConvertorHelper convertorHelper = new ConvertorHelper(employeeInfo);
-                String svgFilePath = convertorHelper.doConvert(path, svgFileInfo.getBaseDir(), name, bytes, pageIndex);
-                if (!svgFilePath.equals("")) {
-                    previewInfoDao.create(path, svgFileInfo.getBaseDir(), svgFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length,pageCnt);
+                String dataFilePath = docConvertor.doConvert(employeeInfo.getEa(), path, svgFileInfo.getBaseDir(), name, bytes, pageIndex);
+                if (!dataFilePath.equals("")) {
+                    previewInfoDao.create(path, svgFileInfo.getBaseDir(), dataFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length, pageCnt);
                     jsonResponseEntity.setSuccessed(true);
-                    jsonResponseEntity.setFilePath(svgFilePath);
+                    jsonResponseEntity.setFilePath(dataFilePath);
                     jsonResponseEntity.setType(type);
                     return JSONObject.toJSONString(jsonResponseEntity);
                 } else {

@@ -83,7 +83,8 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         if (previewInfo != null) {
             String baseDir = previewInfo.getBaseDir();
             svgFileInfo.setBaseDir(baseDir);
-            String svgFileName = previewInfo.getSvgList().stream().filter(x -> x.equals((page + 1) + ".svg")).findFirst().orElse("");
+            String extension=FilenameUtils.getExtension(path).toLowerCase().equals("pdf")?".png":".svg";
+            String svgFileName = previewInfo.getSvgList().stream().filter(x -> x.equals((page + 1) +extension)).findFirst().orElse("");
             if (!svgFileName.equals("")) {
                 String filePath = previewInfo.getFolderName() + "/" + svgFileName;
                 svgFileInfo.setFilePath(filePath);

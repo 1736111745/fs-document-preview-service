@@ -38,16 +38,16 @@ function loadSvg(pageIndex) {
         success: function (data) {
             if (data.successed) {
                 var maxWidth = 793;
-                dataSrc = "<img src='" + window.contextPath + "/preview/" + data.filePath + "' width='100%' height='100%'>";
+                var img = "<img src='" + window.contextPath + "/preview/" + data.filePath + "' width='100%' height='100%'>";
                 if (data.type == 2) {
                     maxWidth = 893
                 }
-                var html = $("<div class='word-page' STYLE='max-width:" + maxWidth + "px' id='doc0'><div class='word-content'>" + dataSrc + "</div></div>");
+                var html = $("<div class='word-page' STYLE='max-width:" + maxWidth + "px' id='doc0'><div class='word-content'>" + img + "</div></div>");
                 $("#content").append(html);
                 loaded++;
             }
             else {
-                maxPageIndex = loaded;
+                pageCount = loaded;
             }
         },
         complete: function () {

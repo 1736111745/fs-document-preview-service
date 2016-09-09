@@ -38,11 +38,12 @@ function loadSvg(pageIndex) {
         success: function (data) {
             if (data.successed) {
                 var maxWidth = 793;
-                var img = "<img src='" + window.contextPath + "/preview/" + data.filePath + "' width='100%' height='100%'>";
+                var dataSrc = "<embed src='" + window.contextPath + "/preview/" + data.filePath + "' width='100%' height='100%' type='image/svg+xml'></embed>"
                 if (data.type == 2) {
                     maxWidth = 893
+                    dataSrc = "<img src='" + window.contextPath + "/preview/" + data.filePath + "' width='100%' height='100%'>";
                 }
-                var html = $("<div class='word-page' STYLE='max-width:" + maxWidth + "px' id='doc0'><div class='word-content'>" + img + "</div></div>");
+                var html = $("<div class='word-page' STYLE='max-width:" + maxWidth + "px' id='doc0'><div class='word-content'>" + dataSrc + "</div></div>");
                 $("#content").append(html);
                 loaded++;
             }

@@ -43,7 +43,7 @@ function loadSvg(pageIndex) {
                     maxWidth = 893
                     dataSrc = "<img src='" + window.contextPath + "/preview/" + data.filePath + "' width='100%' height='100%'>";
                 }
-                var html = $("<div class='word-page' STYLE='max-width:" + maxWidth + "px' id='doc0'><div class='word-content'>" + dataSrc + "</div></div>");
+                var html = $("<div class='word-page' style='max-width:" + maxWidth + "px'><div class='word-content'>" + dataSrc + "</div></div>");
                 $("#content").append(html);
                 loaded++;
             }

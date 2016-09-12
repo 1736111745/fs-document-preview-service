@@ -39,7 +39,7 @@ function loadData(pageIndex) {
     var contentId="divContent"+pageIndex;
     content=$('#'+contentId);
     if(content.length>0) return;
-    var img=$("<img src='http://img.zcool.cn/community/013cb15648986a32f87512f6d87dc8.gif' width='100%' height='100%'>");
+    var img=$("<img src='"+window.contextPath+"/static/loading.gif' width='100%' height='100%'>");
     var page = $("<div class='word-page' style='max-width:893px'></div>");
     content=$("<div class='word-content'  id='"+contentId+"'></div>");
     content.append(img);

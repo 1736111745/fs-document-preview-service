@@ -12,7 +12,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta Name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="<%=request.getContextPath()%>/static/bootstrap-combined.min.css" rel="stylesheet">
-    <link href="<%=request.getContextPath()%>/static/font-awesome.css" rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/doc.css?v=1" rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/loading.css" rel="stylesheet">
     <script>

@@ -43,8 +43,8 @@ function loadData(pageIndex) {
     var page = $("<div class='word-page' style='max-width:893px'></div>");
     content=$("<div class='word-content'  id='"+contentId+"'></div>");
     content.append(img);
-    page.append(content);
     $("#divPages").append(page);
+    page.append(content);
     $.ajax({
         type: 'get',
         dataType: 'json',

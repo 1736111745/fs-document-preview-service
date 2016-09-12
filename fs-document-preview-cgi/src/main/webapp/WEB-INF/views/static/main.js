@@ -32,12 +32,11 @@ function getQueryStringByName(name) {
     return result[1];
 }
 
-var content=null;
 //分页加载
 function loadData(pageIndex) {
     if (pageIndex >= pageCount) return;
     var contentId="divContent"+pageIndex;
-    content=$('#'+contentId);
+    var content=$('#'+contentId);
     if(content.length>0) return;
     loaded++;
     var img=$("<img src='"+window.contextPath+"/static/loading.gif' width='100%' height='100%'>");

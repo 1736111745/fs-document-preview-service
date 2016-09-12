@@ -88,13 +88,13 @@ function scrollEvent() {
         console.log("h1:" + h1 + ",h2:" + h2);
         if (h1 > 0.5 * h2) {
             if (loaded > 0 && pageCount > loaded)
-                loadTopN(1);
+                loadTopN(3);
         }
     });
 }
 
 //入口
-$(function () {
+$(document).ready(function () {
     getPreviewInfo();
     scrollEvent();
 });

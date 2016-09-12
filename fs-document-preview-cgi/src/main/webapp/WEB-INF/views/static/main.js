@@ -48,7 +48,7 @@ function loadData(pageIndex) {
     $.ajax({
         type: 'get',
         dataType: 'json',
-        async: false,
+        async: true,
         url: window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + pageIndex + "&pageCount=" + pageCount,
         beforeSend:function () {
         },

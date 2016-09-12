@@ -39,6 +39,7 @@ function loadData(pageIndex) {
     var contentId="divContent"+pageIndex;
     content=$('#'+contentId);
     if(content.length>0) return;
+    loaded++;
     var img=$("<img src='"+window.contextPath+"/static/loading.gif' width='100%' height='100%'>");
     var page = $("<div class='word-page' style='max-width:893px'></div>");
     content=$("<div class='word-content'  id='"+contentId+"'></div>");
@@ -53,7 +54,6 @@ function loadData(pageIndex) {
         beforeSend:function () {
         },
         success: function (data) {
-            loaded++;
             if (data.successed) {
                 var maxWidth = 793;
                 var dataSrc = "<embed src='" + window.contextPath + "/preview/" + data.filePath + "' width='100%' height='100%' type='image/svg+xml'></embed>"

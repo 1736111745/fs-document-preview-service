@@ -86,7 +86,7 @@ function scrollEvent() {
         var h1 = $(window).scrollTop() + $(window).height();
         var h2 = $(document).height();
         console.log("h1:" + h1 + ",h2:" + h2);
-        if (h1 > 0.75 * h2) {
+        if (h1 > 0.5 * h2) {
             if (loaded > 0 && pageCount > loaded)
                 loadTopN(1);
         }

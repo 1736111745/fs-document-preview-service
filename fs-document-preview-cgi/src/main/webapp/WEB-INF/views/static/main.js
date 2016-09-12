@@ -4,15 +4,22 @@
 var path = getQueryStringByName("path");
 var loaded = 0;
 var pageCount = 0;
-
-function getPageCount() {
+var type = 1;
+function getPreviewInfo() {
     $.ajax({
         type: 'get',
-        dataType: 'text',
+        dataType: 'json',
         async: false,
-        url: window.contextPath + '/preview/getPageCount?path=' + path,
+        url: window.contextPath + '/preview/getPreviewInfo?path=' + path,
         success: function (data) {
-            pageCount = parseInt(data);
+            if (data.canPreview) {
+                pageCount = data.pageCount;
+                type = data.type;
+                loadFirst();
+            }
+            else {
+                document.write(data.errorMsg);
+            }
         }
     });
 }
@@ -25,42 +32,53 @@ function getQueryStringByName(name) {
     return result[1];
 }
 
-function loadSvg(pageIndex) {
+var content=null;
+//分页加载
+function loadData(pageIndex) {
     if (pageIndex >= pageCount) return;
+    var contentId="divContent"+pageIndex;
+    content=$('#'+contentId);
+    if(content.length>0) return;
+    var img=$("<img src='http://img.zcool.cn/community/013cb15648986a32f87512f6d87dc8.gif' width='100%' height='100%'>");
+    var page = $("<div class='word-page' style='max-width:893px'></div>");
+    content=$("<div class='word-content'  id='"+contentId+"'></div>");
+    content.append(img);
+    page.append(content);
+    $("#divPages").append(page);
     $.ajax({
         type: 'get',
         dataType: 'json',
         async: false,
-        url: window.contextPath + '/preview/getsvg?path=' + path + '&page=' + pageIndex + "&pageCount=" + pageCount,
-        beforeSend: function () {
-            console.log("load " + pageIndex);
+        url: window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + pageIndex + "&pageCount=" + pageCount,
+        beforeSend:function () {
         },
         success: function (data) {
+            loaded++;
             if (data.successed) {
                 var maxWidth = 793;
                 var dataSrc = "<embed src='" + window.contextPath + "/preview/" + data.filePath + "' width='100%' height='100%' type='image/svg+xml'></embed>"
-                if (data.type == 2) {
+                if (type == 2) {
                     maxWidth = 893
                     dataSrc = "<img src='" + window.contextPath + "/preview/" + data.filePath + "' width='100%' height='100%'>";
                 }
-                var html = $("<div class='word-page' style='max-width:" + maxWidth + "px'><div class='word-content'>" + dataSrc + "</div></div>");
-                $("#content").append(html);
-                loaded++;
+                var data=$(dataSrc);
+                img.remove();
+                content.append(data);
             }
             else {
                 pageCount = loaded;
             }
-        },
-        complete: function () {
         }
     });
 }
 
+//首次加载
 function loadFirst() {
-    getPageCount();
     var topN = pageCount > 3 ? 3 : pageCount;
     loadTopN(topN);
 }
+
+//滚动加载
 function scrollEvent() {
     $(window).scroll(function () {
         var $body = $("body");
@@ -70,15 +88,19 @@ function scrollEvent() {
         console.log("h1:" + h1 + ",h2:" + h2);
         if (h1 > 0.75 * h2) {
             if (loaded > 0 && pageCount > loaded)
-                loadTopN(3);
+                loadTopN(1);
         }
     });
 }
-$(document).ready(function () {
-    loadFirst();
+
+//入口
+$(function () {
+    getPreviewInfo();
     scrollEvent();
 });
+
+//加载N页
 function loadTopN(n) {
     for (var i = 0; i < n; i++)
-        loadSvg(loaded);
+        loadData(loaded);
 }

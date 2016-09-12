@@ -1,6 +1,5 @@
 package com.facishare.document.preview.cgi.convertor;
 
-import application.dcs.Convert;
 import application.dcs.IPICConvertor;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -16,18 +15,18 @@ public class PDFConvertor implements IDocConvertor {
 
     @Override
     public String convert(int page1, int page2, String filePath, String baseDir) throws Exception {
-        Convert convert = (Convert) ConvertorPool.getInstance().borrowObject();
+        ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
         try {
             LOG.info("begin get IPICConvertor");
-            IPICConvertor ipicConvertor = convert.convertPdftoPic(filePath);
+            IPICConvertor ipicConvertor = convertobj.convertor.convertPdftoPic(filePath);
             LOG.info("end get IPICConvertor");
             int resultcode = ipicConvertor.resultCode();
             if (resultcode == 0) {
                 String fileName = (page1 + 1) + ".png";
                 String imageFilePath = baseDir + "/" + fileName;
                 LOG.info("begin get png,png folder:{}", baseDir);
-                ipicConvertor.convertToPNG(page1, page2, 1.0f, baseDir);
-                LOG.info("end get png,png folder:{}", baseDir);
+                int code =ipicConvertor.convertToPNG(page1, page2, 3.0f, baseDir);
+                LOG.info("end get png,png folder:{},code:{}", baseDir,code);
                 ipicConvertor.close();
                 File file = new File(imageFilePath);
                 if (file.exists()) {
@@ -41,7 +40,7 @@ public class PDFConvertor implements IDocConvertor {
             LOG.error("error info:" + e.getStackTrace());
             return "";
         } finally {
-            ConvertorPool.getInstance().returnObject(convert);
+            ConvertorPool.getInstance().returnConvertor(convertobj);
         }
     }
 }

@@ -43,7 +43,7 @@ public class PreviewInfo {
 
     private long docSize;//原始大小
 
-    private List<String> svgList;
+    private List<String> filePathList;
 
     public ObjectId getId() {
         return id;
@@ -101,12 +101,12 @@ public class PreviewInfo {
         this.docSize = docSize;
     }
 
-    public List<String> getSvgList() {
-        return svgList;
+    public List<String> getFilePathList() {
+        return filePathList;
     }
 
-    public void setSvgList(List<String> svgList) {
-        this.svgList = svgList;
+    public void setFilePathList(List<String> filePathList) {
+        this.filePathList = filePathList;
     }
 
     public String getBaseDir() {

@@ -1,6 +1,5 @@
 package com.facishare.document.preview.cgi.utils;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.hslf.usermodel.HSLFSlideShow;
@@ -18,39 +17,31 @@ import java.io.*;
  * Created by liuq on 16/9/7.
  */
 public class DocPageCalculator {
-    public static int GetDocPageCount(String filePath) throws Exception {
-        int pageCount=0;
-        String extension= FilenameUtils.getExtension(filePath).toLowerCase();
-        switch (extension) {
-            case "doc":
-            case "docx":
-                pageCount = parseWord(filePath);
+    public static int GetDocPageCount(byte[] data, String filePath) throws Exception {
+        int pageCount = 0;
+        DocType docType = DocTypeHelper.getDocType(filePath);
+        switch (docType) {
+            case Word:
+                pageCount = parseWord(data);
                 break;
-            case "xls":
-            case "xlsx":
-                pageCount = parseExcel(filePath);
+            case Excel:
+                pageCount = parseExcel(data);
                 break;
-            case "ppt":
-            case "pptx":
-                pageCount = parsePPT(filePath);
+            case PPT:
+                pageCount = parsePPT(data);
                 break;
-            case "pdf":
-                pageCount = parsePDF(filePath);
-                break;
+            case PDF:
+                pageCount = parsePDF(data);
         }
         return pageCount;
     }
 
 
-
-
-    private static int  checkFileVersion(String filePath) throws IOException {
-        InputStream inp = new FileInputStream(filePath);
-
+    private static int checkFileVersion(byte[] data) throws IOException {
+        InputStream inp = new ByteArrayInputStream(data);
         if (!inp.markSupported()) {
             inp = new PushbackInputStream(inp, 8);
         }
-
         if (POIFSFileSystem.hasPOIFSHeader(inp)) {
             return 2003;
         }
@@ -60,56 +51,62 @@ public class DocPageCalculator {
         return 2003;
     }
 
-    private static int parseWord(String filePath) throws Exception {
-        int version=checkFileVersion(filePath);
-        return version==2003?parseWord2003(filePath):parseWord2007(filePath);
-    }
-    private static int parseExcel(String filePath) throws Exception {
-        int version=checkFileVersion(filePath);
-        return version==2003?parseExcel2003(filePath):parseExcel2007(filePath);
-    }
-    private static int parsePPT(String filePath) throws Exception {
-        int version=checkFileVersion(filePath);
-        return version==2003?parsePPT2003(filePath):parsePPT2007(filePath);
+    private static int parseWord(byte[] data) throws Exception {
+        int version = checkFileVersion(data);
+        return version == 2003 ? parseWord2003(data) : parseWord2007(data);
     }
 
-    private static int parseWord2007(String filePath) throws Exception {
-        XWPFDocument docx = new XWPFDocument(POIXMLDocument.openPackage(filePath));
-        return docx.getProperties().getExtendedProperties().getUnderlyingProperties().getPages();//总页数
+    private static int parseExcel(byte[] data) throws Exception {
+        int version = checkFileVersion(data);
+        return version == 2003 ? parseExcel2003(data) : parseExcel2007(data);
     }
 
-    private static int parseWord2003(String filePath) throws Exception {
-        WordExtractor doc = new WordExtractor(new FileInputStream(filePath));
-        return doc.getSummaryInformation().getPageCount();//总页数
+    private static int parsePPT(byte[] data) throws Exception {
+        InputStream input = new ByteArrayInputStream(data);
+        int version = checkFileVersion(data);
+        return version == 2003 ? parsePPT2003(data) : parsePPT2007(data);
     }
 
-    private static int parseExcel2007(String filePath) throws Exception {
-        XSSFWorkbook workbook = new XSSFWorkbook(POIXMLDocument.openPackage(filePath));
-        return workbook.getNumberOfSheets();
-    }
 
-    private static int parseExcel2003(String filePath) throws Exception {
-        HSSFWorkbook hs = new HSSFWorkbook(new POIFSFileSystem(new FileInputStream(filePath)));
-        return hs.getNumberOfSheets();
-    }
-
-    private static int parsePPT2007(String filePath) throws Exception {
-        XMLSlideShow ppt = new XMLSlideShow(POIXMLDocument.openPackage(filePath));
-        return ppt.getSlides().size();
-    }
-
-    private static int parsePPT2003(String filePath) throws Exception {
-        SlideShow ppt = new HSLFSlideShow(new FileInputStream(filePath));
-        return ppt.getSlides().size();
-    }
-
-    private static  int parsePDF(String filePath) throws IOException {
-        PDDocument doc = PDDocument.load(new File(filePath));
+    private static int parsePDF(byte[] data) throws IOException {
+        InputStream input = new ByteArrayInputStream(data);
+        PDDocument doc = PDDocument.load(input);
         return doc.getNumberOfPages();
     }
 
-    public static void main(String[] args) throws Exception {
-        String file="/Users/liuq/Downloads/b.doc";
-        int pageCount=GetDocPageCount(file);
+    private static int parseWord2007(byte[] data) throws Exception {
+        InputStream input = new ByteArrayInputStream(data);
+        XWPFDocument docx = new XWPFDocument(input);
+        return docx.getProperties().getExtendedProperties().getUnderlyingProperties().getPages();//总页数
+    }
+
+    private static int parseWord2003(byte[] data) throws Exception {
+        InputStream input = new ByteArrayInputStream(data);
+        WordExtractor doc = new WordExtractor(input);
+        return doc.getSummaryInformation().getPageCount();//总页数
+    }
+
+    private static int parseExcel2007(byte[] data) throws Exception {
+        InputStream input = new ByteArrayInputStream(data);
+        XSSFWorkbook workbook = new XSSFWorkbook(input);
+        return workbook.getNumberOfSheets();
+    }
+
+    private static int parseExcel2003(byte[] data) throws Exception {
+        InputStream input = new ByteArrayInputStream(data);
+        HSSFWorkbook hs = new HSSFWorkbook(input);
+        return hs.getNumberOfSheets();
+    }
+
+    private static int parsePPT2007(byte[] data) throws Exception {
+        InputStream input = new ByteArrayInputStream(data);
+        XMLSlideShow ppt = new XMLSlideShow(input);
+        return ppt.getSlides().size();
+    }
+
+    private static int parsePPT2003(byte[] data) throws Exception {
+        InputStream input = new ByteArrayInputStream(data);
+        SlideShow ppt = new HSLFSlideShow(input);
+        return ppt.getSlides().size();
     }
 }

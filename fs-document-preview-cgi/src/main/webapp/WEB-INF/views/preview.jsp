@@ -14,14 +14,14 @@
     <link href="<%=request.getContextPath()%>/static/bootstrap-combined.min.css" rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/font-awesome.css" rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/doc.css?v=1" rel="stylesheet">
+    <link href="<%=request.getContextPath()%>/static/loading.css" rel="stylesheet">
     <script>
         window.contextPath = "<%=request.getContextPath()%>";
     </script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/main.js?v=3"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/loading.js?v=6"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/main.js?v=14"></script>
 <body class="word-body">
-<div id="load-overlay">
-</div>
-<div id="content">
+<div id="divPages">
 </div>
 </body>

@@ -15,7 +15,8 @@ import java.io.File;
 @Component
 public class DocConvertor {
     private static final Logger LOG = LoggerFactory.getLogger(DocConvertor.class);
-    public String doConvert(String ea,String path, String baseDir, String name, byte[] bytes, int page) throws Exception {
+
+    public String doConvert(String ea, String path, String baseDir, String name, byte[] bytes, int page) throws Exception {
         PathHelper pathHelper = new PathHelper(ea);
         String tempFilePath = pathHelper.getTempFilePath(path, bytes);
         String extension = FilenameUtils.getExtension(path).toLowerCase();

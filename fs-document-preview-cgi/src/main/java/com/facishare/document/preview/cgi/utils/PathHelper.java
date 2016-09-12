@@ -27,12 +27,6 @@ public class PathHelper {
     public PathHelper() {
     }
 
-
-    public String getDataDir()
-    {
-        return this.dataDir;
-    }
-
     public String getConvertTempPath() {
         String convertorTempPath = String.format("%s/convertor/", tempDir);
         return convertorTempPath;
@@ -47,34 +41,11 @@ public class PathHelper {
         return tempFilePath;
     }
 
-    public String getSvgFolder(String path) throws IOException {
+    public String getDataFolder() throws IOException {
         String yyyyMM = DateUtil.getFormatDateStr("yyyyMM");
         String dd = DateUtil.getFormatDateStr("dd");
         String hh = DateUtil.getFormatDateStr("HH");
-        //创建根目录
-        String extension = FilenameUtils.getExtension(path).toLowerCase();
-        String type;
-        switch (extension) {
-            case "doc":
-            case "docx":
-                type = "word";
-                break;
-            case "xls":
-            case "xlsx":
-                type = "excel";
-                break;
-            case "ppt":
-            case "pptx":
-                type = "ppt";
-                break;
-            case "pdf":
-                type = "pdf";
-                break;
-            default:
-                type = "other";
-                break;
-        }
-        String dirPath = String.format("%s/%s/%s/%s/%s/%s/%s/%s", dataDir, "dps", yyyyMM, dd, hh, ea, type,SampleUUID.getUUID());
+        String dirPath = String.format("%s/%s/%s/%s/%s/%s/%s", dataDir, "dps", yyyyMM, dd, hh, ea, SampleUUID.getUUID());
         File dir = new File(dirPath);
         if (!dir.exists()) {
             dir.mkdirs();

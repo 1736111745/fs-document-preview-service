@@ -2,7 +2,7 @@ package com.facishare.document.preview.cgi.dao.impl;
 
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.PreviewInfo;
-import com.facishare.document.preview.cgi.model.SvgFileInfo;
+import com.facishare.document.preview.cgi.model.DataFileInfo;
 import com.facishare.document.preview.cgi.utils.DateUtil;
 import com.facishare.document.preview.cgi.utils.PathHelper;
 import com.github.mongo.support.DatastoreExt;
@@ -50,24 +50,24 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
             previewInfo.setPageCount(pageCount);
             List<String> svgs = new ArrayList<>();
             svgs.add(svgFileName);
-            previewInfo.setSvgList(svgs);
+            previewInfo.setFilePathList(svgs);
             dpsDataStore.insert("PreviewInfo", previewInfo);
             dpsDataStore.ensureIndexes();
         } else {
-            List<String> svgs = previewInfo.getSvgList();
-            if (svgs == null) {
-                svgs = new ArrayList<>();
-                svgs.add(svgFileName);
-                previewInfo.setSvgList(svgs);
+            List<String> filePathList = previewInfo.getFilePathList();
+            if (filePathList == null) {
+                filePathList = new ArrayList<>();
+                filePathList.add(svgFileName);
+                previewInfo.setFilePathList(filePathList);
                 UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
-                update.set("svgList", svgs);
+                update.set("filePathList", filePathList);
                 dpsDataStore.findAndModify(query, update);
             } else {
-                if (!svgs.contains(svgFileName)) {
-                    svgs.add(svgFileName);
-                    previewInfo.setSvgList(svgs);
+                if (!filePathList.contains(svgFileName)) {
+                    filePathList.add(svgFileName);
+                    previewInfo.setFilePathList(filePathList);
                     UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
-                    update.set("svgList", svgs);
+                    update.set("filePathList", filePathList);
                     dpsDataStore.findAndModify(query, update);
                 }
             }
@@ -75,32 +75,32 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     }
 
     @Override
-    public SvgFileInfo getSvgBaseDir(String path, int page, String ea) throws IOException {
-        SvgFileInfo svgFileInfo = new SvgFileInfo();
+    public DataFileInfo getDataFileInfo(String path, int page, String ea) throws IOException {
+        DataFileInfo dataFileInfo = new DataFileInfo();
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("path").equal(path);
         PreviewInfo previewInfo = getInfoByPath(path);
         if (previewInfo != null) {
             String baseDir = previewInfo.getBaseDir();
-            svgFileInfo.setBaseDir(baseDir);
-            String extension=FilenameUtils.getExtension(path).toLowerCase().equals("pdf")?"png":"svg";
-            String svgFileName = previewInfo.getSvgList().stream().filter(x -> x.equals((page + 1) +extension)).findFirst().orElse("");
-            if (!svgFileName.equals("")) {
-                String filePath = previewInfo.getFolderName() + "/" + svgFileName;
-                svgFileInfo.setFilePath(filePath);
+            dataFileInfo.setBaseDir(baseDir);
+            String extension = FilenameUtils.getExtension(path).toLowerCase().equals("pdf") ? ".png" : ".svg";
+            String dataFileName = previewInfo.getFilePathList().stream().filter(x -> x.equals((page + 1) + extension)).findFirst().orElse("");
+            if (!dataFileName.equals("")) {
+                String filePath = previewInfo.getFolderName() + "/" + dataFileName;
+                dataFileInfo.setFilePath(filePath);
             } else {
-                svgFileInfo.setFilePath("");
+                dataFileInfo.setFilePath("");
             }
         } else {
-            String baseDir = new PathHelper(ea).getSvgFolder(path);
-            svgFileInfo.setBaseDir(baseDir);
-            svgFileInfo.setFilePath("");
+            String baseDir = new PathHelper(ea).getDataFolder();
+            dataFileInfo.setBaseDir(baseDir);
+            dataFileInfo.setFilePath("");
         }
-        return svgFileInfo;
+        return dataFileInfo;
     }
 
     @Override
-    public String getSvgBaseDir(String folderName) {
+    public String getDataFileInfo(String folderName) {
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("folderName").equal(folderName);
         PreviewInfo previewInfo= query.get();

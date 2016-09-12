@@ -3,7 +3,7 @@ package com.facishare.document.preview.cgi.model;
 /**
  * Created by liuq on 16/9/6.
  */
-public class SvgFileInfo {
+public class DataFileInfo {
     public String getBaseDir() {
         return baseDir;
     }

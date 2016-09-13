@@ -1,6 +1,5 @@
 package com.facishare.document.preview.cgi.controller;
 
-import com.facishare.document.preview.cgi.dao.FileTokenDao;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.fsi.proxy.model.warehouse.n.fileupload.NUploadFileDirect;
 import com.facishare.fsi.proxy.service.NFileStorageService;
@@ -34,10 +33,7 @@ import java.util.Properties;
 @Controller
 @RequestMapping("/")
 public class IndexController {
-    @Autowired
-    FileTokenDao fileTokenDao;
     private static final Logger LOG = LoggerFactory.getLogger(PreviewController.class);
-
     @RequestMapping(method = RequestMethod.GET)
     public void index(HttpServletResponse response) throws IOException {
         PrintWriter printWriter = response.getWriter();
@@ -96,8 +92,4 @@ public class IndexController {
 
     }
 
-    @RequestMapping("/scroll")
-    public String scroll() {
-        return "scroll";
-    }
 }

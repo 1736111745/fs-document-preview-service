@@ -30,10 +30,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.net.FileNameMap;
+import java.net.URLConnection;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.HashMap;
 import java.util.Map;
+
 
 /**
  * Created by liuq on 16/8/5.
@@ -132,7 +135,7 @@ public class PreviewController {
                 return getPreviewInfoResult(false, 0, "该文件不可以预览!");
             }
         }
-        pageCount=previewInfo.getPageCount();
+        pageCount = previewInfo.getPageCount();
         if (pageCount == 0) {
             return getPreviewInfoResult(false, 0, "该文件不可以预览!");
         }
@@ -155,8 +158,8 @@ public class PreviewController {
             return getFilePathResult(true, dataFileInfo.getShortFilePath());
 
         } else {
-            String originalFilePath=dataFileInfo.getOriginalFilePath();
-            byte[] bytes=FileUtils.readFileToByteArray(new File(originalFilePath));
+            String originalFilePath = dataFileInfo.getOriginalFilePath();
+            byte[] bytes = FileUtils.readFileToByteArray(new File(originalFilePath));
             String dataFilePath = docConvertor.doConvert(employeeInfo.getEa(), path, dataFileInfo.getDataDir(), name, bytes, pageIndex);
             if (!dataFilePath.equals("")) {
                 previewInfoDao.create(path, dataFileInfo.getDataDir(), dataFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length, pageCnt);
@@ -172,15 +175,9 @@ public class PreviewController {
     public void getStatic(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
         String baseDir = previewInfoDao.getBaseDir(folder);
         String filePath = baseDir + "/" + fileName;
-        if (fileName.toLowerCase().contains(".jpg")) {
-            response.setContentType("image/jpg");
-        } else if (fileName.toLowerCase().contains(".js")) {
-            response.setContentType("application/javascript");
-        } else if (fileName.toLowerCase().contains(".css")) {
-            response.setContentType("text/css");
-        } else if (fileName.toLowerCase().contains(".svg")) {
-            response.setContentType("image/svg+xml");
-        }
+        FileNameMap fileNameMap = URLConnection.getFileNameMap();
+        String type = fileNameMap.getContentTypeFor(filePath);
+        response.setContentType(type);
         outPut(response, filePath);
     }
 

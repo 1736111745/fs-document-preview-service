@@ -47,6 +47,7 @@ function loadData(pageIndex) {
     page.append(content);
     $.ajax({
         type: 'get',
+        timeout : 1800000,
         dataType: 'json',
         async: true,
         url: window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + pageIndex + "&pageCount=" + pageCount,
@@ -63,8 +64,11 @@ function loadData(pageIndex) {
                 content.append(data);
             }
             else {
-                pageCount = loaded;
+                content.remove();
             }
+        },
+        error:function () {
+            content.remove();
         }
     });
 }

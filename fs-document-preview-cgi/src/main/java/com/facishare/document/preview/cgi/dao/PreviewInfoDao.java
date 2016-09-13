@@ -1,6 +1,7 @@
 package com.facishare.document.preview.cgi.dao;
 
 import com.facishare.document.preview.cgi.model.DataFileInfo;
+import com.facishare.document.preview.cgi.model.PreviewInfo;
 
 import java.io.IOException;
 
@@ -9,11 +10,14 @@ import java.io.IOException;
  */
 public interface PreviewInfoDao {
 
-    void create(String path,String baseDir, String svgFilePath, String ea, int employeeId, long docSize,int pageCount) throws IOException;
+    void create(String path, String baseDir, String svgFilePath, String ea, int employeeId, long docSize, int pageCount) throws IOException;
 
-     DataFileInfo getDataFileInfo(String path, int page, String ea) throws IOException;
+    DataFileInfo getDataFileInfo(String path, int page, String ea) throws IOException;
 
-    String getDataFileInfo(String folderName);
+    String getBaseDir(String folderName);
 
-    int getPageCount(String path);
+    void initPreviewInfo(String path, String originalFilePath, String dataDir, long docSize, int pageCount, String ea, int employeeId);
+
+    PreviewInfo getInfoByPath(String path);
+
 }

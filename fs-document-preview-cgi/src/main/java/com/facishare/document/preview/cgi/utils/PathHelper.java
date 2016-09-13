@@ -41,7 +41,7 @@ public class PathHelper {
         return tempFilePath;
     }
 
-    public String getDataFolder() throws IOException {
+    public String getDataDir() throws IOException {
         String yyyyMM = DateUtil.getFormatDateStr("yyyyMM");
         String dd = DateUtil.getFormatDateStr("dd");
         String hh = DateUtil.getFormatDateStr("HH");

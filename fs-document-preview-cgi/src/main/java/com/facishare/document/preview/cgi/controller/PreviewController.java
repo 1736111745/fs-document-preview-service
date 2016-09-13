@@ -5,15 +5,15 @@ import com.alibaba.fastjson.JSONObject;
 import com.facishare.document.preview.cgi.convertor.DocConvertor;
 import com.facishare.document.preview.cgi.dao.FileTokenDao;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
-import com.facishare.document.preview.cgi.model.DataFileInfo;
-import com.facishare.document.preview.cgi.model.DownloadFileTokens;
-import com.facishare.document.preview.cgi.model.EmployeeInfo;
-import com.facishare.document.preview.cgi.model.PreviewWayEntity;
+import com.facishare.document.preview.cgi.model.*;
 import com.facishare.document.preview.cgi.utils.DocPageCalculator;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
+import com.facishare.document.preview.cgi.utils.PathHelper;
+import com.facishare.document.preview.cgi.utils.SampleUUID;
 import com.fxiaoke.release.FsGrayRelease;
 import com.fxiaoke.release.FsGrayReleaseBiz;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
@@ -92,11 +93,8 @@ public class PreviewController {
         String token = safteGetRequestParameter(request, "token");
         String name = safteGetRequestParameter(request, "name");
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        Map<String, Object> map = new HashMap<>();
         if (path.equals("") && token.equals("")) {
-            map.put("canPreview", false);
-            map.put("errorMsg", "参数错误!");
-            return JSONObject.toJSONString(map);
+            return getPreviewInfoResult(false, 0, "参数错误!");
         }
         if (!token.equals("")) {
             DownloadFileTokens fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
@@ -108,45 +106,37 @@ public class PreviewController {
             }
         }
         if (path.isEmpty()) {
-            map.put("canPreview", false);
-            map.put("errorMsg", "参数错误!");
-            return JSONObject.toJSONString(map);
+            return getPreviewInfoResult(false, 0, "参数错误!");
         }
         String extension = FilenameUtils.getExtension(path).toLowerCase();
         if (allowPreviewExtension.indexOf(extension) == -1) {
-            map.put("canPreview", false);
-            map.put("errorMsg", "该文件不可以预览!");
-            return JSONObject.toJSONString(map);
+            return getPreviewInfoResult(false, 0, "该文件不可以预览!");
         }
-        int pageCount = previewInfoDao.getPageCount(path);
-        if (pageCount == 0) {
+        PreviewInfo previewInfo = previewInfoDao.getInfoByPath(path);
+        int pageCount = 0;
+        if (previewInfo == null) {
             try {
                 byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo);
                 if (bytes == null || bytes.length == 0) {
-                    map.put("canPreview", false);
-                    map.put("errorMsg", "文件无法找到或者损坏!");
-                    return JSONObject.toJSONString(map);
+                    return getPreviewInfoResult(false, 0, "文件无法找到或者损坏!");
                 }
+                String dataDir = new PathHelper(employeeInfo.getEa()).getDataDir();
+                String fileName = SampleUUID.getUUID() + "." + extension;
+                String filePath = FilenameUtils.concat(dataDir, fileName);
+                FileUtils.writeByteArrayToFile(new File(filePath), bytes);
                 pageCount = DocPageCalculator.GetDocPageCount(bytes, path);
+                previewInfoDao.initPreviewInfo(path, filePath, dataDir, bytes.length, pageCount, employeeInfo.getEa(), employeeInfo.getEmployeeId());
+                return getPreviewInfoResult(true, pageCount, "");
             } catch (Exception ex) {
                 LOG.error("get page count", ex);
-                map.put("canPreview", false);
-                map.put("errorMsg", "该文件不可以预览!");
-                return JSONObject.toJSONString(map);
+                return getPreviewInfoResult(false, 0, "该文件不可以预览!");
             }
         }
+        pageCount=previewInfo.getPageCount();
         if (pageCount == 0) {
-            map.put("canPreview", false);
-            map.put("errorMsg", "该文件不可以预览!");
-            return JSONObject.toJSONString(map);
+            return getPreviewInfoResult(false, 0, "该文件不可以预览!");
         }
-        name = name.equals("") ? path : name;
-        int type = extension.equals("pdf") ? 2 : 1;
-        map.put("canPreview", true);
-        map.put("pageCount", pageCount);
-        map.put("path", path);
-        map.put("type", type);
-        return JSONObject.toJSONString(map);
+        return getPreviewInfoResult(true, pageCount, "");
     }
 
 
@@ -161,33 +151,26 @@ public class PreviewController {
         int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         DataFileInfo dataFileInfo = previewInfoDao.getDataFileInfo(path, pageIndex, employeeInfo.getEa());
-        if (!dataFileInfo.getFilePath().equals("")) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("filePath", dataFileInfo.getFilePath());
-            map.put("successed", true);
-            return JSONObject.toJSONString(map);
+        if (!dataFileInfo.getShortFilePath().equals("")) {
+            return getFilePathResult(true, dataFileInfo.getShortFilePath());
 
         } else {
-            byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo);
-            String dataFilePath = docConvertor.doConvert(employeeInfo.getEa(), path, dataFileInfo.getBaseDir(), name, bytes, pageIndex);
+            String originalFilePath=dataFileInfo.getOriginalFilePath();
+            byte[] bytes=FileUtils.readFileToByteArray(new File(originalFilePath));
+            String dataFilePath = docConvertor.doConvert(employeeInfo.getEa(), path, dataFileInfo.getDataDir(), name, bytes, pageIndex);
             if (!dataFilePath.equals("")) {
-                previewInfoDao.create(path, dataFileInfo.getBaseDir(), dataFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length, pageCnt);
-                Map<String, Object> map = new HashMap<>();
-                map.put("filePath", dataFilePath);
-                map.put("successed", true);
-                return JSONObject.toJSONString(map);
+                previewInfoDao.create(path, dataFileInfo.getDataDir(), dataFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length, pageCnt);
+                return getFilePathResult(true, dataFilePath);
             } else {
                 LOG.warn("path:{} can't do preview", path);
-                Map<String, Object> map = new HashMap<>();
-                map.put("successed", false);
-                return JSONObject.toJSONString(map);
+                return getFilePathResult(false, "");
             }
         }
     }
 
     @RequestMapping("/preview/{folder}/{fileName:.+}")
     public void getStatic(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
-        String baseDir = previewInfoDao.getDataFileInfo(folder);
+        String baseDir = previewInfoDao.getBaseDir(folder);
         String filePath = baseDir + "/" + fileName;
         if (fileName.toLowerCase().contains(".jpg")) {
             response.setContentType("image/jpg");
@@ -217,6 +200,24 @@ public class PreviewController {
     private String safteGetRequestParameter(HttpServletRequest request, String paramName) {
         String value = request.getParameter(paramName) == null ? "" : request.getParameter(paramName).trim();
         return value;
+    }
+
+    private String getPreviewInfoResult(boolean canPreview, int pageCount, String errorMsg) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("canPreview", canPreview);
+        if (canPreview)
+            map.put("pageCount", pageCount);
+        else
+            map.put("errorMsg", errorMsg);
+        return JSONObject.toJSONString(map);
+    }
+
+    private String getFilePathResult(boolean successed, String filePath) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("successed", successed);
+        if (!filePath.equals(""))
+            map.put("filePath", filePath);
+        return JSONObject.toJSONString(map);
     }
 }
 

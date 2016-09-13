@@ -4,22 +4,32 @@ package com.facishare.document.preview.cgi.model;
  * Created by liuq on 16/9/6.
  */
 public class DataFileInfo {
-    public String getBaseDir() {
-        return baseDir;
+
+    private String dataDir;
+    private String shortFilePath;
+    private String originalFilePath;
+
+    public String getDataDir() {
+        return dataDir;
     }
 
-    public void setBaseDir(String baseDir) {
-        this.baseDir = baseDir;
+    public void setDataDir(String dataDir) {
+        this.dataDir = dataDir;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public String getShortFilePath() {
+        return shortFilePath;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setShortFilePath(String shortFilePath) {
+        this.shortFilePath = shortFilePath;
     }
 
-    private String baseDir;
-    private String filePath;
+    public String getOriginalFilePath() {
+        return originalFilePath;
+    }
+
+    public void setOriginalFilePath(String originalFilePath) {
+        this.originalFilePath = originalFilePath;
+    }
 }

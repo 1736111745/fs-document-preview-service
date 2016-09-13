@@ -27,21 +27,23 @@ public class PreviewInfo {
 
     private int pageCount;
 
-    public String getFolderName() {
-        return folderName;
+    public String getDirName() {
+        return dirName;
     }
 
-    public void setFolderName(String folderName) {
-        this.folderName = folderName;
+    public void setDirName(String dirName) {
+        this.dirName = dirName;
     }
 
-    private String folderName;
+    private String dirName;
 
-    private String baseDir;
+    private String dataDir;
 
     private long employeeId;
 
     private long docSize;//原始大小
+
+    private String originalFilePath;//原始文件
 
     private List<String> filePathList;
 
@@ -109,12 +111,12 @@ public class PreviewInfo {
         this.filePathList = filePathList;
     }
 
-    public String getBaseDir() {
-        return baseDir;
+    public String getDataDir() {
+        return dataDir;
     }
 
-    public void setBaseDir(String baseDir) {
-        this.baseDir = baseDir;
+    public void setDataDir(String dataDir) {
+        this.dataDir = dataDir;
     }
 
     public int getPageCount() {
@@ -123,5 +125,13 @@ public class PreviewInfo {
 
     public void setPageCount(int pageCount) {
         this.pageCount = pageCount;
+    }
+
+    public String getOriginalFilePath() {
+        return originalFilePath;
+    }
+
+    public void setOriginalFilePath(String originalFilePath) {
+        this.originalFilePath = originalFilePath;
     }
 }

@@ -64,11 +64,11 @@ function loadData(pageIndex) {
                 content.append(data);
             }
             else {
-                content.remove();
+                page.remove();
             }
         },
         error:function () {
-            content.remove();
+            page.remove();
         }
     });
 }

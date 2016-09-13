@@ -4,7 +4,8 @@
 var path = getQueryStringByName("path");
 var loaded = 0;
 var pageCount = 0;
-var type = 1;
+var maxWidth=893;
+var type=1;
 function getPreviewInfo() {
     $.ajax({
         type: 'get',
@@ -14,7 +15,6 @@ function getPreviewInfo() {
         success: function (data) {
             if (data.canPreview) {
                 pageCount = data.pageCount;
-                type = data.type;
                 loadFirst();
             }
             else {
@@ -40,7 +40,7 @@ function loadData(pageIndex) {
     if(content.length>0) return;
     loaded++;
     var img=$("<img src='"+window.contextPath+"/static/loading.gif' width='100%' height='100%'>");
-    var page = $("<div class='word-page' style='max-width:893px'></div>");
+    var page = $("<div class='word-page' style='max-width:"+maxWidth+"px'></div>");
     content=$("<div class='word-content'  id='"+contentId+"'></div>");
     content.append(img);
     $("#divPages").append(page);
@@ -54,10 +54,8 @@ function loadData(pageIndex) {
         },
         success: function (data) {
             if (data.successed) {
-                var maxWidth = 793;
                 var dataSrc = "<embed src='" + window.contextPath + "/preview/" + data.filePath + "' width='100%' height='100%' type='image/svg+xml'></embed>"
                 if (type == 2) {
-                    maxWidth = 893
                     dataSrc = "<img src='" + window.contextPath + "/preview/" + data.filePath + "' width='100%' height='100%'>";
                 }
                 var data=$(dataSrc);
@@ -94,6 +92,8 @@ function scrollEvent() {
 
 //入口
 $(document).ready(function () {
+    type = path.indexOf(".pdf")>0?2:1;
+    maxWidth=type==1?793:893;
     getPreviewInfo();
     scrollEvent();
 });

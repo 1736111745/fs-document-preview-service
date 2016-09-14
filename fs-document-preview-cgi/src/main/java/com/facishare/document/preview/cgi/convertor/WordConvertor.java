@@ -17,16 +17,18 @@ public class WordConvertor implements IDocConvertor {
     public String convert(int page1, int page2,String filePath, String baseDir) throws Exception {
         ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
         try {
+            int exceptWidth=793;
             LOG.info("begin get IPICConvertor");
             IPICConvertor ipicConvertor = convertobj.convertor.convertMStoPic(filePath);
             LOG.info("end get IPICConvertor");
             int resultcode = ipicConvertor.resultCode();
             if (resultcode == 0) {
-                String fileName = (page1 + 1) + ".svg";
+                String fileName = (page1 + 1) + ".png";
                 String imageFilePath = baseDir + "/" + fileName;
                 LOG.info("begin get svg,folder:{}", baseDir);
-                float sacle=1.0f;
-                int code=ipicConvertor.convertToSVG(page1, page2, sacle, baseDir);
+                float width=ipicConvertor.getAllpageWHeigths()[page1][0];
+                float sacle=exceptWidth/width;
+                int code=ipicConvertor.convertToPNG(page1, page2, 1.0f, baseDir);
                 LOG.info("end get svg,folder:{},code:{}", baseDir,code);
                 ipicConvertor.close();
                 File file = new File(imageFilePath);

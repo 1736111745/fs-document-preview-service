@@ -17,7 +17,7 @@ function getPreviewInfo() {
             if (data.canPreview) {
                 pageCount = data.pageCount;
                 path=data.path;
-                type = path.toLowerCase().indexOf(".pdf")>0?2:1;
+                type = path.toLowerCase().indexOf(".pdf")>0?2:2;
                 maxWidth=type==1?793:893;
                 loadFirst();
             }

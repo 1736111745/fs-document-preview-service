@@ -17,7 +17,7 @@
         window.contextPath = "<%=request.getContextPath()%>";
     </script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/main.js?v=0.6"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/main.js?v=0.8"></script>
 <body class="word-body">
 <div id="divPages">
 </div>

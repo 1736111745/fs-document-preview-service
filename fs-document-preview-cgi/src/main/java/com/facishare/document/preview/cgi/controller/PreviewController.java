@@ -115,7 +115,7 @@ public class PreviewController {
         }
         String extension = FilenameUtils.getExtension(path).toLowerCase();
         if (allowPreviewExtension.indexOf(extension) == -1) {
-            return getPreviewInfoResult(false, 0,"","该文件不可以预览!");
+            return getPreviewInfoResult(false, 0, "", "该文件不可以预览!");
         }
         PreviewInfo previewInfo = previewInfoDao.getInfoByPath(path);
         int pageCount;
@@ -161,10 +161,10 @@ public class PreviewController {
 
         } else {
             String originalFilePath = dataFileInfo.getOriginalFilePath();
-            byte[] bytes = FileUtils.readFileToByteArray(new File(originalFilePath));
-            String dataFilePath = docConvertor.doConvert(employeeInfo.getEa(), path, dataFileInfo.getDataDir(), name, bytes, pageIndex);
+            File file=new File(originalFilePath);
+            String dataFilePath = docConvertor.doConvert(employeeInfo.getEa(), path, dataFileInfo.getDataDir(), name, originalFilePath, pageIndex);
             if (!dataFilePath.equals("")) {
-                previewInfoDao.create(path, dataFileInfo.getDataDir(), dataFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), bytes.length, pageCnt);
+                previewInfoDao.create(path, dataFileInfo.getDataDir(), dataFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), file.length(), pageCnt);
                 return getFilePathResult(true, dataFilePath);
             } else {
                 LOG.warn("path:{} can't do preview", path);

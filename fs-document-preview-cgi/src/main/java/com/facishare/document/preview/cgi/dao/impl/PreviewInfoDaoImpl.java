@@ -30,8 +30,8 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     private DatastoreExt dpsDataStore;
 
     @Override
-    public void create(String path, String baseDir, String svgFilePath, String ea, int employeeId, long docSize, int pageCount) throws IOException {
-        String svgFileName = FilenameUtils.getName(svgFilePath);
+    public void create(String path, String baseDir, String dataFilePath, String ea, int employeeId, long docSize, int pageCount) throws IOException {
+        String dataFileName = FilenameUtils.getName(dataFilePath);
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("path").equal(path);
         PreviewInfo previewInfo = query.get();
@@ -48,7 +48,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
             previewInfo.setPath(path);
             previewInfo.setPageCount(pageCount);
             List<String> svgs = new ArrayList<>();
-            svgs.add(svgFileName);
+            svgs.add(dataFileName);
             previewInfo.setFilePathList(svgs);
             dpsDataStore.insert("PreviewInfo", previewInfo);
             dpsDataStore.ensureIndexes();
@@ -56,14 +56,14 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
             List<String> filePathList = previewInfo.getFilePathList();
             if (filePathList == null) {
                 filePathList = new ArrayList<>();
-                filePathList.add(svgFileName);
+                filePathList.add(dataFileName);
                 previewInfo.setFilePathList(filePathList);
                 UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
                 update.set("filePathList", filePathList);
                 dpsDataStore.findAndModify(query, update);
             } else {
-                if (!filePathList.contains(svgFileName)) {
-                    filePathList.add(svgFileName);
+                if (!filePathList.contains(dataFileName)) {
+                    filePathList.add(dataFileName);
                     previewInfo.setFilePathList(filePathList);
                     UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
                     update.set("filePathList", filePathList);

@@ -12,13 +12,6 @@
     <mvc:annotation-driven />
     <mvc:resources mapping="/static/**" location="WEB-INF/views/static/" cache-period="31556926"/>
     <aop:aspectj-autoproxy/>
-    <!--<mvc:interceptors>-->
-        <!--<mvc:interceptor>-->
-            <!--<mvc:mapping path="/preview/getPreviewInfo" />-->
-            <!--<mvc:mapping path="/preview/getFilePath" />-->
-            <!--<bean id="stopWatchHandlerInterceptor" class="com.facishare.document.preview.cgi.aop.StopWatchHandlerInterceptor" />-->
-        <!--</mvc:interceptor>-->
-    <!--</mvc:interceptors>-->
     <bean id="fileProxy" class="com.facishare.document.preview.cgi.utils.FileStorageProxy"/>
     <bean id="previewInfoDao" class="com.facishare.document.preview.cgi.dao.impl.PreviewInfoDaoImpl"/>
     <bean id="fileTokenDao" class="com.facishare.document.preview.cgi.dao.impl.FileTokenDaoImpl"/>

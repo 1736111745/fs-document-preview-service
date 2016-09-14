@@ -20,22 +20,6 @@
             <CleanHistoryOnStart>true</CleanHistoryOnStart>
         </rollingPolicy>
     </appender>
-
-
-    <appender name="log-cost" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_DIR}/fs-cost.log</file>
-        <encoder>
-            <pattern>${COMMON_PATTERN}</pattern>
-        </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <FileNamePattern>${LOG_DIR}/fs-cost-%d{yyyy-MM-dd}.log</FileNamePattern>
-            <MaxHistory>30</MaxHistory>
-            <CleanHistoryOnStart>true</CleanHistoryOnStart>
-        </rollingPolicy>
-    </appender>
-
-
-
     <appender name="trace" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <File>${LOG_DIR}/fs-trace.log</File>
         <encoder>
@@ -51,9 +35,6 @@
     <!-- - - - - - - - logger - - - - - - -  -->
     <logger name="com.facishare.document.preview.cgi" level="INFO" additivity="true">
         <appender-ref ref="log-common-file"/>
-    </logger>
-    <logger name="com.facishare.document.preview.cgi.aop.StopWatchHandlerInterceptor" level="INFO" additivity="false">
-        <appender-ref ref="log-cost"/>
     </logger>
     <logger name="com.github.trace" level="INFO" additivity="false">
         <appender-ref ref="trace" />

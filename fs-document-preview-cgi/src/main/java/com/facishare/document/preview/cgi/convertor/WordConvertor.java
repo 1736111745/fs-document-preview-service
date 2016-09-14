@@ -17,7 +17,6 @@ public class WordConvertor implements IDocConvertor {
     public String convert(int page1, int page2,String filePath, String baseDir) throws Exception {
         ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
         try {
-            int exceptWidth=793;
             LOG.info("begin get IPICConvertor");
             IPICConvertor ipicConvertor = convertobj.convertor.convertMStoPic(filePath);
             LOG.info("end get IPICConvertor");
@@ -26,8 +25,7 @@ public class WordConvertor implements IDocConvertor {
                 String fileName = (page1 + 1) + ".svg";
                 String imageFilePath = baseDir + "/" + fileName;
                 LOG.info("begin get svg,folder:{}", baseDir);
-                float width=ipicConvertor.getAllpageWHeigths()[page1][0];
-                float sacle=exceptWidth/width;
+                float sacle=1.0f;
                 int code=ipicConvertor.convertToSVG(page1, page2, sacle, baseDir);
                 LOG.info("end get svg,folder:{},code:{}", baseDir,code);
                 ipicConvertor.close();

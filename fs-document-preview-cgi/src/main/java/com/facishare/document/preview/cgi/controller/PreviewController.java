@@ -104,6 +104,7 @@ public class PreviewController {
             DownloadFileTokens fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
             if (fileToken != null && fileToken.getFileType().toLowerCase().equals("preview")) {
                 {
+                    LOG.info("token info:{}",JSONObject.toJSONString(fileToken));
                     path = fileToken.getFilePath() == null ? "" : fileToken.getFilePath().trim();
                     securityGroup=fileToken.getDownloadSecurityGroup();
                     name = fileToken.getFileName() == null ? "" : fileToken.getFileName().trim();

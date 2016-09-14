@@ -5,8 +5,6 @@ import com.facishare.document.preview.cgi.model.DownloadFileTokens;
 import com.facishare.document.preview.cgi.model.FileTokenFields;
 import com.github.mongo.support.DatastoreExt;
 import org.mongodb.morphia.query.Query;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -15,9 +13,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class FileTokenDaoImpl implements FileTokenDao {
-
-    private static final Logger LOG = LoggerFactory.getLogger(FileTokenDaoImpl.class);
-
     @Autowired
     private DatastoreExt shareContentDataStore;
 
@@ -27,7 +22,6 @@ public class FileTokenDaoImpl implements FileTokenDao {
         query.field(FileTokenFields.EA).equal(ea)
                 .field(FileTokenFields.fileToken).equal(fileToken)
                 .field(FileTokenFields.downloadUser).equal(downloadUesr);
-        LOG.info(query.toString());
         return query.get();
     }
 }

@@ -95,33 +95,35 @@ public class PreviewController {
         String path = safteGetRequestParameter(request, "path");
         String token = safteGetRequestParameter(request, "token");
         String name = safteGetRequestParameter(request, "name");
+        String securityGroup="";
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         if (path.equals("") && token.equals("")) {
-            return getPreviewInfoResult(false, 0, "参数错误!");
+            return getPreviewInfoResult(false, 0,"", "参数错误!");
         }
         if (!token.equals("")) {
             DownloadFileTokens fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
             if (fileToken != null && fileToken.getFileType().toLowerCase().equals("preview")) {
                 {
                     path = fileToken.getFilePath() == null ? "" : fileToken.getFilePath().trim();
+                    securityGroup=fileToken.getDownloadSecurityGroup();
                     name = fileToken.getFileName() == null ? "" : fileToken.getFileName().trim();
                 }
             }
         }
         if (path.isEmpty()) {
-            return getPreviewInfoResult(false, 0, "参数错误!");
+            return getPreviewInfoResult(false, 0, "","参数错误!");
         }
         String extension = FilenameUtils.getExtension(path).toLowerCase();
         if (allowPreviewExtension.indexOf(extension) == -1) {
-            return getPreviewInfoResult(false, 0, "该文件不可以预览!");
+            return getPreviewInfoResult(false, 0,"","该文件不可以预览!");
         }
         PreviewInfo previewInfo = previewInfoDao.getInfoByPath(path);
-        int pageCount = 0;
+        int pageCount;
         if (previewInfo == null) {
             try {
-                byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo);
+                byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo,securityGroup);
                 if (bytes == null || bytes.length == 0) {
-                    return getPreviewInfoResult(false, 0, "文件无法找到或者损坏!");
+                    return getPreviewInfoResult(false, 0, "","文件无法找到或者损坏!");
                 }
                 String dataDir = new PathHelper(employeeInfo.getEa()).getDataDir();
                 String fileName = SampleUUID.getUUID() + "." + extension;
@@ -129,17 +131,17 @@ public class PreviewController {
                 FileUtils.writeByteArrayToFile(new File(filePath), bytes);
                 pageCount = DocPageCalculator.GetDocPageCount(bytes, path);
                 previewInfoDao.initPreviewInfo(path, filePath, dataDir, bytes.length, pageCount, employeeInfo.getEa(), employeeInfo.getEmployeeId());
-                return getPreviewInfoResult(true, pageCount, "");
+                return getPreviewInfoResult(true, pageCount,path, "");
             } catch (Exception ex) {
                 LOG.error("get page count", ex);
-                return getPreviewInfoResult(false, 0, "该文件不可以预览!");
+                return getPreviewInfoResult(false, 0, "","该文件不可以预览!");
             }
         }
         pageCount = previewInfo.getPageCount();
         if (pageCount == 0) {
-            return getPreviewInfoResult(false, 0, "该文件不可以预览!");
+            return getPreviewInfoResult(false, 0,"", "该文件不可以预览!");
         }
-        return getPreviewInfoResult(true, pageCount, "");
+        return getPreviewInfoResult(true, pageCount,path, "");
     }
 
 
@@ -199,11 +201,13 @@ public class PreviewController {
         return value;
     }
 
-    private String getPreviewInfoResult(boolean canPreview, int pageCount, String errorMsg) {
+    private String getPreviewInfoResult(boolean canPreview, int pageCount,String path, String errorMsg) {
         Map<String, Object> map = new HashMap<>();
         map.put("canPreview", canPreview);
-        if (canPreview)
+        if (canPreview) {
             map.put("pageCount", pageCount);
+            map.put("path",path);
+        }
         else
             map.put("errorMsg", errorMsg);
         return JSONObject.toJSONString(map);

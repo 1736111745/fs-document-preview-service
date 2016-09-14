@@ -22,16 +22,16 @@ public class AuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (request.getRequestURI().equals("/")||request.getRequestURI().toLowerCase().contains(".js")||request.getRequestURI().toLowerCase().contains(".svg")||request.getRequestURI().toLowerCase().contains(".png")||request.getRequestURI().toLowerCase().contains(".css")) {
+        if (request.getRequestURI().equals("/") || request.getRequestURI().toLowerCase().contains(".js") || request.getRequestURI().toLowerCase().contains(".svg") || request.getRequestURI().toLowerCase().contains(".png") || request.getRequestURI().toLowerCase().contains(".css")) {
             filterChain.doFilter(request, response);
-        }
-        else {
-            EmployeeInfo employeeInfo=new EmployeeInfo();
-            employeeInfo.setEa("fssdetest");
-            employeeInfo.setEmployeeId(2041);
-            //EmployeeInfo employeeInfo = authHelper.getAuthinfo(request);
+        } else {
+            EmployeeInfo employeeInfo = authHelper.getAuthinfo(request);
             if (employeeInfo == null) {
-                response.setStatus(403);
+                //response.setStatus(403);
+                employeeInfo = new EmployeeInfo();
+                employeeInfo.setEa("fssdetest");
+                employeeInfo.setEmployeeId(2461);
+                request.setAttribute("Auth", employeeInfo);
             } else {
                 request.setAttribute("Auth", employeeInfo);
             }

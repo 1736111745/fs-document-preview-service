@@ -25,25 +25,25 @@ public class FileStorageProxy {
     @Autowired
     GFileStorageService gFileStorageService;
 
-    public byte[] GetBytesByPath(String path, EmployeeInfo employeeInfo) {
+    public byte[] GetBytesByPath(String path, EmployeeInfo employeeInfo,String securityGroup) {
         try {
             if (path.startsWith("G_")) {
                 GFileDownload.Arg arg = new GFileDownload.Arg();
                 arg.downloadUser = employeeInfo.getSourceUser();
-                arg.downloadSecurityGroup = "";
+                arg.downloadSecurityGroup = securityGroup;
                 arg.gPath = path;
                 return gFileStorageService.downloadFile(arg).data;
             } else if (path.startsWith("A_")) {
                 ADownloadFile.Arg arg = new ADownloadFile.Arg();
                 arg.setaPath(path);
                 arg.setBusiness("Preview");
-                arg.setFileSecurityGroup("");
+                arg.setFileSecurityGroup(securityGroup);
                 arg.setUser(new User(employeeInfo.getEmployeeAccount(), employeeInfo.getEmployeeId()));
                 return aFileStorageService.downloadFile(arg).getData();
             } else {
                 NDownloadFile.Arg arg = new NDownloadFile.Arg();
                 arg.setnPath(path);
-                arg.setDownloadSecurityGroup("");
+                arg.setDownloadSecurityGroup(securityGroup);
                 arg.setDownloadUser(employeeInfo.getSourceUser());
                 arg.setEa(employeeInfo.getEa());
                 return nFileStorageService.nDownloadFile(arg, employeeInfo.getEa()).getData();

@@ -2,6 +2,7 @@
  * Created by liuq on 16/9/8.
  */
 var path = getQueryStringByName("path");
+var token=getQueryStringByName("token");
 var loaded = 0;
 var pageCount = 0;
 var maxWidth=893;
@@ -11,10 +12,13 @@ function getPreviewInfo() {
         type: 'get',
         dataType: 'json',
         async: false,
-        url: window.contextPath + '/preview/getPreviewInfo?path=' + path,
+        url: window.contextPath + '/preview/getPreviewInfo?path=' + path+'&token='+token,
         success: function (data) {
             if (data.canPreview) {
                 pageCount = data.pageCount;
+                path=data.path;
+                type = path.indexOf(".pdf")>0?2:1;
+                maxWidth=type==1?793:893;
                 loadFirst();
             }
             else {
@@ -96,8 +100,6 @@ function scrollEvent() {
 
 //入口
 $(document).ready(function () {
-    type = path.indexOf(".pdf")>0?2:1;
-    maxWidth=type==1?793:893;
     getPreviewInfo();
     scrollEvent();
 });

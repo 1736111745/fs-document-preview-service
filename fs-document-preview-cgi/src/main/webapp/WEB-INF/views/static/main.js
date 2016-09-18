@@ -5,7 +5,6 @@ var path = getQueryStringByName("path");
 var token=getQueryStringByName("token");
 var loaded = 0;
 var pageCount = 0;
-var maxWidth=893;
 var type=1;
 var exceptWidth=window.screen.width;
 function getPreviewInfo() {
@@ -18,7 +17,7 @@ function getPreviewInfo() {
             if (data.canPreview) {
                 pageCount = data.pageCount;
                 path = data.path;
-                type = path.toLowerCase().indexOf(".pdf") > 0 ? 2 : 2;
+                type = path.toLowerCase().indexOf(".pdf") > 0 ? 2 : 1;
                 maxWidth = type == 1 ? 793 : 893;
                 loadFirst();
             }

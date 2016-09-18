@@ -104,6 +104,7 @@ public class PreviewController {
             DownloadFileTokens fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
             if (fileToken != null && fileToken.getFileType().toLowerCase().equals("preview")) {
                 {
+                    LOG.info("token info:{}",JSONObject.toJSONString(fileToken));
                     path = fileToken.getFilePath() == null ? "" : fileToken.getFilePath().trim();
                     securityGroup=fileToken.getDownloadSecurityGroup();
                     name = fileToken.getFileName() == null ? "" : fileToken.getFileName().trim();
@@ -129,7 +130,7 @@ public class PreviewController {
                 String fileName = SampleUUID.getUUID() + "." + extension;
                 String filePath = FilenameUtils.concat(dataDir, fileName);
                 FileUtils.writeByteArrayToFile(new File(filePath), bytes);
-                pageCount = DocPageCalculator.GetDocPageCount(bytes, path);
+                pageCount = DocPageCalculator.GetDocPageCount(bytes, filePath);
                 previewInfoDao.initPreviewInfo(path, filePath, dataDir, bytes.length, pageCount, employeeInfo.getEa(), employeeInfo.getEmployeeId());
                 return getPreviewInfoResult(true, pageCount,path, "");
             } catch (Exception ex) {
@@ -152,6 +153,8 @@ public class PreviewController {
         String page = safteGetRequestParameter(request, "page");
         String name = safteGetRequestParameter(request, "name");
         String pageCount = safteGetRequestParameter(request, "pageCount");
+        String expectWidth = safteGetRequestParameter(request, "width");
+        int width= pageCount.isEmpty() ? 0 : Integer.parseInt(expectWidth);
         int pageCnt = pageCount.isEmpty() ? 0 : Integer.parseInt(pageCount);
         int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
@@ -162,7 +165,7 @@ public class PreviewController {
         } else {
             String originalFilePath = dataFileInfo.getOriginalFilePath();
             File file=new File(originalFilePath);
-            String dataFilePath = docConvertor.doConvert(employeeInfo.getEa(), path, dataFileInfo.getDataDir(), name, originalFilePath, pageIndex);
+            String dataFilePath = docConvertor.doConvert(employeeInfo.getEa(), path, dataFileInfo.getDataDir(), name, originalFilePath, pageIndex,width);
             if (!dataFilePath.equals("")) {
                 previewInfoDao.create(path, dataFileInfo.getDataDir(), dataFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), file.length(), pageCnt);
                 return getFilePathResult(true, dataFilePath);

@@ -49,7 +49,7 @@ public class FileStorageProxy {
                 return nFileStorageService.nDownloadFile(arg, employeeInfo.getEa()).getData();
             }
         } catch (Exception e) {
-            LOG.error("downloadFile:ea:{},sourceUser:{},path:{},securityGroup:{}", employeeInfo.getEa(), employeeInfo.getSourceUser(), path, "", e);
+            LOG.error("downloadFile:ea:{},sourceUser:{},path:{},securityGroup:{}", employeeInfo.getEa(), employeeInfo.getSourceUser(), path, securityGroup, e);
             return null;
         }
     }

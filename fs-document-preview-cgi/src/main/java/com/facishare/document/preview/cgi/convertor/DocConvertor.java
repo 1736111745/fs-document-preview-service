@@ -12,8 +12,9 @@ import org.springframework.stereotype.Component;
 public class DocConvertor {
     private static final Logger LOG = LoggerFactory.getLogger(DocConvertor.class);
 
-    public String doConvert(String ea, String path, String baseDir, String name, String originalFilePath, int page) throws Exception {
+    public String doConvert(String ea, String path, String baseDir, String name, String originalFilePath, int page,int exceptWidth) throws Exception {
         String extension = FilenameUtils.getExtension(path).toLowerCase();
+        if(exceptWidth>893) exceptWidth=893;
         IDocConvertor docConvertor = null;
         switch (extension) {
             case "doc":
@@ -36,7 +37,7 @@ public class DocConvertor {
             return "";
         }
         try {
-            String filePath = docConvertor.convert(page, page, originalFilePath, baseDir);
+            String filePath = docConvertor.convert(page, page, originalFilePath, baseDir,exceptWidth);
             return filePath;
         } catch (Exception e) {
             LOG.error("do convert happed error:{}", e.getStackTrace());

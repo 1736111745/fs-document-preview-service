@@ -14,7 +14,7 @@ public class PDFConvertor implements IDocConvertor {
     private static final Logger LOG = LoggerFactory.getLogger(PDFConvertor.class);
 
     @Override
-    public String convert(int page1, int page2, String filePath, String baseDir,int expectWidth) throws Exception {
+    public String convert(int page1, int page2, String filePath, String baseDir) throws Exception {
         ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
         try {
             LOG.info("begin get IPICConvertor");

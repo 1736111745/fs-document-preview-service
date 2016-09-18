@@ -14,7 +14,7 @@ public class ExcelConvertor implements IDocConvertor {
     private static final Logger LOG = LoggerFactory.getLogger(ExcelConvertor.class);
 
     @Override
-    public String convert(int page1, int page2,String filePath, String baseDir,int expectWidth) throws Exception {
+    public String convert(int page1, int page2,String filePath, String baseDir) throws Exception {
         ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
         try {
             LOG.info("begin get IPICConvertor");
@@ -22,10 +22,10 @@ public class ExcelConvertor implements IDocConvertor {
             LOG.info("end get IPICConvertor");
             int resultcode = ipicConvertor.resultCode();
             if (resultcode == 0) {
-                String fileName = (page1 + 1) + ".jpg";
+                String fileName = (page1 + 1) + ".png";
                 String imageFilePath = baseDir + "/" + fileName;
                 LOG.info("begin get svg,folder:{}", baseDir);
-                int code=ipicConvertor.convertToJPG(page1, page2, 1.0f, baseDir);
+                int code=ipicConvertor.convertToPNG(page1, page2, 1.0f, baseDir);
                 LOG.info("end get svg,folder:{},code:{}", baseDir,code);
                 ipicConvertor.close();
                 File file = new File(imageFilePath);

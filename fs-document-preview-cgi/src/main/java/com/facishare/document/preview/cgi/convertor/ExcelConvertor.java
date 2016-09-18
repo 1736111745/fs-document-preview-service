@@ -25,7 +25,7 @@ public class ExcelConvertor implements IDocConvertor {
                 htmlConvertor.setNormal(true);
                 String fileName = (page1 + 1) + ".html";
                 String imageFilePath = baseDir + "/" + fileName;
-                LOG.info("begin get svg,folder:{}", baseDir);
+                LOG.info("begin get html,filePath,{},folder:{}", filePath,baseDir);
                 htmlConvertor.convertToHtml(baseDir,page1,page2);
                 LOG.info("end get svg,folder:{}");
                 htmlConvertor.close();

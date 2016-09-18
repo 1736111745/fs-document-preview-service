@@ -165,7 +165,7 @@ public class PreviewController {
         } else {
             String originalFilePath = dataFileInfo.getOriginalFilePath();
             File file=new File(originalFilePath);
-            String dataFilePath = docConvertor.doConvert(employeeInfo.getEa(), path, dataFileInfo.getDataDir(), name, originalFilePath, pageIndex,width);
+            String dataFilePath = docConvertor.doConvert(employeeInfo.getEa(), path, dataFileInfo.getDataDir(), name, originalFilePath, pageIndex);
             if (!dataFilePath.equals("")) {
                 previewInfoDao.create(path, dataFileInfo.getDataDir(), dataFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), file.length(), pageCnt);
                 return getFilePathResult(true, dataFilePath);

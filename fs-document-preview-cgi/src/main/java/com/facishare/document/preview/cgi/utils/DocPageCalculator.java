@@ -10,14 +10,22 @@ import org.apache.poi.sl.usermodel.SlideShow;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PushbackInputStream;
 
 /**
  * Created by liuq on 16/9/7.
  */
 public class DocPageCalculator {
+    private static final Logger LOG = LoggerFactory.getLogger(DocPageCalculator.class);
+
     public static int GetDocPageCount(byte[] data, String filePath) throws Exception {
+        LOG.info("begin get pageCount,data length:{}",data.length);
         int pageCount = 0;
         DocType docType = DocTypeHelper.getDocType(filePath);
         switch (docType) {
@@ -33,6 +41,7 @@ public class DocPageCalculator {
             case PDF:
                 pageCount = parsePDF(data);
         }
+        LOG.info("end get pageCount");
         return pageCount;
     }
 

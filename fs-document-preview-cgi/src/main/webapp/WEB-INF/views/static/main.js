@@ -66,6 +66,7 @@ function loadData(pageIndex) {
                 var data=$(dataSrc);
                 img.remove();
                 content.append(data);
+                var a=data;
             }
             else {
                 page.remove();

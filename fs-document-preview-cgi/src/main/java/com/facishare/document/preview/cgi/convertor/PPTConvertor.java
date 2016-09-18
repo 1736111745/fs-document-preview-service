@@ -14,7 +14,7 @@ public class PPTConvertor implements IDocConvertor {
     private static final Logger LOG = LoggerFactory.getLogger(PPTConvertor.class);
 
     @Override
-    public String convert(int page1, int page2,String filePath, String baseDir) throws Exception {
+    public String convert(int page1, int page2,String filePath, String baseDir,int expectWidth) throws Exception {
         ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
         try {
             int exceptWidth=793;
@@ -23,12 +23,12 @@ public class PPTConvertor implements IDocConvertor {
             LOG.info("end get IPICConvertor");
             int resultcode = ipicConvertor.resultCode();
             if (resultcode == 0) {
-                String fileName = (page1 + 1) + ".png";
+                String fileName = (page1 + 1) + ".jpg";
                 String imageFilePath = baseDir + "/" + fileName;
                 LOG.info("begin get svg,folder:{}", baseDir);
                 float width=ipicConvertor.getAllpageWHeigths()[page1][0];
                 float sacle=exceptWidth/width;
-                int code=ipicConvertor.convertToPNG(page1, page2, sacle, baseDir);
+                int code=ipicConvertor.convertToJPG(page1, page2, sacle, baseDir);
                 LOG.info("end get svg,folder:{},code:{}", baseDir,code);
                 ipicConvertor.close();
                 File file = new File(imageFilePath);

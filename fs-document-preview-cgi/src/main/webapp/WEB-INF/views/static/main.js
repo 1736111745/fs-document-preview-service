@@ -7,18 +7,19 @@ var loaded = 0;
 var pageCount = 0;
 var maxWidth=893;
 var type=1;
+var exceptWidth=window.screen.width;
 function getPreviewInfo() {
     $.ajax({
         type: 'get',
         dataType: 'json',
         async: false,
-        url: window.contextPath + '/preview/getPreviewInfo?path=' + path+'&token='+token,
+        url: window.contextPath + '/preview/getPreviewInfo?path=' + path + '&token=' + token,
         success: function (data) {
             if (data.canPreview) {
                 pageCount = data.pageCount;
-                path=data.path;
-                type = path.toLowerCase().indexOf(".pdf")>0?2:2;
-                maxWidth=type==1?793:893;
+                path = data.path;
+                type = path.toLowerCase().indexOf(".pdf") > 0 ? 2 : 2;
+                maxWidth = type == 1 ? 793 : 893;
                 loadFirst();
             }
             else {
@@ -54,7 +55,7 @@ function loadData(pageIndex) {
         timeout : 1800000,
         dataType: 'json',
         async: true,
-        url: window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + pageIndex + "&pageCount=" + pageCount,
+        url: window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + pageIndex + "&pageCount=" + pageCount+"&width="+exceptWidth,
         beforeSend:function () {
         },
         success: function (data) {

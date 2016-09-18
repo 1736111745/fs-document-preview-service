@@ -1,5 +1,7 @@
 package com.facishare.document.preview.cgi.utils;
 
+import application.dcs.IPICConvertor;
+import com.facishare.document.preview.cgi.convertor.ConvertorPool;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.hslf.usermodel.HSLFSlideShow;
@@ -22,7 +24,7 @@ public class DocPageCalculator {
         DocType docType = DocTypeHelper.getDocType(filePath);
         switch (docType) {
             case Word:
-                pageCount = parseWord(data);
+                pageCount = parseWord(data,filePath);
                 break;
             case Excel:
                 pageCount = parseExcel(data);
@@ -51,9 +53,9 @@ public class DocPageCalculator {
         return 2003;
     }
 
-    private static int parseWord(byte[] data) throws Exception {
+    private static int parseWord(byte[] data,String filePath) throws Exception {
         int version = checkFileVersion(data);
-        return version == 2003 ? parseWord2003(data) : parseWord2007(data);
+        return version == 2003 ? parseWord2003(data,filePath) : parseWord2007(data);
     }
 
     private static int parseExcel(byte[] data) throws Exception {
@@ -80,10 +82,25 @@ public class DocPageCalculator {
         return docx.getProperties().getExtendedProperties().getUnderlyingProperties().getPages();//总页数
     }
 
-    private static int parseWord2003(byte[] data) throws Exception {
+    private static int parseWord2003(byte[] data,String filePath) throws Exception {
         InputStream input = new ByteArrayInputStream(data);
         WordExtractor doc = new WordExtractor(input);
-        return doc.getSummaryInformation().getPageCount();//总页数
+        int pageCount= doc.getSummaryInformation().getPageCount();//总页数
+        if(pageCount==0)
+        {
+            ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
+            try {
+
+                IPICConvertor ipicConvertor = convertobj.convertor.convertMStoPic(filePath);
+                pageCount=ipicConvertor.getPageCount();
+                ipicConvertor.close();
+            }
+            finally {
+                ConvertorPool.getInstance().returnConvertor(convertobj);
+            }
+
+        }
+        return pageCount;
     }
 
     private static int parseExcel2007(byte[] data) throws Exception {

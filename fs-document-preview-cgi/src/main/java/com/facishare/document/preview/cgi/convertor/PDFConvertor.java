@@ -14,7 +14,7 @@ public class PDFConvertor implements IDocConvertor {
     private static final Logger LOG = LoggerFactory.getLogger(PDFConvertor.class);
 
     @Override
-    public String convert(int page1, int page2, String filePath, String baseDir) throws Exception {
+    public String convert(int page1, int page2, String filePath, String baseDir,int expectWidth) throws Exception {
         ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
         try {
             LOG.info("begin get IPICConvertor");
@@ -24,9 +24,9 @@ public class PDFConvertor implements IDocConvertor {
             if (resultcode == 0) {
                 String fileName = (page1 + 1) + ".png";
                 String imageFilePath = baseDir + "/" + fileName;
-                LOG.info("begin get png,png folder:{}", baseDir);
+                LOG.info("begin get jpg,jpg folder:{}", baseDir);
                 int code =ipicConvertor.convertToPNG(page1, page2, 3.0f, baseDir);
-                LOG.info("end get png,png folder:{},code:{}", baseDir,code);
+                LOG.info("end get jpg,jpg folder:{},code:{}", baseDir,code);
                 ipicConvertor.close();
                 File file = new File(imageFilePath);
                 if (file.exists()) {

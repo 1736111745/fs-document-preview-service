@@ -1,6 +1,6 @@
 package com.facishare.document.preview.cgi.convertor;
 
-import application.dcs.IPICConvertor;
+import application.dcs.IHtmlConvertor;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,16 +18,17 @@ public class ExcelConvertor implements IDocConvertor {
         ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
         try {
             LOG.info("begin get IPICConvertor");
-            IPICConvertor ipicConvertor = convertobj.convertor.convertMStoPic(filePath);
+            IHtmlConvertor htmlConvertor = convertobj.convertor.convertMStoHtml(filePath);
             LOG.info("end get IPICConvertor");
-            int resultcode = ipicConvertor.resultCode();
+            int resultcode = htmlConvertor.resultCode();
             if (resultcode == 0) {
-                String fileName = (page1 + 1) + ".png";
+                htmlConvertor.setNormal(true);
+                String fileName = (page1 + 1) + ".html";
                 String imageFilePath = baseDir + "/" + fileName;
                 LOG.info("begin get svg,folder:{}", baseDir);
-                int code=ipicConvertor.convertToPNG(page1, page2, 1.0f, baseDir);
-                LOG.info("end get svg,folder:{},code:{}", baseDir,code);
-                ipicConvertor.close();
+                htmlConvertor.convertToHtml(baseDir,page1,page2);
+                LOG.info("end get svg,folder:{}");
+                htmlConvertor.close();
                 File file = new File(imageFilePath);
                 if (file.exists()) {
                     return FilenameUtils.getBaseName(baseDir) + "/" + fileName;

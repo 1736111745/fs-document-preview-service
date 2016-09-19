@@ -65,7 +65,7 @@ function loadData(pageIndex) {
                     dataHtml = "<img src='" + src + "' width='100%' height='100%'>";
                 }
                 else if (type == 2) {
-                    dataHtml = "<iframe frameborder=0 scrolling=no src='" + src + "' />";
+                    dataHtml=$.ajax({url:src,async:false});
                 }
                 var data = $(dataHtml);
                 img.remove();
@@ -80,6 +80,9 @@ function loadData(pageIndex) {
         }
     });
 }
+
+
+
 
 //首次加载
 function loadFirst() {

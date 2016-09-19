@@ -190,12 +190,11 @@ public class PreviewController {
         outPut(response, filePath);
     }
 
+    //加载excel生成出来的html
     @RequestMapping("/preview/*/js/{fileName:.+}")
     public String getStatic(@PathVariable String fileName, HttpServletResponse response) throws IOException {
         return "redirect:/static/yozo/" + fileName;
     }
-
-
 
     private void outPut(HttpServletResponse response, String filePath) throws IOException {
         FileChannel fc = new RandomAccessFile(filePath, "r").getChannel();

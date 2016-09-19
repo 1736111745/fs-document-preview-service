@@ -2,11 +2,11 @@
  * Created by liuq on 16/9/8.
  */
 var path = getQueryStringByName("path");
-var token=getQueryStringByName("token");
+var token = getQueryStringByName("token");
 var loaded = 0;
 var pageCount = 0;
-var type=1;
-var exceptWidth=window.screen.width;
+var type = 1;
+var exceptWidth = window.screen.width;
 function getPreviewInfo() {
     $.ajax({
         type: 'get',
@@ -17,8 +17,8 @@ function getPreviewInfo() {
             if (data.canPreview) {
                 pageCount = data.pageCount;
                 path = data.path;
-                type = path.toLowerCase().indexOf(".pdf") > 0 ? 2 : 1;
-                maxWidth = type == 1 ? 793 : 893;
+                type = path.toLowerCase().indexOf(".doc") > 0 ? 1 : path.toLowerCase().indexOf(".xls") > 0 ? 2 : 3;
+                maxWidth = type == 3 ? 893 : 793;
                 loadFirst();
             }
             else {
@@ -39,40 +39,43 @@ function getQueryStringByName(name) {
 //分页加载
 function loadData(pageIndex) {
     if (pageIndex >= pageCount) return;
-    var contentId="divContent"+pageIndex;
-    var content=$('#'+contentId);
-    if(content.length>0) return;
+    var contentId = "divContent" + pageIndex;
+    var content = $('#' + contentId);
+    if (content.length > 0) return;
     loaded++;
-    var img=$("<img src='"+window.contextPath+"/static/loading.gif' width='100%' height='100%'>");
-    var page = $("<div class='word-page' style='max-width:"+maxWidth+"px'></div>");
-    content=$("<div class='word-content'  id='"+contentId+"'></div>");
+    var img = $("<img src='" + window.contextPath + "/static/loading.gif' width='100%' height='100%'>");
+    var page = $("<div class='word-page' style='max-width:" + maxWidth + "px'></div>");
+    content = $("<div class='word-content'  id='" + contentId + "'></div>");
     content.append(img);
     $("#divPages").append(page);
     page.append(content);
     $.ajax({
         type: 'get',
-        timeout : 1800000,
+        timeout: 1800000,
         dataType: 'json',
         async: true,
-        url: window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + pageIndex + "&pageCount=" + pageCount+"&width="+exceptWidth,
-        beforeSend:function () {
+        url: window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + pageIndex + "&pageCount=" + pageCount + "&width=" + exceptWidth,
+        beforeSend: function () {
         },
         success: function (data) {
             if (data.successed) {
-                var dataSrc = "<embed src='" + window.contextPath + "/preview/" + data.filePath + "' width='100%' height='100%' type='image/svg+xml'></embed>"
-                if (type == 2) {
-                    dataSrc = "<img src='" + window.contextPath + "/preview/" + data.filePath + "' width='100%' height='100%'>";
+                var src = window.contextPath + "/preview/" + data.filePath;
+                var dataHtml = "<embed src='" + src + "' width='100%' height='100%' type='image/svg+xml'></embed>"
+                if (type == 3) {
+                    dataHtml = "<img src='" + src + "' width='100%' height='100%'>";
                 }
-                var data=$(dataSrc);
+                else if (type == 1) {
+                    dataHtml = "<iframe frameborder=0 scrolling=no src='" + src + "' />";
+                }
+                var data = $(dataHtml);
                 img.remove();
                 content.append(data);
-                var a=data;
             }
             else {
                 page.remove();
             }
         },
-        error:function () {
+        error: function () {
             page.remove();
         }
     });

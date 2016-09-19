@@ -31,6 +31,8 @@ public class ExcelConvertor implements IDocConvertor {
                 htmlConvertor.close();
                 File file = new File(htmlFilePath);
                 if (file.exists()) {
+                    //预处理
+
                     return FilenameUtils.getBaseName(baseDir) + "/" + fileName;
                 } else {
                     return "";

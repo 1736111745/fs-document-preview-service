@@ -11,12 +11,12 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta Name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="<%=request.getContextPath()%>/static/bootstrap-combined.min.css" rel="stylesheet">
-    <link href="<%=request.getContextPath()%>/static/doc.css?v=1" rel="stylesheet">
+    <link href="<%=request.getContextPath()%>/static/yozo/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="<%=request.getContextPath()%>/static/yozo/style.css?v=1" rel="stylesheet">
     <script>
         window.contextPath = "<%=request.getContextPath()%>";
     </script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/yozo/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/main.js?v=0.235"></script>
 <body>
 <div id="divPages">

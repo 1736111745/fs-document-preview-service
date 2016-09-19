@@ -190,6 +190,13 @@ public class PreviewController {
         outPut(response, filePath);
     }
 
+    @RequestMapping("/preview/*/js/{fileName:.+}")
+    public String getStatic(@PathVariable String fileName, HttpServletResponse response) throws IOException {
+        return "redirect:/static/yozo/" + fileName;
+    }
+
+
+
     private void outPut(HttpServletResponse response, String filePath) throws IOException {
         FileChannel fc = new RandomAccessFile(filePath, "r").getChannel();
         MappedByteBuffer mbb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());

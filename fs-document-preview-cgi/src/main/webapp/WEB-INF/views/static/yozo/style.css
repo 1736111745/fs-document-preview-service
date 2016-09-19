@@ -49,7 +49,7 @@
 	/* -------------------------------------------------- */
 
 	body {
-		padding-top: 10px;
+		padding-top: 5px;
 		padding-bottom: 0px;
 		
 	}
@@ -148,8 +148,8 @@
 		word-wrap: break-word;
 		word-break: break-all;
 		margin: 0px auto;
-		padding-top: 10%;
-		padding-bottom: 10%;
+		padding-top: 5px;
+		padding-bottom: 5px;
 	}
 	
 	.doc-page .doc-content p{
@@ -223,7 +223,7 @@
 	/* -------------------------------------------------- */
 	@media (max-width: 767px) {
 		.word-body {
-			padding-top: 40px;
+			padding-top: 5px;
 		}
 		.word-page .word-content {
 			max-width: 85%;
@@ -243,7 +243,7 @@
 		}
 		
 		.pdf-body {
-			padding-top: 50px;
+			padding-top: 5px;
 		}
 		.pdf-body .container-fluid-content {
 		    padding-left: 0px;
@@ -270,7 +270,7 @@
 	      padding: 0 !important;
 		  width: 100% !important; 
 		}
-		 .container-fluid-content{padding-top:70px}
+		 .container-fluid-content{padding-top:5px}
 	}
 	/*sheet表左右切换按钮*/
 	.right {

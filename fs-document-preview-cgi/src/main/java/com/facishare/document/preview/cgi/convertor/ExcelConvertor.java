@@ -24,12 +24,12 @@ public class ExcelConvertor implements IDocConvertor {
             if (resultcode == 0) {
                 htmlConvertor.setNormal(true);
                 String fileName = (page1 + 1) + ".html";
-                String imageFilePath = baseDir + "/" + fileName;
+                String htmlFilePath = baseDir + "/" + fileName;
                 LOG.info("begin get html,filePath,{},folder:{}", filePath,baseDir);
-                htmlConvertor.convertToHtml(baseDir,page1,page2);
+                htmlConvertor.convertToHtml(htmlFilePath,page1);
                 LOG.info("end get svg,folder:{}");
                 htmlConvertor.close();
-                File file = new File(imageFilePath);
+                File file = new File(htmlFilePath);
                 if (file.exists()) {
                     return FilenameUtils.getBaseName(baseDir) + "/" + fileName;
                 } else {

@@ -44,7 +44,7 @@ function loadData(pageIndex) {
     if (content.length > 0) return;
     loaded++;
     var img = $("<img src='" + window.contextPath + "/static/loading.gif' width='100%' height='100%'>");
-    var page = $("<div class='word-page' style='max-width:" + maxWidth + "px'></div>");
+    var page = $("<div class='page' style='max-width:" + maxWidth + "px'></div>");
     // content = $("<div class='word-content'  id='" + contentId + "'></div>");
     page.append(img);
     $("#divPages").append(page);
@@ -65,7 +65,7 @@ function loadData(pageIndex) {
                     dataHtml = "<img src='" + src + "' width='100%' height='100%'>";
                 }
                 else if (type == 2) {
-                    dataHtml=$.ajax({url:src,async:false}).responseText;
+                    dataHtml = $.ajax({url: src, async: false}).responseText;
                 }
                 var data = $(dataHtml);
                 img.remove();
@@ -80,8 +80,6 @@ function loadData(pageIndex) {
         }
     });
 }
-
-
 
 
 //首次加载

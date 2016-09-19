@@ -191,7 +191,7 @@ public class PreviewController {
     }
 
     //加载excel生成出来的html
-    @RequestMapping("/preview/*/js/{fileName:.+}")
+    @RequestMapping("/preview/js/{fileName:.+}")
     public String getStatic(@PathVariable String fileName, HttpServletResponse response) throws IOException {
         return "redirect:/static/yozo/" + fileName;
     }

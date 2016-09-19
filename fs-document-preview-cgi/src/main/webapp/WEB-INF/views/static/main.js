@@ -45,10 +45,10 @@ function loadData(pageIndex) {
     loaded++;
     var img = $("<img src='" + window.contextPath + "/static/loading.gif' width='100%' height='100%'>");
     var page = $("<div class='word-page' style='max-width:" + maxWidth + "px'></div>");
-    content = $("<div class='word-content'  id='" + contentId + "'></div>");
-    content.append(img);
+    // content = $("<div class='word-content'  id='" + contentId + "'></div>");
+    page.append(img);
     $("#divPages").append(page);
-    page.append(content);
+    // page.append(content);
     $.ajax({
         type: 'get',
         timeout: 1800000,
@@ -69,7 +69,7 @@ function loadData(pageIndex) {
                 }
                 var data = $(dataHtml);
                 img.remove();
-                content.append(data);
+                page.append(data);
             }
             else {
                 page.remove();

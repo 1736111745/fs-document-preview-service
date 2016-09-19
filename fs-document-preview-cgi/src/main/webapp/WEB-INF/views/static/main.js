@@ -64,7 +64,7 @@ function loadData(pageIndex) {
                 if (type == 3) {
                     dataHtml = "<img src='" + src + "' width='100%' height='100%'>";
                 }
-                else if (type == 1) {
+                else if (type == 2) {
                     dataHtml = "<iframe frameborder=0 scrolling=no src='" + src + "' />";
                 }
                 var data = $(dataHtml);

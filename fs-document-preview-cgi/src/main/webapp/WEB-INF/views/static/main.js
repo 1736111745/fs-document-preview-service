@@ -65,7 +65,7 @@ function loadData(pageIndex) {
                     dataHtml = "<img src='" + src + "' width='100%' height='100%'>";
                 }
                 else if (type == 2) {
-                    dataHtml=$.ajax({url:src,async:false});
+                    dataHtml=$.ajax({url:src,async:false}).responseText;
                 }
                 var data = $(dataHtml);
                 img.remove();

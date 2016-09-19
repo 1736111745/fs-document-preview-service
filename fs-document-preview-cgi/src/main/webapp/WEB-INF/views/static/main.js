@@ -7,6 +7,7 @@ var loaded = 0;
 var pageCount = 0;
 var type = 1;
 var exceptWidth = window.screen.width;
+var pageClass="page";
 function getPreviewInfo() {
     $.ajax({
         type: 'get',
@@ -18,6 +19,7 @@ function getPreviewInfo() {
                 pageCount = data.pageCount;
                 path = data.path;
                 type = path.toLowerCase().indexOf(".doc") > 0 ? 1 : path.toLowerCase().indexOf(".xls") > 0 ? 2 : 3;
+                pageClass=path.toLowerCase().indexOf(".xls")?"excel":"page";
                 maxWidth = type == 3 ? 893 : 793;
                 loadFirst();
             }
@@ -44,7 +46,7 @@ function loadData(pageIndex) {
     if (content.length > 0) return;
     loaded++;
     var img = $("<img src='" + window.contextPath + "/static/loading.gif' width='100%' height='100%'>");
-    var page = $("<div class='page' style='max-width:" + maxWidth + "px'></div>");
+    var page = $("<div class='"+pageClass+"' style='max-width:" + maxWidth + "px'></div>");
     // content = $("<div class='word-content'  id='" + contentId + "'></div>");
     page.append(img);
     $("#divPages").append(page);

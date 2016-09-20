@@ -28,6 +28,7 @@ function loadData() {
         success: function (data) {
             $('#loading').hide();
             if (data.successed) {
+                $(document).attr("title","文档("+page+"/"+pageCount+")");//修改title值
                 var urlNext = window.contextPath + '/preview/handleExcel?path=' + path + '&page=' + (pageIndex + 1) + '&pageCount=' + pageCount;
                 var urlLast = window.contextPath + '/preview/handleExcel?path=' + path + '&page=' + (pageIndex - 1) + '&pageCount=' + pageCount;
                 if (pageIndex == 0) {

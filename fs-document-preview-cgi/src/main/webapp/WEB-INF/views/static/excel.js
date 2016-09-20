@@ -3,7 +3,7 @@
  */
 
 var page = getQueryStringByName("page");
-var pageIndex=parseInt(page)
+var pageIndex = parseInt(page)
 var pageCount = getQueryStringByName("pageCount");
 var path = getQueryStringByName("path");
 function getQueryStringByName(name) {
@@ -28,14 +28,20 @@ function loadData() {
         success: function (data) {
             $('#loading').hide();
             if (data.successed) {
-                $(document).attr("title","文档("+page+"/"+pageCount+")");//修改title值
+                $(document).attr("title", "文档(" + page + "/" + pageCount + ")");//修改title值
                 var urlNext = window.contextPath + '/preview/handleExcel?path=' + path + '&page=' + (pageIndex + 1) + '&pageCount=' + pageCount;
                 var urlLast = window.contextPath + '/preview/handleExcel?path=' + path + '&page=' + (pageIndex - 1) + '&pageCount=' + pageCount;
-                if (pageIndex == 0||pageCount==1) {
+                if (pageIndex == 0) {
                     $('#linkLast').addClass("disabled");
                     $('#linkLast').removeAttr("href");
                     $('#linkNext').removeClass("disabled");
                     $('#linkNext').attr("href", urlNext);
+                }
+                if (pageCount == 1) {
+                    $('#linkNext').addClass("disabled");
+                    $('#linkNext').removeAttr("href");
+                    $('#linkLast').removeClass("disabled");
+                    $('#linkLast').attr("href", urlLast);
                 }
                 else if (pageIndex == pageCount - 1) {
 

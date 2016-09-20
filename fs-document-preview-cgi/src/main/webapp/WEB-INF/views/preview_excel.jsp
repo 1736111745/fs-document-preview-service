@@ -25,7 +25,7 @@
 <body>
 <div id="loading">
     <div id="background" class="background"></div>
-    <div id="progressBar" class="progressBar">数据加载中，请稍等...</div>
+    <div id="progressBar" class="progressBar">数据加载中...</div>
 </div>
 <div id="content">
 

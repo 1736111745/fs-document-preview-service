@@ -18,7 +18,7 @@ function getPreviewInfo() {
                 pageCount = data.pageCount;
                 path = data.path;
                 type = path.toLowerCase().indexOf(".doc") > 0 ? 1 : path.toLowerCase().indexOf(".xls") > 0 ? 2 : 3;
-                pageClass = path.toLowerCase().indexOf(".xls") ? "excel" : "page";
+                pageClass = path.toLowerCase().indexOf(".xls")>0 ? "excel" : "page";
                 maxWidth = type == 3 ? 893 : 793;
                 loadFirst();
             }

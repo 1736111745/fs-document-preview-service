@@ -27,14 +27,15 @@
     <div id="background" class="background"></div>
     <div id="progressBar" class="progressBar">数据加载中...</div>
 </div>
-<div id="content">
-
-</div>
-<div id="fd">
+<div id="nav">
     <div class="btn-group">
         <a type="button" class="btn btn-default" id="linkLast">上一页</a>
         <a type="button" class="btn btn-default" id="linkNext">下一页</a>
     </div>
 </div>
+<div id="content">
+
+</div>
+
 </body>
 </html>

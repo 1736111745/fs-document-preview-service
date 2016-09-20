@@ -213,7 +213,15 @@ public class PreviewController {
     public void getCss(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
         String baseDir = previewInfoDao.getBaseDir(folder);
         String filePath = baseDir + "/js/" + fileName;
-        response.setContentType("text/css");
+        if (fileName.toLowerCase().contains(".png")) {
+            response.setContentType("image/png");
+        } else if (fileName.toLowerCase().contains(".js")) {
+            response.setContentType("application/javascript");
+        } else if (fileName.toLowerCase().contains(".css")) {
+            response.setContentType("text/css");
+        } else if (fileName.toLowerCase().contains(".svg")) {
+            response.setContentType("image/svg+xml");
+        }
         outPut(response, filePath);
     }
 

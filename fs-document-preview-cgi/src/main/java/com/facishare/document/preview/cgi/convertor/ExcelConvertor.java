@@ -63,7 +63,13 @@ public class ExcelConvertor implements IDocConvertor {
         } finally {
             LineIterator.closeQuietly(it);
         }
-        String html = sb.toString();
+        String html = sb.toString().trim();
+        String regex="<head>[\\s\\S]*</head>";
+        html=html.replaceAll(regex,"");
+        html=html.replace("<!DOCTYPE html><html>","").trim();
+        html=html.replace("</html>","").trim();
+        html=html.replace("<body>","").trim();
+        html=html.replace("</body>","").trim();
         html = html.replace("./js", "./" + dirName + "/js");
         FileUtils.writeStringToFile(file, html, false);
         LOG.info("end handleHtml");

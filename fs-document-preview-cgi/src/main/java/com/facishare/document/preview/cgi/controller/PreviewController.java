@@ -93,7 +93,6 @@ public class PreviewController {
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Callable<String> getPreviewInfo(HttpServletRequest request) throws Exception {
-        int a=1/0;
         System.out.println("getPreviewInfo被调用 thread id is : " + Thread.currentThread().getId());
         final String[] path = {safteGetRequestParameter(request, "path")};
         String token = safteGetRequestParameter(request, "token");
@@ -263,7 +262,7 @@ public class PreviewController {
     @ExceptionHandler
     @ResponseBody
     public void handleException(HttpServletResponse req, Exception e) {
-        LOG.error("error:{}", e);
+        LOG.error("error:", e);
         req.setStatus(500);
     }
 }

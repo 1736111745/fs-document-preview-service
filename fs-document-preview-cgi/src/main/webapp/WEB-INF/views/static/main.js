@@ -54,7 +54,7 @@ function loadData(pageIndex) {
         type: 'get',
         timeout: 1800000,
         dataType: 'json',
-        async: true,
+        async: false,
         url: window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + pageIndex + "&pageCount=" + pageCount,
         beforeSend: function () {
         },

@@ -64,6 +64,7 @@ public class ExcelConvertor implements IDocConvertor {
             LineIterator.closeQuietly(it);
         }
         String html = sb.toString();
+        html=html.replace("./js","")
         html = html.replace("./js", "./" + dirName + "/js");
         FileUtils.writeStringToFile(file, html, false);
         LOG.info("end handleHtml");

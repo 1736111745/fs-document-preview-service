@@ -29,33 +29,7 @@ function loadData() {
             $('#loading').hide();
             if (data.successed) {
                 $(document).attr("title", "文档(" + page + "/" + pageCount + ")");//修改title值
-                var urlNext = window.contextPath + '/preview/handleExcel?path=' + path + '&page=' + (pageIndex + 1) + '&pageCount=' + pageCount;
-                var urlLast = window.contextPath + '/preview/handleExcel?path=' + path + '&page=' + (pageIndex - 1) + '&pageCount=' + pageCount;
-                if (pageIndex == 0) {
-                    $('#linkLast').addClass("disabled");
-                    $('#linkLast').removeAttr("href");
-                    $('#linkNext').removeClass("disabled");
-                    $('#linkNext').attr("href", urlNext);
-                }
-                if (pageCount == 1) {
-                    $('#linkNext').addClass("disabled");
-                    $('#linkNext').removeAttr("href");
-                    $('#linkLast').removeClass("disabled");
-                    $('#linkLast').attr("href", urlLast);
-                }
-                else if (pageIndex == pageCount - 1) {
-
-                    $('#linkNext').addClass("disabled");
-                    $('#linkNext').removeAttr("href");
-                    $('#linkLast').removeClass("disabled");
-                    $('#linkLast').attr("href", urlLast);
-                }
-                else {
-                    $('#linkLast').removeClass("disabled");
-                    $('#linkNext').removeClass("disabled");
-                    $('#linkNext').attr("href", urlNext);
-                    $('#linkLast').attr("href", urlLast);
-                }
+                paging();
                 var dataHtml = $.ajax({url: data.filePath, async: false}).responseText;
                 $('#content').html(dataHtml);
             }
@@ -65,6 +39,40 @@ function loadData() {
         error: function () {
         }
     });
+}
+function paging() {
+    var urlNext = window.contextPath + '/preview/handleExcel?path=' + path + '&page=' + (pageIndex + 1) + '&pageCount=' + pageCount;
+    var urlLast = window.contextPath + '/preview/handleExcel?path=' + path + '&page=' + (pageIndex - 1) + '&pageCount=' + pageCount;
+    if (pageCount == 1) //只有一页的时候
+    {
+        $('#linkNext').addClass("disabled");
+        $('#linkNext').removeAttr("href");
+        $('#linkLast').addClass("disabled");
+        $('#linkLast').removeAttr("href");
+    }
+    else {
+        if (pageIndex == 0) { //第一页
+            $('#linkLast').addClass("disabled");
+            $('#linkLast').removeAttr("href");
+            $('#linkNext').removeClass("disabled");
+            $('#linkNext').attr("href", urlNext);
+        }
+        else {
+            if (pageIndex == pageCount - 1) {//最后一页
+                $('#linkNext').addClass("disabled");
+                $('#linkNext').removeAttr("href");
+                $('#linkLast').removeClass("disabled");
+                $('#linkLast').attr("href", urlLast);
+            }
+            else {
+                //中间页
+                $('#linkLast').removeClass("disabled");
+                $('#linkNext').removeClass("disabled");
+                $('#linkNext').attr("href", urlNext);
+                $('#linkLast').attr("href", urlLast);
+            }
+        }
+    }
 }
 
 $(document).ready(function () {

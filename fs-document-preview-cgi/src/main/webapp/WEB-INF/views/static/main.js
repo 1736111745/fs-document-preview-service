@@ -7,6 +7,7 @@ var loaded = 0;
 var pageCount = 0;
 var type = 1;
 var pageClass = "page";
+var flag=false;
 function getPreviewInfo() {
     $.ajax({
         type: 'get',
@@ -18,9 +19,9 @@ function getPreviewInfo() {
                 pageCount = data.pageCount;
                 path = data.path;
                 type = path.toLowerCase().indexOf(".doc") > 0 ? 1 : path.toLowerCase().indexOf(".xls") > 0 ? 2 : 3;
-                pageClass = path.toLowerCase().indexOf(".xls")>0 ? "excel" : "page";
+                pageClass = path.toLowerCase().indexOf(".xls") > 0 ? "excel" : "page";
                 maxWidth = type == 3 ? 893 : 793;
-                loadFirst();
+                flag = true;
             }
             else {
                 document.write(data.errorMsg);
@@ -46,10 +47,8 @@ function loadData(pageIndex) {
     loaded++;
     var img = $("<img src='" + window.contextPath + "/static/loading.gif' width='100px' height='100px' style='display:block; margin:0 auto;'>");
     var page = $("<div class='" + pageClass + "' style='max-width:" + maxWidth + "px'></div>");
-    // content = $("<div class='word-content'  id='" + contentId + "'></div>");
     page.append(img);
     $("#divPages").append(page);
-    // page.append(content);
     $.ajax({
         type: 'get',
         timeout: 1800000,
@@ -105,12 +104,16 @@ function scrollEvent() {
 //入口
 $(document).ready(function () {
     getPreviewInfo();
-    if (type == 2) {
-        var url = window.contextPath + '/preview/handleExcel?path=' + path + '&page=0&pageCount=' + pageCount;
-        location.href = url;
+    if(flag) {
+        if (type == 2) {
+            var url = window.contextPath + '/preview/handleExcel?path=' + path + '&page=0&pageCount=' + pageCount;
+            location.href = url;
+        }
+        else {
+            loadFirst();
+            scrollEvent();
+        }
     }
-    else
-        scrollEvent();
 });
 
 //加载N页

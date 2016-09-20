@@ -43,7 +43,7 @@ body {
 
 .progressBar {
     display: block;
-    width: 148px;
+    width: 100px;
     height: 28px;
     position: fixed;
     top: 50%;

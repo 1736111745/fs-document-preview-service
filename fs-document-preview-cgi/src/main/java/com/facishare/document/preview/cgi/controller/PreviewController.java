@@ -34,6 +34,7 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 
 /**
@@ -94,64 +95,69 @@ public class PreviewController {
 
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getPreviewInfo(HttpServletRequest request) throws Exception {
-        String path = safteGetRequestParameter(request, "path");
+    public Callable<String> getPreviewInfo(HttpServletRequest request) throws Exception {
+        System.out.println("getPreviewInfo被调用 thread id is : " + Thread.currentThread().getId());
+        final String[] path = {safteGetRequestParameter(request, "path")};
         String token = safteGetRequestParameter(request, "token");
-        String name = safteGetRequestParameter(request, "name");
-        String securityGroup = "";
+        final String[] name = {safteGetRequestParameter(request, "name")};
+        final String[] securityGroup = {""};
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        if (path.equals("") && token.equals("")) {
-            return getPreviewInfoResult(false, 0, "", "参数错误!");
-        }
-        if (!token.equals("")) {
-            DownloadFileTokens fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
-            if (fileToken != null && fileToken.getFileType().toLowerCase().equals("preview")) {
-                {
-                    LOG.info("token info:{}", JSONObject.toJSONString(fileToken));
-                    path = fileToken.getFilePath() == null ? "" : fileToken.getFilePath().trim();
-                    securityGroup = fileToken.getDownloadSecurityGroup();
-                    name = fileToken.getFileName() == null ? "" : fileToken.getFileName().trim();
+        return () ->
+        {
+            System.out.println("getCount thread id is : " + Thread.currentThread().getId());
+            if (path[0].equals("") && token.equals("")) {
+                return getPreviewInfoResult(false, 0, "", "参数错误!");
+            }
+            if (!token.equals("")) {
+                DownloadFileTokens fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
+                if (fileToken != null && fileToken.getFileType().toLowerCase().equals("preview")) {
+                    {
+                        LOG.info("token info:{}", JSONObject.toJSONString(fileToken));
+                        path[0] = fileToken.getFilePath() == null ? "" : fileToken.getFilePath().trim();
+                        securityGroup[0] = fileToken.getDownloadSecurityGroup();
+                        name[0] = fileToken.getFileName() == null ? "" : fileToken.getFileName().trim();
+                    }
                 }
             }
-        }
-        if (path.isEmpty()) {
-            return getPreviewInfoResult(false, 0, "", "参数错误!");
-        }
-        String extension = FilenameUtils.getExtension(path).toLowerCase();
-        if (allowPreviewExtension.indexOf(extension) == -1) {
-            return getPreviewInfoResult(false, 0, "", "该文件不可以预览!");
-        }
-        PreviewInfo previewInfo = previewInfoDao.getInfoByPath(path);
-        int pageCount;
-        if (previewInfo == null) {
-            try {
-                byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo, securityGroup);
-                if (bytes == null || bytes.length == 0) {
-                    return getPreviewInfoResult(false, 0, "", "文件无法找到或者损坏!");
-                }
-                String dataDir = new PathHelper(employeeInfo.getEa()).getDataDir();
-                String fileName = SampleUUID.getUUID() + "." + extension;
-                String filePath = FilenameUtils.concat(dataDir, fileName);
-                FileUtils.writeByteArrayToFile(new File(filePath), bytes);
-                pageCount = DocPageCalculator.GetDocPageCount(bytes, filePath);
-                previewInfoDao.initPreviewInfo(path, filePath, dataDir, bytes.length, pageCount, employeeInfo.getEa(), employeeInfo.getEmployeeId());
-                return getPreviewInfoResult(true, pageCount, path, "");
-            } catch (Exception ex) {
-                LOG.error("get page count", ex);
+            if (path[0].isEmpty()) {
+                return getPreviewInfoResult(false, 0, "", "参数错误!");
+            }
+            String extension = FilenameUtils.getExtension(path[0]).toLowerCase();
+            if (allowPreviewExtension.indexOf(extension) == -1) {
                 return getPreviewInfoResult(false, 0, "", "该文件不可以预览!");
             }
-        }
-        pageCount = previewInfo.getPageCount();
-        if (pageCount == 0) {
-            return getPreviewInfoResult(false, 0, "", "该文件不可以预览!");
-        }
-        return getPreviewInfoResult(true, pageCount, path, "");
+            PreviewInfo previewInfo = previewInfoDao.getInfoByPath(path[0]);
+            int pageCount;
+            if (previewInfo == null) {
+                try {
+                    byte[] bytes = fileStorageProxy.GetBytesByPath(path[0], employeeInfo, securityGroup[0]);
+                    if (bytes == null || bytes.length == 0) {
+                        return getPreviewInfoResult(false, 0, "", "文件无法找到或者损坏!");
+                    }
+                    String dataDir = new PathHelper(employeeInfo.getEa()).getDataDir();
+                    String fileName = SampleUUID.getUUID() + "." + extension;
+                    String filePath = FilenameUtils.concat(dataDir, fileName);
+                    FileUtils.writeByteArrayToFile(new File(filePath), bytes);
+                    pageCount = DocPageCalculator.GetDocPageCount(bytes, filePath);
+                    previewInfoDao.initPreviewInfo(path[0], filePath, dataDir, bytes.length, pageCount, employeeInfo.getEa(), employeeInfo.getEmployeeId());
+                    return getPreviewInfoResult(true, pageCount, path[0], "");
+                } catch (Exception ex) {
+                    LOG.error("get page count", ex);
+                    return getPreviewInfoResult(false, 0, "", "该文件不可以预览!");
+                }
+            }
+            pageCount = previewInfo.getPageCount();
+            if (pageCount == 0) {
+                return getPreviewInfoResult(false, 0, "", "该文件不可以预览!");
+            }
+            return getPreviewInfoResult(true, pageCount, path[0], "");
+        };
     }
 
 
     @ResponseBody
     @RequestMapping(value = "/preview/getFilePath", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String convert(HttpServletRequest request) throws Exception {
+    public Callable<String> convert(HttpServletRequest request) throws Exception {
         String path = safteGetRequestParameter(request, "path");
         String page = safteGetRequestParameter(request, "page");
         String name = safteGetRequestParameter(request, "name");
@@ -160,21 +166,24 @@ public class PreviewController {
         int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         DataFileInfo dataFileInfo = previewInfoDao.getDataFileInfo(path, pageIndex, employeeInfo.getEa());
-        if (!dataFileInfo.getShortFilePath().equals("")) {
-            return getFilePathResult(true, dataFileInfo.getShortFilePath());
+        return () ->
+        {
+            if (!dataFileInfo.getShortFilePath().equals("")) {
+                return getFilePathResult(true, dataFileInfo.getShortFilePath());
 
-        } else {
-            String originalFilePath = dataFileInfo.getOriginalFilePath();
-            File file = new File(originalFilePath);
-            String dataFilePath = docConvertor.doConvert(employeeInfo.getEa(), path, dataFileInfo.getDataDir(), name, originalFilePath, pageIndex);
-            if (!dataFilePath.equals("")) {
-                previewInfoDao.create(path, dataFileInfo.getDataDir(), dataFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), file.length(), pageCnt);
-                return getFilePathResult(true, dataFilePath);
             } else {
-                LOG.warn("path:{} can't do preview", path);
-                return getFilePathResult(false, "");
+                String originalFilePath = dataFileInfo.getOriginalFilePath();
+                File file = new File(originalFilePath);
+                String dataFilePath = docConvertor.doConvert(employeeInfo.getEa(), path, dataFileInfo.getDataDir(), name, originalFilePath, pageIndex);
+                if (!dataFilePath.equals("")) {
+                    previewInfoDao.create(path, dataFileInfo.getDataDir(), dataFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), file.length(), pageCnt);
+                    return getFilePathResult(true, dataFilePath);
+                } else {
+                    LOG.warn("path:{} can't do preview", path);
+                    return getFilePathResult(false, "");
+                }
             }
-        }
+        };
     }
 
     @RequestMapping("/preview/{folder}/{fileName:.+}")
@@ -201,7 +210,7 @@ public class PreviewController {
 
     //加载excel生成出来的html的样式
     @RequestMapping("/preview/{folder}/js/{fileName:.+}")
-    public void getCss(@PathVariable String folder,@PathVariable String fileName, HttpServletResponse response) throws IOException {
+    public void getCss(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
         String baseDir = previewInfoDao.getBaseDir(folder);
         String filePath = baseDir + "/js/" + fileName;
         response.setContentType("text/css");

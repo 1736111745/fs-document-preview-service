@@ -10,40 +10,22 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>iframe tag test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta Name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文档</title>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/yozo/jquery-1.11.1.min.js"></script>
     <script>
         window.contextPath = "<%=request.getContextPath()%>";
     </script>
+    <link href="<%=request.getContextPath()%>/static/excel_preview.css" rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/yozo/bootstrap.min.css" rel="stylesheet">
     <script type="application/javascript" src="<%=request.getContextPath()%>/static/yozo/bootstrap.min.js"></script>
     <script type="application/javascript" src="<%=request.getContextPath()%>/static/excel.js"></script>
-    <style type="text/css">
-        <!--
-        * html {
-            overflow: hidden;
-        }
-
-        * body {
-            height: 100%;
-            overflow: auto;
-            margin: 0;
-        }
-
-        #fd {
-            position: fixed;
-            *position: absolute;
-            width: 100px;
-            height: 100px;
-            top: 90%;
-            left: 50%;
-            margin: -50px 0 0 -50px;
-        }
-    </style>
 </head>
 <body>
 <div id="loading">
-    <img src="<%=request.getContextPath()%>/static/loading.gif" alt="" width="100px"/>
+    <div id="background" class="background"></div>
+    <div id="progressBar" class="progressBar">数据加载中，请稍等...</div>
 </div>
 <div id="content">
 

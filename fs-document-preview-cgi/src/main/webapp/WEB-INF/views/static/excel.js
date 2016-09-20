@@ -32,14 +32,14 @@ function loadData() {
                 var urlLast = window.contextPath + '/preview/handleExcel?path=' + path + '&page=' + (pageIndex - 1) + '&pageCount=' + pageCount;
                 if (pageIndex == 0) {
                     $('#linkLast').addClass("disabled");
-                    $('#linkLast').attr("href","");
+                    $('#linkLast').removeAttr("href");
                     $('#linkNext').removeClass("disabled");
                     $('#linkNext').attr("href", urlNext);
                 }
                 else if (pageIndex == pageCount - 1) {
 
                     $('#linkNext').addClass("disabled");
-                    $('#linkNext').attr("href","");
+                    $('#linkNext').removeAttr("href");
                     $('#linkLast').removeClass("disabled");
                     $('#linkLast').attr("href", urlLast);
                 }

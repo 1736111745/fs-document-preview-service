@@ -10,7 +10,6 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta Name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="<%=request.getContextPath()%>/static/yozo/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/yozo/doc.css?v=1" rel="stylesheet">
     <script>

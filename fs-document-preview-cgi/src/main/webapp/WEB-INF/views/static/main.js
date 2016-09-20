@@ -44,7 +44,7 @@ function loadData(pageIndex) {
     var content = $('#' + contentId);
     if (content.length > 0) return;
     loaded++;
-    var img = $("<img src='" + window.contextPath + "/static/loading.gif' width='100%' height='100%'>");
+    var img = $("<img src='" + window.contextPath + "/static/loading.gif' width='100px' height='100px' style='display:block; margin:0 auto;'>");
     var page = $("<div class='" + pageClass + "' style='max-width:" + maxWidth + "px'></div>");
     // content = $("<div class='word-content'  id='" + contentId + "'></div>");
     page.append(img);

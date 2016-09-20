@@ -68,6 +68,11 @@ public class PreviewController {
         return "preview";
     }
 
+    @RequestMapping(value = "/preview/handleExcel", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String handleExcel() {
+        return "preview_excel";
+    }
+
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewConfig", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getPreviewWay(HttpServletRequest request) {
@@ -151,8 +156,6 @@ public class PreviewController {
         String page = safteGetRequestParameter(request, "page");
         String name = safteGetRequestParameter(request, "name");
         String pageCount = safteGetRequestParameter(request, "pageCount");
-        String expectWidth = safteGetRequestParameter(request, "width");
-        int width = pageCount.isEmpty() ? 0 : Integer.parseInt(expectWidth);
         int pageCnt = pageCount.isEmpty() ? 0 : Integer.parseInt(pageCount);
         int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
@@ -192,8 +195,17 @@ public class PreviewController {
 
     //加载excel生成出来的html
     @RequestMapping("/preview/js/{fileName:.+}")
-    public String getStatic(@PathVariable String fileName, HttpServletResponse response) throws IOException {
+    public String getStatic(@PathVariable String fileName) throws IOException {
         return "redirect:/static/yozo/" + fileName;
+    }
+
+    //加载excel生成出来的html的样式
+    @RequestMapping("/preview/{folder}/js/{fileName:.+}")
+    public void getCss(@PathVariable String folder,@PathVariable String fileName, HttpServletResponse response) throws IOException {
+        String baseDir = previewInfoDao.getBaseDir(folder);
+        String filePath = baseDir + "/js/" + fileName;
+        response.setContentType("text/css");
+        outPut(response, filePath);
     }
 
     private void outPut(HttpServletResponse response, String filePath) throws IOException {

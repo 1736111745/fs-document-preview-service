@@ -70,7 +70,7 @@ public class IndexController {
     NFileStorageService nFileStorageService;
 
     @RequestMapping("/upload")
-    public String upload(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public String upload(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request) throws IOException {
         try {
             LOG.info("begin upload");
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");

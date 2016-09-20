@@ -62,5 +62,6 @@ function loadData() {
 }
 
 $(document).ready(function () {
+    $('#loading').hide();
     loadData();
 });

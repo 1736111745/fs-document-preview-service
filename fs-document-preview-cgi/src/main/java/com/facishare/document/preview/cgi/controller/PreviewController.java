@@ -19,10 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -96,6 +93,7 @@ public class PreviewController {
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Callable<String> getPreviewInfo(HttpServletRequest request) throws Exception {
+        int a=1/0;
         System.out.println("getPreviewInfo被调用 thread id is : " + Thread.currentThread().getId());
         final String[] path = {safteGetRequestParameter(request, "path")};
         String token = safteGetRequestParameter(request, "token");
@@ -260,6 +258,13 @@ public class PreviewController {
         if (!filePath.equals(""))
             map.put("filePath", filePath);
         return JSONObject.toJSONString(map);
+    }
+
+    @ExceptionHandler
+    @ResponseBody
+    public void handleException(HttpServletResponse req, Exception e) {
+        LOG.error("error:{}", e);
+        req.setStatus(500);
     }
 }
 

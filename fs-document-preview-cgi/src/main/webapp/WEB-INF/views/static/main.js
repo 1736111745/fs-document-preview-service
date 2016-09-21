@@ -56,7 +56,7 @@ function loadData(pageIndex) {
         success: function (data) {
             if (data.successed) {
                 var src = window.contextPath + "/preview/" + data.filePath;
-                var dataHtml = "<img class='lazy img-responsive' data-original='" + src + "' width='100%' height='100%'>";
+                var dataHtml = "<img class='lazy img-responsive' data-original='" + src + "'>";
                 var data = $(dataHtml);
                 page.append(data);
                 var nav = $("<div class='nav'><span>"+(pageIndex+1)+"/"+pageCount+"</span></div>");

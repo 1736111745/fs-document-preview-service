@@ -58,7 +58,6 @@ function loadData(pageIndex) {
                 var src = window.contextPath + "/preview/" + data.filePath;
                 var dataHtml = "<img class='lazy img-responsive' data-original='" + src + "' width='100%' height='100%'>";
                 var data = $(dataHtml);
-                $("img.lazy").lazyload({effect: "fadeIn"});
                 page.append(data);
             }
             else {
@@ -108,6 +107,9 @@ $(document).ready(function () {
 
 //加载N页
 function loadTopN(n) {
-    for (var i = 0; i < n; i++)
+    for (var i = 0; i < n; i++) {
         loadData(loaded);
+        $("img.lazy").lazyload({effect: "fadeIn"});
+    }
+
 }

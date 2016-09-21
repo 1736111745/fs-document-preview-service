@@ -25,7 +25,7 @@ public class WordConvertor implements IDocConvertor {
                 String fileName = (page1 + 1) + ".svg";
                 String dataFilePath = baseDir + "/" + fileName;
                 LOG.info("data file name:{}",fileName);
-                int code = ipicConvertor.convertToSVG(page1, page2, 1.0f, baseDir);
+                int code = ipicConvertor.convertToSVG(page1, page1, 1.0f, baseDir);
                 LOG.info("convert page:{},result code:{}",page1,code);
                 ipicConvertor.close();
                 File file = new File(dataFilePath);

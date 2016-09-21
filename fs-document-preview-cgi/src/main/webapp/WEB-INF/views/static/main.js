@@ -59,6 +59,8 @@ function loadData(pageIndex) {
                 var dataHtml = "<img class='lazy img-responsive' data-original='" + src + "' width='100%' height='100%'>";
                 var data = $(dataHtml);
                 page.append(data);
+                var nav = $("<div class='nav'><span>"+(pageIndex+1)+"/"+pageCount+"</span></div>");
+                page.append(nav);
             }
             else {
                 page.remove();
@@ -85,7 +87,7 @@ function scrollEvent() {
         var h2 = $(document).height();
         if (h1 > 0.5 * h2) {
             if (loaded > 0 && pageCount > loaded)
-                loadTopN(1);
+                loadTopN(3);
         }
     });
 }
@@ -109,7 +111,7 @@ $(document).ready(function () {
 function loadTopN(n) {
     for (var i = 0; i < n; i++) {
         loadData(loaded);
-        $("img.lazy").show().lazyload({placeholder:window.contextPath+"/static/grey.gif"});
+        $("img.lazy").show().lazyload({placeholder: window.contextPath + "/static/grey.gif"});
     }
 
 }

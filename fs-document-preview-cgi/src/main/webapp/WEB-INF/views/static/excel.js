@@ -29,10 +29,6 @@ function loadData() {
             $('#divLoading').hide();
             if (data.successed) {
                 var filePath = data.filePath;
-                var dirName = filePath.substr(0, filePath.indexOf('/'));
-                var cssURL = window.contextPath+"/preview/" + dirName + "/js/stylesheet.css"
-                var linkTag = $('<link href="' + cssURL + '" rel="stylesheet">');
-                $($('head')[0]).append(linkTag);
                 $(document).attr("title", "文档(" + page + "/" + pageCount + ")");//修改title值
                 paging();
                 var dataHtml = $.ajax({url: filePath, async: false}).responseText;

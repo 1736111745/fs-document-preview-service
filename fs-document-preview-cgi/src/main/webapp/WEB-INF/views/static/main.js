@@ -43,7 +43,7 @@ function loadData(pageIndex) {
     var content = $('#' + contentId);
     if (content.length > 0) return;
     loaded++;
-    var page = $("<div class='page'></div>");
+    var page = $("<div class='content'></div>");
     $("#divPages").append(page);
     $.ajax({
         type: 'get',
@@ -60,7 +60,9 @@ function loadData(pageIndex) {
                 var data = $(dataHtml);
                 page.append(data);
                 var nav = $("<div class='nav'><span>"+(pageIndex+1)+"/"+pageCount+"</span></div>");
+                var line=$("<div style='margin:0;padding:0;height:1px;background-color:#ddd;overflow:hidden;'></div>");
                 page.append(nav);
+                page.append(line)
             }
             else {
                 page.remove();

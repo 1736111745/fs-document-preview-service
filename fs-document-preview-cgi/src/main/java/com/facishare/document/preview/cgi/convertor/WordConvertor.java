@@ -17,7 +17,7 @@ public class WordConvertor implements IDocConvertor {
     public String convert(int page1, int page2, String filePath, String baseDir) throws Exception {
         ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
         try {
-            LOG.info("begin convert file:{},page:{}");
+            LOG.info("begin convert file:{},page:{}",filePath,page1);
             IPICConvertor ipicConvertor = convertobj.convertor.convertMStoPic(filePath);
             int resultcode = ipicConvertor.resultCode();
             LOG.info("get convertor result code:{}",resultcode);

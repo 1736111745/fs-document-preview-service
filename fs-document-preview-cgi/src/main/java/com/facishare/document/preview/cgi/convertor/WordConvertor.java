@@ -17,18 +17,18 @@ public class WordConvertor implements IDocConvertor {
     public String convert(int page1, int page2, String filePath, String baseDir) throws Exception {
         ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
         try {
-            LOG.info("begin get IPICConvertor");
+            LOG.info("begin convert file:{},page:{}");
             IPICConvertor ipicConvertor = convertobj.convertor.convertMStoPic(filePath);
-            LOG.info("end get IPICConvertor");
             int resultcode = ipicConvertor.resultCode();
+            LOG.info("get convertor result code:{}",resultcode);
             if (resultcode == 0) {
                 String fileName = (page1 + 1) + ".svg";
-                String imageFilePath = baseDir + "/" + fileName;
-                LOG.info("begin get svg,folder:{}", baseDir);
+                String dataFilePath = baseDir + "/" + fileName;
+                LOG.info("data file name:{}",fileName);
                 int code = ipicConvertor.convertToSVG(page1, page2, 1.0f, baseDir);
-                LOG.info("end get svg,folder:{},code:{}", baseDir, code);
+                LOG.info("convert page:{},result code:{}",code);
                 ipicConvertor.close();
-                File file = new File(imageFilePath);
+                File file = new File(dataFilePath);
                 if (file.exists()) {
                     return FilenameUtils.getBaseName(baseDir) + "/" + fileName;
                 } else {
@@ -37,7 +37,7 @@ public class WordConvertor implements IDocConvertor {
             } else
                 return "";
         } catch (Exception e) {
-            LOG.error("error info:" + e.getStackTrace());
+            LOG.error("error info",e);
             return "";
         } finally {
             ConvertorPool.getInstance().returnConvertor(convertobj);

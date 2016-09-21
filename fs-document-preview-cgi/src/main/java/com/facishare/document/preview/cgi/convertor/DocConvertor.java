@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class DocConvertor {
     private static final Logger LOG = LoggerFactory.getLogger(DocConvertor.class);
 
-    public String doConvert(String ea, String path, String baseDir, String name, String originalFilePath, int page) throws Exception {
+    public String doConvert(String path, String baseDir, String name, String originalFilePath, int page) throws Exception {
         String extension = FilenameUtils.getExtension(path).toLowerCase();
         IDocConvertor docConvertor = null;
         switch (extension) {

@@ -25,7 +25,7 @@ public class PDFConvertor implements IDocConvertor {
                 String fileName = (page1 + 1) + ".png";
                 String imageFilePath = baseDir + "/" + fileName;
                 LOG.info("begin get jpg,jpg folder:{}", baseDir);
-                int code =ipicConvertor.convertToPNG(page1, page2, 3.0f, baseDir);
+                int code =ipicConvertor.convertToPNG(page1, page2, 2.0f, baseDir);
                 LOG.info("end get jpg,jpg folder:{},code:{}", baseDir,code);
                 ipicConvertor.close();
                 File file = new File(imageFilePath);

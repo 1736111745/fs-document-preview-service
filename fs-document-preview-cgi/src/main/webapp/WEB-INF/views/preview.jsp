@@ -10,14 +10,15 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta content="width=device-width, maximum-scale=1.0, user-scalable=1" name="viewport" />
     <link href="<%=request.getContextPath()%>/static/yozo/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/yozo/doc.css?v=1" rel="stylesheet">
     <script>
         window.contextPath = "<%=request.getContextPath()%>";
     </script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/yozo/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/jquery.lazyload.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/main.js?v=1.0.5"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/jquery.lazyload.min.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/main.js?v=1.0.6"></script>
 <body>
 <div id="divPages">
 </div>

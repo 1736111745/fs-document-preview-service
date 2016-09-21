@@ -109,7 +109,7 @@ $(document).ready(function () {
 function loadTopN(n) {
     for (var i = 0; i < n; i++) {
         loadData(loaded);
-        $("img.lazy").show().lazyload();
+        $("img.lazy").show().lazyload({placeholder:window.contextPath+"/static/grey.gif"});
     }
 
 }

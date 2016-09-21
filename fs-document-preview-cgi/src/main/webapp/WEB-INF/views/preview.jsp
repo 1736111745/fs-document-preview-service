@@ -16,7 +16,8 @@
         window.contextPath = "<%=request.getContextPath()%>";
     </script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/yozo/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/main.js?v=1.0.3"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/jquery.lazyload.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/main.js?v=1.0.4"></script>
 <body>
 <div id="divPages">
 </div>

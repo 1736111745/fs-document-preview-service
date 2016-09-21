@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.WebAsyncTask;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -92,14 +93,14 @@ public class PreviewController {
 
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public Callable<String> getPreviewInfo(HttpServletRequest request) throws Exception {
+    public WebAsyncTask<String> getPreviewInfo(HttpServletRequest request) throws Exception {
         System.out.println("getPreviewInfo被调用 thread id is : " + Thread.currentThread().getId());
         final String[] path = {safteGetRequestParameter(request, "path")};
         String token = safteGetRequestParameter(request, "token");
         final String[] name = {safteGetRequestParameter(request, "name")};
         final String[] securityGroup = {""};
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        return () ->
+        Callable<String> callable=() ->
         {
             System.out.println("getCount thread id is : " + Thread.currentThread().getId());
             if (path[0].equals("") && token.equals("")) {
@@ -149,12 +150,13 @@ public class PreviewController {
             }
             return getPreviewInfoResult(true, pageCount, path[0], "");
         };
+        return new WebAsyncTask<>(1000 * 60, callable);
     }
 
 
     @ResponseBody
     @RequestMapping(value = "/preview/getFilePath", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public Callable<String> convert(HttpServletRequest request) throws Exception {
+    public WebAsyncTask<String> convert(HttpServletRequest request) throws Exception {
         String path = safteGetRequestParameter(request, "path");
         String page = safteGetRequestParameter(request, "page");
         String name = safteGetRequestParameter(request, "name");
@@ -163,8 +165,7 @@ public class PreviewController {
         int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         DataFileInfo dataFileInfo = previewInfoDao.getDataFileInfo(path, pageIndex, employeeInfo.getEa());
-        return () ->
-        {
+        Callable<String> callable = () -> {
             if (!dataFileInfo.getShortFilePath().equals("")) {
                 return getFilePathResult(true, dataFileInfo.getShortFilePath());
 
@@ -181,6 +182,7 @@ public class PreviewController {
                 }
             }
         };
+        return new WebAsyncTask<>(1000 * 60, callable);
     }
 
     @RequestMapping("/preview/{folder}/{fileName:.+}")

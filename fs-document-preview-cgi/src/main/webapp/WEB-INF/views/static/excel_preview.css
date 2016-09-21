@@ -37,11 +37,7 @@ body {
 }
 
 .progressBar {
-    border: solid 1px #000000;
-    background: white url('loading1.gif') no-repeat 10px 10px;
-}
-
-.progressBar {
+    background: white url('loading.gif') no-repeat 10px 10px;
     display: block;
     width: 100px;
     height: 28px;

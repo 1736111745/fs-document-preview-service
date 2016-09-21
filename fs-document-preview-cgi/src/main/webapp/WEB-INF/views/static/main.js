@@ -6,8 +6,7 @@ var token = getQueryStringByName("token");
 var loaded = 0;
 var pageCount = 0;
 var type = 1;
-var pageClass = "page";
-var flag=false;
+var flag = false;
 function getPreviewInfo() {
     $.ajax({
         type: 'get',
@@ -19,7 +18,6 @@ function getPreviewInfo() {
                 pageCount = data.pageCount;
                 path = data.path;
                 type = path.toLowerCase().indexOf(".doc") > 0 ? 1 : path.toLowerCase().indexOf(".xls") > 0 ? 2 : 3;
-                pageClass = path.toLowerCase().indexOf(".xls") > 0 ? "excel" : "page";
                 maxWidth = type == 3 ? 893 : 793;
                 flag = true;
             }
@@ -45,9 +43,7 @@ function loadData(pageIndex) {
     var content = $('#' + contentId);
     if (content.length > 0) return;
     loaded++;
-    var img = $("<img src='" + window.contextPath + "/static/loading.gif' width='100px' height='100px' style='display:block; margin:0 auto;'>");
-    var page = $("<div class='" + pageClass + "' style='max-width:" + maxWidth + "px'></div>");
-    page.append(img);
+    var page = $("<div class='page'></div>");
     $("#divPages").append(page);
     $.ajax({
         type: 'get',
@@ -60,15 +56,9 @@ function loadData(pageIndex) {
         success: function (data) {
             if (data.successed) {
                 var src = window.contextPath + "/preview/" + data.filePath;
-                var dataHtml = "<embed src='" + src + "' width='100%' height='100%' type='image/svg+xml'></embed>"
-                if (type == 3) {
-                    dataHtml = "<img src='" + src + "' width='100%' height='100%'>";
-                }
-                else if (type == 2) {
-                    dataHtml = $.ajax({url: src, async: false}).responseText;
-                }
+                var dataHtml = "<img class='lazy img-responsive' data-original='" + src + "' width='100%' height='100%'>";
                 var data = $(dataHtml);
-                img.remove();
+                $("img.lazy").lazyload({effect: "fadeIn"});
                 page.append(data);
             }
             else {
@@ -96,7 +86,7 @@ function scrollEvent() {
         var h2 = $(document).height();
         if (h1 > 0.5 * h2) {
             if (loaded > 0 && pageCount > loaded)
-                loadTopN(3);
+                loadTopN(1);
         }
     });
 }
@@ -104,7 +94,7 @@ function scrollEvent() {
 //入口
 $(document).ready(function () {
     getPreviewInfo();
-    if(flag) {
+    if (flag) {
         if (type == 2) {
             var url = window.contextPath + '/preview/handleExcel?path=' + path + '&page=0&pageCount=' + pageCount;
             location.href = url;

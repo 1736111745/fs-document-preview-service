@@ -3,38 +3,9 @@ body {
     padding-bottom: 20px;
 }
 
-.page{
-    line-height: normal;
-    margin-right: auto;
-    margin-left: auto;
+.nav {
+    border-bottom: 1px dotted #ccc;
+    border-width: 1px;
     margin-bottom: 15px;
-    background-color:#FFF;
-    -moz-border-radius: 1px;
-    border-radius: 1px;
-    -moz-box-shadow: 0 0 10px 5px #888;
-    -webkit-box-shadow: 0 0 10px 5px #888;
-    box-shadow: 0 0 10px 5px #888;
-    position: relative;
-    word-wrap: break-word;
-    word-break: break-all;
-}
-/* -------------------------------------------------- */
-/*	Mobile css
-/* -------------------------------------------------- */
-@media (max-width: 793px) {
-    .page{
-        line-height: normal;
-        margin-right: auto;
-        margin-left: auto;
-        margin-bottom: 15px;
-        background-color:#FFF;
-        -moz-border-radius: 1px;
-        border-radius: 1px;
-        -moz-box-shadow: 0 0 10px 5px #888;
-        -webkit-box-shadow: 0 0 10px 5px #888;
-        box-shadow: 0 0 10px 5px #888;
-        position: relative;
-        word-wrap: break-word;
-        word-break: break-all;
-    }
+    padding-bottom: 15px;
 }

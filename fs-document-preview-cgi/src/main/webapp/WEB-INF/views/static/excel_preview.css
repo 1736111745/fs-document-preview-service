@@ -11,6 +11,7 @@
     height: 30px;
     text-align: center;
 }
+
 body {
     height: 100%;
     overflow: auto;
@@ -49,3 +50,4 @@ body {
     position: absolute;
     z-index: 2001;
 }
+

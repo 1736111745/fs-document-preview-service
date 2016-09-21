@@ -56,13 +56,11 @@ function loadData(pageIndex) {
         success: function (data) {
             if (data.successed) {
                 var src = window.contextPath + "/preview/" + data.filePath;
-                var dataHtml = "<img class='lazy img-responsive' data-original='" + src + "'>";
+                var dataHtml = "<img class='lazy img-responsive' data-original='" + src + "' width='100%' height='100%'>";
                 var data = $(dataHtml);
                 page.append(data);
                 var nav = $("<div class='nav'><span>"+(pageIndex+1)+"/"+pageCount+"</span></div>");
-                var line=$("<div style='margin:0;padding:0;height:1px;background-color:#ddd;overflow:hidden;'></div>");
                 page.append(nav);
-                page.append(line)
             }
             else {
                 page.remove();

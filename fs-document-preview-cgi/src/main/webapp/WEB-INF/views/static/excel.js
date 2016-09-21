@@ -23,10 +23,10 @@ function loadData() {
         async: true,
         url: window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + pageIndex + "&pageCount=" + pageCount,
         beforeSend: function () {
-            $('#loading').show();
+            $('#divLoading').show();
         },
         success: function (data) {
-            $('#loading').hide();
+            $('#divLoading').hide();
             if (data.successed) {
                 var filePath = data.filePath;
                 var dirName = filePath.substr(0, filePath.indexOf('/'));
@@ -81,6 +81,6 @@ function paging() {
 }
 
 $(document).ready(function () {
-    $('#loading').hide();
+    $('#divLoading').hide();
     loadData();
 });

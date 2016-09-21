@@ -11,7 +11,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta content="width=device-width, maximum-scale=1.0, user-scalable=1" name="viewport" />
+    <meta content="width=device-width,user-scalable=0" name="viewport" />
     <title>文档</title>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/yozo/jquery-1.11.1.min.js"></script>
     <script>
@@ -25,7 +25,7 @@
     <script type="application/javascript" src="<%=request.getContextPath()%>/static/excel.js?v=1.0.3"></script>
 </head>
 <body>
-<div id="loading">
+<div id="divLoading">
     <div id="background" class="background"></div>
     <div id="progressBar" class="progressBar"></div>
 </div>

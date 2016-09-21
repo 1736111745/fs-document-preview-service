@@ -81,7 +81,7 @@ public class ConvertorPool {
         convert.setHtmlTitle("文档预览");
         convert.setShowTitle(true);
         convert.setShowPic(true);
-        convert.setEmptyCount(20, 20);
+        convert.setEmptyCount(100, 200);
         convert.setHtmlEncoding("UTF-8");
         convert.setConvertForPhone(true);
         convert.setAutoDeleteTempFiles(true);

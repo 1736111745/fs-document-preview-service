@@ -1,6 +1,7 @@
 package com.facishare.document.preview.cgi.convertor;
 
 import application.dcs.IHtmlConvertor;
+import com.facishare.document.preview.cgi.utils.HtmlCompressor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.LineIterator;
@@ -51,8 +52,7 @@ public class ExcelConvertor implements IDocConvertor {
         }
     }
 
-    private void handleHtml(File file, String dirName) throws IOException {
-        LOG.info("begin handleHtml,file size:{}", file.length());
+    private String readFile(File file) throws IOException {
         StringBuffer sb = new StringBuffer();
         LineIterator it = FileUtils.lineIterator(file, "UTF-8");
         try {
@@ -63,15 +63,23 @@ public class ExcelConvertor implements IDocConvertor {
         } finally {
             LineIterator.closeQuietly(it);
         }
-        String html = sb.toString().trim();
-        String regex="<head>[\\s\\S]*</head>";
-        html=html.replaceAll(regex,"");
-        html=html.replace("<!DOCTYPE html><html>","").trim();
-        html=html.replace("</html>","").trim();
-        html=html.replace("<body>","").trim();
-        html=html.replace("</body>","").trim();
+        return sb.toString();
+    }
+    private void handleHtml(File file, String dirName) throws Exception {
+        String cssFilePath = file.getParent() + "/js/stylesheet.css";
+        String css = readFile(new File(cssFilePath)).trim();
+        String html = readFile(file).trim();
+        String regex = "<head>[\\s\\S]*</head>";
+        html = html.replaceAll(regex, "");
+        html = html.replace("<!DOCTYPE html><html>", "").trim();
+        html = html.replace("</html>", "").trim();
+        html = html.replace("<body>", "").trim();
+        html = html.replace("</body>", "").trim();
         html = html.replace("./js", "./" + dirName + "/js");
+        html = "<style>" + css + "</style>" + html;
+        LOG.info("befor compress,length:{}",html.length());
+        html = HtmlCompressor.compress(html);
+        LOG.info("end compress,length:{}",html.length());
         FileUtils.writeStringToFile(file, html, false);
-        LOG.info("end handleHtml");
     }
 }

@@ -33,10 +33,8 @@
 
 </div>
 <div id="fd">
-    <div class="btn-group">
-        <a type="button" class="btn btn-default" id="linkLast">上一页</a>
-        <a type="button" class="btn btn-default" id="linkNext">下一页</a>
-    </div>
+        <a type="button" id="linkLast">上一页</a>
+        <a type="button" id="linkNext">下一页</a>
 </div>
 </body>
 </html>

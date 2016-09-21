@@ -5,14 +5,20 @@
 
 #fd {
     position: fixed;
-    *position: absolute;
-    width: 100px;
-    height: 100px;
-    top: 96%;
-    left: 50%;
-    margin: -50px 0 0 -50px;
+    bottom: 50px;
+    left: 50px;
+    right: 50px;
+    height: 30px;
+    text-align: center;
 }
-
+#fd a {
+    display: inline-block;
+    width: 40%;
+    height: 30px;
+    line-height: 30px;
+    background: #CCC;
+    border-radius: 5px;
+}
 body {
     height: 100%;
     overflow: auto;

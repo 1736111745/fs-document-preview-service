@@ -17,7 +17,7 @@
     </script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/yozo/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/jquery.lazyload.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/main.js?v=1.0.7"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/main.js?v=1.0.8"></script>
 <body>
 <div id="divPages">
 </div>

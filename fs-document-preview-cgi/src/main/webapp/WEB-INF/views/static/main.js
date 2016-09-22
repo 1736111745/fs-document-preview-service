@@ -59,7 +59,7 @@ function loadData(pageIndex) {
                 var dataHtml = "<img class='lazy img-responsive' data-original='" + src + "' width='100%' height='100%'>";
                 var data = $(dataHtml);
                 page.append(data);
-                var nav = $("<div class='nav'><span>"+(pageIndex+1)+"/"+pageCount+"</span></div>");
+                var nav = $("<div><span>"+(pageIndex+1)+"/"+pageCount+"</span></div>");
                 page.append(nav);
             }
             else {

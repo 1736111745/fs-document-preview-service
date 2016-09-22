@@ -100,7 +100,7 @@ public class PreviewController {
         final String[] name = {safteGetRequestParameter(request, "name")};
         final String[] securityGroup = {""};
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        Callable<String> callable=() ->
+        Callable<String> callable = () ->
         {
             System.out.println("getCount thread id is : " + Thread.currentThread().getId());
             if (path[0].equals("") && token.equals("")) {
@@ -191,6 +191,8 @@ public class PreviewController {
         String filePath = baseDir + "/" + fileName;
         if (fileName.toLowerCase().contains(".png")) {
             response.setContentType("image/png");
+        } else if (fileName.toLowerCase().contains(".jpg")) {
+            response.setContentType("image/jpeg ");
         } else if (fileName.toLowerCase().contains(".js")) {
             response.setContentType("application/javascript");
         } else if (fileName.toLowerCase().contains(".css")) {
@@ -214,6 +216,8 @@ public class PreviewController {
         String filePath = baseDir + "/js/" + fileName;
         if (fileName.toLowerCase().contains(".png")) {
             response.setContentType("image/png");
+        } else if (fileName.toLowerCase().contains(".jpg")) {
+            response.setContentType("image/jpeg ");
         } else if (fileName.toLowerCase().contains(".js")) {
             response.setContentType("application/javascript");
         } else if (fileName.toLowerCase().contains(".css")) {

@@ -17,7 +17,12 @@
     </script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/yozo/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/jquery.lazyload.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/main.js?v=1.0.9"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/main.js?v=1.1.0"></script>
+<style>
+    .content {
+        margin-bottom: 15px;
+        border: 1px solid #D3D3D3;
+    }</style>
 <body>
 <div id="divPages">
 </div>

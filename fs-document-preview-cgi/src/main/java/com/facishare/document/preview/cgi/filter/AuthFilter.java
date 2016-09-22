@@ -22,7 +22,8 @@ public class AuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (request.getRequestURI().equals("/") || request.getRequestURI().toLowerCase().contains(".js") || request.getRequestURI().toLowerCase().contains(".svg") || request.getRequestURI().toLowerCase().contains(".png") || request.getRequestURI().toLowerCase().contains(".css")) {
+        String requestUri = request.getRequestURI().toLowerCase();
+        if (requestUri.equals("/") || requestUri.contains(".js") || requestUri.contains(".svg") || requestUri.contains(".png") || requestUri.contains(".css") || requestUri.contains(".jpg")) {
             filterChain.doFilter(request, response);
         } else {
             EmployeeInfo employeeInfo = authHelper.getAuthinfo(request);

@@ -16,12 +16,14 @@
     <script>
         window.contextPath = "<%=request.getContextPath()%>";
     </script>
-    <link href="<%=request.getContextPath()%>/static/excel_preview.css?ts=<%=System.currentTimeMillis()%>" rel="stylesheet">
+    <link href="<%=request.getContextPath()%>/static/excel_preview.css?ts=<%=System.currentTimeMillis()%>"
+          rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/yozo/style.css" rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/yozo/bootstrap.min.css" rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/yozo/bootstrap-responsive.min.css" rel="stylesheet">
     <script type="application/javascript" src="<%=request.getContextPath()%>/static/yozo/bootstrap.min.js"></script>
-    <script type="application/javascript" src="<%=request.getContextPath()%>/static/excel.js?ts=<%=System.currentTimeMillis()%>"></script>
+    <script type="application/javascript"
+            src="<%=request.getContextPath()%>/static/excel.js?ts=<%=System.currentTimeMillis()%>"></script>
 </head>
 <body>
 <div id="divLoading">
@@ -29,9 +31,8 @@
     <div id="progressBar" class="progressBar"></div>
 </div>
 <div id="content">
-
 </div>
-<div id="fd">
+<div class="fixed_div">
     <div class="btn-group">
         <a type="button" class="btn btn-default" id="linkLast">上一页</a>
         <a type="button" class="btn btn-default" id="linkNext">下一页</a>

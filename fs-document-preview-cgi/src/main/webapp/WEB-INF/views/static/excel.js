@@ -26,7 +26,8 @@ function loadData() {
         },
         complete: function(request, status){
             $('#divLoading').hide();
-            $('#content').html(request.responseText);
+            var excelContent=$(request.responseText)
+            $('#content').prepend(excelContent);
             paging();
         }
     });

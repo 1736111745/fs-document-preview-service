@@ -34,8 +34,9 @@
 </div>
 <div class="fixed_div">
     <div class="btn-group">
-        <a type="button" class="btn btn-default" id="linkLast">上一页</a>
-        <a type="button" class="btn btn-default" id="linkNext">下一页</a>
+        <a type="button" class="btn btn-group-lg" id="linkLast">上一页</a>
+        <a type="button" class="btn btn-group-lg" id="linkNext">下一页</a>
+        <button type="button" class="btn btn-group-lg" id="paging"></button>
     </div>
 </div>
 </body>

@@ -15,6 +15,7 @@ function getQueryStringByName(name) {
 //分页加载
 function loadData() {
     if (pageIndex >= pageCount) return;
+    $('#paging').html((pageIndex+1)+"/"+pageCount);
     $.ajax({
         type: 'get',
         timeout: 1800000,

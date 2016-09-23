@@ -16,12 +16,12 @@
     <script>
         window.contextPath = "<%=request.getContextPath()%>";
     </script>
-    <link href="<%=request.getContextPath()%>/static/excel_preview.css" rel="stylesheet">
+    <link href="<%=request.getContextPath()%>/static/excel_preview.css?v=1.0.1" rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/yozo/style.css" rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/yozo/bootstrap.min.css" rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/yozo/bootstrap-responsive.min.css" rel="stylesheet">
     <script type="application/javascript" src="<%=request.getContextPath()%>/static/yozo/bootstrap.min.js"></script>
-    <script type="application/javascript" src="<%=request.getContextPath()%>/static/excel.js?v=1.0.3"></script>
+    <script type="application/javascript" src="<%=request.getContextPath()%>/static/excel.js?v=2.1ww.3"></script>
 </head>
 <body>
 <div id="divLoading">

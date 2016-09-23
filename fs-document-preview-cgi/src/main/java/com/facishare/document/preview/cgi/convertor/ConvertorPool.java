@@ -2,6 +2,8 @@ package com.facishare.document.preview.cgi.convertor;
 
 import application.dcs.Convert;
 import com.facishare.document.preview.cgi.utils.PathHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +11,7 @@ import java.util.List;
 public class ConvertorPool {
     private final static String root = Thread.currentThread().getContextClassLoader().getResource("").getPath();
     private final static String configDir = root + "yozo_config";
-
+    private static final Logger LOG = LoggerFactory.getLogger(ConvertorPool.class);
     private ConvertorPool() {
     }
 
@@ -56,6 +58,7 @@ public class ConvertorPool {
     }
 
     private synchronized ConvertorObject getIdleConvertor() {
+        LOG.info("convert pool availSize:{}",availSize);
         for (ConvertorObject co : pool) {
             if (co.available) {
                 co.available = false;
@@ -93,7 +96,6 @@ public class ConvertorPool {
         public ConvertorObject(int id) {
             this.id = id;
         }
-
         public int id;
         public Convert convertor;
         public boolean available;

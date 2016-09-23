@@ -1,7 +1,6 @@
 /**
  * Created by liuq on 16/9/19.
  */
-
 var page = getQueryStringByName("page");
 var pageIndex = parseInt(page)
 var pageCount = getQueryStringByName("pageCount");
@@ -25,19 +24,10 @@ function loadData() {
         beforeSend: function () {
             $('#divLoading').show();
         },
-        success: function (data) {
+        complete: function(request, status){
             $('#divLoading').hide();
-            if (data.successed) {
-                var filePath = data.filePath;
-                $(document).attr("title", "文档(" + page + "/" + pageCount + ")");//修改title值
-                paging();
-                var dataHtml = $.ajax({url: filePath, async: false}).responseText;
-                $('#content').html(dataHtml);
-            }
-            else {
-            }
-        },
-        error: function () {
+            $('#content').html(request.responseText);
+            paging();
         }
     });
 }
@@ -75,7 +65,6 @@ function paging() {
         }
     }
 }
-
 $(document).ready(function () {
     $('#divLoading').hide();
     loadData();

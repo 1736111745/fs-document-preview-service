@@ -10,14 +10,12 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link href="<%=request.getContextPath()%>/static/yozo/bootstrap-responsive.min.css" rel="stylesheet">
-    <link href="<%=request.getContextPath()%>/static/yozo/doc.css?v=1.0.2" rel="stylesheet">
     <script>
         window.contextPath = "<%=request.getContextPath()%>";
     </script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/yozo/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/jquery.scrollLoading.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/main.js?v=1.1.5"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/main.js?ts=<%=System.currentTimeMillis()%>"></script>
 <style>
     .content {
         margin-bottom: 15px;

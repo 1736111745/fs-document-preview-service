@@ -108,8 +108,14 @@ $(document).ready(function () {
             location.href = url;
         }
         else {
-            loadFirst();
-            scrollEvent();
+            var preloadImg=window.contextPath+"/static/pixel.gif";
+            for(var i=0;i<pageCount;i++)
+            {
+                var src=window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount
+                var page=$("<div class='content'><img class='scrollLoading' data-url='"+src+"' src='"+preloadImg+"' width='32px' height='32px'/></div>");
+                $("#divPages").append(page);
+            }
+            $(".scrollLoading").scrollLoading();
         }
     }
 });
@@ -120,5 +126,4 @@ function loadTopN(n) {
         loadData(loaded);
         $("img.lazy").lazyload({threshold: 200});
     }
-
 }

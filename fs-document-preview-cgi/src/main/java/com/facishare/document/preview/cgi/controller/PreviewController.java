@@ -15,12 +15,14 @@ import com.fxiaoke.release.FsGrayReleaseBiz;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.LineIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.WebAsyncTask;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -94,7 +96,6 @@ public class PreviewController {
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public WebAsyncTask<String> getPreviewInfo(HttpServletRequest request) throws Exception {
-        System.out.println("getPreviewInfo被调用 thread id is : " + Thread.currentThread().getId());
         final String[] path = {safteGetRequestParameter(request, "path")};
         String token = safteGetRequestParameter(request, "token");
         final String[] name = {safteGetRequestParameter(request, "name")};
@@ -102,7 +103,6 @@ public class PreviewController {
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         Callable<String> callable = () ->
         {
-            System.out.println("getCount thread id is : " + Thread.currentThread().getId());
             if (path[0].equals("") && token.equals("")) {
                 return getPreviewInfoResult(false, 0, "", "参数错误!");
             }
@@ -128,7 +128,9 @@ public class PreviewController {
             int pageCount;
             if (previewInfo == null) {
                 try {
+                    LOG.info("begin download from warehouse,path:{}",path);
                     byte[] bytes = fileStorageProxy.GetBytesByPath(path[0], employeeInfo, securityGroup[0]);
+                    LOG.info("end download from warehouse ,path:{}",path);
                     if (bytes == null || bytes.length == 0) {
                         return getPreviewInfoResult(false, 0, "", "文件无法找到或者损坏!");
                     }
@@ -136,7 +138,9 @@ public class PreviewController {
                     String fileName = SampleUUID.getUUID() + "." + extension;
                     String filePath = FilenameUtils.concat(dataDir, fileName);
                     FileUtils.writeByteArrayToFile(new File(filePath), bytes);
+                    LOG.info("begin get page count,path:{}",path);
                     pageCount = DocPageCalculator.GetDocPageCount(bytes, filePath);
+                    LOG.info("end get page count,path:{}",path);
                     previewInfoDao.initPreviewInfo(path[0], filePath, dataDir, bytes.length, pageCount, employeeInfo.getEa(), employeeInfo.getEmployeeId());
                     return getPreviewInfoResult(true, pageCount, path[0], "");
                 } catch (Exception ex) {
@@ -156,7 +160,7 @@ public class PreviewController {
 
     @ResponseBody
     @RequestMapping(value = "/preview/getFilePath", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public WebAsyncTask<String> convert(HttpServletRequest request) throws Exception {
+    public Callable<ModelAndView> convert(HttpServletRequest request) throws Exception {
         String path = safteGetRequestParameter(request, "path");
         String page = safteGetRequestParameter(request, "page");
         String name = safteGetRequestParameter(request, "name");
@@ -165,24 +169,21 @@ public class PreviewController {
         int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         DataFileInfo dataFileInfo = previewInfoDao.getDataFileInfo(path, pageIndex, employeeInfo.getEa());
-        Callable<String> callable = () -> {
+        Callable<ModelAndView> callable = () -> {
             if (!dataFileInfo.getShortFilePath().equals("")) {
-                return getFilePathResult(true, dataFileInfo.getShortFilePath());
+                String[] array = dataFileInfo.getShortFilePath().split("/");
+                return new ModelAndView("redirect:/preview/" + array[0] + "/" + array[1]);
 
             } else {
                 String originalFilePath = dataFileInfo.getOriginalFilePath();
                 File file = new File(originalFilePath);
                 String dataFilePath = docConvertor.doConvert(path, dataFileInfo.getDataDir(), name, originalFilePath, pageIndex);
-                if (!dataFilePath.equals("")) {
-                    previewInfoDao.create(path, dataFileInfo.getDataDir(), dataFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), file.length(), pageCnt);
-                    return getFilePathResult(true, dataFilePath);
-                } else {
-                    LOG.warn("path:{} can't do preview", path);
-                    return getFilePathResult(false, "");
-                }
+                previewInfoDao.create(path, dataFileInfo.getDataDir(), dataFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), file.length(), pageCnt);
+                String[] array = dataFilePath.split("/");
+                return new ModelAndView("redirect:/preview/" + array[0] + "/" + array[1]);
             }
         };
-        return new WebAsyncTask<>(1000 * 60, callable);
+        return callable;
     }
 
     @RequestMapping("/preview/{folder}/{fileName:.+}")
@@ -229,6 +230,17 @@ public class PreviewController {
     }
 
     private void outPut(HttpServletResponse response, String filePath) throws IOException {
+        if (filePath.toLowerCase().contains(".png")) {
+            response.setContentType("image/png");
+        } else if (filePath.toLowerCase().contains(".jpg")) {
+            response.setContentType("image/jpeg ");
+        } else if (filePath.toLowerCase().contains(".js")) {
+            response.setContentType("application/javascript");
+        } else if (filePath.toLowerCase().contains(".css")) {
+            response.setContentType("text/css");
+        } else if (filePath.toLowerCase().contains(".svg")) {
+            response.setContentType("image/svg+xml");
+        }
         FileChannel fc = new RandomAccessFile(filePath, "r").getChannel();
         MappedByteBuffer mbb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
         byte[] buffer = new byte[(int) fc.size()];
@@ -270,6 +282,20 @@ public class PreviewController {
     public void handleException(HttpServletResponse req, Exception e) {
         LOG.error("error:", e);
         req.setStatus(500);
+    }
+
+    private String readFile(File file) throws IOException {
+        StringBuffer sb = new StringBuffer();
+        LineIterator it = FileUtils.lineIterator(file, "UTF-8");
+        try {
+            while (it.hasNext()) {
+                String line = it.nextLine();
+                sb.append(line);
+            }
+        } finally {
+            LineIterator.closeQuietly(it);
+        }
+        return sb.toString();
     }
 }
 

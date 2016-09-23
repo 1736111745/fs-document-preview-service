@@ -1,8 +1,6 @@
 package com.facishare.document.preview.cgi.utils;
 
 import com.github.autoconf.ConfigFactory;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,14 +30,6 @@ public class PathHelper {
         return convertorTempPath;
     }
 
-
-    public String getTempFilePath(String path, byte[] bytes) throws IOException {
-        String extension = FilenameUtils.getExtension(path).toLowerCase();
-        String tempFileName = SampleUUID.getUUID() + "." + extension;
-        String tempFilePath = String.format("%s/tempfile/%s", tempDir, tempFileName);
-        FileUtils.writeByteArrayToFile(new File(tempFilePath), bytes);
-        return tempFilePath;
-    }
 
     public String getDataDir() throws IOException {
         String yyyyMM = DateUtil.getFormatDateStr("yyyyMM");

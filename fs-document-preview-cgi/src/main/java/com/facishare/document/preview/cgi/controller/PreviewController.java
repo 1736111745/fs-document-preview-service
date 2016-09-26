@@ -171,24 +171,26 @@ public class PreviewController {
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             DataFileInfo dataFileInfo = previewInfoDao.getDataFileInfo(path, pageIndex, employeeInfo.getEa());
             if (!dataFileInfo.getShortFilePath().equals("")) {
-                String[] array = dataFileInfo.getShortFilePath().split("/");
-                return handModelAndView(array);
+                return handModelAndView(dataFileInfo.getShortFilePath());
 
             } else {
                 String originalFilePath = dataFileInfo.getOriginalFilePath();
                 File file = new File(originalFilePath);
                 String dataFilePath = docConvertor.doConvert(path, dataFileInfo.getDataDir(), name, originalFilePath, pageIndex);
                 previewInfoDao.create(path, dataFileInfo.getDataDir(), dataFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), file.length(), pageCnt);
-                String[] array = dataFilePath.split("/");
-                return handModelAndView(array);
+                return handModelAndView(dataFilePath);
             }
         };
         return new WebAsyncTask(1000 * 60, callable);
     }
 
-    private ModelAndView handModelAndView(String[] array) {
-        if (array.length == 2) {
-            return new ModelAndView("redirect:/preview/" + array[0] + "/" + array[1]);
+    private ModelAndView handModelAndView(String dataFilePath) {
+        if (dataFilePath.length() > 0) {
+            String[] array = dataFilePath.split("/");
+            if (array.length == 2) {
+                return new ModelAndView("redirect:/preview/" + array[0] + "/" + array[1]);
+            } else
+                return new ModelAndView("redirect:/preview/static/pixel.gif");
         } else {
             return new ModelAndView("redirect:/preview/static/pixel.gif");
         }
@@ -205,6 +207,7 @@ public class PreviewController {
     public String getStatic(@PathVariable String fileName) throws IOException {
         return "redirect:/static/yozo/" + fileName;
     }
+
     @RequestMapping("/preview/{folder}/js/{fileName:.+}")
     public void getCss(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
         String baseDir = previewInfoDao.getBaseDir(folder);
@@ -223,9 +226,7 @@ public class PreviewController {
             response.setContentType("text/css");
         } else if (filePath.toLowerCase().contains(".svg")) {
             response.setContentType("image/svg+xml");
-        }
-        else if(filePath.toLowerCase().contains(".htm"))
-        {
+        } else if (filePath.toLowerCase().contains(".htm")) {
             response.setContentType("text/html");
         }
 

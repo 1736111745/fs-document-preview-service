@@ -21,6 +21,10 @@
         margin-bottom: 15px;
         border: 1px solid #D3D3D3;
     }
+    .center
+    {
+        text-align: center;
+    }
     .background {
         display: block;
         width: 100%;

@@ -172,7 +172,7 @@ public class PreviewController {
             DataFileInfo dataFileInfo = previewInfoDao.getDataFileInfo(path, pageIndex, employeeInfo.getEa());
             if (!dataFileInfo.getShortFilePath().equals("")) {
                 String[] array = dataFileInfo.getShortFilePath().split("/");
-                return new ModelAndView("redirect:/preview/" + array[0] + "/" + array[1]);
+                return handModelAndView(array);
 
             } else {
                 String originalFilePath = dataFileInfo.getOriginalFilePath();
@@ -180,10 +180,18 @@ public class PreviewController {
                 String dataFilePath = docConvertor.doConvert(path, dataFileInfo.getDataDir(), name, originalFilePath, pageIndex);
                 previewInfoDao.create(path, dataFileInfo.getDataDir(), dataFilePath, employeeInfo.getEa(), employeeInfo.getEmployeeId(), file.length(), pageCnt);
                 String[] array = dataFilePath.split("/");
-                return new ModelAndView("redirect:/preview/" + array[0] + "/" + array[1]);
+                return handModelAndView(array);
             }
         };
         return new WebAsyncTask(1000 * 60, callable);
+    }
+
+    private ModelAndView handModelAndView(String[] array) {
+        if (array.length == 2) {
+            return new ModelAndView("redirect:/preview/" + array[0] + "/" + array[1]);
+        } else {
+            return new ModelAndView("redirect:/preview/static/pixel.gif");
+        }
     }
 
     @RequestMapping("/preview/{folder}/{fileName:.+}")

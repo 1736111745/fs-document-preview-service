@@ -14,7 +14,7 @@
         window.contextPath = "<%=request.getContextPath()%>";
     </script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/yozo/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/jquery.scrollLoading.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/jquery.lazyload.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/main.js?ts=<%=System.currentTimeMillis()%>"></script>
 <style>
     .content {
@@ -35,7 +35,7 @@
     }
 
     .progressBar {
-        background: url('/dps/static/loading.gif') no-repeat center center;
+        background: url('<%=request.getContextPath()%>/static/loading.gif') no-repeat center center;
         display: block;
         width: 32px;
         height: 32px;

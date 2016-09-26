@@ -31,15 +31,16 @@ function doPreview() {
         location.href = url;
     }
     else {
-        var preloadImg = window.contextPath + "/static/pixel.gif";
         for (var i = 0; i < pageCount; i++) {
             var src = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount
-            var page = $("<div class='content'><img class='scrollLoading' data-url='" + src + "' src='" + preloadImg + "' /></div>");
+            var page = $("<div class='content'><img class='lazy' data-original='" + src + "' height='50%' width='100%'/></div>");
             $("#divPages").append(page);
             var nav = $("<div><span>" + (i + 1) + "/" + pageCount + "</span></div>");
             page.append(nav);
         }
-        $(".scrollLoading").scrollLoading();
+        $("img.lazy").lazyload({
+            effect : "fadeIn"
+        });
     }
 }
 function getQueryStringByName(name) {

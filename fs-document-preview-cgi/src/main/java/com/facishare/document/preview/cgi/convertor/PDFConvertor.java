@@ -1,7 +1,7 @@
 package com.facishare.document.preview.cgi.convertor;
 
 import application.dcs.IPICConvertor;
-import com.facishare.document.preview.cgi.utils.ImageHandle;
+import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,12 +51,6 @@ public class PDFConvertor implements IDocConvertor {
     }
 
     private void handleImg(File file,String jpgFilePath) throws InterruptedException, IOException {
-        ImageHandle.fromFile(file).scale(0.5).toFile(new File(jpgFilePath));
+        Thumbnails.of(file).scale(0.5).outputFormat("jpg").toFile(new File(jpgFilePath));
     }
-
-//    public static void main(String[] args) {
-//        File file=new File("/Users/liuq/smb_data/normal/dps/201609/22/17/fssdetest/8h4jpozk/2.png");
-//        File file1=new File("/Users/liuq/smb_data/normal/dps/201609/22/17/fssdetest/8h4jpozk/a.png");
-//        ImageHandle.fromFile(file).scale(0.5).toFile(file);
-//    }
 }

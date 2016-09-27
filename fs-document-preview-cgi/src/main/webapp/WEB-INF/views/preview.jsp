@@ -24,6 +24,7 @@
     .center
     {
         text-align: center;
+        margin-bottom: 20px;
     }
     .background {
         display: block;

@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 
 
 /**
@@ -27,30 +26,24 @@ public class PDFConvertor implements IDocConvertor {
             if (resultcode == 0) {
                 String fileName = (page1 + 1) + ".png";
                 String pngFilePath = baseDir + "/" + fileName;
-                LOG.info("begin get jpg,jpg folder:{}", baseDir);
-                int code =ipicConvertor.convertToPNG(page1, page2, 2.0f, baseDir);
-                LOG.info("end get jpg,jpg folder:{},code:{}", baseDir,code);
+                LOG.info("begin get image,folder:{},page:{}", baseDir, page1);
+                int code = ipicConvertor.convertToPNG(page1, page2, 3f, baseDir);
+                LOG.info("end get image,folder:{},code:{},page:{}", baseDir, code, page1);
                 ipicConvertor.close();
                 File file = new File(pngFilePath);
                 if (file.exists()) {
-                    String jpgFileName=(page1 + 1) + ".jpg";
-                    String jpgFilePath=baseDir+"/"+jpgFileName;
-                    handleImg(file,jpgFilePath);
-                    return FilenameUtils.getBaseName(baseDir) + "/" + jpgFileName;
+                    Thumbnails.of(file).scale(0.5).outputFormat("png").toFile(file);
+                    return FilenameUtils.getBaseName(baseDir) + "/" + fileName;
                 } else {
                     return "";
                 }
             } else
                 return "";
         } catch (Exception e) {
-            LOG.error("error info",e);
+            LOG.error("error info", e);
             return "";
         } finally {
             ConvertorPool.getInstance().returnConvertor(convertobj);
         }
-    }
-
-    private void handleImg(File file,String jpgFilePath) throws InterruptedException, IOException {
-        Thumbnails.of(file).scale(0.5).outputFormat("jpg").toFile(new File(jpgFilePath));
     }
 }

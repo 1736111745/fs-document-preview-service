@@ -80,7 +80,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         dataFileInfo.setOriginalFilePath(previewInfo.getOriginalFilePath());
         dataFileInfo.setDataDir(previewInfo.getDataDir());
         String fileExtension = FilenameUtils.getExtension(path).toLowerCase();
-        String extension=fileExtension.equals("pdf")?".jpg":fileExtension.contains("xls")?".html":".svg";
+        String extension = fileExtension.equals("pdf") ? ".png" : fileExtension.contains("xls") ? ".html" : ".svg";
         String dataFileName = previewInfo.getFilePathList() == null || previewInfo.getFilePathList().size() == 0 ? "" : previewInfo.getFilePathList().stream().filter(x -> x.equals((page + 1) + extension)).findFirst().orElse("");
         if (!dataFileName.equals("")) {
             String filePath = previewInfo.getDirName() + "/" + dataFileName;

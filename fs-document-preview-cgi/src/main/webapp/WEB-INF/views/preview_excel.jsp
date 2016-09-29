@@ -16,11 +16,11 @@
     <script>
         window.contextPath = "<%=request.getContextPath()%>";
     </script>
-    <link href="<%=request.getContextPath()%>/static/excel_preview.css?ts=<%=System.currentTimeMillis()%>"
-          rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/yozo/style.css" rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/yozo/bootstrap.min.css" rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/yozo/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="<%=request.getContextPath()%>/static/excel_preview.css?ts=<%=System.currentTimeMillis()%>"
+          rel="stylesheet">
     <script type="application/javascript" src="<%=request.getContextPath()%>/static/yozo/bootstrap.min.js"></script>
     <script type="application/javascript"
             src="<%=request.getContextPath()%>/static/excel.js?ts=<%=System.currentTimeMillis()%>"></script>
@@ -36,7 +36,7 @@
     <div class="btn-group">
         <a type="button" class="btn btn-group-lg" id="linkLast">上一页</a>
         <a type="button" class="btn btn-group-lg" id="linkNext">下一页</a>
-        <button type="button" class="btn btn-group-lg" id="paging"></button>
+        <button type="button" class="btn btn-group-lg" id="paging" disabled></button>
     </div>
 </div>
 </body>

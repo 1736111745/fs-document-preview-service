@@ -1,5 +1,60 @@
-body,html{overflow:hidden;margin:0;width:100%;height:100%;}
-#content{overflow-x:auto;overflow-y:scroll;width:100%;height:100%;}
-.fixed_div{position:absolute;bottom:20px;left:40px;z-index:2008;width:100%;height:40px;text-align:center;}
-.background{position:absolute;top:0;left:0;z-index:2000;display:block;width:100%;height:100%;background:#fff;opacity:.4;filter:alpha(opacity=40);}
-.progressBar{position:absolute;top:50%;left:50%;z-index:2001;display:block;margin-top:-16px;margin-left:-16px;width:32px;height:32px;background:url(loading.gif) no-repeat center center;text-align:left;font-weight:700;line-height:27px;}
+body, html {
+    overflow: hidden;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#content {
+    overflow-x: auto;
+    overflow-y: scroll;
+    width: 100%;
+    height: 100%;
+}
+
+.fixed_div {
+    position: absolute;
+    bottom: 20px;
+    left: 40px;
+    z-index: 2008;
+    width: 100%;
+    height: 40px;
+    text-align: center;
+}
+
+.background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2000;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    opacity: .4;
+    filter: alpha(opacity=40);
+}
+
+.progressBar {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 2001;
+    display: block;
+    margin-top: -16px;
+    margin-left: -16px;
+    width: 32px;
+    height: 32px;
+    background: url(loading.gif) no-repeat center center;
+    text-align: left;
+    font-weight: 700;
+    line-height: 27px;
+}
+
+.btn {
+    line-height: 40px;
+}
+
+.btn-group > .btn, .btn-group > .dropdown-menu, .btn-group > .popover {
+    font-size: 20px;
+}

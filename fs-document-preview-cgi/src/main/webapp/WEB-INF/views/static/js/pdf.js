@@ -4,7 +4,7 @@ function loadData() {
     for (var i = 0; i < pageCount; i++) {
         var pdfUrl = location.protocol + "//" + location.host + window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&t=" + Math.random();
         var src = window.contextPath + '/static/pdfjs/generic/web/viewer.html?file=' + encodeURIComponent(pdfUrl);
-        var page = $("<div class='content'><iframe class='scrollLoading' id='frame" + i + "' data-url='" + src + "' height='30%' width='100%'/></div>");
+        var page = $("<div class='content'><iframe class='scrollLoading' id='frame" + i + "' data-url='" + src + "' height='1000px' width='100%'/></div>");
         $("#divPages").append(page);
     }
 }
@@ -42,7 +42,7 @@ $(function () {
     loadData();
     $(".scrollLoading").scrollLoading();
     $(".scrollLoading").on("load", function () {
-        adjust(this);
+       adjust(this);
     })
 });
 

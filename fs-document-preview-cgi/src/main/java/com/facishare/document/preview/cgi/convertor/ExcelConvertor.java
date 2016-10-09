@@ -1,7 +1,6 @@
 package com.facishare.document.preview.cgi.convertor;
 
 import application.dcs.IHtmlConvertor;
-import com.facishare.document.preview.cgi.utils.HtmlCompressor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.LineIterator;
@@ -71,15 +70,13 @@ public class ExcelConvertor implements IDocConvertor {
         String html = readFile(file).trim();
         String regex = "<head>[\\s\\S]*</head>";
         html = html.replaceAll(regex, "");
+        html = html.replaceAll("<script[^>]*>[\\d\\D]*?</script>","");//去掉script
         html = html.replace("<!DOCTYPE html><html>", "").trim();
         html = html.replace("</html>", "").trim();
         html = html.replace("<body>", "").trim();
         html = html.replace("</body>", "").trim();
         html = html.replace("./js", "./" + dirName + "/js");
         html = "<style>" + css + "</style>" + html;
-        LOG.info("befor compress,length:{}",html.length());
-        html = HtmlCompressor.compress(html);
-        LOG.info("end compress,length:{}",html.length());
         FileUtils.writeStringToFile(file, html, false);
     }
 }

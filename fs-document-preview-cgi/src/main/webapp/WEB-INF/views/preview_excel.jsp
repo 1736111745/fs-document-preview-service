@@ -12,18 +12,20 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>文档</title>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/yozo/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery-1.11.1.min.js"></script>
     <script>
         window.contextPath = "<%=request.getContextPath()%>";
     </script>
-    <link href="<%=request.getContextPath()%>/static/yozo/style.css" rel="stylesheet">
-    <link href="<%=request.getContextPath()%>/static/yozo/bootstrap.min.css" rel="stylesheet">
-    <link href="<%=request.getContextPath()%>/static/yozo/bootstrap-responsive.min.css" rel="stylesheet">
-    <link href="<%=request.getContextPath()%>/static/excel_preview.css?ts=<%=System.currentTimeMillis()%>"
+    <link href="<%=request.getContextPath()%>/static/common/style.css" rel="stylesheet">
+    <link href="<%=request.getContextPath()%>/static/common/bootstrap.min.css" rel="stylesheet">
+    <link href="<%=request.getContextPath()%>/static/common/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="<%=request.getContextPath()%>/static/css/excel.css?ts=<%=System.currentTimeMillis()%>"
           rel="stylesheet">
-    <script type="application/javascript" src="<%=request.getContextPath()%>/static/yozo/bootstrap.min.js"></script>
+    <script type="application/javascript" src="<%=request.getContextPath()%>/static/common/bootstrap.min.js"></script>
+    <script type="text/javascript"
+            src="<%=request.getContextPath()%>/static/js/util.js?ts=<%=System.currentTimeMillis()%>"></script>
     <script type="application/javascript"
-            src="<%=request.getContextPath()%>/static/excel.js?ts=<%=System.currentTimeMillis()%>"></script>
+            src="<%=request.getContextPath()%>/static/js/excel.js?ts=<%=System.currentTimeMillis()%>"></script>
 </head>
 <body>
 <div id="divLoading">
@@ -36,7 +38,7 @@
     <div class="btn-group">
         <a type="button" class="btn btn-group-lg" id="linkLast">上一页</a>
         <a type="button" class="btn btn-group-lg" id="linkNext">下一页</a>
-        <button type="button" class="btn btn-group-lg" id="paging" disabled></button>
+        <a type="button" class="btn btn-group-lg" id="paging" disabled></a>
     </div>
 </div>
 </body>

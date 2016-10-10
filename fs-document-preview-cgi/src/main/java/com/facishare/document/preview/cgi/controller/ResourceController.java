@@ -21,6 +21,7 @@ import java.nio.channels.FileChannel;
 public class ResourceController {
     @Autowired
     PreviewInfoDao previewInfoDao;
+
     @RequestMapping("/preview/js/{fileName:.+}")
     public String getStatic(@PathVariable String fileName) throws IOException {
         return "redirect:/static/common/" + fileName;
@@ -32,14 +33,16 @@ public class ResourceController {
         String filePath = baseDir + "/js/" + fileName;
         outPut(response, filePath);
     }
+
     @RequestMapping("/preview/{folder}/{fileName:.+}")
     public void getStatic(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
         String baseDir = previewInfoDao.getBaseDir(folder);
         String filePath = baseDir + "/" + fileName;
         outPut(response, filePath);
     }
+
     private void outPut(HttpServletResponse response, String filePath) throws IOException {
-        filePath=filePath.toLowerCase();
+        filePath = filePath.toLowerCase();
         if (filePath.contains(".png")) {
             response.setContentType("image/png");
         } else if (filePath.contains(".jpg")) {
@@ -52,7 +55,7 @@ public class ResourceController {
             response.setContentType("image/svg+xml");
         } else if (filePath.contains(".htm")) {
             response.setContentType("text/html");
-        } else if(filePath.contains(".pdf")) {
+        } else if (filePath.contains(".pdf")) {
             response.setContentType("application/pdf");
         }
         FileChannel fc = new RandomAccessFile(filePath, "r").getChannel();

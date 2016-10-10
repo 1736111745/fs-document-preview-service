@@ -63,8 +63,17 @@ public class DocPageCalculator {
     }
 
     private static int parseWord(byte[] data,String filePath) throws Exception {
-        int version = checkFileVersion(data);
-        return version == 2003 ? parseWord2003(data,filePath) : parseWord2007(data);
+        int pageCount = 0;
+        ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
+        try {
+
+            IPICConvertor ipicConvertor = convertobj.convertor.convertMStoPic(filePath);
+            pageCount = ipicConvertor.getPageCount();
+            ipicConvertor.close();
+        } finally {
+            ConvertorPool.getInstance().returnConvertor(convertobj);
+        }
+        return pageCount;
     }
 
     private static int parseExcel(byte[] data) throws Exception {

@@ -146,9 +146,9 @@ public class PreviewController {
             if (array.length == 2) {
                 return new ModelAndView("redirect:/preview/" + array[0] + "/" + array[1]);
             } else
-                return new ModelAndView("redirect:/preview/static/pixel.gif");
+                return new ModelAndView("redirect:/preview/static/images/pixel.gif");
         } else {
-            return new ModelAndView("redirect:/preview/static/pixel.gif");
+            return new ModelAndView("redirect:/preview/static/images/pixel.gif");
         }
     }
 

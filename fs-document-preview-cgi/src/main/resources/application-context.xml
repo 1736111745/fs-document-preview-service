@@ -10,8 +10,15 @@
     <context:annotation-config/>
     <context:component-scan base-package="com.facishare.document.preview.cgi"/>
     <mvc:annotation-driven />
+    <aop:aspectj-autoproxy/>
     <mvc:resources mapping="/static/**" location="WEB-INF/views/static/" cache-period="31556926"/>
     <aop:aspectj-autoproxy/>
+    <bean id="serviceProfiler" class="com.github.trace.aop.ServiceProfiler"/>
+    <aop:config proxy-target-class="true">
+        <aop:aspect ref="serviceProfiler">
+            <aop:around method="profile" pointcut="execution(* com.facishare.document.preview.cgi..*(..))"/>
+        </aop:aspect>
+    </aop:config>
     <bean id="fileProxy" class="com.facishare.document.preview.cgi.utils.FileStorageProxy"/>
     <bean id="previewInfoDao" class="com.facishare.document.preview.cgi.dao.impl.PreviewInfoDaoImpl"/>
     <bean id="fileTokenDao" class="com.facishare.document.preview.cgi.dao.impl.FileTokenDaoImpl"/>

@@ -32,7 +32,7 @@ public class PDFConvertor implements IDocConvertor {
                 ipicConvertor.close();
                 File file = new File(pngFilePath);
                 if (file.exists()) {
-                    Thumbnails.of(file).size(414,736).outputFormat("png").toFile(file);
+                    Thumbnails.of(file).scale(0.4).outputFormat("png").toFile(file);
                     return FilenameUtils.getBaseName(baseDir) + "/" + fileName;
                 } else {
                     return "";

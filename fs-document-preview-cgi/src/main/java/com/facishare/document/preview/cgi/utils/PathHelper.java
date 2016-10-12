@@ -16,17 +16,21 @@ public class PathHelper {
 
     public PathHelper(String ea) {
         ConfigFactory.getConfig("fs-dps-config", config -> {
-            dataDir = config.get("dataDir");
-            tempDir = config.get("tempDir");
+            this.dataDir = config.get("dataDir");
+            this.tempDir = config.get("tempDir");
         });
         this.ea = ea;
     }
 
     public PathHelper() {
+        ConfigFactory.getConfig("fs-dps-config", config -> {
+            this.dataDir = config.get("dataDir");
+            this.tempDir = config.get("tempDir");
+        });
     }
 
     public String getConvertTempPath() {
-        String convertorTempPath = String.format("%s/convertor/", tempDir);
+        String convertorTempPath = String.format("%s/convertor/", this.tempDir);
         return convertorTempPath;
     }
 
@@ -35,7 +39,7 @@ public class PathHelper {
         String yyyyMM = DateUtil.getFormatDateStr("yyyyMM");
         String dd = DateUtil.getFormatDateStr("dd");
         String hh = DateUtil.getFormatDateStr("HH");
-        String dirPath = String.format("%s/%s/%s/%s/%s/%s/%s", dataDir, "dps", yyyyMM, dd, hh, ea, SampleUUID.getUUID());
+        String dirPath = String.format("%s/%s/%s/%s/%s/%s/%s", this.dataDir, "dps", yyyyMM, dd, hh, ea, SampleUUID.getUUID());
         File dir = new File(dirPath);
         if (!dir.exists()) {
             dir.mkdirs();

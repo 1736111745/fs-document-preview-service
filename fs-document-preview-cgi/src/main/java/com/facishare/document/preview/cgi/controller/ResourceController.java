@@ -31,6 +31,7 @@ public class ResourceController {
     public void getCss(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
         String baseDir = previewInfoDao.getBaseDir(folder);
         String filePath = baseDir + "/js/" + fileName;
+        response.setHeader("Cache-Control", "max-age=315360000"); // HTTP/1.1
         outPut(response, filePath);
     }
 
@@ -38,6 +39,7 @@ public class ResourceController {
     public void getStatic(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
         String baseDir = previewInfoDao.getBaseDir(folder);
         String filePath = baseDir + "/" + fileName;
+        response.setHeader("Cache-Control", "max-age=315360000" ); // HTTP/1.1
         outPut(response, filePath);
     }
 

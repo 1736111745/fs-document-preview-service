@@ -2,6 +2,7 @@ package com.facishare.document.preview.cgi.utils;
 
 import application.dcs.IPICConvertor;
 import com.facishare.document.preview.cgi.convertor.ConvertorPool;
+import com.facishare.document.preview.cgi.model.PageInfo;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.hslf.usermodel.HSLFSlideShow;
@@ -19,23 +20,28 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by liuq on 16/9/7.
  */
-public class DocPageCalculator {
-    private static final Logger LOG = LoggerFactory.getLogger(DocPageCalculator.class);
+public class DocPageInfoHelper {
+    private static final Logger LOG = LoggerFactory.getLogger(DocPageInfoHelper.class);
 
-    public static int GetDocPageCount(byte[] data, String filePath) throws Exception {
-        LOG.info("begin get pageCount,data length:{}",data.length);
+    public static PageInfo GetDocPageCount(byte[] data, String filePath) throws Exception {
+        LOG.info("begin get pageCount,data length:{}", data.length);
         int pageCount = 0;
+        List<String> sheetNames = null;
         DocType docType = DocTypeHelper.getDocType(filePath);
         switch (docType) {
             case Word:
-                pageCount = parseWord(data,filePath);
+                pageCount = parseWord(data, filePath);
                 break;
             case Excel:
-                pageCount = parseExcel(data);
+                PageInfo _pageInfo = parseExcel(data);
+                pageCount = _pageInfo.getPageCount();
+                sheetNames = _pageInfo.getSheetNames();
                 break;
             case PPT:
                 pageCount = parsePPT(data);
@@ -44,7 +50,10 @@ public class DocPageCalculator {
                 pageCount = parsePDF(data);
         }
         LOG.info("end get pageCount");
-        return pageCount;
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setPageCount(pageCount);
+        pageInfo.setSheetNames(sheetNames);
+        return pageInfo;
     }
 
 
@@ -76,7 +85,7 @@ public class DocPageCalculator {
         return pageCount;
     }
 
-    private static int parseExcel(byte[] data) throws Exception {
+    private static PageInfo parseExcel(byte[] data) throws Exception {
         int version = checkFileVersion(data);
         return version == 2003 ? parseExcel2003(data) : parseExcel2007(data);
     }
@@ -121,16 +130,34 @@ public class DocPageCalculator {
         return pageCount;
     }
 
-    private static int parseExcel2007(byte[] data) throws Exception {
+    private static PageInfo parseExcel2007(byte[] data) throws Exception {
         InputStream input = new ByteArrayInputStream(data);
         XSSFWorkbook workbook = new XSSFWorkbook(input);
-        return workbook.getNumberOfSheets();
+        int pageCount = workbook.getNumberOfSheets();
+        List<String> sheetNames = new ArrayList<>();
+        for (int i = 0; i < pageCount; i++) {
+            String sheetName = workbook.getSheetName(i);
+            sheetNames.add(sheetName);
+        }
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setPageCount(pageCount);
+        pageInfo.setSheetNames(sheetNames);
+        return pageInfo;
     }
 
-    private static int parseExcel2003(byte[] data) throws Exception {
+    private static PageInfo parseExcel2003(byte[] data) throws Exception {
         InputStream input = new ByteArrayInputStream(data);
         HSSFWorkbook hs = new HSSFWorkbook(input);
-        return hs.getNumberOfSheets();
+        int pageCount = hs.getNumberOfSheets();
+        List<String> sheetNames = new ArrayList<>();
+        for (int i = 0; i < pageCount; i++) {
+            String sheetName = hs.getSheetName(i);
+            sheetNames.add(sheetName);
+        }
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setPageCount(pageCount);
+        pageInfo.setSheetNames(sheetNames);
+        return pageInfo;
     }
 
     private static int parsePPT2007(byte[] data) throws Exception {
@@ -144,4 +171,6 @@ public class DocPageCalculator {
         SlideShow ppt = new HSLFSlideShow(input);
         return ppt.getSlides().size();
     }
+
+
 }

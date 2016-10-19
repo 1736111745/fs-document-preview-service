@@ -76,6 +76,7 @@ public class ExcelConvertor implements IDocConvertor {
         html = html.replace("<body>", "").trim();
         html = html.replace("</body>", "").trim();
         html = html.replace("./js", "./" + dirName + "/js");
+        css="table, tbody, tfoot, thead, tr, th, td {border: 1px solid #dddddd;}"+css;
         html = "<style>" + css + "</style>" + html;
         FileUtils.writeStringToFile(file, html, false);
     }

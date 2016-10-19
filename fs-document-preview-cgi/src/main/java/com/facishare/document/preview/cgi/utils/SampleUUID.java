@@ -25,4 +25,5 @@ public class SampleUUID {
         }
         return shortBuffer.toString().toLowerCase();
     }
+
 }

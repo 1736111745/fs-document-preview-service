@@ -27,6 +27,16 @@ public class PreviewInfo {
 
     private int pageCount;
 
+    public List<String> getSheetNames() {
+        return sheetNames;
+    }
+
+    public void setSheetNames(List<String> sheetNames) {
+        this.sheetNames = sheetNames;
+    }
+
+    private List<String> sheetNames;
+
     public String getDirName() {
         return dirName;
     }

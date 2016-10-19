@@ -5,62 +5,88 @@ var page = getQueryStringByName("page");
 var pageIndex = parseInt(page)
 var pageCount = getQueryStringByName("pageCount");
 var path = getQueryStringByName("path");
-//分页加载
-function loadData() {
-    if (pageIndex >= pageCount) return;
-    $('#paging').html((pageIndex+1)+"/"+pageCount);
+function loadSheetNames() {
+    $.ajax({
+        type: 'get',
+        dataType: 'json',
+        async: false,
+        url: window.contextPath + '/preview/getSheetNames?path=' + path,
+        success: function (data) {
+            if (data.success) {
+                var sheets = data.sheets;
+                for (var i = 0; i < sheets.length; i++) {
+                    var sheetName = sheets[i];
+                    var cls = '';
+                    if (i == 0) {
+                        cls = 'active';
+                        $('#aTitle').html(sheetName);
+                    }
+                    var li = "<li class='" + cls + "'><a href='#' onclick='loadSheet(" + i + ")' data-toggle='tab'>" + sheetName + "</a></li>";
+                    $('#navSheet').append($(li));
+                }
+                loadSheet(0);
+            }
+            else {
+                document.write(data.errorMsg);
+            }
+        }
+    });
+}
+
+function loadSheet(i) {
     $.ajax({
         type: 'get',
         timeout: 1800000,
         dataType: 'json',
         async: true,
-        url: window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + pageIndex + "&pageCount=" + pageCount,
+        url: window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount,
         beforeSend: function () {
             $('#divLoading').show();
         },
-        complete: function(request, status){
+        complete: function (request) {
             $('#divLoading').hide();
-            var excelContent=$(request.responseText)
-            $('#content').prepend(excelContent);
-            paging();
+            var excelContent = $(request.responseText)
+            $('#content').html(excelContent);
         }
     });
 }
-function paging() {
-    var urlNext = window.contextPath + '/preview/handleExcel?path=' + path + '&page=' + (pageIndex + 1) + '&pageCount=' + pageCount;
-    var urlLast = window.contextPath + '/preview/handleExcel?path=' + path + '&page=' + (pageIndex - 1) + '&pageCount=' + pageCount;
-    if (pageCount == 1) //只有一页的时候
-    {
-        $('#linkNext').addClass("disabled");
-        $('#linkNext').removeAttr("href");
-        $('#linkLast').addClass("disabled");
-        $('#linkLast').removeAttr("href");
-    }
-    else {
-        if (pageIndex == 0) { //第一页
-            $('#linkLast').addClass("disabled");
-            $('#linkLast').removeAttr("href");
-            $('#linkNext').removeClass("disabled");
-            $('#linkNext').attr("href", urlNext);
-        }
-        else {
-            if (pageIndex == pageCount - 1) {//最后一页
-                $('#linkNext').addClass("disabled");
-                $('#linkNext').removeAttr("href");
-                $('#linkLast').removeClass("disabled");
-                $('#linkLast').attr("href", urlLast);
+
+function move(direction){
+    if(direction == 0){
+        for (var i = $(".excel-tab-title li").length - 1; i > -1; i--) {
+            if ($(".excel-tab-title li:eq("+i+")").css("display") == "none") {
+                $(".excel-tab-title li:eq("+i+")").css("display","block");
+                break;
             }
-            else {
-                //中间页
-                $('#linkLast').removeClass("disabled");
-                $('#linkNext').removeClass("disabled");
-                $('#linkNext').attr("href", urlNext);
-                $('#linkLast').attr("href", urlLast);
+        }
+    }
+    else{
+        if($(".excel-tab-title")[0].scrollHeight > 42 ){
+            for (var i = 0; i < $(".excel-tab-title li").length; i++) {
+                if ($(".excel-tab-title li:eq("+i+")").css("display") != "none") {
+                    $(".excel-tab-title li:eq("+i+")").css("display","none");
+                    break;
+                }
             }
         }
     }
 }
 $(document).ready(function () {
     $('#divLoading').hide();
-    loadData();
+    loadSheetNames();
+    $(".lnk-file-title").html($(".excel-tab-title .active>a").html());
+    $(".excel-tab-title li>a").click(function(){
+        $(".navbar-fixed-top").css("height","");
+        $(".lnk-file-title").html($(this).html());
+        $(".nav-collapse.collapse").height("0px");
+        $(".btn.btn-navbar").addClass("collapsed");
+        $(".nav-collapse.in.collapse").removeClass("in");
+    })
+    $(".btn-navbar").click(function(e) {
+        $(".navbar-fixed-top").height(document.documentElement.clientHeight);
+        if($(".nav-collapse").hasClass("in")){
+            $(".navbar-fixed-top").css("height","");
+        }
+    });
+
 });

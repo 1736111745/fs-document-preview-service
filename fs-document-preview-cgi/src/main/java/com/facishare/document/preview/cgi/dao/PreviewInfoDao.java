@@ -4,6 +4,7 @@ import com.facishare.document.preview.cgi.model.DataFileInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfo;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by liuq on 16/8/16.
@@ -16,7 +17,7 @@ public interface PreviewInfoDao {
 
     String getBaseDir(String folderName);
 
-    void initPreviewInfo(String path, String originalFilePath, String dataDir, long docSize, int pageCount, String ea, int employeeId);
+    void initPreviewInfo(String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames, String ea, int employeeId);
 
     PreviewInfo getInfoByPath(String path);
 

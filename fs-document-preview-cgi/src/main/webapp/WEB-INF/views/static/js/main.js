@@ -34,7 +34,7 @@ function doPreview() {
     else {
         route = "handleWordAndPPT";
     }
-    var url = window.contextPath + '/preview/' + route + '?path=' + path + '&page=0&pageCount=' + pageCount;
+    var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount;
     location.href = url;
 }
 //入口

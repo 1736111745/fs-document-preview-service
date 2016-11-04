@@ -30,15 +30,12 @@ public class PathHelper {
     }
 
     public String getConvertTempPath() {
-        //debug
-        this.tempDir="/Users/liuq/temp/docconvert/temp";
         String convertorTempPath = String.format("%s/convertor/", this.tempDir);
         return convertorTempPath;
     }
 
 
     public String getDataDir() throws IOException {
-        this.dataDir="/Users/liuq/temp/docconvert/normal";
         String yyyyMM = DateUtil.getFormatDateStr("yyyyMM");
         String dd = DateUtil.getFormatDateStr("dd");
         String hh = DateUtil.getFormatDateStr("HH");

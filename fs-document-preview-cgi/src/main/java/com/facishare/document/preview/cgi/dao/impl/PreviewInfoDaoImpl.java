@@ -1,15 +1,13 @@
 package com.facishare.document.preview.cgi.dao.impl;
 
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
-import com.facishare.document.preview.cgi.model.PreviewInfo;
 import com.facishare.document.preview.cgi.model.DataFileInfo;
+import com.facishare.document.preview.cgi.model.PreviewInfo;
 import com.facishare.document.preview.cgi.utils.DateUtil;
 import com.github.mongo.support.DatastoreExt;
 import org.apache.commons.io.FilenameUtils;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -24,59 +22,37 @@ import java.util.List;
 @Repository
 public class PreviewInfoDaoImpl implements PreviewInfoDao {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PreviewInfoDaoImpl.class);
-
     @Autowired
     private DatastoreExt dpsDataStore;
 
     @Override
-    public void create(String path, String baseDir, String dataFilePath, String ea, int employeeId, long docSize, int pageCount) throws IOException {
+    public void savePreviewInfo(String ea,String path,String dataFilePath) throws IOException {
         String dataFileName = FilenameUtils.getName(dataFilePath);
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
-        query.criteria("path").equal(path);
+        query.criteria("path").equal(path).criteria("ea").equal(ea);
         PreviewInfo previewInfo = query.get();
-        if (previewInfo == null) {
-            previewInfo = new PreviewInfo();
-            previewInfo.setDocSize(docSize);
-            previewInfo.setDirName(FilenameUtils.getBaseName(baseDir));
-            previewInfo.setCreateTime(new Date());
-            int yyyyMMdd = Integer.parseInt(DateUtil.getFormatDateStr("yyyyMMdd"));
-            previewInfo.setCreateYYMMDD(yyyyMMdd);
-            previewInfo.setEa(ea);
-            previewInfo.setEmployeeId(employeeId);
-            previewInfo.setDataDir(baseDir);
-            previewInfo.setPath(path);
-            previewInfo.setPageCount(pageCount);
-            List<String> svgs = new ArrayList<>();
-            svgs.add(dataFileName);
-            previewInfo.setFilePathList(svgs);
-            dpsDataStore.insert("PreviewInfo", previewInfo);
-            dpsDataStore.ensureIndexes();
+        List<String> filePathList = previewInfo.getFilePathList();
+        if (filePathList == null) {
+            filePathList = new ArrayList<>();
+            filePathList.add(dataFileName);
+            previewInfo.setFilePathList(filePathList);
+            UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
+            update.set("filePathList", filePathList);
+            dpsDataStore.findAndModify(query, update);
         } else {
-            List<String> filePathList = previewInfo.getFilePathList();
-            if (filePathList == null) {
-                filePathList = new ArrayList<>();
+            if (!filePathList.contains(dataFileName)) {
                 filePathList.add(dataFileName);
                 previewInfo.setFilePathList(filePathList);
                 UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
                 update.set("filePathList", filePathList);
                 dpsDataStore.findAndModify(query, update);
-            } else {
-                if (!filePathList.contains(dataFileName)) {
-                    filePathList.add(dataFileName);
-                    previewInfo.setFilePathList(filePathList);
-                    UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
-                    update.set("filePathList", filePathList);
-                    dpsDataStore.findAndModify(query, update);
-                }
             }
         }
     }
 
     @Override
-    public DataFileInfo getDataFileInfo(String path, int page, String ea) throws IOException {
+    public DataFileInfo getDataFileInfo( String ea,String path, int page,PreviewInfo previewInfo) throws IOException {
         DataFileInfo dataFileInfo = new DataFileInfo();
-        PreviewInfo previewInfo = getInfoByPath(path);
         dataFileInfo.setOriginalFilePath(previewInfo.getOriginalFilePath());
         dataFileInfo.setDataDir(previewInfo.getDataDir());
         String fileExtension = FilenameUtils.getExtension(path).toLowerCase();
@@ -101,8 +77,9 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
 
 
     @Override
-    public void initPreviewInfo(String path, String originalFilePath, String dataDir, long docSize, int pageCount,List<String> sheetNames, String ea, int employeeId) {
-        PreviewInfo previewInfo = getInfoByPath(path);
+    public void initPreviewInfo( String ea, int employeeId,String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames)
+    {
+        PreviewInfo previewInfo = getInfoByPath(ea,path);
         if (previewInfo == null) {
             previewInfo = new PreviewInfo();
             previewInfo.setDocSize(docSize);
@@ -125,9 +102,9 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     }
 
     @Override
-    public PreviewInfo getInfoByPath(String path) {
+    public PreviewInfo getInfoByPath(String ea,String path) {
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
-        query.criteria("path").equal(path);
+        query.criteria("path").equal(path).criteria("ea").equal(ea);
         return query.get();
     }
 }

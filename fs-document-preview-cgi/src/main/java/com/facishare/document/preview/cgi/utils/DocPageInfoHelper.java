@@ -2,15 +2,18 @@ package com.facishare.document.preview.cgi.utils;
 
 import application.dcs.IPICConvertor;
 import com.facishare.document.preview.cgi.convertor.ConvertorPool;
+import com.facishare.document.preview.cgi.model.DocPageInfo;
 import com.facishare.document.preview.cgi.model.PageInfo;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.hslf.usermodel.HSLFSlideShow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.sl.usermodel.SlideShow;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.slf4j.Logger;
@@ -29,7 +32,7 @@ import java.util.List;
 public class DocPageInfoHelper {
     private static final Logger LOG = LoggerFactory.getLogger(DocPageInfoHelper.class);
 
-    public static PageInfo GetDocPageCount(byte[] data, String filePath) throws Exception {
+    public static PageInfo GetPageInfo(byte[] data, String filePath) throws Exception {
         LOG.info("begin get pageCount,data length:{}", data.length);
         int pageCount = 0;
         List<String> sheetNames = null;
@@ -54,6 +57,41 @@ public class DocPageInfoHelper {
         pageInfo.setPageCount(pageCount);
         pageInfo.setSheetNames(sheetNames);
         return pageInfo;
+    }
+
+    public static DocPageInfo GetDocPageInfo(String filePath) throws Exception {
+        String docFormat="",previewFormat="",contentType="";
+        DocType docType = DocTypeHelper.getDocType(filePath);
+        switch (docType) {
+            case Word: {
+                docFormat = "101";
+                previewFormat = "1";
+                contentType="image/png";
+                break;
+            }
+            case Excel: {
+                docFormat = "102";
+                previewFormat = "2";
+                contentType="text/html";
+                break;
+            }
+            case PPT: {
+                docFormat = "103";
+                previewFormat = "1";
+                contentType="image/png";
+                break;
+            }
+            case PDF: {
+                docFormat = "104";
+                previewFormat = "1";
+                contentType = "image/png";
+            }
+        }
+        DocPageInfo docPageInfo = new DocPageInfo();
+        docPageInfo.setContentType(contentType);
+        docPageInfo.setDocumentFormat(docFormat);
+        docPageInfo.setPreviewFormat(previewFormat);
+        return docPageInfo;
     }
 
 
@@ -91,7 +129,6 @@ public class DocPageInfoHelper {
     }
 
     private static int parsePPT(byte[] data) throws Exception {
-        InputStream input = new ByteArrayInputStream(data);
         int version = checkFileVersion(data);
         return version == 2003 ? parsePPT2003(data) : parsePPT2007(data);
     }
@@ -117,7 +154,6 @@ public class DocPageInfoHelper {
         {
             ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
             try {
-
                 IPICConvertor ipicConvertor = convertobj.convertor.convertMStoPic(filePath);
                 pageCount=ipicConvertor.getPageCount();
                 ipicConvertor.close();
@@ -136,7 +172,8 @@ public class DocPageInfoHelper {
         int pageCount = workbook.getNumberOfSheets();
         List<String> sheetNames = new ArrayList<>();
         for (int i = 0; i < pageCount; i++) {
-            String sheetName = workbook.getSheetName(i);
+            XSSFSheet xssfSheet = workbook.getSheetAt(i);
+            String sheetName = xssfSheet.getSheetName();
             sheetNames.add(sheetName);
         }
         PageInfo pageInfo = new PageInfo();
@@ -151,7 +188,8 @@ public class DocPageInfoHelper {
         int pageCount = hs.getNumberOfSheets();
         List<String> sheetNames = new ArrayList<>();
         for (int i = 0; i < pageCount; i++) {
-            String sheetName = hs.getSheetName(i);
+            HSSFSheet xssfSheet= hs.getSheetAt(i);
+            String sheetName = xssfSheet.getSheetName();
             sheetNames.add(sheetName);
         }
         PageInfo pageInfo = new PageInfo();

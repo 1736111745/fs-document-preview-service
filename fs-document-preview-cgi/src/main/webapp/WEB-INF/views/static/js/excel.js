@@ -25,6 +25,7 @@ function loadSheetNames() {
                     $('#navSheet').append($(li));
                 }
                 loadSheet(0);
+                loadNav();
             }
             else {
                 document.write(data.errorMsg);
@@ -71,9 +72,7 @@ function move(direction){
         }
     }
 }
-$(document).ready(function () {
-    $('#divLoading').hide();
-    loadSheetNames();
+function loadNav() {
     $(".lnk-file-title").html($(".excel-tab-title .active>a").html());
     $(".excel-tab-title li>a").click(function(){
         $(".navbar-fixed-top").css("height","");
@@ -89,4 +88,8 @@ $(document).ready(function () {
         }
     });
 
+}
+$(document).ready(function () {
+    $('#divLoading').hide();
+    loadSheetNames();
 });

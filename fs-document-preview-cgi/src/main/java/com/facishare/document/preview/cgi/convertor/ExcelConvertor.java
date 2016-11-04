@@ -51,6 +51,12 @@ public class ExcelConvertor implements IDocConvertor {
         }
     }
 
+    @Override
+    public String convert(int page1, int page2, String filePath, String folder,int width) throws Exception {
+        //// TODO: 2016/11/4 excel的单页预览要考虑样式等问题的打包 因为最终给用户的是一个二进制 
+        throw new Exception("Not Support!");
+    }
+
     private String readFile(File file) throws IOException {
         StringBuffer sb = new StringBuffer();
         LineIterator it = FileUtils.lineIterator(file, "UTF-8");

@@ -11,14 +11,14 @@ import java.util.List;
  */
 public interface PreviewInfoDao {
 
-    void create(String path, String baseDir, String dataFilePath, String ea, int employeeId, long docSize, int pageCount) throws IOException;
+    void savePreviewInfo(String ea,String path,String dataFilePath) throws IOException;
 
-    DataFileInfo getDataFileInfo(String path, int page, String ea) throws IOException;
+    DataFileInfo getDataFileInfo( String ea,String path, int page,PreviewInfo previewInfo) throws IOException;
 
     String getBaseDir(String folderName);
 
-    void initPreviewInfo(String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames, String ea, int employeeId);
+    void initPreviewInfo( String ea, int employeeId,String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames);
 
-    PreviewInfo getInfoByPath(String path);
+    PreviewInfo getInfoByPath(String ea,String path);
 
 }

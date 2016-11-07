@@ -187,7 +187,7 @@ public class PreviewController {
     @ResponseBody
     @RequestMapping(value = "/preview/DocPreviewByPath", method = RequestMethod.GET)
     public void docPreviewByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String path = safteGetRequestParameter(request, "Npath") == "" ? safteGetRequestParameter(request, "Path") : safteGetRequestParameter(request, "NPath");
+        String path = safteGetRequestParameter(request, "npath") == "" ? safteGetRequestParameter(request, "path") : safteGetRequestParameter(request, "path");
         String extension = FilenameUtils.getExtension(path).toLowerCase();
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String ea = employeeInfo.getEa();
@@ -235,15 +235,16 @@ public class PreviewController {
     @ResponseBody
     @RequestMapping(value = "/preview/DocPageByPath", method = RequestMethod.GET)
     public void docPageByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String path = safteGetRequestParameter(request, "Npath") == "" ? safteGetRequestParameter(request, "Path") : safteGetRequestParameter(request, "NPath");
-        int pageIndex = Integer.parseInt(safteGetRequestParameter(request, "PageIndex"));
-        int width = NumberUtils.toInt(safteGetRequestParameter(request, "Width"), 1136);
+        String path = safteGetRequestParameter(request, "npath") == "" ? safteGetRequestParameter(request, "path") : safteGetRequestParameter(request, "npath");
+        int pageIndex =NumberUtils.toInt(safteGetRequestParameter(request, "pageIndex"));
+        pageIndex=pageIndex+1;
+        int width = NumberUtils.toInt(safteGetRequestParameter(request, "width"), 1136);
         width = width > 1920 ? 1920 : width;
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String ea = employeeInfo.getEa();
         DocPreviewInfo docPreviewInfo = docPreviewInfoDao.getInfoByPath(ea, path);
         if (docPreviewInfo != null) {
-            DataFileInfo dataFileInfo = docPreviewInfoDao.getDataFileInfo(ea, path, pageIndex + 1, docPreviewInfo);
+            DataFileInfo dataFileInfo = docPreviewInfoDao.getDataFileInfo(ea, path, pageIndex, docPreviewInfo);
             if (!dataFileInfo.getShortFilePath().equals("")) {
                 responseBinary(dataFileInfo.getShortFilePath(), response);
             } else {

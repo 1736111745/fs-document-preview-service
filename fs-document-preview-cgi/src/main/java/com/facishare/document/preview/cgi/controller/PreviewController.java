@@ -236,8 +236,7 @@ public class PreviewController {
     @RequestMapping(value = "/preview/DocPageByPath", method = RequestMethod.GET)
     public void docPageByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String path = safteGetRequestParameter(request, "npath") == "" ? safteGetRequestParameter(request, "path") : safteGetRequestParameter(request, "npath");
-        int pageIndex =NumberUtils.toInt(safteGetRequestParameter(request, "pageIndex"));
-        pageIndex=pageIndex+1;
+        int pageIndex =NumberUtils.toInt(safteGetRequestParameter(request, "pageIndex"),0);
         int width = NumberUtils.toInt(safteGetRequestParameter(request, "width"), 1136);
         width = width > 1920 ? 1920 : width;
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");

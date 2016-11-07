@@ -26,7 +26,6 @@ public class PPTConvertor implements IDocConvertor {
                 String fileName = (page1 + 1) + ".svg";
                 String imageFilePath = baseDir + "/" + fileName;
                 LOG.info("begin get svg,folder:{}", baseDir);
-                float width=ipicConvertor.getAllpageWHeigths()[page1][0];
                 int code=ipicConvertor.convertToSVG(page1, page2, 1.0f, baseDir);
                 LOG.info("end get svg,folder:{},code:{}", baseDir,code);
                 ipicConvertor.close();
@@ -55,7 +54,7 @@ public class PPTConvertor implements IDocConvertor {
             LOG.info("end get IPICConvertor");
             int resultcode = ipicConvertor.resultCode();
             if (resultcode == 0) {
-                String fileName = (page1 + 1) + ".png";
+                String fileName = (page1) + ".png";
                 String pngFilePath = baseDir + "/" + fileName;
                 LOG.info("begin get image,folder:{},page:{}", baseDir, page1);
                 int code = ipicConvertor.convertToPNG(page1, page2, 2f, baseDir);

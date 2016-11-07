@@ -249,6 +249,7 @@ public class PreviewController {
             } else {
                 String originalFilePath = dataFileInfo.getOriginalFilePath();
                 String dataFilePath = docConvertor.doConvert(path, dataFileInfo.getDataDir(), "", originalFilePath, pageIndex, width);
+                LOG.info("dataFilePath:{}",dataFilePath);
                 docPreviewInfoDao.saveDocPreviewInfo(ea, path, dataFilePath);
                 responseBinary(dataFilePath, response);
             }

@@ -56,8 +56,10 @@ public class DocPreviewInfoDaoImpl implements DocPreviewInfoDao {
         dataFileInfo.setOriginalFilePath(DocPreviewInfo.getOriginalFilePath());
         dataFileInfo.setDataDir(DocPreviewInfo.getDataDir());
         String fileExtension = FilenameUtils.getExtension(path).toLowerCase();
-        String extension = fileExtension.contains("xls") ? ".html":".png";
-        String dataFileName = DocPreviewInfo.getFilePathList() == null || DocPreviewInfo.getFilePathList().size() == 0 ? "" : DocPreviewInfo.getFilePathList().stream().filter(x -> x.equals((page) + extension)).findFirst().orElse("");
+        String extension = fileExtension.contains("xls") ? ".html" : ".png";
+        page = fileExtension.contains("ppt") ? page : page + 1;
+        int finalPage = page;
+        String dataFileName = DocPreviewInfo.getFilePathList() == null || DocPreviewInfo.getFilePathList().size() == 0 ? "" : DocPreviewInfo.getFilePathList().stream().filter(x -> x.equals((finalPage) + extension)).findFirst().orElse("");
         if (!dataFileName.equals("")) {
             String filePath = DocPreviewInfo.getDirName() + "/" + dataFileName;
             dataFileInfo.setShortFilePath(filePath);

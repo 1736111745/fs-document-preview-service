@@ -20,17 +20,13 @@ public class ExcelConvertor implements IDocConvertor {
     public String convert(int page1, int page2, String filePath, String baseDir) throws Exception {
         ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
         try {
-            LOG.info("begin get IPICConvertor");
             IHtmlConvertor htmlConvertor = convertobj.convertor.convertMStoHtml(filePath);
-            LOG.info("end get IPICConvertor");
             int resultcode = htmlConvertor.resultCode();
             if (resultcode == 0) {
                 htmlConvertor.setNormal(true);
                 String fileName = (page1 + 1) + ".html";
                 String htmlFilePath = baseDir + "/" + fileName;
-                LOG.info("begin get html,filePath,{},folder:{}", filePath, baseDir);
                 htmlConvertor.convertToHtml(htmlFilePath, page1);
-                LOG.info("end get svg,folder:{}");
                 htmlConvertor.close();
                 File file = new File(htmlFilePath);
                 if (file.exists()) {

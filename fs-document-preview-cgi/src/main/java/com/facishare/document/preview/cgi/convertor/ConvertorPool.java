@@ -12,12 +12,12 @@ public class ConvertorPool {
     private final static String root = Thread.currentThread().getContextClassLoader().getResource("").getPath();
     private final static String configDir = root + "yozo_config";
     private static final Logger LOG = LoggerFactory.getLogger(ConvertorPool.class);
+
     private ConvertorPool() {
     }
 
     private static ConvertorPool instance = null;
     private List<ConvertorObject> pool = new ArrayList();
-    //池内维护了最大为5个实例，可以根据自己的服务器性能调整最大值
     private static final int maxSize = 20;
     private int availSize = 0;
     private int current = 0;
@@ -58,7 +58,7 @@ public class ConvertorPool {
     }
 
     private synchronized ConvertorObject getIdleConvertor() {
-        LOG.info("convert pool availSize:{}",availSize);
+        LOG.info("convert pool availSize:{}", availSize);
         for (ConvertorObject co : pool) {
             if (co.available) {
                 co.available = false;

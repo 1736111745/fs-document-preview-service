@@ -13,25 +13,7 @@ public class DocConvertor {
     private static final Logger LOG = LoggerFactory.getLogger(DocConvertor.class);
 
     public String doConvert(String path, String baseDir, String name, String originalFilePath, int page) throws Exception {
-        String extension = FilenameUtils.getExtension(path).toLowerCase();
-        IDocConvertor docConvertor = null;
-        switch (extension) {
-            case "doc":
-            case "docx":
-                docConvertor = new WordConvertor();
-                break;
-            case "xls":
-            case "xlsx":
-                docConvertor = new ExcelConvertor();
-                break;
-            case "ppt":
-            case "pptx":
-                docConvertor = new PPTConvertor();
-                break;
-            case "pdf":
-                docConvertor = new PDFConvertor();
-                break;
-        }
+        IDocConvertor docConvertor = getDocConvert(path);
         if (docConvertor == null) {
             return "";
         }
@@ -45,8 +27,22 @@ public class DocConvertor {
         }
     }
     public String doConvert(String path, String baseDir, String name, String originalFilePath, int page,int width) throws Exception {
-        String extension = FilenameUtils.getExtension(path).toLowerCase();
+        IDocConvertor docConvertor = getDocConvert(path);
+        if (docConvertor == null) {
+            return "";
+        }
+        try {
+            String filePath = docConvertor.convert(page, page, originalFilePath, baseDir, width);
+            return filePath;
+        } catch (Exception e) {
+            LOG.error("do convert happed error:{}", e);
+            return "";
+        }
+    }
+
+    private IDocConvertor getDocConvert(String path) {
         IDocConvertor docConvertor = null;
+        String extension = FilenameUtils.getExtension(path).toLowerCase();
         switch (extension) {
             case "doc":
             case "docx":
@@ -64,16 +60,6 @@ public class DocConvertor {
                 docConvertor = new PDFConvertor();
                 break;
         }
-        if (docConvertor == null) {
-            return "";
-        }
-        try {
-            String filePath = docConvertor.convert(page, page, originalFilePath, baseDir,width);
-            return filePath;
-        } catch (Exception e) {
-            LOG.error("do convert happed error:{}", e);
-            return "";
-        } finally {
-        }
+        return docConvertor;
     }
 }

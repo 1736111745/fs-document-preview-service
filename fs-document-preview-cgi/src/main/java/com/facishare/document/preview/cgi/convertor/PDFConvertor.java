@@ -19,16 +19,11 @@ public class PDFConvertor implements IDocConvertor {
     public String convert(int page1, int page2, String filePath, String baseDir) throws Exception {
         ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
         try {
-            LOG.info("begin get IPICConvertor");
             IPICConvertor ipicConvertor = convertobj.convertor.convertPdftoPic(filePath);
-            LOG.info("end get IPICConvertor");
             int resultcode = ipicConvertor.resultCode();
             if (resultcode == 0) {
                 String fileName = (page1 + 1) + ".png";
                 String pngFilePath = baseDir + "/" + fileName;
-                LOG.info("begin get image,folder:{},page:{}", baseDir, page1);
-                int code = ipicConvertor.convertToPNG(page1, page2, 2f, baseDir);
-                LOG.info("end get image,folder:{},code:{},page:{}", baseDir, code, page1);
                 ipicConvertor.close();
                 File file = new File(pngFilePath);
                 if (file.exists()) {
@@ -51,16 +46,11 @@ public class PDFConvertor implements IDocConvertor {
     public String convert(int page1, int page2, String filePath, String baseDir, int width) throws Exception {
         ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
         try {
-            LOG.info("begin get IPICConvertor");
             IPICConvertor ipicConvertor = convertobj.convertor.convertPdftoPic(filePath);
-            LOG.info("end get IPICConvertor");
             int resultcode = ipicConvertor.resultCode();
             if (resultcode == 0) {
-                String fileName = (page1) + ".png";
+                String fileName = (page1 + 1) + ".png";
                 String pngFilePath = baseDir + "/" + fileName;
-                LOG.info("begin get image,folder:{},page:{}", baseDir, page1);
-                int code = ipicConvertor.convertToPNG(page1, page2, 2f, baseDir);
-                LOG.info("end get image,folder:{},code:{},page:{}", baseDir, code, page1);
                 ipicConvertor.close();
                 File file = new File(pngFilePath);
                 if (file.exists()) {
@@ -77,5 +67,17 @@ public class PDFConvertor implements IDocConvertor {
         } finally {
             ConvertorPool.getInstance().returnConvertor(convertobj);
         }
+    }
+
+
+    public static void main(String[] args) {
+        ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
+        String docPath = "/Users/liuq/DocPreviewTest/1.doc";
+        String pptpath = "/Users/liuq/DocPreviewTest/2.ppt";
+        String pdfPath = "/Users/liuq/DocPreviewTest/4.pdf";
+        String excelPath = "/Users/liuq/DocPreviewTest/4.xlsx";
+        IPICConvertor ipicConvertor = convertobj.convertor.convertMStoPic(pptpath);
+        int code =ipicConvertor.convertToPNG(0, 0, 2f, "/Users/liuq/DocPreviewTest/Result");
+        ipicConvertor.convertToSVG(0, 0, 2f, "/Users/liuq/DocPreviewTest/Result");
     }
 }

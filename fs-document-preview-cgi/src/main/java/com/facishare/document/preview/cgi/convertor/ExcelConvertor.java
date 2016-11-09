@@ -8,7 +8,6 @@ import org.apache.commons.io.LineIterator;
 import java.io.File;
 import java.io.IOException;
 
-import static com.facishare.document.preview.cgi.model.FileTokenFields.fileName;
 
 /**
  * Created by liuq on 16/9/9.
@@ -21,7 +20,7 @@ public class ExcelConvertor implements IDocConvertor {
             File file = new File(htmlFilePath);
             String dirName = FilenameUtils.getBaseName(baseDir);
             handleHtml(file, dirName);
-            return dirName + "/" + fileName;
+            return dirName + "/" + FilenameUtils.getName(htmlFilePath);
         }
         return htmlFilePath;
     }

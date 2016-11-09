@@ -49,7 +49,7 @@ public class ConvertorHelper {
             if (resultcode == 0) {
                 String fileName = (page1 + startIndex) + ".png";
                 String pngFilePath = baseDir + "/" + fileName;
-                ipicConvertor.convertToPNG(page1, page2, 2f, baseDir);
+                ipicConvertor.convertToPNG(page1, page2, 1f, baseDir);
                 ipicConvertor.close();
                 File file = new File(pngFilePath);
                 if (file.exists()) {

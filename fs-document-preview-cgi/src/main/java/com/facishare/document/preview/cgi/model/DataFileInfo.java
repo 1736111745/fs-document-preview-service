@@ -4,7 +4,6 @@ package com.facishare.document.preview.cgi.model;
  * Created by liuq on 16/9/6.
  */
 public class DataFileInfo {
-
     private String dataDir;
     private String shortFilePath;
     private String originalFilePath;

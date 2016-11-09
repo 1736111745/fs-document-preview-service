@@ -1,50 +1,29 @@
 package com.facishare.document.preview.cgi.convertor;
 
-import application.dcs.IHtmlConvertor;
+import com.google.common.base.Strings;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.LineIterator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+
+import static com.facishare.document.preview.cgi.model.FileTokenFields.fileName;
 
 /**
  * Created by liuq on 16/9/9.
  */
 public class ExcelConvertor implements IDocConvertor {
-    private static final Logger LOG = LoggerFactory.getLogger(ExcelConvertor.class);
-
     @Override
     public String convert(int page1, int page2, String filePath, String baseDir) throws Exception {
-        ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
-        try {
-            IHtmlConvertor htmlConvertor = convertobj.convertor.convertMStoHtml(filePath);
-            int resultcode = htmlConvertor.resultCode();
-            if (resultcode == 0) {
-                htmlConvertor.setNormal(true);
-                String fileName = (page1 + 1) + ".html";
-                String htmlFilePath = baseDir + "/" + fileName;
-                htmlConvertor.convertToHtml(htmlFilePath, page1);
-                htmlConvertor.close();
-                File file = new File(htmlFilePath);
-                if (file.exists()) {
-                    //预处理
-                    String dirName = FilenameUtils.getBaseName(baseDir);
-                    handleHtml(file, dirName);
-                    return dirName + "/" + fileName;
-                } else {
-                    return "";
-                }
-            } else
-                return "";
-        } catch (Exception e) {
-            LOG.error("error info:" + e.getStackTrace());
-            return "";
-        } finally {
-            ConvertorPool.getInstance().returnConvertor(convertobj);
+        String htmlFilePath = ConvertorHelper.toHtml(page1, filePath, baseDir);
+        if (!Strings.isNullOrEmpty(htmlFilePath)) {
+            File file = new File(htmlFilePath);
+            String dirName = FilenameUtils.getBaseName(baseDir);
+            handleHtml(file, dirName);
+            return dirName + "/" + fileName;
         }
+        return htmlFilePath;
     }
 
     @Override

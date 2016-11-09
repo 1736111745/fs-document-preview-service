@@ -12,7 +12,7 @@ public class WordConvertor implements IDocConvertor {
     @Override
     public String convert(int page1, int page2, String filePath, String baseDir) throws Exception {
         String svgFilePath = ConvertorHelper.toSvg(page1, page2, filePath, baseDir);
-        return Strings.isNullOrEmpty(svgFilePath) ? svgFilePath : FilenameUtils.getBaseName(baseDir) + "/" + FilenameUtils.getBaseName(svgFilePath);
+        return Strings.isNullOrEmpty(svgFilePath) ? svgFilePath : FilenameUtils.getBaseName(baseDir) + "/" + FilenameUtils.getName(svgFilePath);
     }
 
     @Override
@@ -20,7 +20,7 @@ public class WordConvertor implements IDocConvertor {
         String pngFilePath = ConvertorHelper.toPng(page1, page2, filePath, baseDir,1,1);
         if(!Strings.isNullOrEmpty(pngFilePath)) {
             Thumbnails.of(pngFilePath).width(width).outputFormat("png").toFile(pngFilePath);
-            return FilenameUtils.getBaseName(baseDir) + "/" + FilenameUtils.getBaseName(pngFilePath);
+            return FilenameUtils.getBaseName(baseDir) + "/" + FilenameUtils.getName(pngFilePath);
         }
         return pngFilePath;
     }

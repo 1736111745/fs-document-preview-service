@@ -60,7 +60,7 @@ public class ConvertorHelper {
             } else
                 return "";
         } catch (Exception e) {
-            logger.error("error info", e);
+            logger.error("toPng", e);
             return "";
         } finally {
             ConvertorPool.getInstance().returnConvertor(convertobj);
@@ -89,7 +89,7 @@ public class ConvertorHelper {
             } else
                 return "";
         } catch (Exception e) {
-            logger.error("error info:" + e.getStackTrace());
+            logger.error("toHtml", e);
             return "";
         } finally {
             ConvertorPool.getInstance().returnConvertor(convertobj);

@@ -16,7 +16,7 @@ public class PPTConvertor implements IDocConvertor {
 
     @Override
     public String convert(int page1, int page2, String filePath, String baseDir, int width) throws Exception {
-        String pngFilePath = ConvertorHelper.toPng(page1, page2, filePath, baseDir, 0, 2);
+        String pngFilePath = ConvertorHelper.toPng(page1, page2, filePath, baseDir, 0, 1);
         if (!Strings.isNullOrEmpty(pngFilePath)) {
             Thumbnails.of(pngFilePath).width(width).outputFormat("png").toFile(pngFilePath);
             return FilenameUtils.getBaseName(baseDir) + "/" + FilenameUtils.getBaseName(pngFilePath);

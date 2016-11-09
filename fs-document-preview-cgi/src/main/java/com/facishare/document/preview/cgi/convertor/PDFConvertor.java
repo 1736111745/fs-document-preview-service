@@ -13,7 +13,7 @@ public class PDFConvertor implements IDocConvertor {
     public String convert(int page1, int page2, String filePath, String baseDir) throws Exception {
         String pngFilePath = ConvertorHelper.toPng(page1, page2, filePath, baseDir, 1, 2);
         if (!Strings.isNullOrEmpty(pngFilePath)) {
-            Thumbnails.of(pngFilePath).scale(0.4).outputFormat("png").toFile(pngFilePath);
+            Thumbnails.of(pngFilePath).width(1024).outputFormat("png").toFile(pngFilePath);
             return FilenameUtils.getBaseName(baseDir) + "/" + FilenameUtils.getName(pngFilePath);
         }
         return pngFilePath;

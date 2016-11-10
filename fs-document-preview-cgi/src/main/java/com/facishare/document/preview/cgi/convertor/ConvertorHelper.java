@@ -66,9 +66,7 @@ public class ConvertorHelper {
             ConvertorPool.getInstance().returnConvertor(convertobj);
         }
     }
-
-
-
+    
     public static String toHtml(int page1, String filePath, String baseDir) {
         ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
         try {

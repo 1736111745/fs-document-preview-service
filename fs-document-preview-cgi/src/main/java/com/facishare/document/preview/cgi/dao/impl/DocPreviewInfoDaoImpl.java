@@ -5,6 +5,7 @@ import com.facishare.document.preview.cgi.model.DataFileInfo;
 import com.facishare.document.preview.cgi.model.DocPreviewInfo;
 import com.facishare.document.preview.cgi.utils.DateUtil;
 import com.github.mongo.support.DatastoreExt;
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FilenameUtils;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
@@ -26,42 +27,31 @@ public class DocPreviewInfoDaoImpl implements DocPreviewInfoDao {
     private DatastoreExt dpsDataStore;
 
     @Override
-    public void saveDocPreviewInfo(String ea,String path,String dataFilePath) throws IOException {
+    public void saveDocPreviewInfo(String ea,String path,String dataFilePath,List<String> filePathList) throws IOException {
+        if (filePathList == null) {
+            filePathList = Lists.newArrayList();
+        }
         String dataFileName = FilenameUtils.getName(dataFilePath);
+        filePathList.add(dataFileName);
         Query<DocPreviewInfo> query = dpsDataStore.createQuery(DocPreviewInfo.class);
         query.criteria("path").equal(path).criteria("ea").equal(ea);
-        DocPreviewInfo DocPreviewInfo = query.get();
-        List<String> filePathList = DocPreviewInfo.getFilePathList();
-        if (filePathList == null) {
-            filePathList = new ArrayList<>();
-            filePathList.add(dataFileName);
-            DocPreviewInfo.setFilePathList(filePathList);
-            UpdateOperations<DocPreviewInfo> update = dpsDataStore.createUpdateOperations(DocPreviewInfo.class);
-            update.set("filePathList", filePathList);
-            dpsDataStore.findAndModify(query, update);
-        } else {
-            if (!filePathList.contains(dataFileName)) {
-                filePathList.add(dataFileName);
-                DocPreviewInfo.setFilePathList(filePathList);
-                UpdateOperations<DocPreviewInfo> update = dpsDataStore.createUpdateOperations(DocPreviewInfo.class);
-                update.set("filePathList", filePathList);
-                dpsDataStore.findAndModify(query, update);
-            }
-        }
+        UpdateOperations<DocPreviewInfo> update = dpsDataStore.createUpdateOperations(DocPreviewInfo.class);
+        update.set("filePathList", filePathList);
+        dpsDataStore.findAndModify(query, update);
     }
 
     @Override
-    public DataFileInfo getDataFileInfo( String ea,String path, int page,DocPreviewInfo DocPreviewInfo) throws IOException {
+    public DataFileInfo getDataFileInfo( String ea,String path, int page,DocPreviewInfo docPreviewInfo) throws IOException {
         DataFileInfo dataFileInfo = new DataFileInfo();
-        dataFileInfo.setOriginalFilePath(DocPreviewInfo.getOriginalFilePath());
-        dataFileInfo.setDataDir(DocPreviewInfo.getDataDir());
+        dataFileInfo.setOriginalFilePath(docPreviewInfo.getOriginalFilePath());
+        dataFileInfo.setDataDir(docPreviewInfo.getDataDir());
         String fileExtension = FilenameUtils.getExtension(path).toLowerCase();
         String extension = fileExtension.contains("xls") ? ".html" : ".png";
         page = fileExtension.contains("ppt") ? page : page + 1;
         int finalPage = page;
-        String dataFileName = DocPreviewInfo.getFilePathList() == null || DocPreviewInfo.getFilePathList().size() == 0 ? "" : DocPreviewInfo.getFilePathList().stream().filter(x -> x.equals((finalPage) + extension)).findFirst().orElse("");
+        String dataFileName = docPreviewInfo.getFilePathList() == null || docPreviewInfo.getFilePathList().size() == 0 ? "" : docPreviewInfo.getFilePathList().stream().filter(x -> x.equals((finalPage) + extension)).findFirst().orElse("");
         if (!dataFileName.equals("")) {
-            String filePath = DocPreviewInfo.getDirName() + "/" + dataFileName;
+            String filePath = docPreviewInfo.getDirName() + "/" + dataFileName;
             dataFileInfo.setShortFilePath(filePath);
         } else {
             dataFileInfo.setShortFilePath("");
@@ -80,26 +70,23 @@ public class DocPreviewInfoDaoImpl implements DocPreviewInfoDao {
 
     @Override
     public DocPreviewInfo initDocPreviewInfo( String ea, int employeeId,String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames) {
-        DocPreviewInfo docPreviewInfo = getInfoByPath(ea, path);
-        if (docPreviewInfo == null) {
-            docPreviewInfo = new DocPreviewInfo();
-            docPreviewInfo.setDocSize(docSize);
-            docPreviewInfo.setDirName(FilenameUtils.getBaseName(dataDir));
-            docPreviewInfo.setCreateTime(new Date());
-            int yyyyMMdd = Integer.parseInt(DateUtil.getFormatDateStr("yyyyMMdd"));
-            docPreviewInfo.setCreateYYMMDD(yyyyMMdd);
-            docPreviewInfo.setEa(ea);
-            docPreviewInfo.setEmployeeId(employeeId);
-            docPreviewInfo.setDataDir(dataDir);
-            docPreviewInfo.setPath(path);
-            docPreviewInfo.setSheetNames(sheetNames);
-            docPreviewInfo.setPageCount(pageCount);
-            docPreviewInfo.setOriginalFilePath(originalFilePath);
-            List<String> filePathList = new ArrayList<>();
-            docPreviewInfo.setFilePathList(filePathList);
-            dpsDataStore.insert("docPreviewInfo", docPreviewInfo);
-            dpsDataStore.ensureIndexes();
-        }
+        DocPreviewInfo docPreviewInfo = new DocPreviewInfo();
+        docPreviewInfo.setDocSize(docSize);
+        docPreviewInfo.setDirName(FilenameUtils.getBaseName(dataDir));
+        docPreviewInfo.setCreateTime(new Date());
+        int yyyyMMdd = Integer.parseInt(DateUtil.getFormatDateStr("yyyyMMdd"));
+        docPreviewInfo.setCreateYYMMDD(yyyyMMdd);
+        docPreviewInfo.setEa(ea);
+        docPreviewInfo.setEmployeeId(employeeId);
+        docPreviewInfo.setDataDir(dataDir);
+        docPreviewInfo.setPath(path);
+        docPreviewInfo.setSheetNames(sheetNames);
+        docPreviewInfo.setPageCount(pageCount);
+        docPreviewInfo.setOriginalFilePath(originalFilePath);
+        List<String> filePathList = new ArrayList<>();
+        docPreviewInfo.setFilePathList(filePathList);
+        dpsDataStore.insert("DocPreviewInfo", docPreviewInfo);
+        dpsDataStore.ensureIndexes();
         return docPreviewInfo;
     }
 

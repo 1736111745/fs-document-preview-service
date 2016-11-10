@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface DocPreviewInfoDao {
 
-    void saveDocPreviewInfo(String ea,String path,String dataFilePath) throws IOException;
+    void saveDocPreviewInfo(String ea,String path,String dataFilePath,List<String> filePathList) throws IOException;
 
     DataFileInfo getDataFileInfo( String ea,String path, int page,DocPreviewInfo previewInfo) throws IOException;
 

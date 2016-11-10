@@ -113,7 +113,7 @@ public class PreviewController {
                     String originalFilePath = dataFileInfo.getOriginalFilePath();
                     String dataFilePath = docConvertor.doConvert(path, dataFileInfo.getDataDir(), name, originalFilePath, pageIndex);
                     if (!Strings.isNullOrEmpty(dataFilePath)) {
-                        previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
+                        previewInfoDao.savePreviewInfo(ea, path, dataFilePath, previewInfo.getFilePathList());
                     }
                     return handModelAndView(dataFilePath);
                 }
@@ -256,7 +256,7 @@ public class PreviewController {
                 String originalFilePath = dataFileInfo.getOriginalFilePath();
                 String dataFilePath = docConvertor.doConvert(path, dataFileInfo.getDataDir(), "", originalFilePath, pageIndex, width);
                 if (!Strings.isNullOrEmpty(dataFilePath)) {
-                    docPreviewInfoDao.saveDocPreviewInfo(ea, path, dataFilePath);
+                    docPreviewInfoDao.saveDocPreviewInfo(ea, path, dataFilePath,docPreviewInfo.getFilePathList());
                     responseBinary(dataFilePath, response);
                 } else {
                     logger.error("ea:{},path:{} do convert hanppend error!", ea, path);

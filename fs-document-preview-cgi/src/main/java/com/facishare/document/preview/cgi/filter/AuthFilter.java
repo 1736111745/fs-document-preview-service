@@ -30,7 +30,7 @@ public class AuthFilter extends OncePerRequestFilter {
             if (employeeInfo == null) {
                   //response.setStatus(403);
                 employeeInfo = new EmployeeInfo();
-                employeeInfo.setEa("11");
+                employeeInfo.setEa("7");
                 employeeInfo.setEmployeeId(1000);
                 request.setAttribute("Auth", employeeInfo);
             } else {

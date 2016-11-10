@@ -1,6 +1,9 @@
 package com.facishare.document.preview.cgi.controller;
 
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +22,7 @@ import java.nio.channels.FileChannel;
 @Controller
 @RequestMapping("/")
 public class ResourceController {
+    private static final Logger logger = LoggerFactory.getLogger(ResourceController.class);
     @Autowired
     PreviewInfoDao previewInfoDao;
 
@@ -39,36 +43,44 @@ public class ResourceController {
     public void getStatic(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
         String baseDir = previewInfoDao.getBaseDir(folder);
         String filePath = baseDir + "/" + fileName;
-        response.setHeader("Cache-Control", "max-age=315360000" ); // HTTP/1.1
+        response.setHeader("Cache-Control", "max-age=315360000"); // HTTP/1.1
         outPut(response, filePath);
     }
 
+    /*
+      处理静态文件
+     */
     private void outPut(HttpServletResponse response, String filePath) throws IOException {
-        filePath = filePath.toLowerCase();
-        if (filePath.contains(".png")) {
+        String fileName = FilenameUtils.getName(filePath);
+        fileName = fileName.toLowerCase();
+        if (fileName.contains(".png")) {
             response.setContentType("image/png");
-        } else if (filePath.contains(".jpg")) {
+        } else if (fileName.contains(".jpg")) {
             response.setContentType("image/jpeg ");
-        } else if (filePath.contains(".js")) {
+        } else if (fileName.contains(".js")) {
             response.setContentType("application/javascript");
-        } else if (filePath.contains(".css")) {
+        } else if (fileName.contains(".css")) {
             response.setContentType("text/css");
-        } else if (filePath.contains(".svg")) {
+        } else if (fileName.contains(".svg")) {
             response.setContentType("image/svg+xml");
-        } else if (filePath.contains(".htm")) {
+        } else if (fileName.contains(".htm")) {
             response.setContentType("text/html");
-        } else if (filePath.contains(".pdf")) {
+        } else if (fileName.contains(".pdf")) {
             response.setContentType("application/pdf");
         }
-        FileChannel fc = new RandomAccessFile(filePath, "r").getChannel();
-        MappedByteBuffer mbb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-        byte[] buffer = new byte[(int) fc.size()];
-        mbb.get(buffer);
-        OutputStream out = response.getOutputStream();
-        out.write(buffer);
-        out.flush();
-        out.close();
-        mbb.force();
-        fc.close();
+        try {
+            FileChannel fc = new RandomAccessFile(filePath, "r").getChannel();
+            MappedByteBuffer mbb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+            byte[] buffer = new byte[(int) fc.size()];
+            mbb.get(buffer);
+            OutputStream out = response.getOutputStream();
+            out.write(buffer);
+            out.flush();
+            out.close();
+            mbb.force();
+            fc.close();
+        } catch (Exception ex) {
+            logger.error("filepath:{}", filePath, ex);
+        }
     }
 }

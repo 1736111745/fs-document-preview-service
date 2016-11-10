@@ -9,13 +9,24 @@
         </layout>
     </appender>
 
-    <appender name="log-common-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="log-common" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_DIR}/fs-log.log</file>
         <encoder>
             <pattern>${COMMON_PATTERN}</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>${LOG_DIR}/fs-log-%d{yyyy-MM-dd}.log</FileNamePattern>
+            <MaxHistory>30</MaxHistory>
+            <CleanHistoryOnStart>true</CleanHistoryOnStart>
+        </rollingPolicy>
+    </appender>
+    <appender name="log-error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/fs-error.log</file>
+        <encoder>
+            <pattern>${COMMON_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_DIR}/fs-error-%d{yyyy-MM-dd}.log</FileNamePattern>
             <MaxHistory>30</MaxHistory>
             <CleanHistoryOnStart>true</CleanHistoryOnStart>
         </rollingPolicy>
@@ -32,9 +43,13 @@
         </rollingPolicy>
     </appender>
 
-    <!-- - - - - - - - logger - - - - - - -  -->
+    <!-- - - - - - - - info logger - - - - - - -  -->
     <logger name="com.facishare.document.preview.cgi" level="INFO" additivity="true">
-        <appender-ref ref="log-common-file"/>
+        <appender-ref ref="log-common"/>
+    </logger>
+    <!-- - - - - - - -error logger - - - - - - -  -->
+    <logger name="com.facishare.document.preview.cgi" level="ERROR" additivity="true">
+        <appender-ref ref="log-error"/>
     </logger>
     <logger name="com.github.trace" level="INFO" additivity="false">
         <appender-ref ref="trace" />

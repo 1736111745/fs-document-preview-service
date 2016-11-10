@@ -32,7 +32,7 @@ public class ConvertorHelper {
             } else
                 return "";
         } catch (Exception e) {
-            logger.error("toSvg",e);
+            logger.error("toSvg,filepath:{}",filePath,e);
             return "";
         } finally {
             ConvertorPool.getInstance().returnConvertor(convertobj);
@@ -60,7 +60,7 @@ public class ConvertorHelper {
             } else
                 return "";
         } catch (Exception e) {
-            logger.error("toPng", e);
+            logger.error("toPng,filepath:{}",filePath,e);
             return "";
         } finally {
             ConvertorPool.getInstance().returnConvertor(convertobj);
@@ -89,10 +89,14 @@ public class ConvertorHelper {
             } else
                 return "";
         } catch (Exception e) {
-            logger.error("toHtml", e);
+            logger.error("toHtml,filepath:{}", filePath, e);
             return "";
         } finally {
             ConvertorPool.getInstance().returnConvertor(convertobj);
         }
+    }
+
+    public static void main(String[] args) {
+
     }
 }

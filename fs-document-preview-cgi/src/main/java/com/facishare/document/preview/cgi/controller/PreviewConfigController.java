@@ -22,10 +22,12 @@ public class PreviewConfigController {
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewConfig", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getPreviewWay(HttpServletRequest request) {
+        String client = safteGetRequestParameter(request, "client");
+        String grayConfig = client.toLowerCase().equals("ios") ? "newway_iOS" : "newway_android";
         PreviewWayEntity entity = new PreviewWayEntity();
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
-        boolean newway = gray.isAllow("newway", user);
+        boolean newway = gray.isAllow(grayConfig, user);
         if (newway) {
             entity.setWay(1);
             String byTokenUrl = "/dps/preview/bytoken?token={0}&name={1}";
@@ -36,5 +38,9 @@ public class PreviewConfigController {
             entity.setWay(0);
         String json = JSON.toJSONString(entity);
         return json;
+    }
+    private String safteGetRequestParameter(HttpServletRequest request, String paramName) {
+        String value = request.getParameter(paramName) == null ? "" : request.getParameter(paramName).trim();
+        return value;
     }
 }

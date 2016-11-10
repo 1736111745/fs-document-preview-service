@@ -17,7 +17,7 @@ public interface DocPreviewInfoDao {
 
     String getBaseDir(String folderName);
 
-    void initDocPreviewInfo( String ea, int employeeId,String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames);
+    DocPreviewInfo initDocPreviewInfo( String ea, int employeeId,String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames);
 
     DocPreviewInfo getInfoByPath(String ea, String path);
 

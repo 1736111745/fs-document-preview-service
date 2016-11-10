@@ -77,9 +77,8 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
 
 
     @Override
-    public void initPreviewInfo( String ea, int employeeId,String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames)
-    {
-        PreviewInfo previewInfo = getInfoByPath(ea,path);
+    public PreviewInfo initPreviewInfo( String ea, int employeeId,String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames) {
+        PreviewInfo previewInfo = getInfoByPath(ea, path);
         if (previewInfo == null) {
             previewInfo = new PreviewInfo();
             previewInfo.setDocSize(docSize);
@@ -99,6 +98,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
             dpsDataStore.insert("PreviewInfo", previewInfo);
             dpsDataStore.ensureIndexes();
         }
+        return previewInfo;
     }
 
     @Override

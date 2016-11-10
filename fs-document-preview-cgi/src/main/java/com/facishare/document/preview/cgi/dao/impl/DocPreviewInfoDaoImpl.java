@@ -79,28 +79,28 @@ public class DocPreviewInfoDaoImpl implements DocPreviewInfoDao {
 
 
     @Override
-    public void initDocPreviewInfo( String ea, int employeeId,String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames)
-    {
-        DocPreviewInfo DocPreviewInfo = getInfoByPath(ea,path);
-        if (DocPreviewInfo == null) {
-            DocPreviewInfo = new DocPreviewInfo();
-            DocPreviewInfo.setDocSize(docSize);
-            DocPreviewInfo.setDirName(FilenameUtils.getBaseName(dataDir));
-            DocPreviewInfo.setCreateTime(new Date());
+    public DocPreviewInfo initDocPreviewInfo( String ea, int employeeId,String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames) {
+        DocPreviewInfo docPreviewInfo = getInfoByPath(ea, path);
+        if (docPreviewInfo == null) {
+            docPreviewInfo = new DocPreviewInfo();
+            docPreviewInfo.setDocSize(docSize);
+            docPreviewInfo.setDirName(FilenameUtils.getBaseName(dataDir));
+            docPreviewInfo.setCreateTime(new Date());
             int yyyyMMdd = Integer.parseInt(DateUtil.getFormatDateStr("yyyyMMdd"));
-            DocPreviewInfo.setCreateYYMMDD(yyyyMMdd);
-            DocPreviewInfo.setEa(ea);
-            DocPreviewInfo.setEmployeeId(employeeId);
-            DocPreviewInfo.setDataDir(dataDir);
-            DocPreviewInfo.setPath(path);
-            DocPreviewInfo.setSheetNames(sheetNames);
-            DocPreviewInfo.setPageCount(pageCount);
-            DocPreviewInfo.setOriginalFilePath(originalFilePath);
+            docPreviewInfo.setCreateYYMMDD(yyyyMMdd);
+            docPreviewInfo.setEa(ea);
+            docPreviewInfo.setEmployeeId(employeeId);
+            docPreviewInfo.setDataDir(dataDir);
+            docPreviewInfo.setPath(path);
+            docPreviewInfo.setSheetNames(sheetNames);
+            docPreviewInfo.setPageCount(pageCount);
+            docPreviewInfo.setOriginalFilePath(originalFilePath);
             List<String> filePathList = new ArrayList<>();
-            DocPreviewInfo.setFilePathList(filePathList);
-            dpsDataStore.insert("DocPreviewInfo", DocPreviewInfo);
+            docPreviewInfo.setFilePathList(filePathList);
+            dpsDataStore.insert("docPreviewInfo", docPreviewInfo);
             dpsDataStore.ensureIndexes();
         }
+        return docPreviewInfo;
     }
 
     @Override

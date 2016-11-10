@@ -12,6 +12,7 @@ import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.cgi.utils.PathHelper;
 import com.facishare.document.preview.cgi.utils.SampleUUID;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
+import com.google.common.base.Strings;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -53,7 +54,7 @@ public class PreviewController {
     FileTokenDao fileTokenDao;
     @Autowired
     DocConvertor docConvertor;
-    private static final Logger LOG = LoggerFactory.getLogger(PreviewController.class);
+    private static final Logger logger = LoggerFactory.getLogger(PreviewController.class);
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
 
@@ -64,10 +65,7 @@ public class PreviewController {
         {
             String path = safteGetRequestParameter(request, "path");
             String token = safteGetRequestParameter(request, "token");
-            String securityGroup = "";
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-            String ea = employeeInfo.getEa();
-            int employeeId = employeeInfo.getEmployeeId();
             if (path.equals("") && token.equals("")) {
                 return getPreviewInfoResult(false, 0, null, "", "参数错误!");
             }
@@ -76,7 +74,6 @@ public class PreviewController {
                 if (fileToken != null && fileToken.getFileType().toLowerCase().equals("preview")) {
                     {
                         path = fileToken.getFilePath() == null ? "" : fileToken.getFilePath().trim();
-                        securityGroup = fileToken.getDownloadSecurityGroup();
                     }
                 }
             }
@@ -87,34 +84,11 @@ public class PreviewController {
             if (allowPreviewExtension.indexOf(extension) == -1) {
                 return getPreviewInfoResult(false, 0, null, "", "该文件不可以预览!");
             }
-            PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
-            int pageCount;
-            List<String> sheetNames;
-            if (previewInfo == null) {
-                try {
-                    byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo, securityGroup);
-                    if (bytes == null || bytes.length == 0) {
-                        return getPreviewInfoResult(false, 0, null, "", "文件无法找到或者损坏!");
-                    }
-                    String dataDir = new PathHelper(employeeInfo.getEa()).getDataDir();
-                    String fileName = SampleUUID.getUUID() + "." + extension;
-                    String filePath = FilenameUtils.concat(dataDir, fileName);
-                    FileUtils.writeByteArrayToFile(new File(filePath), bytes);
-                    PageInfo pageInfo = DocPageInfoHelper.GetPageInfo(bytes, filePath);
-                    pageCount = pageInfo.getPageCount();
-                    sheetNames = pageInfo.getSheetNames();
-                    previewInfoDao.initPreviewInfo(ea, employeeId, path, filePath, dataDir, bytes.length, pageCount, sheetNames);
-                    return getPreviewInfoResult(true, pageCount, pageInfo.getSheetNames(), path, "");
-                } catch (Exception ex) {
-                    return getPreviewInfoResult(false, 0, null, "", "该文件不可以预览!");
-                }
-            }
-            pageCount = previewInfo.getPageCount();
-            sheetNames = previewInfo.getSheetNames();
-            if (pageCount == 0) {
+            PreviewInfo previewInfo = getPreviewInfo(employeeInfo, path);
+            if (previewInfo == null || previewInfo.getPageCount() == 0) {
                 return getPreviewInfoResult(false, 0, null, "", "该文件不可以预览!");
             }
-            return getPreviewInfoResult(true, pageCount, sheetNames, path, "");
+            return getPreviewInfoResult(true, previewInfo.getPageCount(), previewInfo.getSheetNames(), path, "");
         };
         return new WebAsyncTask<>(1000 * 60, callable);
     }
@@ -129,7 +103,7 @@ public class PreviewController {
             int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             String ea = employeeInfo.getEa();
-            PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
+            PreviewInfo previewInfo = getPreviewInfo(employeeInfo, path);
             if (previewInfo != null) {
                 DataFileInfo dataFileInfo = previewInfoDao.getDataFileInfo(ea, path, pageIndex, previewInfo);
                 if (!dataFileInfo.getShortFilePath().equals("")) {
@@ -138,7 +112,9 @@ public class PreviewController {
                 } else {
                     String originalFilePath = dataFileInfo.getOriginalFilePath();
                     String dataFilePath = docConvertor.doConvert(path, dataFileInfo.getDataDir(), name, originalFilePath, pageIndex);
-                    previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
+                    if (!Strings.isNullOrEmpty(dataFilePath)) {
+                        previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
+                    }
                     return handModelAndView(dataFilePath);
                 }
             } else {
@@ -188,60 +164,90 @@ public class PreviewController {
     @RequestMapping(value = "/preview/DocPreviewByPath", method = RequestMethod.GET)
     public void docPreviewByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String path = safteGetRequestParameter(request, "npath") == "" ? safteGetRequestParameter(request, "path") : safteGetRequestParameter(request, "path");
-        String extension = FilenameUtils.getExtension(path).toLowerCase();
-        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+        if (Strings.isNullOrEmpty(path)) {
+            response.setStatus(400);
+        } else {
+            EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+            DocPreviewInfo docPreviewInfo = getDocPreviewInfo(employeeInfo, path);
+            if (docPreviewInfo == null) {
+                response.setStatus(404);
+            } else {
+                int pageCount = docPreviewInfo.getPageCount();
+                DocPageInfo docPageInfo = DocPageInfoHelper.GetDocPageInfo(path);
+                docPageInfo.setPageCount(pageCount);
+                response.setStatus(200);
+                response.setContentType("application/json");
+                String json = JSON.toJSONString(docPageInfo);
+                PrintWriter printWriter = response.getWriter();
+                printWriter.write(json);
+            }
+        }
+    }
+
+    /*
+      培训助手预览
+     */
+    private DocPreviewInfo getDocPreviewInfo(EmployeeInfo employeeInfo, String path) throws Exception {
         String ea = employeeInfo.getEa();
         int employeeId = employeeInfo.getEmployeeId();
         DocPreviewInfo docPreviewInfo = docPreviewInfoDao.getInfoByPath(ea, path);
         int pageCount;
         List<String> sheetNames;
         if (docPreviewInfo == null) {
-            try {
-                byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo, "");
-                if (bytes == null || bytes.length == 0) {
-                    response.setStatus(404);
-                } else {
-                    String dataDir = new PathHelper(employeeInfo.getEa()).getDataDir();
-                    String fileName = SampleUUID.getUUID() + "." + extension;
-                    String filePath = FilenameUtils.concat(dataDir, fileName);
-                    FileUtils.writeByteArrayToFile(new File(filePath), bytes);
-                    PageInfo pageInfo = DocPageInfoHelper.GetPageInfo(bytes, filePath);
-                    pageCount = pageInfo.getPageCount();
-                    sheetNames = pageInfo.getSheetNames();
-                    docPreviewInfoDao.initDocPreviewInfo(ea, employeeId, path, filePath, dataDir, bytes.length, pageCount, sheetNames);
-                    DocPageInfo docPageInfo = DocPageInfoHelper.GetDocPageInfo(filePath);
-                    docPageInfo.setPageCount(pageCount);
-                    response.setStatus(200);
-                    response.setContentType("application/json");
-                    String json = JSON.toJSONString(docPageInfo);
-                    PrintWriter printWriter = response.getWriter();
-                    printWriter.write(json);
-                }
-            } catch (Exception ex) {
-                response.setStatus(400);
+            byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo, "");
+            if (bytes != null && bytes.length > 0) {
+                String extension = FilenameUtils.getExtension(path).toLowerCase();
+                String dataDir = new PathHelper(ea).getDataDir();
+                String fileName = SampleUUID.getUUID() + "." + extension;
+                String filePath = FilenameUtils.concat(dataDir, fileName);
+                //下载下来保存便于文档转换方便 // TODO: 2016/11/10 当所有的页码都转码完毕后需要删除.
+                FileUtils.writeByteArrayToFile(new File(filePath), bytes);
+                PageInfo pageInfo = DocPageInfoHelper.GetPageInfo(bytes, filePath);
+                pageCount = pageInfo.getPageCount();
+                sheetNames = pageInfo.getSheetNames();
+                docPreviewInfo = docPreviewInfoDao.initDocPreviewInfo(ea, employeeId, path, filePath, dataDir, bytes.length, pageCount, sheetNames);
             }
-        } else {
-            pageCount = docPreviewInfo.getPageCount();
-            DocPageInfo docPageInfo = DocPageInfoHelper.GetDocPageInfo(path);
-            docPageInfo.setPageCount(pageCount);
-            response.setStatus(200);
-            response.setContentType("application/json");
-            String json = JSON.toJSONString(docPageInfo);
-            PrintWriter printWriter = response.getWriter();
-            printWriter.write(json);
         }
+        return docPreviewInfo;
+    }
+
+    /*
+    手机预览
+     */
+    private PreviewInfo getPreviewInfo(EmployeeInfo employeeInfo, String path) throws Exception {
+        String ea = employeeInfo.getEa();
+        int employeeId = employeeInfo.getEmployeeId();
+        PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
+        int pageCount;
+        List<String> sheetNames;
+        if (previewInfo == null) {
+            byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo, "");
+            if (bytes != null && bytes.length > 0) {
+                String extension = FilenameUtils.getExtension(path).toLowerCase();
+                String dataDir = new PathHelper(ea).getDataDir();
+                String fileName = SampleUUID.getUUID() + "." + extension;
+                String filePath = FilenameUtils.concat(dataDir, fileName);
+                //下载下来保存便于文档转换方便 // TODO: 2016/11/10 当所有的页码都转码完毕后需要删除.
+                FileUtils.writeByteArrayToFile(new File(filePath), bytes);
+                PageInfo pageInfo = DocPageInfoHelper.GetPageInfo(bytes, filePath);
+                pageCount = pageInfo.getPageCount();
+                sheetNames = pageInfo.getSheetNames();
+                previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, path, filePath, dataDir, bytes.length, pageCount, sheetNames);
+            }
+        }
+        return previewInfo;
     }
 
     @ResponseBody
     @RequestMapping(value = "/preview/DocPageByPath", method = RequestMethod.GET)
     public void docPageByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String path = safteGetRequestParameter(request, "npath") == "" ? safteGetRequestParameter(request, "path") : safteGetRequestParameter(request, "npath");
-        int pageIndex =NumberUtils.toInt(safteGetRequestParameter(request, "pageIndex"),0);
+        int pageIndex = NumberUtils.toInt(safteGetRequestParameter(request, "pageIndex"), 0);
         int width = NumberUtils.toInt(safteGetRequestParameter(request, "width"), 1136);
         width = width > 1920 ? 1920 : width;
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String ea = employeeInfo.getEa();
-        DocPreviewInfo docPreviewInfo = docPreviewInfoDao.getInfoByPath(ea, path);
+        DocPreviewInfo docPreviewInfo = getDocPreviewInfo(employeeInfo, path);
         if (docPreviewInfo != null) {
             DataFileInfo dataFileInfo = docPreviewInfoDao.getDataFileInfo(ea, path, pageIndex, docPreviewInfo);
             if (!dataFileInfo.getShortFilePath().equals("")) {
@@ -249,9 +255,13 @@ public class PreviewController {
             } else {
                 String originalFilePath = dataFileInfo.getOriginalFilePath();
                 String dataFilePath = docConvertor.doConvert(path, dataFileInfo.getDataDir(), "", originalFilePath, pageIndex, width);
-                LOG.info("dataFilePath:{}",dataFilePath);
-                docPreviewInfoDao.saveDocPreviewInfo(ea, path, dataFilePath);
-                responseBinary(dataFilePath, response);
+                if (!Strings.isNullOrEmpty(dataFilePath)) {
+                    docPreviewInfoDao.saveDocPreviewInfo(ea, path, dataFilePath);
+                    responseBinary(dataFilePath, response);
+                } else {
+                    logger.error("ea:{},path:{} do convert hanppend error!", ea, path);
+                    response.setStatus(500);
+                }
             }
         } else {
             response.setStatus(400);
@@ -296,7 +306,7 @@ public class PreviewController {
     @ExceptionHandler
     @ResponseBody
     public void handleException(HttpServletResponse req, Exception e) {
-        LOG.error("error:", e);
+        logger.error("error:", e);
         req.setStatus(500);
     }
 }

@@ -1,8 +1,11 @@
 package com.facishare.document.preview.cgi.convertor;
 
+import com.fxiaoke.common.image.SimpleImageInfo;
 import com.google.common.base.Strings;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.FilenameUtils;
+
+import java.io.File;
 
 
 /**
@@ -13,7 +16,10 @@ public class PDFConvertor implements IDocConvertor {
     public String convert(int page1, int page2, String filePath, String baseDir) throws Exception {
         String pngFilePath = ConvertorHelper.toPng(page1, page2, filePath, baseDir, 1, 2);
         if (!Strings.isNullOrEmpty(pngFilePath)) {
-            Thumbnails.of(pngFilePath).width(1024).outputFormat("png").toFile(pngFilePath);
+            SimpleImageInfo simpleImageInfo=new SimpleImageInfo(new File(pngFilePath));
+            if(simpleImageInfo.getWidth()>1024) {
+                Thumbnails.of(pngFilePath).width(1024).outputQuality(0.8).toFile(pngFilePath);
+            }
             return FilenameUtils.getBaseName(baseDir) + "/" + FilenameUtils.getName(pngFilePath);
         }
         return pngFilePath;
@@ -27,10 +33,5 @@ public class PDFConvertor implements IDocConvertor {
             return FilenameUtils.getBaseName(baseDir) + "/" + FilenameUtils.getName(pngFilePath);
         }
         return pngFilePath;
-    }
-
-    public static void main(String[] args) {
-        String filePath="/a/b/c.txt";
-        System.out.println(FilenameUtils.getName(filePath));
     }
 }

@@ -29,7 +29,7 @@
             src="<%=request.getContextPath()%>/static/js/excel.js?ts=<%=System.currentTimeMillis()%>"></script>
     <style type="text/css">
         .tab-content {
-            margin-top: 40px;
+            margin-top: 50px;
             margin-bottom: 40px;
         }
     </style>

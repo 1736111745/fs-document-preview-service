@@ -95,7 +95,7 @@ public class PreviewController {
 
 
     @RequestMapping(value = "/preview/getFilePath")
-    public WebAsyncTask convert(HttpServletRequest request) throws Exception {
+    public WebAsyncTask getFilePath(HttpServletRequest request) throws Exception {
         Callable<ModelAndView> callable = () -> {
             String path = safteGetRequestParameter(request, "path");
             String page = safteGetRequestParameter(request, "page");

@@ -5,6 +5,7 @@ import com.facishare.document.preview.cgi.model.DataFileInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfo;
 import com.facishare.document.preview.cgi.utils.DateUtil;
 import com.github.mongo.support.DatastoreExt;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FilenameUtils;
 import org.mongodb.morphia.query.Query;
@@ -18,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * 文档预览dao
  * Created by liuq on 16/8/16.
  */
 @Repository
@@ -46,14 +48,30 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         dataFileInfo.setOriginalFilePath(previewInfo.getOriginalFilePath());
         dataFileInfo.setDataDir(previewInfo.getDataDir());
         String fileExtension = FilenameUtils.getExtension(path).toLowerCase();
-        String extension = fileExtension.equals("pdf") ? ".png" : fileExtension.contains("xls") ? ".html" : ".svg";
-        String dataFileName = previewInfo.getFilePathList() == null || previewInfo.getFilePathList().size() == 0 ? "" : previewInfo.getFilePathList().stream().filter(x -> x.equals((page + 1) + extension)).findFirst().orElse("");
-        if (!dataFileName.equals("")) {
-            String filePath = previewInfo.getDirName() + "/" + dataFileName;
-            dataFileInfo.setShortFilePath(filePath);
-        } else {
-            dataFileInfo.setShortFilePath("");
+        String dataFileName = "";
+        int pageIndex = page + 1;
+        List<String> filePathList = previewInfo.getFilePathList();
+        if (filePathList != null && filePathList.size() > 0) {
+            switch (fileExtension) {
+                case "pdf": {
+                    dataFileName = filePathList.stream().filter(x -> (x.equals(pageIndex + ".jpg") || x.equals(pageIndex + ".png"))).findFirst().orElse("");
+                    break;
+                }
+                case "xls": {
+                    dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".html")).findFirst().orElse("");
+                    break;
+                }
+                default: {
+                    dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".html")).findFirst().orElse("");
+                    break;
+                }
+            }
         }
+        String filePath="";
+        if (!Strings.isNullOrEmpty(dataFileName)) {
+            filePath = FilenameUtils.concat(previewInfo.getDirName(), dataFileName);
+        }
+        dataFileInfo.setShortFilePath(filePath);
         return dataFileInfo;
     }
 

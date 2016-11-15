@@ -22,7 +22,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        request.setAttribute("sv","v1.1.2git");
+        request.setAttribute("sv","v1.1.2");
         String requestUri = request.getRequestURI().toLowerCase();
         if (requestUri.equals("/") || requestUri.contains(".js") || requestUri.contains(".svg") || requestUri.contains(".png") || requestUri.contains(".css") || requestUri.contains(".jpg") || requestUri.contains(".html")) {
             filterChain.doFilter(request, response);

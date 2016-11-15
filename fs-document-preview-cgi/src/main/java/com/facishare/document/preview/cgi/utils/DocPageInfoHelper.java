@@ -42,7 +42,7 @@ public class DocPageInfoHelper {
                 pageCount = parseWord(data, filePath);
                 break;
             case Excel:
-                PageInfo _pageInfo = parseExcel(data);
+                PageInfo _pageInfo = parseExcel(data,filePath);
                 pageCount = _pageInfo.getPageCount();
                 sheetNames = _pageInfo.getSheetNames();
                 break;
@@ -123,9 +123,9 @@ public class DocPageInfoHelper {
         return pageCount;
     }
 
-    private static PageInfo parseExcel(byte[] data) throws Exception {
+    private static PageInfo parseExcel(byte[] data,String filePath) throws Exception {
         int version = checkFileVersion(data);
-        return version == 2003 ? parseExcel2003(data) : parseExcel2007(data);
+        return version == 2003 ? parseExcel2003(filePath,data) : parseExcel2007(filePath,data);
     }
 
     private static int parsePPT(byte[] data) throws Exception {
@@ -166,36 +166,46 @@ public class DocPageInfoHelper {
         return pageCount;
     }
 
-    private static PageInfo parseExcel2007(byte[] data) throws Exception {
-        InputStream input = new ByteArrayInputStream(data);
-        XSSFWorkbook workbook = new XSSFWorkbook(input);
-        int pageCount = workbook.getNumberOfSheets();
-        List<String> sheetNames = new ArrayList<>();
-        for (int i = 0; i < pageCount; i++) {
-            XSSFSheet xssfSheet = workbook.getSheetAt(i);
-            String sheetName = xssfSheet.getSheetName();
-            sheetNames.add(sheetName);
+    private static PageInfo parseExcel2007(String filePath,byte[] data) throws Exception {
+        try {
+            InputStream input = new ByteArrayInputStream(data);
+            XSSFWorkbook workbook = new XSSFWorkbook(input);
+            int pageCount = workbook.getNumberOfSheets();
+            List<String> sheetNames = new ArrayList<>();
+            for (int i = 0; i < pageCount; i++) {
+                XSSFSheet xssfSheet = workbook.getSheetAt(i);
+                String sheetName = xssfSheet.getSheetName();
+                sheetNames.add(sheetName);
+            }
+            PageInfo pageInfo = new PageInfo();
+            pageInfo.setPageCount(pageCount);
+            pageInfo.setSheetNames(sheetNames);
+            return pageInfo;
+        } catch (Exception ex) {
+            LOG.error("parese excel happend error,path:{}!", filePath, ex);
+            return null;
         }
-        PageInfo pageInfo = new PageInfo();
-        pageInfo.setPageCount(pageCount);
-        pageInfo.setSheetNames(sheetNames);
-        return pageInfo;
     }
 
-    private static PageInfo parseExcel2003(byte[] data) throws Exception {
-        InputStream input = new ByteArrayInputStream(data);
-        HSSFWorkbook hs = new HSSFWorkbook(input);
-        int pageCount = hs.getNumberOfSheets();
-        List<String> sheetNames = new ArrayList<>();
-        for (int i = 0; i < pageCount; i++) {
-            HSSFSheet xssfSheet= hs.getSheetAt(i);
-            String sheetName = xssfSheet.getSheetName();
-            sheetNames.add(sheetName);
+    private static PageInfo parseExcel2003(String filePath,byte[] data) throws Exception {
+        try {
+            InputStream input = new ByteArrayInputStream(data);
+            HSSFWorkbook hs = new HSSFWorkbook(input);
+            int pageCount = hs.getNumberOfSheets();
+            List<String> sheetNames = new ArrayList<>();
+            for (int i = 0; i < pageCount; i++) {
+                HSSFSheet xssfSheet = hs.getSheetAt(i);
+                String sheetName = xssfSheet.getSheetName();
+                sheetNames.add(sheetName);
+            }
+            PageInfo pageInfo = new PageInfo();
+            pageInfo.setPageCount(pageCount);
+            pageInfo.setSheetNames(sheetNames);
+            return pageInfo;
+        } catch (Exception ex) {
+            LOG.error("parese excel happend error,path:{}!", filePath, ex);
+            return null;
         }
-        PageInfo pageInfo = new PageInfo();
-        pageInfo.setPageCount(pageCount);
-        pageInfo.setSheetNames(sheetNames);
-        return pageInfo;
     }
 
     private static int parsePPT2007(byte[] data) throws Exception {

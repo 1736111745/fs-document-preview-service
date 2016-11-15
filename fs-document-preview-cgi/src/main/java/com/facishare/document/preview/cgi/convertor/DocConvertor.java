@@ -1,6 +1,7 @@
 package com.facishare.document.preview.cgi.convertor;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -17,9 +18,12 @@ public class DocConvertor {
             return "";
         }
         try {
+            StopWatch watch=new StopWatch();
+            watch.start();
             logger.info("begin do convert,baseDir:{},originalFilePath:{}", baseDir, originalFilePath);
             String filePath = docConvertor.convert(page, page, originalFilePath, baseDir);
-            logger.info("end do convert,filePath:{}", filePath);
+            watch.stop();
+            logger.info("end do convert,filePath:{},cost:{}", filePath,watch.getTime()+"ms");
             return filePath;
         } catch (Exception e) {
             logger.error("do convert happed error:{}", e);
@@ -32,9 +36,12 @@ public class DocConvertor {
             return "";
         }
         try {
+            StopWatch watch=new StopWatch();
+            watch.start();
             logger.info("begin do convert,baseDir:{},originalFilePath:{}", baseDir, originalFilePath);
             String filePath = docConvertor.convert(page, page, originalFilePath, baseDir, width);
-            logger.info("end do convert,filePath:{}", filePath);
+            watch.stop();
+            logger.info("end do convert,filePath:{},cost:{}", filePath,watch.getTime()+"ms");
             return filePath;
         } catch (Exception e) {
             logger.error("do convert happed error:{}", e);

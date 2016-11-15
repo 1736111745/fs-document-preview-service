@@ -94,15 +94,15 @@ public class ConvertorHelper {
         }
     }
 
-//    public static void main(String[] args) throws IOException {
-//        ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
-//        String docPath = "/Users/liuq/DocPreviewTest/1.doc";
-//        String pptpath = "/Users/liuq/DocPreviewTest/2.ppt";
-//        String pdfPath = "/Users/liuq/Ebook/Intellij IDEA教程.pdf";
-//        String excelPath = "/Users/liuq/DocPreviewTest/4.xlsx";
-//        IPICConvertor ipicConvertor = convertobj.convertor.convertPdftoPic(pdfPath);
-//        int code = ipicConvertor.convertToPNG(2, 2, 2f, "/Users/liuq/DocPreviewTest/Result");
-//        Thumbnails.of("/Users/liuq/DocPreviewTest/Result/3.png").width(1080).outputQuality(0.8).toFile("/Users/liuq/DocPreviewTest/Result/a.png");
-////        Thumbnails.of("/Users/liuq/Pictures/刘晨曦/底片/004.jpg").width(1024).outputQuality(0.7).toFile("/Users/liuq/DocPreviewTest/Result/a1.png");
-//    }
+    public static void main(String[] args) throws IOException {
+        ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
+        String docPath = "/Users/liuq/DocPreviewTest/1.doc";
+        String pptpath = "/Users/liuq/DocPreviewTest/2.ppt";
+        String pdfPath = "/Users/liuq/Ebook/Intellij IDEA教程.pdf";
+        String excelPath = "/Users/liuq/DocPreviewTest/4.xlsx";
+        IPICConvertor ipicConvertor = convertobj.convertor.convertPdftoPic(pdfPath);
+        int code = ipicConvertor.convertToPNG(2, 2, 2f, "/Users/liuq/DocPreviewTest/Result");
+        Thumbnails.of("/Users/liuq/DocPreviewTest/Result/3.png").width(1080).outputQuality(0.8).toFile("/Users/liuq/DocPreviewTest/Result/a.png");
+//        Thumbnails.of("/Users/liuq/Pictures/刘晨曦/底片/004.jpg").width(1024).outputQuality(0.7).toFile("/Users/liuq/DocPreviewTest/Result/a1.png");
+    }
 }

@@ -1,51 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="false" scanPeriod="60 seconds" debug="false">
-    <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <!-- 可让每天产生一个日志文件，最多 7 个，自动回滚 -->
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/fs-app-%d{yyyyMMdd}.log.zip</fileNamePattern>
-            <maxHistory>7</maxHistory>
-        </rollingPolicy>
+<configuration>
+    <property name="LOG_DIR" value="logs"/>
+    <property name="COMMON_PATTERN" value="%date{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{0} - %msg%n"/>
+    <!-- - - - - - - - appender - - - - - - -  -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>${COMMON_PATTERN}</pattern>
+        </layout>
+    </appender>
+
+    <appender name="log-common" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/fs-log.log</file>
         <encoder>
-            <!-- 日志中默认打印traceId和userId，方便定位问题,异常栈中去掉包含如下字符的行避免打印很多无用的信息-->
-            <pattern>%d{HH:mm:ss} [%thread] %-5level %logger{12} %X{traceId} %X{userId} %msg%rEx{full,
-                java.lang.Thread,
-                javassist,
-                sun.reflect,
-                org.springframework,
-                org.apache,
-                org.eclipse.jetty,
-                $Proxy,
-                java.net,
-                java.io,
-                javax.servlet,
-                org.junit,
-                com.mysql,
-                com.sun,
-                org.mybatis.spring,
-                cglib,
-                CGLIB,
-                java.util.concurrent,
-                okhttp,
-                org.jboss,
-                }%n
-            </pattern>
+            <pattern>${COMMON_PATTERN}</pattern>
         </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_DIR}/fs-log-%d{yyyy-MM-dd}.log.zip</FileNamePattern>
+            <MaxHistory>3</MaxHistory>
+            <CleanHistoryOnStart>true</CleanHistoryOnStart>
+        </rollingPolicy>
+    </appender>
+    <appender name="log-error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/fs-error.log</file>
+        <encoder>
+            <pattern>${COMMON_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_DIR}/fs-error-%d{yyyy-MM-dd}.log.zip</FileNamePattern>
+            <MaxHistory>3</MaxHistory>
+            <CleanHistoryOnStart>true</CleanHistoryOnStart>
+        </rollingPolicy>
+    </appender>
+    <appender name="trace" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${LOG_DIR}/fs-trace.log</File>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>logs/fs-trace.%d{yyyy-MM-dd}.log</FileNamePattern>
+            <MaxHistory>1</MaxHistory>
+            <CleanHistoryOnStart>true</CleanHistoryOnStart>
+        </rollingPolicy>
     </appender>
 
-    <!-- 异步输出日志避免阻塞服务 -->
-    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
-        <queueSize>512</queueSize>
-        <appender-ref ref="RollingFile"/>
-    </appender>
-
-    <!-- 配置基础组件为WARN级别，避免打印过多影响服务自己日志 -->
-    <logger name="druid.sql" level="INFO"/>
-    <logger name="org.hibernate" level="WARN"/>
-    <logger name="org.springframework" level="WARN"/>
-    <logger name="org.apache" level="WARN"/>
-
+    <!-- - - - - - - - info logger - - - - - - -  -->
+    <logger name="com.facishare.document.preview.cgi" level="INFO" additivity="true">
+        <appender-ref ref="log-common"/>
+    </logger>
+    <!-- - - - - - - -error logger - - - - - - -  -->
+    <logger name="com.facishare.document.preview.cgi" level="ERROR" additivity="true">
+        <appender-ref ref="log-error"/>
+    </logger>
+    <logger name="com.github.trace" level="INFO" additivity="false">
+        <appender-ref ref="trace" />
+    </logger>
     <root level="INFO">
-        <appender-ref ref="ASYNC"/>
+        <appender-ref ref="console" />
     </root>
 </configuration>

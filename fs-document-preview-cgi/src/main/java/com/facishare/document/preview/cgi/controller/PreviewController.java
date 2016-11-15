@@ -99,7 +99,6 @@ public class PreviewController {
         Callable<ModelAndView> callable = () -> {
             String path = safteGetRequestParameter(request, "path");
             String page = safteGetRequestParameter(request, "page");
-            String name = safteGetRequestParameter(request, "name");
             int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             String ea = employeeInfo.getEa();
@@ -111,7 +110,7 @@ public class PreviewController {
 
                 } else {
                     String originalFilePath = dataFileInfo.getOriginalFilePath();
-                    String dataFilePath = docConvertor.doConvert(path, dataFileInfo.getDataDir(), name, originalFilePath, pageIndex);
+                    String dataFilePath = docConvertor.doConvert(path, dataFileInfo.getDataDir(), originalFilePath, pageIndex);
                     if (!Strings.isNullOrEmpty(dataFilePath)) {
                         previewInfoDao.savePreviewInfo(ea, path, dataFilePath, previewInfo.getFilePathList());
                     }
@@ -243,7 +242,7 @@ public class PreviewController {
     public void docPageByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String path = safteGetRequestParameter(request, "npath") == "" ? safteGetRequestParameter(request, "path") : safteGetRequestParameter(request, "npath");
         int pageIndex = NumberUtils.toInt(safteGetRequestParameter(request, "pageIndex"), 0);
-        int width = NumberUtils.toInt(safteGetRequestParameter(request, "width"), 1136);
+        int width = NumberUtils.toInt(safteGetRequestParameter(request, "width"), 1024);
         width = width > 1920 ? 1920 : width;
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String ea = employeeInfo.getEa();
@@ -254,7 +253,7 @@ public class PreviewController {
                 responseBinary(dataFileInfo.getShortFilePath(), response);
             } else {
                 String originalFilePath = dataFileInfo.getOriginalFilePath();
-                String dataFilePath = docConvertor.doConvert(path, dataFileInfo.getDataDir(), "", originalFilePath, pageIndex, width);
+                String dataFilePath = docConvertor.doConvert(path, dataFileInfo.getDataDir(), originalFilePath, pageIndex, width);
                 if (!Strings.isNullOrEmpty(dataFilePath)) {
                     docPreviewInfoDao.saveDocPreviewInfo(ea, path, dataFilePath,docPreviewInfo.getFilePathList());
                     responseBinary(dataFilePath, response);

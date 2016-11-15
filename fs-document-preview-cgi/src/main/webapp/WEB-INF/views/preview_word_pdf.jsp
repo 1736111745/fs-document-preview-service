@@ -17,8 +17,8 @@
     </script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery.lazyload.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/util.js?ts=v1.1>"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/word_ppt.js?ts=v1.1"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/util.js?v=<%=request.getAttribute("sv")%>>"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/word_ppt.js?v=<%=request.getAttribute("sv")%>"></script>
     <link href="<%=request.getContextPath()%>/static/css/main.css" rel="stylesheet">
 </head>
 <body>

@@ -14,9 +14,9 @@
         window.contextPath = "<%=request.getContextPath()%>";
     </script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/util.js?ts=v1.1"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/main.js?ts=v1.1>"></script>
-    <link href="<%=request.getContextPath()%>/static/css/main.css" rel="stylesheet">
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/main.js?v=<%=request.getAttribute("sv")%>"></script>
+    <link href="<%=request.getContextPath()%>/static/css/main.css?v=<%=request.getAttribute("sv")%>" rel="stylesheet">
 <style>
 
 </style>

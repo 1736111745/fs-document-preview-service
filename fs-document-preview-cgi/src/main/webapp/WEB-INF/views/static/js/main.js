@@ -4,6 +4,7 @@
 var path = getQueryStringByName("path");
 var token = getQueryStringByName("token");
 var pageCount = 0;
+var sg="";//安全组
 function getPreviewInfo() {
     $('#divLoading').show();
     $.ajax({
@@ -16,6 +17,8 @@ function getPreviewInfo() {
             if (data.canPreview) {
                 pageCount = data.pageCount;
                 path = data.path;
+                sg = data.sg;
+                doPreview();
             }
             else {
                 document.write(data.errorMsg);
@@ -34,12 +37,11 @@ function doPreview() {
     else {
         route = "handleWordAndPPT";
     }
-    var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount;
+    var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg;
     location.href = url;
 }
 //入口
 $(document).ready(function () {
     $('#divLoading').hide();
     getPreviewInfo();
-    doPreview();
 });

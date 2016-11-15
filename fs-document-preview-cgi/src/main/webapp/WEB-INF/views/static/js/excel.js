@@ -2,9 +2,9 @@
  * Created by liuq on 16/9/19.
  */
 var page = getQueryStringByName("page");
-var pageIndex = parseInt(page)
 var pageCount = getQueryStringByName("pageCount");
 var path = getQueryStringByName("path");
+var sg=getQueryStringByName("sg");
 function loadSheetNames() {
     $.ajax({
         type: 'get',
@@ -40,7 +40,7 @@ function loadSheet(i) {
         timeout: 1800000,
         dataType: 'json',
         async: true,
-        url: window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount,
+        url: window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg,
         beforeSend: function () {
             $('#divLoading').show();
         },

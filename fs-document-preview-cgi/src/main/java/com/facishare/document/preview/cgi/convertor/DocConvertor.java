@@ -39,7 +39,6 @@ public class DocConvertor {
         }
         try {
             Stopwatch stopwatch = Stopwatch.createStarted();
-            stopwatch.start();
             logger.info("begin do convert,baseDir:{},originalFilePath:{}", baseDir, originalFilePath);
             String filePath = docConvertor.convert(page, page, originalFilePath, baseDir, width);
             logger.info("end do convert,filePath:{}", filePath);

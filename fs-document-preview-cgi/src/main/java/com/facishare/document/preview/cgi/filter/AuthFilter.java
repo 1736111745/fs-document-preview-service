@@ -22,17 +22,23 @@ public class AuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        request.setAttribute("sv","v1.1.2git");
         String requestUri = request.getRequestURI().toLowerCase();
-        if (requestUri.equals("/") || requestUri.contains(".js") || requestUri.contains(".svg") || requestUri.contains(".png") || requestUri.contains(".css") || requestUri.contains(".jpg")) {
+        if (requestUri.equals("/") || requestUri.contains(".js") || requestUri.contains(".svg") || requestUri.contains(".png") || requestUri.contains(".css") || requestUri.contains(".jpg") || requestUri.contains(".html")) {
             filterChain.doFilter(request, response);
         } else {
             EmployeeInfo employeeInfo = authHelper.getAuthinfo(request);
             if (employeeInfo == null) {
-                response.setStatus(403);
-////                employeeInfo = new EmployeeInfo();
-////                employeeInfo.setEa("7");
-////                employeeInfo.setEmployeeId(1000);
-//                request.setAttribute("Auth", employeeInfo);
+                String profile = System.getProperty("spring.profiles.active");
+
+                if (!profile.equals("foneshare")) {
+                    employeeInfo = new EmployeeInfo();
+                    employeeInfo.setEa("7");
+                    employeeInfo.setEmployeeId(1000);
+                    request.setAttribute("Auth", employeeInfo);
+                } else
+                    response.setStatus(403);
+
             } else {
                 request.setAttribute("Auth", employeeInfo);
             }

@@ -20,13 +20,13 @@
     <link href="<%=request.getContextPath()%>/static/common/bootstrap.min.css" rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/common/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/common/style.css" rel="stylesheet">
-    <link href="<%=request.getContextPath()%>/static/css/excel.css?ts=<%=System.currentTimeMillis()%>"
+    <link href="<%=request.getContextPath()%>/static/css/excel.css?ts=v1.1"
           rel="stylesheet">
     <script type="application/javascript" src="<%=request.getContextPath()%>/static/common/bootstrap.min.js"></script>
     <script type="text/javascript"
-            src="<%=request.getContextPath()%>/static/js/util.js?ts=<%=System.currentTimeMillis()%>"></script>
+            src="<%=request.getContextPath()%>/static/js/util.js?ts=v1.1"></script>
     <script type="application/javascript"
-            src="<%=request.getContextPath()%>/static/js/excel.js?ts=<%=System.currentTimeMillis()%>"></script>
+            src="<%=request.getContextPath()%>/static/js/excel.js?ts=v1.1"></script>
     <style type="text/css">
         .tab-content {
             margin-top: 50px;

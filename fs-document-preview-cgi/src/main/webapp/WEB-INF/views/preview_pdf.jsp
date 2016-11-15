@@ -17,8 +17,8 @@
     </script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery.lazyload.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/util.js?ts=<%=System.currentTimeMillis()%>"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/pdf.js?ts=<%=System.currentTimeMillis()%>"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/util.js?ts=v1.1"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/pdf.js?ts=v1.1"></script>
     <link href="<%=request.getContextPath()%>/static/css/main.css" rel="stylesheet">
 </head>
 <body>

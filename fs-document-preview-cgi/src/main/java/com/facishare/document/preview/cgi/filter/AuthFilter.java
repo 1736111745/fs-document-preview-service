@@ -28,11 +28,11 @@ public class AuthFilter extends OncePerRequestFilter {
         } else {
             EmployeeInfo employeeInfo = authHelper.getAuthinfo(request);
             if (employeeInfo == null) {
-                  //response.setStatus(403);
-                employeeInfo = new EmployeeInfo();
-                employeeInfo.setEa("7");
-                employeeInfo.setEmployeeId(1000);
-                request.setAttribute("Auth", employeeInfo);
+                response.setStatus(403);
+////                employeeInfo = new EmployeeInfo();
+////                employeeInfo.setEa("7");
+////                employeeInfo.setEmployeeId(1000);
+//                request.setAttribute("Auth", employeeInfo);
             } else {
                 request.setAttribute("Auth", employeeInfo);
             }

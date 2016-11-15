@@ -1,12 +1,9 @@
 package com.facishare.document.preview.cgi.convertor;
 
-import com.google.common.base.Stopwatch;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liuq on 16/9/9.
@@ -20,12 +17,9 @@ public class DocConvertor {
             return "";
         }
         try {
-            Stopwatch stopwatch = Stopwatch.createStarted();
             logger.info("begin do convert,baseDir:{},originalFilePath:{}", baseDir, originalFilePath);
             String filePath = docConvertor.convert(page, page, originalFilePath, baseDir);
             logger.info("end do convert,filePath:{}", filePath);
-            stopwatch.stop();
-            logger.info("path:{},do convert cost:{}", path,stopwatch.elapsed(TimeUnit.MILLISECONDS));
             return filePath;
         } catch (Exception e) {
             logger.error("do convert happed error:{}", e);
@@ -38,12 +32,9 @@ public class DocConvertor {
             return "";
         }
         try {
-            Stopwatch stopwatch = Stopwatch.createStarted();
             logger.info("begin do convert,baseDir:{},originalFilePath:{}", baseDir, originalFilePath);
             String filePath = docConvertor.convert(page, page, originalFilePath, baseDir, width);
             logger.info("end do convert,filePath:{}", filePath);
-            stopwatch.stop();
-            logger.info("path:{},do convert cost:{}", stopwatch.elapsed(TimeUnit.MILLISECONDS));
             return filePath;
         } catch (Exception e) {
             logger.error("do convert happed error:{}", e);

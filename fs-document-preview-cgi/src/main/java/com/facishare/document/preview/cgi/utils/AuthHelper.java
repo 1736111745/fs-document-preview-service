@@ -20,8 +20,9 @@ import java.util.Arrays;
 public class AuthHelper {
     @Autowired
     ActiveSessionAuthorizeService assService;
-    private static final Logger LOG= LoggerFactory.getLogger(AuthHelper.class);
-    public  EmployeeInfo getAuthinfo(HttpServletRequest request) {
+    private static final Logger LOG = LoggerFactory.getLogger(AuthHelper.class);
+
+    public EmployeeInfo getAuthinfo(HttpServletRequest request) {
         String cookieValue = getCookie(request);
         if (cookieValue.equals("")) {
             return null;

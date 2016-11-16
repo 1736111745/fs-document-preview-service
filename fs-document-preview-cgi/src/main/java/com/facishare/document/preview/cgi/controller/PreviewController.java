@@ -13,8 +13,10 @@ import com.facishare.document.preview.cgi.utils.PathHelper;
 import com.facishare.document.preview.cgi.utils.SampleUUID;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
+import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -253,13 +255,13 @@ public class PreviewController {
         if (docPreviewInfo != null) {
             DataFileInfo dataFileInfo = docPreviewInfoDao.getDataFileInfo(ea, path, pageIndex, docPreviewInfo);
             if (!dataFileInfo.getShortFilePath().equals("")) {
-                responseBinary(dataFileInfo.getShortFilePath(), response);
+                responseBinary(dataFileInfo.getShortFilePath(),width,response);
             } else {
                 String originalFilePath = dataFileInfo.getOriginalFilePath();
                 String dataFilePath = docConvertor.doConvert(path, dataFileInfo.getDataDir(), originalFilePath, pageIndex, width);
                 if (!Strings.isNullOrEmpty(dataFilePath)) {
                     docPreviewInfoDao.saveDocPreviewInfo(ea, path, dataFilePath,docPreviewInfo.getFilePathList());
-                    responseBinary(dataFilePath, response);
+                    responseBinary(dataFilePath,width,response);
                 } else {
                     logger.error("ea:{},path:{} do convert hanppend error!", ea, path);
                     response.setStatus(500);
@@ -270,22 +272,39 @@ public class PreviewController {
         }
     }
 
-    private void responseBinary(String dataFilePath, HttpServletResponse response) throws IOException {
-        String[] array = dataFilePath.split("/");
-        String folder = array[0];
-        String fileName = array[1];
-        String baseDir = docPreviewInfoDao.getBaseDir(folder);
-        String filePath = baseDir + "/" + fileName;
-        FileChannel fc = new RandomAccessFile(filePath, "r").getChannel();
-        MappedByteBuffer mbb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-        byte[] buffer = new byte[(int) fc.size()];
-        mbb.get(buffer);
-        OutputStream out = response.getOutputStream();
-        out.write(buffer);
-        out.flush();
-        out.close();
-        mbb.force();
-        fc.close();
+    private void responseBinary(String dataFilePath,int width, HttpServletResponse response) throws IOException {
+        File file = new File(dataFilePath);
+        if (file.exists()) {
+            byte[] buffer;
+            if (width > 0) {
+                //缩略
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                Thumbnails.of(file).width(width).toOutputStream(outputStream);
+                buffer = outputStream.toByteArray();
+                OutputStream out = response.getOutputStream();
+                out.write(buffer);
+                out.flush();
+                out.close();
+                outputStream.close();
+            } else {
+                String[] array = dataFilePath.split("/");
+                String folder = array[0];
+                String fileName = array[1];
+                String baseDir = docPreviewInfoDao.getBaseDir(folder);
+                String filePath = baseDir + "/" + fileName;
+                FileChannel fc = new RandomAccessFile(filePath, "r").getChannel();
+                MappedByteBuffer mbb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+                buffer = new byte[(int) fc.size()];
+                mbb.get(buffer);
+                OutputStream out = response.getOutputStream();
+                out.write(buffer);
+                out.flush();
+                out.close();
+                mbb.force();
+                fc.close();
+            }
+        } else
+            response.setStatus(404);
     }
 
     private String safteGetRequestParameter(HttpServletRequest request, String paramName) {

@@ -28,8 +28,8 @@
     <logger name="org.hibernate.SQL" level="ERROR"/>
     <logger name="org.hibernate.engine.QueryParameters" level="ERROR"/>
     <logger name="org.hibernate.engine.query.HQLQueryPlan" level="ERROR"/>
-
-    <root level="DEBUG">
+    <logger name="com.github" level="ERROR"/>
+    <root level="INFO">
         <appender-ref ref="ASYNC"/>
     </root>
 </configuration>

@@ -33,7 +33,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
                 if (!profile.equals("foneshare")) {
                     employeeInfo = new EmployeeInfo();
-                    employeeInfo.setEa("7");
+                    employeeInfo.setEa("11");
                     employeeInfo.setEmployeeId(1000);
                     request.setAttribute("Auth", employeeInfo);
                 } else

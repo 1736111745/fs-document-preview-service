@@ -273,7 +273,12 @@ public class PreviewController {
     }
 
     private void responseBinary(String dataFilePath,int width, HttpServletResponse response) throws IOException {
-        File file = new File(dataFilePath);
+        String[] array = dataFilePath.split("/");
+        String folder = array[0];
+        String fileName = array[1];
+        String baseDir = docPreviewInfoDao.getBaseDir(folder);
+        String filePath = baseDir + "/" + fileName;
+        File file = new File(filePath);
         if (file.exists()) {
             byte[] buffer;
             if (width > 0) {
@@ -287,11 +292,6 @@ public class PreviewController {
                 out.close();
                 outputStream.close();
             } else {
-                String[] array = dataFilePath.split("/");
-                String folder = array[0];
-                String fileName = array[1];
-                String baseDir = docPreviewInfoDao.getBaseDir(folder);
-                String filePath = baseDir + "/" + fileName;
                 FileChannel fc = new RandomAccessFile(filePath, "r").getChannel();
                 MappedByteBuffer mbb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
                 buffer = new byte[(int) fc.size()];

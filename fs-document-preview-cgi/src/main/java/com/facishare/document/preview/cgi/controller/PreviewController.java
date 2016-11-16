@@ -11,6 +11,7 @@ import com.facishare.document.preview.cgi.utils.DocPageInfoHelper;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.cgi.utils.PathHelper;
 import com.facishare.document.preview.cgi.utils.SampleUUID;
+import com.fxiaoke.common.image.SimpleImageInfo;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import net.coobird.thumbnailator.Thumbnails;
@@ -283,8 +284,10 @@ public class PreviewController {
             byte[] buffer;
             if (width > 0) {
                 //缩略
+                SimpleImageInfo simpleImageInfo = new SimpleImageInfo(file);
+                int height = width * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                Thumbnails.of(file).width(width).toOutputStream(outputStream);
+                Thumbnails.of(file).size(width, height).toOutputStream(outputStream);
                 buffer = outputStream.toByteArray();
                 OutputStream out = response.getOutputStream();
                 out.write(buffer);

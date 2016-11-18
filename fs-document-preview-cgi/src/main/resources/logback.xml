@@ -19,9 +19,9 @@
         <appender-ref ref="RollingFile"/>
     </appender>
 
-    <logger name="org.springframework" level="WARN"/>
-    <logger name="com.opensymphony" level="WARN"/>
-    <logger name="org.apache" level="WARN"/>
+    <logger name="org.springframework" level="ERROR"/>
+    <logger name="com.opensymphony" level="ERROR"/>
+    <logger name="org.apache" level="ERROR"/>
 
     <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="ERROR"/>
     <logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="ERROR"/>

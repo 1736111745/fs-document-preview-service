@@ -1,8 +1,12 @@
 package com.facishare.document.preview.cgi.utils;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * Created by liuq on 2016/11/14.
@@ -52,18 +56,38 @@ public class WebpHelper {
         }
         return result;
     }
-    public static void main(String[] args) {
-        String base="/share/docconvert/normal/dps/201611/14/19/7/fxivm70n";
-        File folder = new File(base);
-        String[] files = folder.list();
-        for (int i = 0; i < files.length; i++) {
-            String inputFile = base+"/" +files[i];
-            String outputFile = base+"/" +(i+1) +".webp";
-            if (executeCWebp(inputFile, outputFile, 75)) {
-                System.out.println("convert ok~");
-            } else {
-                System.out.println("sth wrong happened");
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+//        String base="/share/docconvert/normal/dps/201611/14/19/7/fxivm70n";
+//        File folder = new File(base);
+//        String[] files = folder.list();
+//        for (int i = 0; i < files.length; i++) {
+//            String inputFile = base+"/" +files[i];
+//            String outputFile = base+"/" +(i+1) +".webp";
+//            if (executeCWebp(inputFile, outputFile, 75)) {
+//                System.out.println("convert ok~");
+//            } else {
+//                System.out.println("sth wrong happened");
+//            }
+//        }
+
+        final List<Integer> firstRange = Lists.newArrayList(10, 11, 12, 15);
+        firstRange.parallelStream().forEach((number) -> {
+            try {
+                // do something slow
+                Thread.sleep(5000);
+                System.out.println(Thread.currentThread().getId() + "-" + Thread.currentThread().getName());
+            } catch (InterruptedException e) {
             }
-        }
+        });
+        ForkJoinPool forkJoinPool = new ForkJoinPool(3);
+        forkJoinPool.submit(() -> {
+            firstRange.parallelStream().forEach((number) -> {
+                try {
+                    Thread.sleep(5000);
+                    System.out.println(Thread.currentThread().getId() + "-" + Thread.currentThread().getName());
+                } catch (InterruptedException e) { }
+            });
+        }).get();
+        System.out.println("aa");
     }
 }

@@ -287,7 +287,7 @@ public class PreviewController {
                 SimpleImageInfo simpleImageInfo = new SimpleImageInfo(file);
                 int height = width * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                Thumbnails.of(file).size(width, height).toOutputStream(outputStream);
+                Thumbnails.of(file).size(width, height).outputFormat("jpg").toOutputStream(outputStream);
                 buffer = outputStream.toByteArray();
                 OutputStream out = response.getOutputStream();
                 out.write(buffer);

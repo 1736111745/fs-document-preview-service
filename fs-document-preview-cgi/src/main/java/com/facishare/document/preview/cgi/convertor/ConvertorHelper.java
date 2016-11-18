@@ -21,7 +21,7 @@ public class ConvertorHelper {
             if (resultcode == 0) {
                 String fileName = (page1 + 1) + ".svg";
                 String svgFilePath = baseDir + "/" + fileName;
-                ipicConvertor.convertToSVG(page1, page2, 1.0f, baseDir);
+                ipicConvertor.convertToSVG(page1, page2, 2.0f, baseDir);
                 ipicConvertor.close();
                 File file = new File(svgFilePath);
                 if (file.exists()) {

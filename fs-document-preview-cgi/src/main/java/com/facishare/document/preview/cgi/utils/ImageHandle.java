@@ -12,7 +12,6 @@ import java.io.*;
  * Created by liuq on 16/9/22.
  */
 public class ImageHandle {
-
     public static void convertToPng(String svgFilePath, OutputStream outputStream)
             throws TranscoderException, IOException {
         try {

@@ -7,6 +7,7 @@ import com.facishare.document.preview.cgi.dao.DocPreviewInfoDao;
 import com.facishare.document.preview.cgi.dao.FileTokenDao;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.*;
+import com.facishare.document.preview.cgi.service.PreviewService;
 import com.facishare.document.preview.cgi.utils.DocPageInfoHelper;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.cgi.utils.PathHelper;
@@ -57,6 +58,10 @@ public class PreviewController {
     FileTokenDao fileTokenDao;
     @Autowired
     DocConvertor docConvertor;
+
+    @Autowired
+    private PreviewService previewService;
+
     private static final Logger logger = LoggerFactory.getLogger(PreviewController.class);
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
@@ -89,7 +94,7 @@ public class PreviewController {
             if (allowPreviewExtension.indexOf(extension) == -1) {
                 return getPreviewInfoResult(false, 0, null, "", "", "该文件不可以预览!");
             }
-            PreviewInfo previewInfo = getPreviewInfo(employeeInfo, path, securityGroup);
+            PreviewInfo previewInfo = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
             if (previewInfo == null || previewInfo.getPageCount() == 0) {
                 return getPreviewInfoResult(false, 0, null, "", "", "该文件不可以预览!");
             }
@@ -108,7 +113,7 @@ public class PreviewController {
             int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             String ea = employeeInfo.getEa();
-            PreviewInfo previewInfo = getPreviewInfo(employeeInfo, path,securityGroup);
+            PreviewInfo previewInfo = previewService.getPreviewInfo(employeeInfo, path,securityGroup);
             if (previewInfo != null) {
                 DataFileInfo dataFileInfo = previewInfoDao.getDataFileInfo(ea, path, pageIndex, previewInfo);
                 if (!dataFileInfo.getShortFilePath().equals("")) {
@@ -216,32 +221,7 @@ public class PreviewController {
         return docPreviewInfo;
     }
 
-    /*
-    手机预览
-     */
-    private PreviewInfo getPreviewInfo(EmployeeInfo employeeInfo, String path,String securityGroup) throws Exception {
-        String ea = employeeInfo.getEa();
-        int employeeId = employeeInfo.getEmployeeId();
-        PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
-        int pageCount;
-        List<String> sheetNames;
-        if (previewInfo == null) {
-            byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo, securityGroup);
-            if (bytes != null && bytes.length > 0) {
-                String extension = FilenameUtils.getExtension(path).toLowerCase();
-                String dataDir = new PathHelper(ea).getDataDir();
-                String fileName = SampleUUID.getUUID() + "." + extension;
-                String filePath = FilenameUtils.concat(dataDir, fileName);
-                //下载下来保存便于文档转换方便 // TODO: 2016/11/10 当所有的页码都转码完毕后需要删除.
-                FileUtils.writeByteArrayToFile(new File(filePath), bytes);
-                PageInfo pageInfo = DocPageInfoHelper.GetPageInfo(bytes, filePath);
-                pageCount = pageInfo.getPageCount();
-                sheetNames = pageInfo.getSheetNames();
-                previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, path, filePath, dataDir, bytes.length, pageCount, sheetNames);
-            }
-        }
-        return previewInfo;
-    }
+
 
     @ResponseBody
     @RequestMapping(value = "/preview/DocPageByPath", method = RequestMethod.GET)

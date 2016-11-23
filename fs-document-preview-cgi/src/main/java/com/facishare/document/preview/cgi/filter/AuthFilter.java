@@ -24,7 +24,8 @@ public class AuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         request.setAttribute("sv","v1.1.2");
         String requestUri = request.getRequestURI().toLowerCase();
-        if (requestUri.equals("/") || requestUri.contains(".js") || requestUri.contains(".svg") || requestUri.contains(".png") || requestUri.contains(".css") || requestUri.contains(".jpg") || requestUri.contains(".html")) {
+        String ctx = request.getContextPath();
+        if (requestUri.startsWith(ctx + "/restful/") ||  requestUri.equals(ctx + "/") || requestUri.contains(".js") || requestUri.contains(".svg") || requestUri.contains(".png") || requestUri.contains(".css") || requestUri.contains(".jpg") || requestUri.contains(".html")) {
             filterChain.doFilter(request, response);
         } else {
             EmployeeInfo employeeInfo = authHelper.getAuthinfo(request);

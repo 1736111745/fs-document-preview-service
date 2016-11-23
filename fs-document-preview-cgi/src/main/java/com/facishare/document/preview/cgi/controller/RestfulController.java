@@ -29,11 +29,12 @@ public class RestfulController {
     @RequestMapping(value = "/document/pageCount/{filePath}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String documentPageCount(@PathVariable String filePath, String enterpriseAccount, Integer employeeId) {
         log.debug("/document/pageCount/{} | ea: {} | ei: {} ", filePath, enterpriseAccount, employeeId);
-        String ret = "";
+        String ret;
         try {
             Preconditions.checkNotNull(enterpriseAccount, "enterpriseAccount is null");
             Preconditions.checkNotNull(employeeId, "employeeId is null");
             PreviewInfo previewInfo = getPreviewInfo(createEmployeeInfo(enterpriseAccount, employeeId), filePath);
+            Preconditions.checkNotNull(previewInfo, "document can't found!");
             ret = String.format("{\"value\":%d}", previewInfo.getPageCount());
 
         } catch (Exception e) {
@@ -54,11 +55,12 @@ public class RestfulController {
     @RequestMapping(value = "/document/fileSize/{filePath}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String documentFileSize(@PathVariable String filePath, String enterpriseAccount, Integer employeeId) {
         log.debug("/document/fileSize/{} | ea: {} | ei: {} ", filePath, enterpriseAccount, employeeId);
-        String ret = "";
+        String ret;
         try {
             Preconditions.checkNotNull(enterpriseAccount, "enterpriseAccount is null");
             Preconditions.checkNotNull(employeeId, "employeeId is null");
             PreviewInfo previewInfo = getPreviewInfo(createEmployeeInfo(enterpriseAccount, employeeId), filePath);
+            Preconditions.checkNotNull(previewInfo, "document can't found!");
             ret = String.format("{\"value\":%d}", previewInfo.getDocSize());
 
         } catch (Exception e) {

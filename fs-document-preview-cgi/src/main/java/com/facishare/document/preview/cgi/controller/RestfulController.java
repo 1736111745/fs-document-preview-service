@@ -22,56 +22,31 @@ public class RestfulController {
      * 获取文档页码数
      *
      * @param filePath          文件路径
-     * @param enterpriseAccount 企业账号
+     * @param ea 企业账号
      * @param employeeId        员工id
      * @return
      */
-    @RequestMapping(value = "/document/pageCount/{filePath}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String documentPageCount(@PathVariable String filePath, String enterpriseAccount, Integer employeeId) {
-        log.debug("/document/pageCount/{} | ea: {} | ei: {} ", filePath, enterpriseAccount, employeeId);
+    @RequestMapping(value = "/document/getPageCount", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String documentPageCount(String filePath, String ea, Integer employeeId) {
         String ret;
         try {
-            Preconditions.checkNotNull(enterpriseAccount, "enterpriseAccount is null");
+            Preconditions.checkNotNull(filePath, "filePath is null");
+            Preconditions.checkNotNull(ea, "enterpriseAccount is null");
             Preconditions.checkNotNull(employeeId, "employeeId is null");
-            PreviewInfo previewInfo = getPreviewInfo(createEmployeeInfo(enterpriseAccount, employeeId), filePath);
+            PreviewInfo previewInfo = getPreviewInfo(createEmployeeInfo(ea, employeeId), filePath);
             Preconditions.checkNotNull(previewInfo, "document can't found!");
             ret = String.format("{\"value\":%d}", previewInfo.getPageCount());
 
         } catch (Exception e) {
-            log.error("/document/pageCount/{} | ea: {} | ei: {} ", filePath, enterpriseAccount, employeeId, e);
+            log.error("/document/getPageCount |filePath: {} | ea: {} | ei: {} ", filePath, ea, employeeId, e);
             ret = String.format("{\"error\":\"%s\"}", e.getMessage());
         }
         return ret;
     }
 
-    /**
-     * 获取文档大小
-     *
-     * @param filePath          文件路径
-     * @param enterpriseAccount 企业账号
-     * @param employeeId        员工id
-     * @return
-     */
-    @RequestMapping(value = "/document/fileSize/{filePath}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String documentFileSize(@PathVariable String filePath, String enterpriseAccount, Integer employeeId) {
-        log.debug("/document/fileSize/{} | ea: {} | ei: {} ", filePath, enterpriseAccount, employeeId);
-        String ret;
-        try {
-            Preconditions.checkNotNull(enterpriseAccount, "enterpriseAccount is null");
-            Preconditions.checkNotNull(employeeId, "employeeId is null");
-            PreviewInfo previewInfo = getPreviewInfo(createEmployeeInfo(enterpriseAccount, employeeId), filePath);
-            Preconditions.checkNotNull(previewInfo, "document can't found!");
-            ret = String.format("{\"value\":%d}", previewInfo.getDocSize());
-
-        } catch (Exception e) {
-            log.error("/document/fileSize/{} | ea: {} | ei: {} ", filePath, enterpriseAccount, employeeId, e);
-            ret = String.format("{\"error\":\"%s\"}", e.getMessage());
-        }
-        return ret;
-    }
 
     public PreviewInfo getPreviewInfo(EmployeeInfo employeeInfo, String path) throws Exception {
-        return previewService.getPreviewInfo(employeeInfo, path, null);
+        return previewService.getDocPreviewInfo(employeeInfo, path);
     }
 
     private EmployeeInfo createEmployeeInfo(String ea, int ei) {
@@ -80,5 +55,4 @@ public class RestfulController {
         employeeInfo.setEmployeeId(ei);
         return employeeInfo;
     }
-
 }

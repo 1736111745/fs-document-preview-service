@@ -71,8 +71,8 @@ public class ConvertorHelper {
         ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
         try {
             IHtmlConvertor htmlConvertor = convertobj.convertor.convertMStoHtml(filePath);
-            int resultcode = htmlConvertor.resultCode();
-            if (resultcode == 0) {
+            int resultCode = htmlConvertor.resultCode();
+            if (resultCode == 0) {
                 htmlConvertor.setNormal(true);
                 String fileName = (page1 + 1) + ".html";
                 String htmlFilePath = baseDir + "/" + fileName;

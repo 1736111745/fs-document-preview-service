@@ -23,7 +23,7 @@ public class ThumbnailSizeHelper {
         if (originalHeight > 1280 || originalWidth > 1280) {
             if (originalWidth / (originalHeight * 1.0f) <= 2) {
                 if (originalWidth > originalHeight) {
-                    originalWidth=1280;
+                    originalWidth = 1280;
                     width = originalWidth;
                     height = width * originalHeight / originalWidth;
 
@@ -32,9 +32,10 @@ public class ThumbnailSizeHelper {
                     height = originalHeight;
                     width = originalWidth * height / originalHeight;
                 }
-            } else {
+            }
+            else {
                 if (originalHeight > 1280 && originalWidth > 1280) {
-                    if (originalWidth > originalHeight) {
+                    if (originalHeight<= originalWidth) {
                         originalHeight = 1280;
                         height = originalHeight;
                         width = originalWidth * height / originalHeight;

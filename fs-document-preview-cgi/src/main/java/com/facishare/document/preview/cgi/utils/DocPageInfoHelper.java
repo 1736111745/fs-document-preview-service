@@ -110,17 +110,7 @@ public class DocPageInfoHelper {
     }
 
     private static int parseWord(byte[] data,String filePath) throws Exception {
-        int pageCount = 0;
-        ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
-        try {
-
-            IPICConvertor ipicConvertor = convertobj.convertor.convertMStoPic(filePath);
-            pageCount = ipicConvertor.getPageCount();
-            ipicConvertor.close();
-        } finally {
-            ConvertorPool.getInstance().returnConvertor(convertobj);
-        }
-        return pageCount;
+        return  getPageCount(filePath);
     }
 
     private static PageInfo parseExcel(byte[] data,String filePath) throws Exception {
@@ -149,19 +139,18 @@ public class DocPageInfoHelper {
     private static int parseWord2003(byte[] data,String filePath) throws Exception {
         InputStream input = new ByteArrayInputStream(data);
         WordExtractor doc = new WordExtractor(input);
-        int pageCount= doc.getSummaryInformation().getPageCount();//总页数
-        if(pageCount==0)
-        {
-            ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
-            try {
-                IPICConvertor ipicConvertor = convertobj.convertor.convertMStoPic(filePath);
-                pageCount=ipicConvertor.getPageCount();
-                ipicConvertor.close();
-            }
-            finally {
-                ConvertorPool.getInstance().returnConvertor(convertobj);
-            }
+        return doc.getSummaryInformation().getPageCount();//总页数
+    }
 
+    private static  int getPageCount(String filePath) {
+        int pageCount = 0;
+        ConvertorPool.ConvertorObject convertObj = ConvertorPool.getInstance().getConvertor();
+        try {
+            IPICConvertor ipicConvertor = convertObj.convertor.convertMStoPic(filePath);
+            pageCount = ipicConvertor.getPageCount();
+            ipicConvertor.close();
+        } finally {
+            ConvertorPool.getInstance().returnConvertor(convertObj);
         }
         return pageCount;
     }
@@ -195,6 +184,7 @@ public class DocPageInfoHelper {
             List<String> sheetNames = new ArrayList<>();
             for (int i = 0; i < pageCount; i++) {
                 HSSFSheet xssfSheet = hs.getSheetAt(i);
+
                 String sheetName = xssfSheet.getSheetName();
                 sheetNames.add(sheetName);
             }

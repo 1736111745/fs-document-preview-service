@@ -26,7 +26,7 @@ public class DocConvertor {
             logger.info("end do convert,filePath:{},cost:{}", filePath,watch.getTime()+"ms");
             return filePath;
         } catch (Exception e) {
-            logger.error("do convert happed error:{}", e);
+            logger.error("do convert happened error:{}", e);
             return "";
         }
     }
@@ -44,7 +44,7 @@ public class DocConvertor {
             logger.info("end do convert,filePath:{},cost:{}", filePath,watch.getTime()+"ms");
             return filePath;
         } catch (Exception e) {
-            logger.error("do convert happed error:{}", e);
+            logger.error("do convert happened error:{}", e);
             return "";
         }
     }

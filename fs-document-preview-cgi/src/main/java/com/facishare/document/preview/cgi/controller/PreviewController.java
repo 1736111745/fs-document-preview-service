@@ -178,7 +178,7 @@ public class PreviewController {
             response.setStatus(400);
         } else {
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-            DocPreviewInfo docPreviewInfo = getDocPreviewInfo(employeeInfo, path);
+            DocPreviewInfo docPreviewInfo = previewService.getDocPreviewInfo(employeeInfo, path);
             if (docPreviewInfo == null) {
                 response.setStatus(404);
             } else {
@@ -194,34 +194,6 @@ public class PreviewController {
         }
     }
 
-    /*
-      培训助手预览
-     */
-    private DocPreviewInfo getDocPreviewInfo(EmployeeInfo employeeInfo, String path) throws Exception {
-        String ea = employeeInfo.getEa();
-        int employeeId = employeeInfo.getEmployeeId();
-        DocPreviewInfo docPreviewInfo = docPreviewInfoDao.getInfoByPath(ea, path);
-        int pageCount;
-        List<String> sheetNames;
-        if (docPreviewInfo == null) {
-            byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo, "");
-            if (bytes != null && bytes.length > 0) {
-                String extension = FilenameUtils.getExtension(path).toLowerCase();
-                String dataDir = new PathHelper(ea).getDataDir();
-                String fileName = SampleUUID.getUUID() + "." + extension;
-                String filePath = FilenameUtils.concat(dataDir, fileName);
-                //下载下来保存便于文档转换方便 // TODO: 2016/11/10 当所有的页码都转码完毕后需要删除.
-                FileUtils.writeByteArrayToFile(new File(filePath), bytes);
-                PageInfo pageInfo = DocPageInfoHelper.GetPageInfo(bytes, filePath);
-                pageCount = pageInfo.getPageCount();
-                sheetNames = pageInfo.getSheetNames();
-                docPreviewInfo = docPreviewInfoDao.initDocPreviewInfo(ea, employeeId, path, filePath, dataDir, bytes.length, pageCount, sheetNames);
-            }
-        }
-        return docPreviewInfo;
-    }
-
-
 
     @ResponseBody
     @RequestMapping(value = "/preview/DocPageByPath", method = RequestMethod.GET)
@@ -232,7 +204,7 @@ public class PreviewController {
         width = width > 1920 ? 1920 : width;
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String ea = employeeInfo.getEa();
-        DocPreviewInfo docPreviewInfo = getDocPreviewInfo(employeeInfo, path);
+        DocPreviewInfo docPreviewInfo = previewService.getDocPreviewInfo(employeeInfo, path);
         if (docPreviewInfo != null) {
             DataFileInfo dataFileInfo = docPreviewInfoDao.getDataFileInfo(ea, path, pageIndex, docPreviewInfo);
             if (!dataFileInfo.getShortFilePath().equals("")) {

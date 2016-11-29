@@ -17,12 +17,13 @@ import java.util.Arrays;
 /**
  * Created by liuq on 16/3/29.
  */
+@SuppressWarnings("SpringJavaAutowiringInspection")
 public class AuthHelper {
     @Autowired
     ActiveSessionAuthorizeService assService;
     private static final Logger LOG = LoggerFactory.getLogger(AuthHelper.class);
 
-    public EmployeeInfo getAuthinfo(HttpServletRequest request) {
+    public EmployeeInfo getAuthInfo(HttpServletRequest request) {
         String cookieValue = getCookie(request);
         if (cookieValue.equals("")) {
             return null;

@@ -14,17 +14,25 @@ function loadSheetNames() {
         success: function (data) {
             if (data.success) {
                 var sheets = data.sheets;
+                var activeSheetIndex = 0;
                 for (var i = 0; i < sheets.length; i++) {
                     var sheetName = sheets[i];
-                    var cls = '';
-                    if (i == 0) {
-                        cls = 'active';
-                        $('#aTitle').html(sheetName);
+                    var isHidden = sheetName.indexOf("_$h1$") > -1;//隐藏的sheet，默认不隐藏
+                    if (!isHidden) {
+                        var isActive = sheetName.indexOf("_$a1$") > -1;//激活的sheet，默认都激活
+                        if (isActive) {
+                            activeSheetIndex = i;
+                        }
+                        sheetName=sheetName.replace("_$h1$","").replace("_$a1$","");
+                        var li = "<li id='li" + i + "'><a href='#' onclick='loadSheet(" + i + ")' data-toggle='tab'>" + sheetName + "</a></li>";
+                        $('#navSheet').append($(li));
                     }
-                    var li = "<li class='" + cls + "'><a href='#' onclick='loadSheet(" + i + ")' data-toggle='tab'>" + sheetName + "</a></li>";
-                    $('#navSheet').append($(li));
                 }
-                loadSheet(0);
+                var activeSheetName = sheets[activeSheetIndex];
+                activeSheetName=activeSheetName.replace("_$h1$","").replace("_$a1$","");
+                $('#li' + activeSheetIndex).addClass("active");
+                $('#aTitle').html(activeSheetName);
+                loadSheet(activeSheetIndex);
                 loadNav();
             }
             else {

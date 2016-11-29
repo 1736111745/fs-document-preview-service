@@ -87,7 +87,6 @@ public class ConvertorPool {
         convert.setEmptyCount(100, 200);
         convert.setHtmlEncoding("UTF-8");
         convert.setConvertForPhone(true);
-        //v  convert.setAutoDeleteTempFiles(true);
         convert.setTimeout(60 * 5);
         return convert;
     }

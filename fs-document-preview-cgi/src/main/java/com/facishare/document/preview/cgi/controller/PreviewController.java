@@ -204,23 +204,29 @@ public class PreviewController {
         width = width > 1920 ? 1920 : width;
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String ea = employeeInfo.getEa();
-        DocPreviewInfo docPreviewInfo = previewService.getDocPreviewInfo(employeeInfo, path);
-        if (docPreviewInfo != null) {
-            DataFileInfo dataFileInfo = docPreviewInfoDao.getDataFileInfo(ea, path, pageIndex, docPreviewInfo);
-            if (!dataFileInfo.getShortFilePath().equals("")) {
-                responseBinary(dataFileInfo.getShortFilePath(),width,response);
-            } else {
-                String originalFilePath = dataFileInfo.getOriginalFilePath();
-                String dataFilePath = docConvertor.doConvert(path, dataFileInfo.getDataDir(), originalFilePath, pageIndex, width);
-                if (!Strings.isNullOrEmpty(dataFilePath)) {
-                    docPreviewInfoDao.saveDocPreviewInfo(ea, path, dataFilePath,docPreviewInfo.getFilePathList());
-                    responseBinary(dataFilePath,width,response);
+        try {
+
+            DocPreviewInfo docPreviewInfo = previewService.getDocPreviewInfo(employeeInfo, path);
+            if (docPreviewInfo != null) {
+                DataFileInfo dataFileInfo = docPreviewInfoDao.getDataFileInfo(ea, path, pageIndex, docPreviewInfo);
+                if (!dataFileInfo.getShortFilePath().equals("")) {
+                    responseBinary(dataFileInfo.getShortFilePath(), width, response);
                 } else {
-                    logger.error("ea:{},path:{} do convert hanppend error!", ea, path);
-                    response.setStatus(500);
+                    String originalFilePath = dataFileInfo.getOriginalFilePath();
+                    String dataFilePath = docConvertor.doConvert(path, dataFileInfo.getDataDir(), originalFilePath, pageIndex, width);
+                    if (!Strings.isNullOrEmpty(dataFilePath)) {
+                        docPreviewInfoDao.saveDocPreviewInfo(ea, path, dataFilePath, docPreviewInfo.getFilePathList());
+                        responseBinary(dataFilePath, width, response);
+                    } else {
+                        logger.error("ea:{},path:{} do convert happened error!", ea, path);
+                        response.setStatus(500);
+                    }
                 }
+            } else {
+                response.setStatus(400);
             }
-        } else {
+        } catch (Exception ex) {
+            logger.error("DocPageByPath happend error", ex);
             response.setStatus(400);
         }
     }

@@ -30,7 +30,7 @@ public class ViewController {
 
     @RequestMapping(value = "/preview/handleWordAndPPT", method = RequestMethod.GET)
     public String handleWordAndPPT() {
-        return "preview_word_pdf";
+        return "preview_word_ppt";
     }
 
 }

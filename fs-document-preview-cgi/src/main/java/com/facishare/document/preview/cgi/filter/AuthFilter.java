@@ -22,19 +22,19 @@ public class AuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        request.setAttribute("sv","v1.1.2");
+        request.setAttribute("sv","v1.1.9");
         String requestUri = request.getRequestURI().toLowerCase();
         String ctx = request.getContextPath();
         if (requestUri.startsWith(ctx + "/restful/") ||  requestUri.equals(ctx + "/") || requestUri.contains(".js") || requestUri.contains(".svg") || requestUri.contains(".png") || requestUri.contains(".css") || requestUri.contains(".jpg") || requestUri.contains(".html")) {
             filterChain.doFilter(request, response);
         } else {
-            EmployeeInfo employeeInfo = authHelper.getAuthinfo(request);
+            EmployeeInfo employeeInfo = authHelper.getAuthInfo(request);
             if (employeeInfo == null) {
                 String profile = System.getProperty("spring.profiles.active");
 
                 if (!profile.equals("foneshare")) {
                     employeeInfo = new EmployeeInfo();
-                    employeeInfo.setEa("11");
+                    employeeInfo.setEa("2");
                     employeeInfo.setEmployeeId(1000);
                     request.setAttribute("Auth", employeeInfo);
                 } else

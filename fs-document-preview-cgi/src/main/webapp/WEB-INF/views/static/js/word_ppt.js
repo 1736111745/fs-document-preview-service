@@ -9,9 +9,7 @@ function loadData() {
         var nav = $("<div class='center'><span>第" + (i + 1) + "页,共" + pageCount + "页</span></div>");
         page.append(nav);
     }
-    $("img.lazy").lazyload({
-        effect: "fadeIn"
-    });
+    $("img.lazy").lazyload();
 }
 //入口
 $(function () {

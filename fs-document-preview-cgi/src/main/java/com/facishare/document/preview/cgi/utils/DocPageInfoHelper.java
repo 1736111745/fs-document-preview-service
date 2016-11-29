@@ -164,6 +164,11 @@ public class DocPageInfoHelper {
             for (int i = 0; i < pageCount; i++) {
                 XSSFSheet xssfSheet = workbook.getSheetAt(i);
                 String sheetName = xssfSheet.getSheetName();
+                boolean isHidden = workbook.isSheetHidden(i);
+                String hiddenFlag = isHidden ? "_$h1$" : "";
+                boolean isActive = workbook.getActiveSheetIndex() == i;
+                String activeFlag = isActive ? "_$a1$" : "";
+                sheetName = sheetName + hiddenFlag + activeFlag;
                 sheetNames.add(sheetName);
             }
             PageInfo pageInfo = new PageInfo();
@@ -171,7 +176,7 @@ public class DocPageInfoHelper {
             pageInfo.setSheetNames(sheetNames);
             return pageInfo;
         } catch (Exception ex) {
-            LOG.error("parese excel happend error,path:{}!", filePath, ex);
+            LOG.error("parse excel happened error,path:{}!", filePath, ex);
             return null;
         }
     }
@@ -184,8 +189,12 @@ public class DocPageInfoHelper {
             List<String> sheetNames = new ArrayList<>();
             for (int i = 0; i < pageCount; i++) {
                 HSSFSheet xssfSheet = hs.getSheetAt(i);
-
                 String sheetName = xssfSheet.getSheetName();
+                boolean isHidden = hs.isSheetHidden(i);
+                String hiddenFlag = isHidden ? "_$h1$" : "_$h0$";
+                boolean isActive = xssfSheet.isActive();
+                String activeFlag = isActive ? "_$a1$" : "_$a0$";
+                sheetName = sheetName + hiddenFlag + activeFlag;
                 sheetNames.add(sheetName);
             }
             PageInfo pageInfo = new PageInfo();
@@ -193,7 +202,7 @@ public class DocPageInfoHelper {
             pageInfo.setSheetNames(sheetNames);
             return pageInfo;
         } catch (Exception ex) {
-            LOG.error("parese excel happend error,path:{}!", filePath, ex);
+            LOG.error("parse excel happened error,path:{}!", filePath, ex);
             return null;
         }
     }

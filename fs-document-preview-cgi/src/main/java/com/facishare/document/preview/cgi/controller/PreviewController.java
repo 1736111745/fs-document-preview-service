@@ -226,7 +226,7 @@ public class PreviewController {
                 response.setStatus(400);
             }
         } catch (Exception ex) {
-            logger.error("DocPageByPath happend error", ex);
+            logger.error("DocPageByPath happened error,npath:{},pageIndex:{}",path,pageIndex,ex);
             response.setStatus(400);
         }
     }

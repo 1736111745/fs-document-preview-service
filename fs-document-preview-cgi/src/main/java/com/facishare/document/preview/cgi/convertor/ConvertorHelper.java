@@ -55,6 +55,7 @@ public class ConvertorHelper {
                     convertobj.convertor.convertMStoPic(filePath) :
                     convertobj.convertor.convertPdftoPic(filePath);
             int resultcode = ipicConvertor.resultCode();
+            logger.info("resultcode:{}",resultcode);
             if (resultcode == 0) {
                 String fileName = (page1 + startIndex) + ".png";
                 String pngFilePath = baseDir + "/" + fileName;

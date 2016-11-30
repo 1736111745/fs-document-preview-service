@@ -2,15 +2,10 @@ package com.facishare.document.preview.cgi.convertor;
 
 import application.dcs.IHtmlConvertor;
 import application.dcs.IPICConvertor;
-import com.fxiaoke.common.PasswordUtil;
-import com.google.common.base.Preconditions;
-import com.google.common.net.UrlEscapers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**
@@ -26,8 +21,8 @@ public class ConvertorHelper {
         ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
         try {
             IPICConvertor ipicConvertor = convertobj.convertor.convertMStoPic(filePath);
-            int resultcode = ipicConvertor.resultCode();
-            if (resultcode == 0) {
+            int resultCode = ipicConvertor.resultCode();
+            if (resultCode == 0) {
                 String fileName = (page1 + 1) + ".svg";
                 String svgFilePath = baseDir + "/" + fileName;
                 ipicConvertor.convertToSVG(page1, page2, 1.0f, baseDir);
@@ -38,8 +33,10 @@ public class ConvertorHelper {
                 } else {
                     return "";
                 }
-            } else
+            } else {
+                logger.info("resultCode:{}", resultCode);
                 return "";
+            }
         } catch (Exception e) {
             logger.error("toSvg,filepath:{}", filePath, e);
             return "";
@@ -54,9 +51,8 @@ public class ConvertorHelper {
             IPICConvertor ipicConvertor = type == 1 ?
                     convertobj.convertor.convertMStoPic(filePath) :
                     convertobj.convertor.convertPdftoPic(filePath);
-            int resultcode = ipicConvertor.resultCode();
-            logger.info("resultcode:{}",resultcode);
-            if (resultcode == 0) {
+            int resultCode = ipicConvertor.resultCode();
+            if (resultCode == 0) {
                 String fileName = (page1 + startIndex) + ".png";
                 String pngFilePath = baseDir + "/" + fileName;
                 ipicConvertor.convertToPNG(page1, page2, 2f, baseDir);
@@ -67,8 +63,10 @@ public class ConvertorHelper {
                 } else {
                     return "";
                 }
-            } else
+            } else {
+                logger.info("resultCode:{}", resultCode);
                 return "";
+            }
         } catch (Exception e) {
             logger.error("toPng,filepath:{}", filePath, e);
             return "";
@@ -94,8 +92,10 @@ public class ConvertorHelper {
                 } else {
                     return "";
                 }
-            } else
+            } else {
+                logger.info("resultcode:{}",resultCode);
                 return "";
+            }
         } catch (Exception e) {
             logger.error("toHtml,filepath:{}", filePath, e);
             return "";

@@ -33,7 +33,7 @@ public class DocPageInfoHelper {
     private static final Logger LOG = LoggerFactory.getLogger(DocPageInfoHelper.class);
 
     public static PageInfo GetPageInfo(byte[] data, String filePath) throws Exception {
-        LOG.info("begin get pageCount,data length:{}", data.length);
+        //LOG.info("begin get pageCount,data length:{}", data.length);
         int pageCount = 0;
         List<String> sheetNames = null;
         DocType docType = DocTypeHelper.getDocType(filePath);
@@ -52,7 +52,7 @@ public class DocPageInfoHelper {
             case PDF:
                 pageCount = parsePDF(data);
         }
-        LOG.info("end get pageCount");
+        //LOG.info("end get pageCount");
         PageInfo pageInfo = new PageInfo();
         pageInfo.setPageCount(pageCount);
         pageInfo.setSheetNames(sheetNames);

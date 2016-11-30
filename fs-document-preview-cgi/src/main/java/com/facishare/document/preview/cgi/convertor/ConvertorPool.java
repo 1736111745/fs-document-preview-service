@@ -58,7 +58,7 @@ public class ConvertorPool {
     }
 
     private synchronized ConvertorObject getIdleConvertor() {
-        LOG.info("convert pool availSize:{}", availSize);
+        //LOG.info("convert pool availSize:{}", availSize);
         for (ConvertorObject co : pool) {
             if (co.available) {
                 co.available = false;

@@ -2,10 +2,15 @@ package com.facishare.document.preview.cgi.convertor;
 
 import application.dcs.IHtmlConvertor;
 import application.dcs.IPICConvertor;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 
 /**
@@ -64,7 +69,7 @@ public class ConvertorHelper {
                     return "";
                 }
             } else {
-                logger.info("resultCode:{}", resultCode);
+                logger.info("filePath:{},pageIndex:{},resultCode:{}",filePath,page1, resultCode);
                 return "";
             }
         } catch (Exception e) {
@@ -118,5 +123,20 @@ public class ConvertorHelper {
 //               // log.error("cannot decode " + m.group(3), e);
 //            }
 //        }
+
+//        String path="/Users/liuq/Downloads/【纷享公开课】高效时间管理.pptx";
+//        String path1="/Users/liuq/Downloads";
+//        byte[] bytes= FileUtils.readFileToByteArray(new File(path));
+//        ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
+//
+//        for(int i=0;i<5;i++) {
+//            ExecutorService executorService = Executors.newSingleThreadExecutor();
+//            int finalI = i;
+//            int finalI1 = i;
+//            System.out.println("convert:"+finalI);
+//            executorService.execute(() ->
+//                  toPng(1, 1,path,path1,1,1));
+//        }
+
     }
 }

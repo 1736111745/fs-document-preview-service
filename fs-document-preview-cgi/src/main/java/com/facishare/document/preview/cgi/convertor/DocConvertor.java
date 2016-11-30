@@ -20,10 +20,10 @@ public class DocConvertor {
         try {
             StopWatch watch=new StopWatch();
             watch.start();
-            logger.info("begin do convert,baseDir:{},originalFilePath:{}", baseDir, originalFilePath);
+            //logger.info("begin do convert,baseDir:{},originalFilePath:{}", baseDir, originalFilePath);
             String filePath = docConvertor.convert(page, page, originalFilePath, baseDir);
             watch.stop();
-            logger.info("end do convert,filePath:{},cost:{}", filePath,watch.getTime()+"ms");
+            //logger.info("end do convert,filePath:{},cost:{}", filePath,watch.getTime()+"ms");
             return filePath;
         } catch (Exception e) {
             logger.error("do convert happened error:{}", e);
@@ -38,13 +38,13 @@ public class DocConvertor {
         try {
             StopWatch watch=new StopWatch();
             watch.start();
-            logger.info("begin do convert,baseDir:{},originalFilePath:{}", baseDir, originalFilePath);
+            //logger.info("begin do convert,baseDir:{},originalFilePath:{}", baseDir, originalFilePath);
             String filePath = docConvertor.convert(page, page, originalFilePath, baseDir, width);
             watch.stop();
-            logger.info("end do convert,filePath:{},cost:{}", filePath,watch.getTime()+"ms");
+            //logger.info("end do convert,filePath:{},cost:{}", filePath,watch.getTime()+"ms");
             return filePath;
         } catch (Exception e) {
-            logger.error("do convert happened error:{}", e);
+            //logger.error("do convert happened error:{}", e);
             return "";
         }
     }

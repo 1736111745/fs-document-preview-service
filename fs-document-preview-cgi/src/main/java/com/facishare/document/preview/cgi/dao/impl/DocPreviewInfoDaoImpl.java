@@ -1,5 +1,6 @@
 package com.facishare.document.preview.cgi.dao.impl;
 
+import com.facishare.document.preview.cgi.convertor.ConvertorHelper;
 import com.facishare.document.preview.cgi.dao.DocPreviewInfoDao;
 import com.facishare.document.preview.cgi.model.DataFileInfo;
 import com.facishare.document.preview.cgi.model.DocPreviewInfo;
@@ -9,6 +10,8 @@ import com.google.common.collect.Lists;
 import org.apache.commons.io.FilenameUtils;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -23,6 +26,9 @@ import java.util.List;
 @Repository
 public class DocPreviewInfoDaoImpl implements DocPreviewInfoDao {
 
+
+    private static final Logger logger = LoggerFactory.getLogger(DocPreviewInfoDaoImpl.class);
+
     @Autowired
     private DatastoreExt dpsDataStore;
 
@@ -31,10 +37,12 @@ public class DocPreviewInfoDaoImpl implements DocPreviewInfoDao {
         if (filePathList == null) {
             filePathList = Lists.newArrayList();
         }
+        logger.info("path:{}",filePathList);
         String dataFileName = FilenameUtils.getName(dataFilePath);
         filePathList.add(dataFileName);
         Query<DocPreviewInfo> query = dpsDataStore.createQuery(DocPreviewInfo.class);
         query.criteria("path").equal(path).criteria("ea").equal(ea);
+        logger.info("query",query.toString());
         UpdateOperations<DocPreviewInfo> update = dpsDataStore.createUpdateOperations(DocPreviewInfo.class);
         update.set("filePathList", filePathList);
         dpsDataStore.findAndModify(query, update);

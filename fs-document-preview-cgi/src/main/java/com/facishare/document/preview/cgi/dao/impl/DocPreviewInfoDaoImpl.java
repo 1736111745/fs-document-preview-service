@@ -44,7 +44,7 @@ public class DocPreviewInfoDaoImpl implements DocPreviewInfoDao {
         query.criteria("path").equal(path).criteria("ea").equal(ea);
         logger.info("query",query.toString());
         UpdateOperations<DocPreviewInfo> update = dpsDataStore.createUpdateOperations(DocPreviewInfo.class);
-        update.set("filePathList:{}", filePathList);
+        update.set("filePathList", filePathList);
         dpsDataStore.findAndModify(query, update);
     }
 

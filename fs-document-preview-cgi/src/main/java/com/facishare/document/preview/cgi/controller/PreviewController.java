@@ -205,7 +205,7 @@ public class PreviewController {
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String ea = employeeInfo.getEa();
         try {
-
+            logger.error("DocPageByPath process path:{}, pageIndex:{}",path,pageIndex);
             DocPreviewInfo docPreviewInfo = previewService.getDocPreviewInfo(employeeInfo, path);
             if (docPreviewInfo != null) {
                 DataFileInfo dataFileInfo = docPreviewInfoDao.getDataFileInfo(ea, path, pageIndex, docPreviewInfo);

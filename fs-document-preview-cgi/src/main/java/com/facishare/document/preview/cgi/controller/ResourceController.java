@@ -1,6 +1,7 @@
 package com.facishare.document.preview.cgi.controller;
 
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
+import com.facishare.document.preview.cgi.utils.ImageHandler;
 import com.fxiaoke.common.image.SimpleImageInfo;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.FilenameUtils;
@@ -92,7 +93,12 @@ public class ResourceController {
                     SimpleImageInfo simpleImageInfo = new SimpleImageInfo(file);
                     int height = width * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    Thumbnails.of(file).forceSize(width, height).outputQuality(0.8).outputFormat("png").toOutputStream(outputStream);
+                    String jpgFilePath=FilenameUtils.getPath(filePath)+"/"+FilenameUtils.getName(fileName)+".jpg";
+                    File jpgFile=new File(jpgFilePath);
+                    if(!jpgFile.exists()) {
+                        ImageHandler.convertSvgToJpg(filePath, jpgFilePath);
+                    }
+                    Thumbnails.of(jpgFile).forceSize(width, height).outputQuality(0.8).outputFormat("png").toOutputStream(outputStream);
                     buffer = outputStream.toByteArray();
                 }
                 out.write(buffer);

@@ -3,20 +3,20 @@ package com.facishare.document.preview.cgi.utils;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.PNGTranscoder;
-import org.apache.commons.lang3.time.StopWatch;
+import org.apache.batik.transcoder.image.JPEGTranscoder;
 
 import java.io.*;
 
 /**
  * Created by liuq on 16/9/22.
  */
-public class ImageHandle {
-    public static void convertToPng(String svgFilePath, OutputStream outputStream)
+public class ImageHandler {
+    public static void convertSvgToJpg(String svgFilePath, String jpgFilePath)
             throws TranscoderException, IOException {
+        InputStream inputStream = new FileInputStream(svgFilePath);
+        OutputStream outputStream=new FileOutputStream(jpgFilePath);
         try {
-            InputStream inputStream = new FileInputStream(svgFilePath);
-            PNGTranscoder t = new PNGTranscoder();
+            JPEGTranscoder t = new JPEGTranscoder();
             TranscoderInput input = new TranscoderInput(inputStream);
             TranscoderOutput output = new TranscoderOutput(outputStream);
             t.transcode(input, output);
@@ -33,13 +33,13 @@ public class ImageHandle {
     }
 
     public static void main(String[] args) throws IOException, TranscoderException {
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        String svgFile = "/share/docconvert/svg/4.svg";
-        File file = new File("/share/docconvert/png/4.png");
-        OutputStream outputStream = new FileOutputStream(file);
-        stopWatch.stop();
-        convertToPng(svgFile, outputStream);
-        System.out.println(stopWatch.getNanoTime());
+        String svgFile = "/Users/liuq/Downloads/1.svg";
+        String jpgFilePath ="/Users/liuq/Downloads/abc.jpg";
+        File jpgFile=new File(jpgFilePath);
+        if(!jpgFile.exists())
+        {
+            convertSvgToJpg(svgFile,jpgFilePath);
+        }
+
     }
 }

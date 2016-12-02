@@ -21,13 +21,4 @@ public class PDFConvertor implements IDocConvertor {
         }
         return pngFilePath;
     }
-
-    @Override
-    public String convert(int page1, int page2, String filePath, String baseDir, int width) throws Exception {
-        String pngFilePath = ConvertorHelper.toPng(page1, page2, filePath, baseDir, 1, 2);
-        if (!Strings.isNullOrEmpty(pngFilePath)) {
-            return FilenameUtils.getBaseName(baseDir) + "/" + FilenameUtils.getName(pngFilePath);
-        }
-        return pngFilePath;
-    }
 }

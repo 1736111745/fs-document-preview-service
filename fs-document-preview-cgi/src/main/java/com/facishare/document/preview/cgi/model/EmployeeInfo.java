@@ -1,66 +1,27 @@
 package com.facishare.document.preview.cgi.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Created by liuq on 16/3/29.
  */
 public class EmployeeInfo {
+    @Getter @Setter
     private String ea;
+    @Getter @Setter
     private int employeeId;
+    @Getter @Setter
     private String employeeName;
+    @Getter @Setter
     private int ei;
+    @Getter @Setter
     private String employeeFullName;
+    @Getter @Setter
     private String employeeAccount;
+    @Setter
     private String sourceUser;
-    public int getEi() {
-        return ei;
-    }
-
-    public void setEi(int ei) {
-        this.ei = ei;
-    }
-
-    public String getEmployeeFullName() {
-        return employeeFullName;
-    }
-
-    public void setEmployeeFullName(String employeeFullName) {
-        this.employeeFullName = employeeFullName;
-    }
-
-    public String getEa() {
-        return ea;
-    }
-
-    public void setEa(String ea) {
-        this.ea = ea;
-    }
-
-    public int getEmployeeId() {
-        return employeeId;
-    }
-
-    public void setEmployeeId(int employeeId) {
-        this.employeeId = employeeId;
-    }
-
-    public String getEmployeeName() {
-        return employeeName;
-    }
-
-    public void setEmployeeName(String employeeName) {
-        this.employeeName = employeeName;
-    }
-
-    public String getEmployeeAccount() {
-        return employeeAccount;
-    }
-
-    public void setEmployeeAccount(String employeeAccount) {
-        this.employeeAccount = employeeAccount;
-    }
-
     public String getSourceUser() {
         return "E." + employeeId;
     }
-
 }

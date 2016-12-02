@@ -1,11 +1,7 @@
 package com.facishare.document.preview.cgi.service;
 
-import com.facishare.document.preview.cgi.dao.DocPreviewInfoDao;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
-import com.facishare.document.preview.cgi.model.DocPreviewInfo;
-import com.facishare.document.preview.cgi.model.EmployeeInfo;
-import com.facishare.document.preview.cgi.model.PageInfo;
-import com.facishare.document.preview.cgi.model.PreviewInfo;
+import com.facishare.document.preview.cgi.model.*;
 import com.facishare.document.preview.cgi.utils.DocPageInfoHelper;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.cgi.utils.PathHelper;
@@ -27,48 +23,19 @@ public class PreviewService {
     FileStorageProxy fileStorageProxy;
     @Autowired
     PreviewInfoDao previewInfoDao;
-    @Autowired
-    DocPreviewInfoDao docPreviewInfoDao;
-
-    /*
-     培训助手预览
-    */
-    public DocPreviewInfo getDocPreviewInfo(EmployeeInfo employeeInfo, String path) throws Exception {
-        String ea = employeeInfo.getEa();
-        int employeeId = employeeInfo.getEmployeeId();
-        DocPreviewInfo docPreviewInfo = docPreviewInfoDao.getInfoByPath(ea, path);
-        int pageCount;
-        List<String> sheetNames;
-        if (docPreviewInfo == null) {
-            byte[] bytes = fileStorageProxy.GetBytesByPath(path, employeeInfo, "");
-            if (bytes != null && bytes.length > 0) {
-                String extension = FilenameUtils.getExtension(path).toLowerCase();
-                String dataDir = new PathHelper(ea).getDataDir();
-                String fileName = SampleUUID.getUUID() + "." + extension;
-                String filePath = FilenameUtils.concat(dataDir, fileName);
-                //下载下来保存便于文档转换方便 // TODO: 2016/11/10 当所有的页码都转码完毕后需要删除.
-                FileUtils.writeByteArrayToFile(new File(filePath), bytes);
-                PageInfo pageInfo = DocPageInfoHelper.GetPageInfo(bytes, filePath);
-                pageCount = pageInfo.getPageCount();
-                sheetNames = pageInfo.getSheetNames();
-                docPreviewInfo = docPreviewInfoDao.initDocPreviewInfo(ea, employeeId, path, filePath, dataDir, bytes.length, pageCount, sheetNames);
-            }
-        }
-        return docPreviewInfo;
-    }
 
     /**
      * 手机预览
-     *
      * @param employeeInfo
      * @param path
      * @param securityGroup
      * @return
      * @throws Exception
      */
-    public PreviewInfo getPreviewInfo(EmployeeInfo employeeInfo, String path, String securityGroup) throws Exception {
+    public PreviewInfoEx getPreviewInfo(EmployeeInfo employeeInfo, String path, String securityGroup) throws Exception {
         String ea = employeeInfo.getEa();
         int employeeId = employeeInfo.getEmployeeId();
+        PreviewInfoEx previewInfoEx=new PreviewInfoEx();
         PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
         int pageCount;
         List<String> sheetNames;
@@ -82,11 +49,25 @@ public class PreviewService {
                 //下载下来保存便于文档转换方便 // TODO: 2016/11/10 当所有的页码都转码完毕后需要删除.
                 FileUtils.writeByteArrayToFile(new File(filePath), bytes);
                 PageInfo pageInfo = DocPageInfoHelper.GetPageInfo(bytes, filePath);
-                pageCount = pageInfo.getPageCount();
-                sheetNames = pageInfo.getSheetNames();
-                previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, path, filePath, dataDir, bytes.length, pageCount, sheetNames);
+                if (pageInfo.isSuccess()) {
+                    pageCount = pageInfo.getPageCount();
+                    sheetNames = pageInfo.getSheetNames();
+                    previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, path, filePath, dataDir, bytes.length, pageCount, sheetNames);
+                    previewInfoEx.setSuccess(true);
+                    previewInfoEx.setPreviewInfo(previewInfo);
+                }
+                else {
+                    previewInfoEx.setSuccess(false);
+                    previewInfoEx.setPreviewInfo(null);
+                    previewInfoEx.setErrorMsg(pageInfo.getErrorMsg());
+                }
             }
         }
-        return previewInfo;
+        else
+        {
+            previewInfoEx.setSuccess(true);
+            previewInfoEx.setPreviewInfo(previewInfo);
+        }
+        return previewInfoEx;
     }
 }

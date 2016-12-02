@@ -18,11 +18,11 @@ public class DocConvertor {
             return "";
         }
         try {
-            StopWatch watch=new StopWatch();
-            watch.start();
+            //StopWatch watch=new StopWatch();
+            //watch.start();
             //logger.info("begin do convert,baseDir:{},originalFilePath:{}", baseDir, originalFilePath);
             String filePath = docConvertor.convert(page, page, originalFilePath, baseDir);
-            watch.stop();
+            //watch.stop();
             //logger.info("end do convert,filePath:{},cost:{}", filePath,watch.getTime()+"ms");
             return filePath;
         } catch (Exception e) {
@@ -36,11 +36,11 @@ public class DocConvertor {
             return "";
         }
         try {
-            StopWatch watch=new StopWatch();
-            watch.start();
+            //StopWatch watch=new StopWatch();
+            //watch.start();
             //logger.info("begin do convert,baseDir:{},originalFilePath:{}", baseDir, originalFilePath);
             String filePath = docConvertor.convert(page, page, originalFilePath, baseDir, width);
-            watch.stop();
+            //watch.stop();
             //logger.info("end do convert,filePath:{},cost:{}", filePath,watch.getTime()+"ms");
             return filePath;
         } catch (Exception e) {

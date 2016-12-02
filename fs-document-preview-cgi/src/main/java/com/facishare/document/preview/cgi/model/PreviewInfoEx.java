@@ -2,16 +2,13 @@ package com.facishare.document.preview.cgi.model;
 
 import lombok.Data;
 
-import java.util.List;
-
 /**
- * Created by liuq on 2016/10/17.
+ * Created by liuq on 16/12/1.
  */
 @Data
-public class PageInfo {
+public class PreviewInfoEx {
     private boolean success;
     private String errorMsg;
-    private int pageCount;
-    private List<String> sheetNames;
+    private PreviewInfo previewInfo;
 
 }

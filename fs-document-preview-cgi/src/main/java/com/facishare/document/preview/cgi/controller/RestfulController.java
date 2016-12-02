@@ -2,6 +2,7 @@ package com.facishare.document.preview.cgi.controller;
 
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfo;
+import com.facishare.document.preview.cgi.model.PreviewInfoEx;
 import com.facishare.document.preview.cgi.service.PreviewService;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
@@ -33,10 +34,9 @@ public class RestfulController {
             Preconditions.checkNotNull(filePath, "filePath is null");
             Preconditions.checkNotNull(ea, "enterpriseAccount is null");
             Preconditions.checkNotNull(employeeId, "employeeId is null");
-            PreviewInfo previewInfo = getPreviewInfo(createEmployeeInfo(ea, employeeId), filePath);
-            Preconditions.checkNotNull(previewInfo, "document can't found!");
-            ret = String.format("{\"value\":%d}", previewInfo.getPageCount());
-
+            PreviewInfoEx previewInfoEx = getPreviewInfo(createEmployeeInfo(ea, employeeId), filePath);
+            Preconditions.checkNotNull(previewInfoEx.getPreviewInfo(), "document can't found!");
+            ret = String.format("{\"value\":%d}", previewInfoEx.getPreviewInfo().getPageCount());
         } catch (Exception e) {
             log.error("/document/getPageCount |filePath: {} | ea: {} | ei: {} ", filePath, ea, employeeId, e);
             ret = String.format("{\"error\":\"%s\"}", e.getMessage());
@@ -45,8 +45,8 @@ public class RestfulController {
     }
 
 
-    public PreviewInfo getPreviewInfo(EmployeeInfo employeeInfo, String path) throws Exception {
-        return previewService.getDocPreviewInfo(employeeInfo, path);
+    public PreviewInfoEx getPreviewInfo(EmployeeInfo employeeInfo, String path) throws Exception {
+        return previewService.getPreviewInfo(employeeInfo, path,"");
     }
 
     private EmployeeInfo createEmployeeInfo(String ea, int ei) {

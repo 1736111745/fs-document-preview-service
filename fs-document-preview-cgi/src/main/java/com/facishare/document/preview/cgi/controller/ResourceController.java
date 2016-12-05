@@ -129,6 +129,7 @@ public class ResourceController {
         if (!jpgFile.exists()) {
             logger.info("begin convertSvgToJpg,filePath:{},jpgFilePath:{}",filePath,jpgFilePath);
             ImageHandler.convertSvgToJpg(filePath, jpgFilePath);
+            logger.info("end convertSvgToJpg,filePath:{},jpgFilePath:{}",filePath,jpgFilePath);
         }
         //缩略
         SimpleImageInfo simpleImageInfo = new SimpleImageInfo(jpgFile);
@@ -136,6 +137,7 @@ public class ResourceController {
         logger.info("begin thumbnail file:{}",jpgFile);
         Thumbnails.of(jpgFile).forceSize(width, height).outputQuality(0.8).outputFormat("jpg").toOutputStream(outputStream);
         response.setContentType("image/jpeg");
+        logger.info("end thumbnail file:{}",jpgFile);
         return outputStream.toByteArray();
     }
 

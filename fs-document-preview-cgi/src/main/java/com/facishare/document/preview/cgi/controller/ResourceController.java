@@ -90,16 +90,16 @@ public class ResourceController {
                 byte[] buffer = new byte[(int) fc.size()];
                 mbb.get(buffer);
                 if (width > 0) {
-                    //缩略
-                    SimpleImageInfo simpleImageInfo = new SimpleImageInfo(file);
-                    int height = width * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    String jpgFilePath=FilenameUtils.getPath(filePath)+"/"+FilenameUtils.getName(fileName)+".jpg";
-                    File jpgFile=new File(jpgFilePath);
-                    if(!jpgFile.exists()) {
+                    String jpgFilePath = FilenameUtils.getPath(filePath) + "/" + FilenameUtils.getName(fileName) + ".jpg";
+                    File jpgFile = new File(jpgFilePath);
+                    if (!jpgFile.exists()) {
                         ImageHandler.convertSvgToJpg(filePath, jpgFilePath);
                     }
-                    Thumbnails.of(jpgFile).forceSize(width, height).outputQuality(0.8).outputFormat("png").toOutputStream(outputStream);
+                    //缩略
+                    SimpleImageInfo simpleImageInfo = new SimpleImageInfo(jpgFile);
+                    int height = width * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
+                    Thumbnails.of(jpgFile).forceSize(width, height).outputQuality(0.8).outputFormat("jpg").toOutputStream(outputStream);
                     buffer = outputStream.toByteArray();
                 }
                 out.write(buffer);

@@ -67,6 +67,7 @@ public class ResourceController {
         } else {
             String fileName = FilenameUtils.getName(filePath);
             fileName = fileName.toLowerCase();
+            response.setContentLength((int) file.length());
             if (fileName.contains(".png")) {
                 response.setContentType("image/png");
             } else if (fileName.contains(".jpg")) {

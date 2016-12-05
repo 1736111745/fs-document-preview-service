@@ -34,7 +34,7 @@ public class ImageHandler {
 
     public static void main(String[] args) throws IOException, TranscoderException {
         String svgFile = "/Users/liuq/Downloads/1.svg";
-        String jpgFilePath ="/Users/liuq/Downloads/abc.jpg";
+        String jpgFilePath ="/Users/liuq/Downloads/abcddd.jpg";
         File jpgFile=new File(jpgFilePath);
         if(!jpgFile.exists())
         {

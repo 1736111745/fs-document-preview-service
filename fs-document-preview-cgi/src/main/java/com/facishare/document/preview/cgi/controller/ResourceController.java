@@ -127,11 +127,13 @@ public class ResourceController {
         String jpgFilePath = FilenameUtils.concat(FilenameUtils.getFullPath(filePath), getFileNameNoEx(svgFileName) + ".jpg");
         File jpgFile = new File(jpgFilePath);
         if (!jpgFile.exists()) {
+            logger.info("begin convertSvgToJpg,filePath:{},jpgFilePath:{}",filePath,jpgFilePath);
             ImageHandler.convertSvgToJpg(filePath, jpgFilePath);
         }
         //缩略
         SimpleImageInfo simpleImageInfo = new SimpleImageInfo(jpgFile);
         int height = width * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
+        logger.info("begin thumbnail file:{}",jpgFile);
         Thumbnails.of(jpgFile).forceSize(width, height).outputQuality(0.8).outputFormat("jpg").toOutputStream(outputStream);
         response.setContentType("image/jpeg");
         return outputStream.toByteArray();

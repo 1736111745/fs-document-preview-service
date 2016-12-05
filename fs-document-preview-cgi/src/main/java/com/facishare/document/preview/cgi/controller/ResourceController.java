@@ -1,10 +1,16 @@
 package com.facishare.document.preview.cgi.controller;
 
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
+import com.facishare.document.preview.cgi.model.ImageSize;
 import com.facishare.document.preview.cgi.utils.ImageHandler;
+import com.facishare.document.preview.cgi.utils.ThumbnailSizeHelper;
 import com.fxiaoke.common.image.SimpleImageInfo;
+import com.google.common.base.Strings;
 import net.coobird.thumbnailator.Thumbnails;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,21 +92,14 @@ public class ResourceController {
             FileChannel fc = new RandomAccessFile(filePath, "r").getChannel();
             MappedByteBuffer mbb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
             OutputStream out = response.getOutputStream();
+            byte[] buffer;
             try {
-                byte[] buffer = new byte[(int) fc.size()];
-                mbb.get(buffer);
-                if (width > 0) {
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    String jpgFilePath = FilenameUtils.getPath(filePath) + "/" + FilenameUtils.getName(fileName) + ".jpg";
-                    File jpgFile = new File(jpgFilePath);
-                    if (!jpgFile.exists()) {
-                        ImageHandler.convertSvgToJpg(filePath, jpgFilePath);
-                    }
-                    //缩略
-                    SimpleImageInfo simpleImageInfo = new SimpleImageInfo(jpgFile);
-                    int height = width * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
-                    Thumbnails.of(jpgFile).forceSize(width, height).outputQuality(0.8).outputFormat("jpg").toOutputStream(outputStream);
-                    buffer = outputStream.toByteArray();
+                if (fileName.contains(".svg")) {
+                    buffer = handleSvg(filePath, width);
+                } else if (fileName.contains(".png")) {
+                    buffer = handlePng(filePath, width);
+                } else {
+                    buffer = handleFile(filePath);
                 }
                 out.write(buffer);
             } catch (Exception ex) {
@@ -113,4 +112,58 @@ public class ResourceController {
             }
         }
     }
+
+    private byte[] handleFile(String filePath) throws IOException {
+        return FileUtils.readFileToByteArray(new File(filePath));
+    }
+
+    private byte[] handleSvg(String filePath, int width) throws IOException, TranscoderException {
+        if (width == 0) {
+            return FileUtils.readFileToByteArray(new File(filePath));
+        }
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        String svgFileName = FilenameUtils.getName(filePath);
+        String jpgFilePath = FilenameUtils.getPath(filePath) + "/" + getFileNameNoEx(svgFileName) + ".jpg";
+        File jpgFile = new File(jpgFilePath);
+        if (!jpgFile.exists()) {
+            ImageHandler.convertSvgToJpg(filePath, jpgFilePath);
+        }
+        //缩略
+        SimpleImageInfo simpleImageInfo = new SimpleImageInfo(jpgFile);
+        int height = width * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
+        Thumbnails.of(jpgFile).forceSize(width, height).outputQuality(0.8).outputFormat("jpg").toOutputStream(outputStream);
+        return outputStream.toByteArray();
+    }
+
+
+    private byte[] handlePng(String filePath, int width) throws IOException, TranscoderException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        //缩略:如果制定大小就从原图中缩略到指定大小，如果不指定大小生成固定大小给手机预览使用
+        if (width > 0) {
+            SimpleImageInfo simpleImageInfo = new SimpleImageInfo(new File(filePath));
+            int height = width * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
+            Thumbnails.of(filePath).forceSize(width, height).outputQuality(0.8).outputFormat("jpg").toOutputStream(outputStream);
+            return outputStream.toByteArray();
+        } else {
+            ImageSize imageSize = ThumbnailSizeHelper.getProcessedSize(filePath);
+            String pngFilePath = FilenameUtils.getName(filePath);
+            String jpgFilePath = FilenameUtils.getPath(filePath) + "/" + getFileNameNoEx(pngFilePath) + "fixed.jpg";
+            File jpgFile = new File(jpgFilePath);
+            if (!jpgFile.exists()) {
+                Thumbnails.of(filePath).size(imageSize.getWidth(), imageSize.getHeight()).toFile(jpgFile);
+            }
+            return FileUtils.readFileToByteArray(jpgFile);
+        }
+    }
+
+    private String getFileNameNoEx(String filename) {
+        if ((filename != null) && (filename.length() > 0)) {
+            int dot = filename.lastIndexOf('.');
+            if ((dot > -1) && (dot < (filename.length()))) {
+                return filename.substring(0, dot);
+            }
+        }
+        return filename;
+    }
+
 }

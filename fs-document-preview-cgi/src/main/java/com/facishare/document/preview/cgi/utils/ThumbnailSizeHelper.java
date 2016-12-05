@@ -14,7 +14,7 @@ import java.io.IOException;
  * d，宽或者高大于1280，但是图片宽高比大于2时，并且宽或者高其中一个小于1280，则压缩至同尺寸的小文件图片
  */
 public class ThumbnailSizeHelper {
-    public static ImageSize getProccessedSize(String imageFilePath) throws IOException {
+    public static ImageSize getProcessedSize(String imageFilePath) throws IOException {
         SimpleImageInfo pngImageInfo = new SimpleImageInfo(new File(imageFilePath));
         int originalWidth = pngImageInfo.getWidth();
         int originalHeight = pngImageInfo.getHeight();

@@ -74,7 +74,6 @@ public class ResourceController {
         } else {
             String fileName = FilenameUtils.getName(filePath);
             fileName = fileName.toLowerCase();
-            response.setContentLength((int) file.length());
             OutputStream out = response.getOutputStream();
             byte[] buffer;
             try {
@@ -85,6 +84,7 @@ public class ResourceController {
                 } else {
                     buffer = handleFile(filePath, response);
                 }
+                response.setContentLength(buffer.length);
                 out.write(buffer);
             } catch (Exception ex) {
                 logger.error("filepath:{}", filePath, ex);

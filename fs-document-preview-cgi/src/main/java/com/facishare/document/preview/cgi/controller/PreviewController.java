@@ -118,7 +118,7 @@ public class PreviewController {
                         String originalFilePath = dataFileInfo.getOriginalFilePath();
                         String dataFilePath = docConvertor.doConvert(path, dataFileInfo.getDataDir(), originalFilePath, pageIndex);
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
-                            previewInfoDao.savePreviewInfo(ea, path, dataFilePath, previewInfo.getFilePathList());
+                            previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
                         }
                         return handModelAndView(dataFilePath);
                     }
@@ -221,7 +221,7 @@ public class PreviewController {
                         String originalFilePath = dataFileInfo.getOriginalFilePath();
                         String dataFilePath = docConvertor.doConvert(path, dataFileInfo.getDataDir(), originalFilePath, pageIndex);
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
-                            previewInfoDao.savePreviewInfo(ea, path, dataFilePath, previewInfo.getFilePathList());
+                            previewInfoDao.savePreviewInfo( ea, path, dataFilePath);
                         }
                         return handModelAndView(dataFilePath, width);
                     }

@@ -29,13 +29,14 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     private DatastoreExt dpsDataStore;
 
     @Override
-    public void savePreviewInfo(String ea,String path,String dataFilePath,List<String> filePathList) {
-        String dataFileName = FilenameUtils.getName(dataFilePath);
+    public void savePreviewInfo(String ea, String path, String dataFilePath) {
+        String dataFileName=FilenameUtils.getName(dataFilePath);
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("path").equal(path).criteria("ea").equal(ea);
-        if (filePathList == null) {
+        PreviewInfo previewInfo = query.get();
+        List<String> filePathList = previewInfo.getFilePathList();
+        if (filePathList == null)
             filePathList = Lists.newArrayList();
-        }
         filePathList.add(dataFileName);
         UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
         update.set("filePathList", filePathList);
@@ -43,7 +44,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     }
 
     @Override
-    public DataFileInfo getDataFileInfo( String ea,String path, int page,PreviewInfo previewInfo) throws IOException {
+    public DataFileInfo getDataFileInfo(String ea, String path, int page, PreviewInfo previewInfo) throws IOException {
         DataFileInfo dataFileInfo = new DataFileInfo();
         dataFileInfo.setOriginalFilePath(previewInfo.getOriginalFilePath());
         dataFileInfo.setDataDir(previewInfo.getDataDir());
@@ -67,7 +68,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
                 }
             }
         }
-        String filePath="";
+        String filePath = "";
         if (!Strings.isNullOrEmpty(dataFileName)) {
             filePath = FilenameUtils.concat(previewInfo.getDirName(), dataFileName);
         }
@@ -85,7 +86,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
 
 
     @Override
-    public PreviewInfo initPreviewInfo( String ea, int employeeId,String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames) {
+    public PreviewInfo initPreviewInfo(String ea, int employeeId, String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames) {
         PreviewInfo previewInfo = new PreviewInfo();
         previewInfo.setDocSize(docSize);
         previewInfo.setDirName(FilenameUtils.getBaseName(dataDir));
@@ -107,7 +108,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     }
 
     @Override
-    public PreviewInfo getInfoByPath(String ea,String path) {
+    public PreviewInfo getInfoByPath(String ea, String path) {
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("path").equal(path).criteria("ea").equal(ea);
         return query.get();

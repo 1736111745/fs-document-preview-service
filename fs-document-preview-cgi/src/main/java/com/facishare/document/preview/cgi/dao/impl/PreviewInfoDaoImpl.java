@@ -10,14 +10,16 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
-import java.text.Collator;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 文档预览dao
@@ -32,17 +34,17 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
 
     @Override
     public void savePreviewInfo(String ea, String path, String dataFilePath) {
-        String dataFileName=FilenameUtils.getName(dataFilePath);
+        String dataFileName = FilenameUtils.getName(dataFilePath);
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("path").equal(path).criteria("ea").equal(ea);
         PreviewInfo previewInfo = query.get();
-        log.info("dataFileName:{},current previewInfo:{}", dataFileName,JSON.toJSON(previewInfo));
+        log.info("dataFileName:{},current previewInfo:{}", dataFileName, JSON.toJSON(previewInfo));
         List<String> filePathList = previewInfo.getFilePathList();
         if (filePathList == null)
             filePathList = Lists.newArrayList();
         filePathList.add(dataFileName);
-        Comparator<Object> cmp = Collator.getInstance(Locale.CHINA);
-        Collections.sort(filePathList, cmp);
+        filePathList.stream().sorted((o1, o2) ->
+                NumberUtils.toInt(getFileNameNoEx(o1)) - NumberUtils.toInt(getFileNameNoEx(o2)));
         UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
         update.set("filePathList", filePathList);
         dpsDataStore.findAndModify(query, update);
@@ -117,5 +119,15 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("path").equal(path).criteria("ea").equal(ea);
         return query.get();
+    }
+
+    private String getFileNameNoEx(String filename) {
+        if ((filename != null) && (filename.length() > 0)) {
+            int dot = filename.lastIndexOf('.');
+            if ((dot > -1) && (dot < (filename.length()))) {
+                return filename.substring(0, dot);
+            }
+        }
+        return filename;
     }
 }

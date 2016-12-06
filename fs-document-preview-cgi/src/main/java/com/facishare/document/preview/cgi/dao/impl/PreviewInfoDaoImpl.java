@@ -16,9 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.text.Collator;
+import java.util.*;
 
 /**
  * 文档预览dao
@@ -42,6 +41,8 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         if (filePathList == null)
             filePathList = Lists.newArrayList();
         filePathList.add(dataFileName);
+        Comparator<Object> cmp = Collator.getInstance(Locale.CHINA);
+        Collections.sort(filePathList, cmp);
         UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
         update.set("filePathList", filePathList);
         dpsDataStore.findAndModify(query, update);

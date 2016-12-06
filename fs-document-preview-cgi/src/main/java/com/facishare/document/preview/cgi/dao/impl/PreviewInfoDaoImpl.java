@@ -1,5 +1,6 @@
 package com.facishare.document.preview.cgi.dao.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.DataFileInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfo;
@@ -7,6 +8,7 @@ import com.facishare.document.preview.cgi.utils.DateUtil;
 import com.github.mongo.support.DatastoreExt;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
@@ -22,6 +24,7 @@ import java.util.List;
  * 文档预览dao
  * Created by liuq on 16/8/16.
  */
+@Slf4j
 @Repository
 public class PreviewInfoDaoImpl implements PreviewInfoDao {
 
@@ -34,6 +37,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("path").equal(path).criteria("ea").equal(ea);
         PreviewInfo previewInfo = query.get();
+        log.info("dataFileName:{},current previewInfo:{}", dataFileName,JSON.toJSON(previewInfo));
         List<String> filePathList = previewInfo.getFilePathList();
         if (filePathList == null)
             filePathList = Lists.newArrayList();

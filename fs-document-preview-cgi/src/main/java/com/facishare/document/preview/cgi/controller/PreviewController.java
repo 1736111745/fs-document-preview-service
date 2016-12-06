@@ -173,8 +173,8 @@ public class PreviewController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/preview/DocPreviewByPath", method = RequestMethod.GET)
-    public WebAsyncTask<String> docPreviewByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @RequestMapping(value = "/preview/DocPreviewByPath", method = RequestMethod.GET,produces = "application/json;charset=UTF-8")
+    public WebAsyncTask<String> docPreviewByPath(HttpServletRequest request) throws Exception {
         Callable<String> callable = () ->
         {
             int pageCount = 0;
@@ -202,7 +202,7 @@ public class PreviewController {
 
     @ResponseBody
     @RequestMapping(value = "/preview/DocPageByPath", method = RequestMethod.GET)
-    public WebAsyncTask docPageByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public WebAsyncTask docPageByPath(HttpServletRequest request) throws Exception {
         Callable<ModelAndView> callable = () -> {
             String path = safteGetRequestParameter(request, "npath") == "" ? safteGetRequestParameter(request, "path") : safteGetRequestParameter(request, "npath");
             int pageIndex = NumberUtils.toInt(safteGetRequestParameter(request, "pageIndex"), 0);

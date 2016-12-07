@@ -45,7 +45,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
             filePathList = Lists.newArrayList();
         filePathList.add(dataFileName);
         filePathList = filePathList.stream().sorted((o1, o2) -> NumberUtils.toInt(getFileNameNoEx(o1)) - NumberUtils.toInt(getFileNameNoEx(o2))).collect(Collectors.toList());
-        log.info("filePathList:{}", JSON.toJSON(filePathList));
+        log.info("dataFileName:{},filePathList:{}", dataFileName,JSON.toJSON(filePathList));
         UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
         update.set("filePathList", filePathList);
         dpsDataStore.findAndModify(query, update);

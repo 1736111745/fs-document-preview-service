@@ -34,21 +34,23 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     private DatastoreExt dpsDataStore;
 
     @Override
-    public void savePreviewInfo(String ea, String path, String dataFilePath) {
+    public void  savePreviewInfo(String ea, String path, String dataFilePath) {
         String dataFileName = FilenameUtils.getName(dataFilePath);
-        Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
-        query.criteria("path").equal(path).criteria("ea").equal(ea);
-        PreviewInfo previewInfo = query.get();
-        //log.info("dataFileName:{},current previewInfo:{}", dataFileName, JSON.toJSON(previewInfo));
-        List<String> filePathList = previewInfo.getFilePathList();
-        if (filePathList == null)
-            filePathList = Lists.newArrayList();
-        filePathList.add(dataFileName);
-        filePathList = filePathList.stream().sorted((o1, o2) -> NumberUtils.toInt(getFileNameNoEx(o1)) - NumberUtils.toInt(getFileNameNoEx(o2))).collect(Collectors.toList());
-        log.info("dataFileName:{},filePathList:{}", dataFileName,JSON.toJSON(filePathList));
-        UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
-        update.set("filePathList", filePathList);
-        dpsDataStore.findAndModify(query, update);
+        synchronized (this) {
+            Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+            query.criteria("path").equal(path).criteria("ea").equal(ea);
+            PreviewInfo previewInfo = query.get();
+            //log.info("dataFileName:{},current previewInfo:{}", dataFileName, JSON.toJSON(previewInfo));
+            List<String> filePathList = previewInfo.getFilePathList();
+            if (filePathList == null)
+                filePathList = Lists.newArrayList();
+            filePathList.add(dataFileName);
+            filePathList = filePathList.stream().sorted((o1, o2) -> NumberUtils.toInt(getFileNameNoEx(o1)) - NumberUtils.toInt(getFileNameNoEx(o2))).collect(Collectors.toList());
+            log.info("dataFileName:{},filePathList:{}", dataFileName, JSON.toJSON(filePathList));
+            UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
+            update.set("filePathList", filePathList);
+            dpsDataStore.findAndModify(query, update);
+        }
     }
 
     @Override

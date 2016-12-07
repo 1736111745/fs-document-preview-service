@@ -2,6 +2,7 @@ package com.facishare.document.preview.cgi.convertor;
 
 import application.dcs.IHtmlConvertor;
 import application.dcs.IPICConvertor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
@@ -16,9 +17,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 /**
  * Created by liuq on 2016/11/9.
  */
+@Slf4j
 public class ConvertorHelper {
-    private static final Logger logger = LoggerFactory.getLogger(ConvertorHelper.class);
-
     public ConvertorHelper() throws Exception {
     }
 
@@ -39,11 +39,11 @@ public class ConvertorHelper {
                     return "";
                 }
             } else {
-                logger.info("resultCode:{}", resultCode);
+                log.warn("resultCode:{}", resultCode);
                 return "";
             }
         } catch (Exception e) {
-            logger.error("toSvg,filepath:{}", filePath, e);
+            log.error("toSvg,filepath:{}", filePath, e);
             return "";
         } finally {
             ConvertorPool.getInstance().returnConvertor(convertobj);
@@ -69,11 +69,11 @@ public class ConvertorHelper {
                     return "";
                 }
             } else {
-                logger.info("filePath:{},pageIndex:{},resultCode:{}",filePath,page1, resultCode);
+                log.warn("filePath:{},pageIndex:{},resultCode:{}",filePath,page1, resultCode);
                 return "";
             }
         } catch (Exception e) {
-            logger.error("toPng,filepath:{}", filePath, e);
+            log.error("toPng,filepath:{}", filePath, e);
             return "";
         } finally {
             ConvertorPool.getInstance().returnConvertor(convertobj);
@@ -98,11 +98,11 @@ public class ConvertorHelper {
                     return "";
                 }
             } else {
-                logger.info("resultcode:{}",resultCode);
+                log.warn("resultcode:{}",resultCode);
                 return "";
             }
         } catch (Exception e) {
-            logger.error("toHtml,filepath:{}", filePath, e);
+            log.error("toHtml,filepath:{}", filePath, e);
             return "";
         } finally {
             ConvertorPool.getInstance().returnConvertor(convertobj);

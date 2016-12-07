@@ -1,5 +1,6 @@
 package com.facishare.document.preview.cgi.convertor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -9,18 +10,20 @@ import org.springframework.stereotype.Component;
 /**
  * Created by liuq on 16/9/9.
  */
+@Slf4j
 @Component
 public class DocConvertor {
-    private static final Logger logger = LoggerFactory.getLogger(DocConvertor.class);
     public String doConvert(String path, String baseDir, String originalFilePath, int page) throws Exception {
         IDocConvertor docConvertor = getDocConvert(path);
         if (docConvertor == null) {
             return "";
         }
         try {
-            return docConvertor.convert(page, page, originalFilePath, baseDir);
+            String result=docConvertor.convert(page, page, originalFilePath, baseDir);
+            log.info("page:{},result:{}",page,result);
+            return result;
         } catch (Exception e) {
-            logger.error("do convert happened error:{}", e);
+            log.error("do convert happened error:{}", e);
             return "";
         }
     }

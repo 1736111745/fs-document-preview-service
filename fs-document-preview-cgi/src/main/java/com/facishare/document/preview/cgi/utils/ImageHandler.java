@@ -1,5 +1,6 @@
 package com.facishare.document.preview.cgi.utils;
 
+import net.coobird.thumbnailator.Thumbnails;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
@@ -18,7 +19,6 @@ public class ImageHandler {
         OutputStream outputStream = new FileOutputStream(jpgFilePath);
         try {
             JPEGTranscoder jpegTranscoder = new JPEGTranscoder();
-            jpegTranscoder.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, new Float(0.8));
             TranscoderInput input = new TranscoderInput(inputStream);
             TranscoderOutput output = new TranscoderOutput(outputStream);
             jpegTranscoder.transcode(input, output);
@@ -34,12 +34,40 @@ public class ImageHandler {
         }
     }
 
+    public static void convertSvgToPng(String svgFilePath, String jpgFilePath)
+            throws TranscoderException, IOException {
+        InputStream inputStream = new FileInputStream(svgFilePath);
+        OutputStream outputStream = new FileOutputStream(jpgFilePath);
+        try {
+            PNGTranscoder pngTranscoder = new PNGTranscoder();
+            TranscoderInput input = new TranscoderInput(inputStream);
+            TranscoderOutput output = new TranscoderOutput(outputStream);
+            pngTranscoder.transcode(input, output);
+            outputStream.flush();
+        } finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     public static void main(String[] args) throws IOException, TranscoderException {
-        String svgFile = "/Users/liuq/Downloads/1.svg";
-        String jpgFilePath = "/Users/liuq/Downloads/abcddd.jpg";
+        String svgFile = "/Users/liuq/Downloads/pic/4.svg";
+        String pngFilePath = "/Users/liuq/Downloads/pic/4png.png";
+        String jpgFilePath = "/Users/liuq/Downloads/pic/4png.jpg";
+        String jpgFilePathThumb = "/Users/liuq/Downloads/pic/4thumb.png";
+        File pngFile = new File(pngFilePath);
+        if (!pngFile.exists()) {
+            convertSvgToPng(svgFile, pngFilePath);
+        }
         File jpgFile = new File(jpgFilePath);
         if (!jpgFile.exists()) {
             convertSvgToJpg(svgFile, jpgFilePath);
         }
+        Thumbnails.of(pngFile).scale(1.0).toFile(new File(jpgFilePathThumb));
     }
 }

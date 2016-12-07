@@ -122,20 +122,16 @@ public class ResourceController {
         }
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         String svgFileName = FilenameUtils.getName(filePath);
-        String jpgFilePath = FilenameUtils.concat(FilenameUtils.getFullPath(filePath), getFileNameNoEx(svgFileName) + ".jpg");
-        File jpgFile = new File(jpgFilePath);
-        if (!jpgFile.exists()) {
-            //log.info("begin convertSvgToJpg,filePath:{},jpgFilePath:{}", filePath, jpgFilePath);
-            ImageHandler.convertSvgToJpg(filePath, jpgFilePath);
-            //log.info("end convertSvgToJpg,filePath:{},jpgFilePath:{}", filePath, jpgFilePath);
+        String pngFilePath = FilenameUtils.concat(FilenameUtils.getFullPath(filePath), getFileNameNoEx(svgFileName) + ".png");
+        File pngFile = new File(pngFilePath);
+        if (!pngFile.exists()) {
+            ImageHandler.convertSvgToPng(filePath, pngFilePath);
         }
         //缩略
-        SimpleImageInfo simpleImageInfo = new SimpleImageInfo(jpgFile);
+        SimpleImageInfo simpleImageInfo = new SimpleImageInfo(pngFile);
         int height = width * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
-        //log.info("begin thumbnail file:{}", jpgFile);
-        Thumbnails.of(jpgFile).forceSize(width, height).outputFormat("jpg").toOutputStream(outputStream);
-        response.setContentType("image/jpeg");
-        //log.info("end thumbnail file:{}", jpgFile);
+        Thumbnails.of(pngFile).forceSize(width, height).outputFormat("png").toOutputStream(outputStream);
+        response.setContentType("image/png");
         return outputStream.toByteArray();
     }
 

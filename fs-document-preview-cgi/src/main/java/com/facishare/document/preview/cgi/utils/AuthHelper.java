@@ -6,6 +6,7 @@ import com.facishare.asm.api.model.CookieToAuth;
 import com.facishare.asm.api.service.ActiveSessionAuthorizeService;
 import com.facishare.common.web.util.WebUtil;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +18,10 @@ import java.util.Arrays;
 /**
  * Created by liuq on 16/3/29.
  */
-@SuppressWarnings("SpringJavaAutowiringInspection")
+@Slf4j
 public class AuthHelper {
     @Autowired
     ActiveSessionAuthorizeService assService;
-    private static final Logger LOG = LoggerFactory.getLogger(AuthHelper.class);
 
     public EmployeeInfo getAuthInfo(HttpServletRequest request) {
         String cookieValue = getCookie(request);
@@ -53,7 +53,7 @@ public class AuthHelper {
             cookie = WebUtil.getCookie(request, "FSAuthXC");
         }
         if (cookie == null) {
-            LOG.warn("[authorizeByCookieValue] [fail] [can't find FSAuthX/FsAuthXC cookie] [cookie:{}] [cookieInHeader:{}]", Arrays.toString(request.getCookies()), request.getHeader("cookie"));
+            log.warn("[authorizeByCookieValue] [fail] [can't find FSAuthX/FsAuthXC cookie] [cookie:{}] [cookieInHeader:{}]", Arrays.toString(request.getCookies()), request.getHeader("cookie"));
             return "";
         } else
             return cookie.getValue();

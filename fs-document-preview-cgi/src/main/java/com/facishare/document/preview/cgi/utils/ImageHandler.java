@@ -17,10 +17,11 @@ public class ImageHandler {
         InputStream inputStream = new FileInputStream(svgFilePath);
         OutputStream outputStream = new FileOutputStream(jpgFilePath);
         try {
-            PNGTranscoder t = new PNGTranscoder();
+            JPEGTranscoder jpegTranscoder = new JPEGTranscoder();
+            jpegTranscoder.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, new Float(0.8));
             TranscoderInput input = new TranscoderInput(inputStream);
             TranscoderOutput output = new TranscoderOutput(outputStream);
-            t.transcode(input, output);
+            jpegTranscoder.transcode(input, output);
             outputStream.flush();
         } finally {
             if (outputStream != null) {

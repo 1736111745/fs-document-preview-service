@@ -133,7 +133,7 @@ public class ResourceController {
         SimpleImageInfo simpleImageInfo = new SimpleImageInfo(jpgFile);
         int height = width * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
         //log.info("begin thumbnail file:{}", jpgFile);
-        Thumbnails.of(jpgFile).forceSize(width, height).outputQuality(0.8).outputFormat("jpg").toOutputStream(outputStream);
+        Thumbnails.of(jpgFile).forceSize(width, height).outputFormat("jpg").toOutputStream(outputStream);
         response.setContentType("image/jpeg");
         //log.info("end thumbnail file:{}", jpgFile);
         return outputStream.toByteArray();

@@ -2,6 +2,7 @@ package com.facishare.document.preview.cgi.filter;
 
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.utils.AuthHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -15,6 +16,7 @@ import java.io.IOException;
 /**
  * Created by liuq on 16/8/15.
  */
+@Slf4j
 @Component
 public class AuthFilter extends OncePerRequestFilter {
     @Autowired
@@ -31,14 +33,15 @@ public class AuthFilter extends OncePerRequestFilter {
             EmployeeInfo employeeInfo = authHelper.getAuthInfo(request);
             if (employeeInfo == null) {
                 String profile = System.getProperty("spring.profiles.active");
-
                 if (!profile.equals("foneshare")) {
                     employeeInfo = new EmployeeInfo();
                     employeeInfo.setEa("2");
                     employeeInfo.setEmployeeId(1000);
                     request.setAttribute("Auth", employeeInfo);
-                } else
+                } else {
+                    log.warn("requestUri:{},is invalid auth",requestUri);
                     response.setStatus(403);
+                }
 
             } else {
                 request.setAttribute("Auth", employeeInfo);

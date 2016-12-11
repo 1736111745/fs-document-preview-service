@@ -43,7 +43,8 @@
     <logger name="org.hibernate" level="WARN"/>
     <logger name="org.springframework" level="WARN"/>
     <logger name="org.apache" level="WARN"/>
-
+    <logger name="com.github.trace" level="DEBUG"/>
+    <logger name="com.facishare.fsi.proxy" level="DEBUG"/>
     <root level="info">
         <appender-ref ref="ASYNC"/>
     </root>

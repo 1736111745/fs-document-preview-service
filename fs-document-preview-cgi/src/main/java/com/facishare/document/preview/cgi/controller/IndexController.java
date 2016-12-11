@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
+import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,6 +40,9 @@ public class IndexController {
         response.setContentType("text/plain");
         PrintWriter printWriter = response.getWriter();
         Properties props = System.getProperties(); //系统属性
+        InetAddress ia = InetAddress.getLocalHost();
+        String host = ia.getHostName();
+        printWriter.println("machine name:"+host);
         List<String> inputArguments = ManagementFactory.getRuntimeMXBean().getInputArguments();
         printWriter.println("===================java options===================");
         printWriter.println(inputArguments.toString());

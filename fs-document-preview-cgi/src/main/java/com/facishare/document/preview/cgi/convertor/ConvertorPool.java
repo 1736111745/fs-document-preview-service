@@ -2,16 +2,31 @@ package com.facishare.document.preview.cgi.convertor;
 
 import application.dcs.Convert;
 import com.facishare.document.preview.cgi.utils.PathHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class ConvertorPool {
     private final static String root = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-    private final static String configDir = root + "yozo_config";
-    private static final Logger LOG = LoggerFactory.getLogger(ConvertorPool.class);
+
+    private static String getConfigDir() {
+        String configDir;
+        InetAddress ia;
+        try {
+            ia = InetAddress.getLocalHost();
+            String host = ia.getHostName();
+            configDir = root + host;
+        } catch (UnknownHostException e) {
+            configDir = root + "yozo_config";
+        }
+        log.info("configDir:{}", configDir);
+        return configDir;
+    }
+
 
     private ConvertorPool() {
     }
@@ -78,7 +93,7 @@ public class ConvertorPool {
     }
 
     private Convert createConvert() {
-        Convert convert = new Convert(configDir);
+        Convert convert = new Convert(getConfigDir());
         convert.setTempPath(new PathHelper().getConvertTempPath());
         convert.setAutoDeleteTempFiles(true);
         convert.setHtmlTitle("文档预览");
@@ -95,6 +110,7 @@ public class ConvertorPool {
         public ConvertorObject(int id) {
             this.id = id;
         }
+
         public int id;
         public Convert convertor;
         public boolean available;

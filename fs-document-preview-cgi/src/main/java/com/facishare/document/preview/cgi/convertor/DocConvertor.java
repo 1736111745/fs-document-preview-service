@@ -14,18 +14,26 @@ import org.springframework.stereotype.Component;
 @Component
 public class DocConvertor {
     public String doConvert(String path, String baseDir, String originalFilePath, int page) throws Exception {
+        StopWatch stopWatch=new StopWatch();
+        log.info("begin convert file:{}",page);
+        stopWatch.start();
         IDocConvertor docConvertor = getDocConvert(path);
         if (docConvertor == null) {
             return "";
         }
         try {
             String result=docConvertor.convert(page, page, originalFilePath, baseDir);
-            log.info("page:{},result:{}",page,result);
+            log.info("path:{},page:{},result:{}",path,page,result);
             return result;
         } catch (Exception e) {
             log.error("do convert happened error:{}", e);
             return "";
         }
+        finally {
+            stopWatch.stop();
+            log.info("convert file:{},cost:{}",path,stopWatch.getTime());
+        }
+
     }
 
     private IDocConvertor getDocConvert(String path) {

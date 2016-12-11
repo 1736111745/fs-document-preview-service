@@ -139,21 +139,22 @@ public class ResourceController {
     private byte[] handlePng(String filePath, int width, HttpServletResponse response) throws IOException, TranscoderException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         //缩略:如果制定大小就从原图中缩略到指定大小，如果不指定大小生成固定大小给手机预览使用
-        response.setContentType("image/jpeg");
+        SimpleImageInfo simpleImageInfo = new SimpleImageInfo(new File(filePath));
+        response.setContentType("image/png");
         if (width > 0) {
-            SimpleImageInfo simpleImageInfo = new SimpleImageInfo(new File(filePath));
             int height = width * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
-            Thumbnails.of(filePath).forceSize(width, height).outputQuality(0.8).outputFormat("jpg").toOutputStream(outputStream);
+            Thumbnails.of(filePath).forceSize(width, height).outputQuality(0.8).outputFormat("png").toOutputStream(outputStream);
             return outputStream.toByteArray();
         } else {
-            ImageSize imageSize = ThumbnailSizeHelper.getProcessedSize(filePath);
-            String pngFilePath = FilenameUtils.getName(filePath);
-            String jpgFilePath = FilenameUtils.getPath(filePath) + "/" + getFileNameNoEx(pngFilePath) + "fixed.jpg";
-            File jpgFile = new File(jpgFilePath);
-            if (!jpgFile.exists()) {
-                Thumbnails.of(filePath).size(imageSize.getWidth(), imageSize.getHeight()).outputQuality(0.8).outputFormat("jpg").toFile(jpgFile);
+            int fixedWidth = 1280;
+            int fixedHeight = fixedWidth * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
+            String pngFileName = FilenameUtils.getName(filePath);
+            String pngFixedFilePath = FilenameUtils.concat(FilenameUtils.getFullPath(filePath), getFileNameNoEx(pngFileName) + "fixed.png");
+            File pngFixedFile = new File(pngFixedFilePath);
+            if (!pngFixedFile.exists()) {
+                Thumbnails.of(filePath).forceSize(fixedWidth, fixedHeight).outputQuality(0.8).outputFormat("png").toFile(pngFixedFile);
             }
-            return FileUtils.readFileToByteArray(jpgFile);
+            return FileUtils.readFileToByteArray(pngFixedFile);
         }
     }
 

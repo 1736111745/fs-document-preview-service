@@ -382,7 +382,7 @@
         <dependency>
             <groupId>com.facishare</groupId>
             <artifactId>fs-fsi-proxy</artifactId>
-            <version>1.4-SNAPSHOT</version>
+            <version>1.4.9-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <artifactId>rpc-trace</artifactId>
@@ -542,6 +542,11 @@
             <groupId>net.coobird</groupId>
             <artifactId>thumbnailator</artifactId>
             <version>0.4.8</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fxiaoke.common</groupId>
+            <artifactId>java-utils</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <build>

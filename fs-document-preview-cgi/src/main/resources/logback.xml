@@ -39,12 +39,13 @@
     </appender>
 
     <!-- 配置基础组件为WARN级别，避免打印过多影响服务自己日志 -->
-    <logger name="druid.sql" level="INFO"/>
-    <logger name="org.hibernate" level="WARN"/>
-    <logger name="org.springframework" level="WARN"/>
-    <logger name="org.apache" level="WARN"/>
-    <logger name="com.github.trace" level="DEBUG"/>
-    <logger name="com.facishare.fsi.proxy" level="DEBUG"/>
+    <logger name="druid.sql" level="ERROR"/>
+    <logger name="org.hibernate" level="ERROR"/>
+    <logger name="org.springframework" level="ERROR"/>
+    <logger name="org.apache" level="ERROR"/>
+    <logger name="com.github.trace.listener.OssStatistic" level="ERROR"/>
+    <logger name="com.facishare.fsi.proxy" level="ERROR"/>
+    <logger name="com.fxiaoke.j4log.J4LogFactory" level="ERROR"/>
     <root level="info">
         <appender-ref ref="ASYNC"/>
     </root>

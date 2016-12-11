@@ -24,10 +24,18 @@ public class AuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        request.setAttribute("sv","v2.0.0");
+        request.setAttribute("sv", "v2.0.0");
         String requestUri = request.getRequestURI().toLowerCase();
         String ctx = request.getContextPath();
-        if (requestUri.startsWith(ctx + "/restful/") ||  requestUri.equals(ctx + "/") || requestUri.contains(".js") || requestUri.contains(".svg") || requestUri.contains(".png") || requestUri.contains(".css") || requestUri.contains(".jpg") || requestUri.contains(".html")) {
+        if (requestUri.startsWith(ctx + "/restful/") ||
+                requestUri.equals(ctx + "/") ||
+                requestUri.contains(".js") ||
+                requestUri.contains(".svg") ||
+                requestUri.contains(".png") ||
+                requestUri.contains(".css") ||
+                requestUri.contains(".jpg") ||
+                requestUri.contains(".htm") ||
+                requestUri.contains("ping")) {
             filterChain.doFilter(request, response);
         } else {
             EmployeeInfo employeeInfo = authHelper.getAuthInfo(request);
@@ -39,7 +47,7 @@ public class AuthFilter extends OncePerRequestFilter {
                     employeeInfo.setEmployeeId(1000);
                     request.setAttribute("Auth", employeeInfo);
                 } else {
-                    log.warn("requestUri:{},is invalid auth",requestUri);
+                    log.warn("requestUri:{},is invalid auth", requestUri);
                     response.setStatus(403);
                 }
 

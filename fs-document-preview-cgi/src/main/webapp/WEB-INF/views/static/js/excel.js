@@ -23,13 +23,13 @@ function loadSheetNames() {
                         if (isActive) {
                             activeSheetIndex = i;
                         }
-                        sheetName=sheetName.replace("_$h1$","").replace("_$a1$","");
+                        sheetName=sheetName.replace("_$h0$","").replace("_$a0$","").replace("_$h1$","").replace("_$a1$","");
                         var li = "<li id='li" + i + "'><a href='#' onclick='loadSheet(" + i + ")' data-toggle='tab'>" + sheetName + "</a></li>";
                         $('#navSheet').append($(li));
                     }
                 }
                 var activeSheetName = sheets[activeSheetIndex];
-                activeSheetName=activeSheetName.replace("_$h1$","").replace("_$a1$","");
+                activeSheetName=activeSheetName.replace("_$h0$","").replace("_$a0$","").replace("_$h1$","").replace("_$a1$","");
                 $('#li' + activeSheetIndex).addClass("active");
                 $('#aTitle').html(activeSheetName);
                 loadSheet(activeSheetIndex);

@@ -22,7 +22,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        request.setAttribute("sv","v1.1.9");
+        request.setAttribute("sv","v2.0.0");
         String requestUri = request.getRequestURI().toLowerCase();
         String ctx = request.getContextPath();
         if (requestUri.startsWith(ctx + "/restful/") ||  requestUri.equals(ctx + "/") || requestUri.contains(".js") || requestUri.contains(".svg") || requestUri.contains(".png") || requestUri.contains(".css") || requestUri.contains(".jpg") || requestUri.contains(".html")) {

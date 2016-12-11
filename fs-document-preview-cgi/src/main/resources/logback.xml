@@ -43,7 +43,7 @@
     <logger name="org.hibernate" level="ERROR"/>
     <logger name="org.springframework" level="ERROR"/>
     <logger name="org.apache" level="ERROR"/>
-    <logger name="com.github.trace.listener.OssStatistic" level="ERROR"/>
+    <logger name="com.github.trace" level="ERROR"/>
     <logger name="com.facishare.fsi.proxy" level="ERROR"/>
     <logger name="com.fxiaoke.j4log.J4LogFactory" level="ERROR"/>
     <root level="info">

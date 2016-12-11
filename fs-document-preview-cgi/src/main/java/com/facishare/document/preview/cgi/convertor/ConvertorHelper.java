@@ -39,7 +39,7 @@ public class ConvertorHelper {
                     return "";
                 }
             } else {
-                log.warn("resultCode:{}", resultCode);
+                log.warn("filePath:{},resultCode:{}", filePath,resultCode);
                 return "";
             }
         } catch (Exception e) {

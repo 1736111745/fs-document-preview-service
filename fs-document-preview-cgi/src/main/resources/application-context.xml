@@ -28,4 +28,5 @@
     <import resource="classpath:spring/spring-cms.xml"/>
     <import resource="fs-fileproxy.xml"/>
     <import resource="classpath:spring/fs-dps-dubbo.xml"/>
+    <bean class="com.fxiaoke.metrics.MetricsConfiguration"/>
 </beans>

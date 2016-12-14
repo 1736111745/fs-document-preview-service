@@ -6,9 +6,9 @@ import com.facishare.asm.api.model.CookieToAuth;
 import com.facishare.asm.api.service.ActiveSessionAuthorizeService;
 import com.facishare.common.web.util.WebUtil;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
+import com.github.trace.TraceContext;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.Cookie;
@@ -42,6 +42,9 @@ public class AuthHelper {
             employeeInfo.setEmployeeFullName(authXC.getFullName());
             employeeInfo.setEmployeeId(authXC.getEmployeeId());
             employeeInfo.setEmployeeName(authXC.getName());
+            String uid = authXC.getEnterpriseAccount() + '.' + authXC.getEmployeeId();
+            TraceContext.get().setUid(uid);
+            MDC.put("userId", uid);
             return employeeInfo;
         } else
             return null;

@@ -1,9 +1,8 @@
 package com.facishare.document.preview.cgi.controller;
 
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
-import com.facishare.document.preview.cgi.model.ImageSize;
 import com.facishare.document.preview.cgi.utils.ImageHandler;
-import com.facishare.document.preview.cgi.utils.ThumbnailSizeHelper;
+import com.facishare.document.preview.common.utils.MimeTypeHelper;
 import com.fxiaoke.common.image.SimpleImageInfo;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
@@ -97,21 +96,9 @@ public class ResourceController {
     private byte[] handleFile(String filePath, HttpServletResponse response) throws IOException {
         String fileName = FilenameUtils.getName(filePath);
         fileName = fileName.toLowerCase();
-        if (fileName.contains(".png")) {
-            response.setContentType("image/png");
-        } else if (fileName.contains(".jpg")) {
-            response.setContentType("image/jpeg ");
-        } else if (fileName.contains(".js")) {
-            response.setContentType("application/javascript");
-        } else if (fileName.contains(".css")) {
-            response.setContentType("text/css");
-        } else if (fileName.contains(".svg")) {
-            response.setContentType("image/svg+xml");
-        } else if (fileName.contains(".htm")) {
-            response.setContentType("text/html");
-        } else if (fileName.contains(".pdf")) {
-            response.setContentType("application/pdf");
-        }
+        String ext = FilenameUtils.getExtension(fileName);
+        String mime = MimeTypeHelper.getMimeType(ext);
+        response.setContentType(mime);
         return FileUtils.readFileToByteArray(new File(filePath));
     }
 
@@ -122,7 +109,7 @@ public class ResourceController {
         }
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         String svgFileName = FilenameUtils.getName(filePath);
-        String pngFilePath = FilenameUtils.concat(FilenameUtils.getFullPath(filePath), getFileNameNoEx(svgFileName) + ".png");
+        String pngFilePath = FilenameUtils.concat(FilenameUtils.getBaseName(filePath), getFileNameNoEx(svgFileName) + ".png");
         File pngFile = new File(pngFilePath);
         if (!pngFile.exists()) {
             ImageHandler.convertSvgToPng(filePath, pngFilePath);
@@ -146,7 +133,7 @@ public class ResourceController {
             Thumbnails.of(filePath).forceSize(width, height).outputQuality(0.8).outputFormat("png").toOutputStream(outputStream);
             return outputStream.toByteArray();
         } else {
-            int fixedWidth = 1280;
+            int fixedWidth = 800;
             int fixedHeight = fixedWidth * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
             String pngFileName = FilenameUtils.getName(filePath);
             String pngFixedFilePath = FilenameUtils.concat(FilenameUtils.getFullPath(filePath), getFileNameNoEx(pngFileName) + "fixed.png");

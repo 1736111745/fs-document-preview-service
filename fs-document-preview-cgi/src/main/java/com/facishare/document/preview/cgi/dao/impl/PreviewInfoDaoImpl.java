@@ -1,10 +1,9 @@
 package com.facishare.document.preview.cgi.dao.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.DataFileInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfo;
-import com.facishare.document.preview.cgi.utils.DateUtil;
+import com.facishare.document.preview.common.utils.DateUtil;
 import com.github.mongo.support.DatastoreExt;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -34,7 +33,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     private DatastoreExt dpsDataStore;
 
     @Override
-    public void  savePreviewInfo(String ea, String path, String dataFilePath) {
+    public void savePreviewInfo(String ea, String path, String dataFilePath) {
         String dataFileName = FilenameUtils.getName(dataFilePath);
         synchronized (this) {
             Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
@@ -101,7 +100,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         previewInfo.setDocSize(docSize);
         previewInfo.setDirName(FilenameUtils.getBaseName(dataDir));
         previewInfo.setCreateTime(new Date());
-        int yyyyMMdd = Integer.parseInt(DateUtil.getFormatDateStr("yyyyMMdd"));
+        int yyyyMMdd = DateUtil.getFormatDateInt("yyyyMMdd");
         previewInfo.setCreateYYMMDD(yyyyMMdd);
         previewInfo.setEa(ea);
         previewInfo.setEmployeeId(employeeId);

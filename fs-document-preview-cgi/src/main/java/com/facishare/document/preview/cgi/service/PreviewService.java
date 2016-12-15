@@ -1,15 +1,16 @@
 package com.facishare.document.preview.cgi.service;
 
 import com.alibaba.fastjson.JSON;
+import com.facishare.document.preview.api.model.arg.GetPageInfoArg;
+import com.facishare.document.preview.api.model.result.GetPageInfoResult;
+import com.facishare.document.preview.api.service.DocConvertService;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
-import com.facishare.document.preview.cgi.model.PageInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfoEx;
-import com.facishare.document.preview.cgi.utils.DocPageInfoHelper;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
-import com.facishare.document.preview.cgi.utils.PathHelper;
-import com.facishare.document.preview.cgi.utils.SampleUUID;
+import com.facishare.document.preview.common.utils.PathHelper;
+import com.facishare.document.preview.common.utils.SampleUUID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -29,6 +30,8 @@ public class PreviewService {
     FileStorageProxy fileStorageProxy;
     @Autowired
     PreviewInfoDao previewInfoDao;
+    @Autowired
+    DocConvertService docConvertService;
 
     /**
      * 手机预览
@@ -40,7 +43,7 @@ public class PreviewService {
      * @throws Exception
      */
     public PreviewInfoEx getPreviewInfo(EmployeeInfo employeeInfo, String path, String securityGroup) throws Exception {
-        log.info("employeeInfo:{},path:{},securityGroup:{}",JSON.toJSONString(employeeInfo),path,securityGroup);
+        log.info("employeeInfo:{},path:{},securityGroup:{}", JSON.toJSONString(employeeInfo), path, securityGroup);
         String ea = employeeInfo.getEa();
         int employeeId = employeeInfo.getEmployeeId();
         PreviewInfoEx previewInfoEx = new PreviewInfoEx();
@@ -57,17 +60,18 @@ public class PreviewService {
                     String filePath = FilenameUtils.concat(dataDir, fileName);
                     //下载下来保存便于文档转换方便 // TODO: 2016/11/10 当所有的页码都转码完毕后需要删除.
                     FileUtils.writeByteArrayToFile(new File(filePath), bytes);
-                    PageInfo pageInfo = DocPageInfoHelper.GetPageInfo(bytes, filePath);
-                    if (pageInfo.isSuccess()) {
-                        pageCount = pageInfo.getPageCount();
-                        sheetNames = pageInfo.getSheetNames();
+                    GetPageInfoArg getPageInfoArg = GetPageInfoArg.builder().filePath(filePath).build();
+                    GetPageInfoResult getPageInfoResult = docConvertService.getPageInfo(getPageInfoArg);
+                    if (getPageInfoResult.isSuccess()) {
+                        pageCount = getPageInfoResult.getPageCount();
+                        sheetNames = getPageInfoResult.getSheetNames();
                         previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, path, filePath, dataDir, bytes.length, pageCount, sheetNames);
                         previewInfoEx.setSuccess(true);
                         previewInfoEx.setPreviewInfo(previewInfo);
                     } else {
                         previewInfoEx.setSuccess(false);
                         previewInfoEx.setPreviewInfo(null);
-                        previewInfoEx.setErrorMsg(pageInfo.getErrorMsg());
+                        previewInfoEx.setErrorMsg(getPageInfoResult.getErrorMsg());
                     }
                 }
             } else {

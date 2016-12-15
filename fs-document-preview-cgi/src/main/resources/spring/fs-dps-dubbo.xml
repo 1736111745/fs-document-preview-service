@@ -4,7 +4,11 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
-    <dubbo:registry address="${dubbo.registry.address}" />
-    <dubbo:application name="fs-dps" />
-    <dubbo:reference id="assService" interface="com.facishare.asm.api.service.ActiveSessionAuthorizeService" protocol="dubbo"/>
+    <dubbo:registry address="${dubbo.registry.address}"/>
+    <dubbo:application name="fs-dps"/>
+    <dubbo:reference id="assService" interface="com.facishare.asm.api.service.ActiveSessionAuthorizeService"
+                     protocol="dubbo" retries="0" timeout="50000" version="1.0"/>
+    <dubbo:reference id="docConvertService" interface="com.facishare.document.preview.api.service.DocConvertService"
+                     protocol="dubbo" retries="0" timeout="50000" version="1.0"/>
+
 </beans>

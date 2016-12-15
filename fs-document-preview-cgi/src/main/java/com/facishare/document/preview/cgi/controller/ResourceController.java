@@ -109,7 +109,7 @@ public class ResourceController {
         }
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         String svgFileName = FilenameUtils.getName(filePath);
-        String pngFilePath = FilenameUtils.concat(FilenameUtils.getBaseName(filePath), getFileNameNoEx(svgFileName) + ".png");
+        String pngFilePath = FilenameUtils.concat(FilenameUtils.getFullPathNoEndSeparator(filePath), getFileNameNoEx(svgFileName) + ".png");
         File pngFile = new File(pngFilePath);
         if (!pngFile.exists()) {
             ImageHandler.convertSvgToPng(filePath, pngFilePath);
@@ -136,7 +136,7 @@ public class ResourceController {
             int fixedWidth = 800;
             int fixedHeight = fixedWidth * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
             String pngFileName = FilenameUtils.getName(filePath);
-            String pngFixedFilePath = FilenameUtils.concat(FilenameUtils.getFullPath(filePath), getFileNameNoEx(pngFileName) + "fixed.png");
+            String pngFixedFilePath = FilenameUtils.concat(FilenameUtils.getFullPathNoEndSeparator(filePath), getFileNameNoEx(pngFileName) + "fixed.png");
             File pngFixedFile = new File(pngFixedFilePath);
             if (!pngFixedFile.exists()) {
                 Thumbnails.of(filePath).forceSize(fixedWidth, fixedHeight).outputQuality(0.8).outputFormat("png").toFile(pngFixedFile);

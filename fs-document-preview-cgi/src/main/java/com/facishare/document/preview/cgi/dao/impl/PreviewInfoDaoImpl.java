@@ -39,13 +39,11 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
             Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
             query.criteria("path").equal(path).criteria("ea").equal(ea);
             PreviewInfo previewInfo = query.get();
-            //log.info("dataFileName:{},current previewInfo:{}", dataFileName, JSON.toJSON(previewInfo));
             List<String> filePathList = previewInfo.getFilePathList();
             if (filePathList == null)
                 filePathList = Lists.newArrayList();
             filePathList.add(dataFileName);
-            filePathList = filePathList.stream().sorted((o1, o2) -> NumberUtils.toInt(getFileNameNoEx(o1)) - NumberUtils.toInt(getFileNameNoEx(o2))).collect(Collectors.toList());
-            //log.info("dataFileName:{},filePathList:{}", dataFileName, JSON.toJSON(filePathList));
+            filePathList = filePathList.stream().sorted((o1, o2) -> NumberUtils.toInt(FilenameUtils.getBaseName(o1)) - NumberUtils.toInt(FilenameUtils.getBaseName(o2))).collect(Collectors.toList());
             UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
             update.set("filePathList", filePathList);
             dpsDataStore.findAndModify(query, update);
@@ -123,15 +121,5 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("path").equal(path).criteria("ea").equal(ea);
         return query.get();
-    }
-
-    private String getFileNameNoEx(String filename) {
-        if ((filename != null) && (filename.length() > 0)) {
-            int dot = filename.lastIndexOf('.');
-            if ((dot > -1) && (dot < (filename.length()))) {
-                return filename.substring(0, dot);
-            }
-        }
-        return filename;
     }
 }

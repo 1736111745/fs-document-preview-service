@@ -10,13 +10,13 @@ import com.facishare.document.preview.cgi.model.*;
 import com.facishare.document.preview.cgi.service.PreviewService;
 import com.facishare.document.preview.cgi.utils.DocPageInfoHelper;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
+import com.facishare.document.preview.common.utils.DocTypeHelper;
+import com.fxiaoke.metrics.CounterService;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -52,6 +52,8 @@ public class PreviewController {
     DocConvertService docConvertService;
     @Autowired
     private PreviewService previewService;
+    @Autowired
+    private CounterService counterService;
 
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
@@ -61,6 +63,7 @@ public class PreviewController {
     public WebAsyncTask<String> getPreviewInfo(HttpServletRequest request) throws Exception {
         Callable<String> callable = () ->
         {
+            counterService.inc("com.facishare.fsc.core.repository.impl.FileRepositoryImpl.getByPathCompatibleChunk.getAvatar0.fail");
             String path = safteGetRequestParameter(request, "path");
             String token = safteGetRequestParameter(request, "token");
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
@@ -107,6 +110,8 @@ public class PreviewController {
             if (!isValidPath(path)) {
                 return handModelAndView("");
             }
+            String docType = DocTypeHelper.getDocType(path).getName();
+            counterService.inc("docType." + docType);
             String page = safteGetRequestParameter(request, "page");
             String securityGroup = safteGetRequestParameter(request, "sg");
             int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);

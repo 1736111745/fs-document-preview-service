@@ -5,6 +5,7 @@ import com.facishare.document.preview.api.service.DocConvertService;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.utils.MimeTypeHelper;
 import com.fxiaoke.common.image.SimpleImageInfo;
+import com.fxiaoke.metrics.CounterService;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.FileUtils;

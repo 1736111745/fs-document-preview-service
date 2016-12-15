@@ -27,6 +27,12 @@
             src="<%=request.getContextPath()%>/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
     <script type="application/javascript"
             src="<%=request.getContextPath()%>/static/js/excel.js?v=<%=request.getAttribute("sv")%>"></script>
+    <style type="text/css">
+        .tab-content {
+            margin-top: 50px;
+            margin-bottom: 40px;
+        }
+    </style>
 </head>
 <body>
 <div class="navbar navbar-inverse navbar-fixed-top">

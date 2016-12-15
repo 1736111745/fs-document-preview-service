@@ -20,20 +20,25 @@ public class ConvertorHelper {
         ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
         try {
             IPICConvertor ipicConvertor = convertobj.convertor.convertMStoPic(filePath);
-            int resultCode = ipicConvertor.resultCode();
-            if (resultCode == 0) {
-                String fileName = (page1 + 1) + ".svg";
-                String svgFilePath = FilenameUtils.concat(baseDir, fileName);
-                ipicConvertor.convertToSVG(page1, page2, 1.0f, baseDir);
-                ipicConvertor.close();
-                File file = new File(svgFilePath);
-                if (file.exists()) {
-                    return svgFilePath;
+            if (ipicConvertor == null) {
+                int resultCode = ipicConvertor.resultCode();
+                if (resultCode == 0) {
+                    String fileName = (page1 + 1) + ".svg";
+                    String svgFilePath = FilenameUtils.concat(baseDir, fileName);
+                    ipicConvertor.convertToSVG(page1, page2, 1.0f, baseDir);
+                    ipicConvertor.close();
+                    File file = new File(svgFilePath);
+                    if (file.exists()) {
+                        return svgFilePath;
+                    } else {
+                        return "";
+                    }
                 } else {
+                    log.warn("filePath:{},resultCode:{}", filePath, resultCode);
                     return "";
                 }
             } else {
-                log.warn("filePath:{},resultCode:{}", filePath, resultCode);
+                log.warn("converter is null");
                 return "";
             }
         } catch (Exception e) {

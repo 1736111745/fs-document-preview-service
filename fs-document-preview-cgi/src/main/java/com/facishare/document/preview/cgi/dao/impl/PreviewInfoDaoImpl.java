@@ -97,22 +97,24 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     @Override
     public PreviewInfo initPreviewInfo(String ea, int employeeId, String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames) {
         PreviewInfo previewInfo = new PreviewInfo();
-        previewInfo.setDocSize(docSize);
-        previewInfo.setDirName(FilenameUtils.getBaseName(dataDir));
-        previewInfo.setCreateTime(new Date());
-        int yyyyMMdd = DateUtil.getFormatDateInt("yyyyMMdd");
-        previewInfo.setCreateYYMMDD(yyyyMMdd);
-        previewInfo.setEa(ea);
-        previewInfo.setEmployeeId(employeeId);
-        previewInfo.setDataDir(dataDir);
-        previewInfo.setPath(path);
-        previewInfo.setSheetNames(sheetNames);
-        previewInfo.setPageCount(pageCount);
-        previewInfo.setOriginalFilePath(originalFilePath);
-        List<String> filePathList = new ArrayList<>();
-        previewInfo.setFilePathList(filePathList);
-        dpsDataStore.insert("PreviewInfo", previewInfo);
-        dpsDataStore.ensureIndexes();
+        synchronized (this) {
+            previewInfo.setDocSize(docSize);
+            previewInfo.setDirName(FilenameUtils.getBaseName(dataDir));
+            previewInfo.setCreateTime(new Date());
+            int yyyyMMdd = DateUtil.getFormatDateInt("yyyyMMdd");
+            previewInfo.setCreateYYMMDD(yyyyMMdd);
+            previewInfo.setEa(ea);
+            previewInfo.setEmployeeId(employeeId);
+            previewInfo.setDataDir(dataDir);
+            previewInfo.setPath(path);
+            previewInfo.setSheetNames(sheetNames);
+            previewInfo.setPageCount(pageCount);
+            previewInfo.setOriginalFilePath(originalFilePath);
+            List<String> filePathList = new ArrayList<>();
+            previewInfo.setFilePathList(filePathList);
+            dpsDataStore.insert("PreviewInfo", previewInfo);
+            dpsDataStore.ensureIndexes();
+        }
         return previewInfo;
     }
 

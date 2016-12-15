@@ -63,7 +63,7 @@ public class PreviewController {
     public WebAsyncTask<String> getPreviewInfo(HttpServletRequest request) throws Exception {
         Callable<String> callable = () ->
         {
-            counterService.inc("com.facishare.fsc.core.repository.impl.FileRepositoryImpl.getByPathCompatibleChunk.getAvatar0.fail");
+
             String path = safteGetRequestParameter(request, "path");
             String token = safteGetRequestParameter(request, "token");
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
@@ -88,6 +88,8 @@ public class PreviewController {
                 return getPreviewInfoResult(false, 0, null, "", "", "该文件不支持预览!");
             }
             String defaultErrMsg = "该文件不可以预览!";
+            String docType = DocTypeHelper.getDocType(path).getName();
+            counterService.inc("docType." + docType);
             PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
             if (previewInfoEx.isSuccess()) {
                 PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
@@ -110,8 +112,6 @@ public class PreviewController {
             if (!isValidPath(path)) {
                 return handModelAndView("");
             }
-            String docType = DocTypeHelper.getDocType(path).getName();
-            counterService.inc("docType." + docType);
             String page = safteGetRequestParameter(request, "page");
             String securityGroup = safteGetRequestParameter(request, "sg");
             int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);

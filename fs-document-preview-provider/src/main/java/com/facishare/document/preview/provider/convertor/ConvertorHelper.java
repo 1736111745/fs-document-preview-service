@@ -20,7 +20,7 @@ public class ConvertorHelper {
         ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
         try {
             IPICConvertor ipicConvertor = convertobj.convertor.convertMStoPic(filePath);
-            if (ipicConvertor == null) {
+            if (ipicConvertor != null) {
                 int resultCode = ipicConvertor.resultCode();
                 if (resultCode == 0) {
                     String fileName = (page1 + 1) + ".svg";

@@ -19,14 +19,16 @@
             <aop:around method="profile" pointcut="execution(* com.facishare.document.preview.cgi..*(..))"/>
         </aop:aspect>
     </aop:config>
+    <import resource="classpath:spring/spring-cms.xml"/>
+    <import resource="classpath:spring/spring-scheduler.xml"/>
+    <import resource="fs-fileproxy.xml"/>
+    <import resource="classpath:spring/fs-dps-dubbo.xml"/>
+    <bean class="com.fxiaoke.metrics.MetricsConfiguration"/>
+
     <bean id="fileProxy" class="com.facishare.document.preview.cgi.utils.FileStorageProxy"/>
     <bean id="previewInfoDao" class="com.facishare.document.preview.cgi.dao.impl.PreviewInfoDaoImpl"/>
     <bean id="fileTokenDao" class="com.facishare.document.preview.cgi.dao.impl.FileTokenDaoImpl"/>
     <bean id="authFilter" class="com.facishare.document.preview.cgi.filter.AuthFilter"/>
     <bean id="authHelper" class="com.facishare.document.preview.cgi.utils.AuthHelper"/>
     <bean id="docConvertor" class="com.facishare.document.preview.cgi.convertor.DocConvertor"/>
-    <import resource="classpath:spring/spring-cms.xml"/>
-    <import resource="fs-fileproxy.xml"/>
-    <import resource="classpath:spring/fs-dps-dubbo.xml"/>
-    <bean class="com.fxiaoke.metrics.MetricsConfiguration"/>
 </beans>

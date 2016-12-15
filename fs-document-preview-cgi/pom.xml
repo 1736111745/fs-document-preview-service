@@ -311,11 +311,6 @@
             <artifactId>batik-transcoder</artifactId>
             <version>1.0.0</version>
         </dependency>
-        <dependency>
-            <groupId>batik-util</groupId>
-            <artifactId>batik-util</artifactId>
-            <version>1.0.0</version>
-        </dependency>
     </dependencies>
     <build>
         <plugins>

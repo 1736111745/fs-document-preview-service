@@ -1,12 +1,12 @@
 package com.facishare.document.preview.cgi.controller;
 
+import com.facishare.document.preview.api.model.arg.ConvertSvg2PngArg;
+import com.facishare.document.preview.api.service.DocConvertService;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
-import com.facishare.document.preview.cgi.utils.ImageHandler;
 import com.facishare.document.preview.common.utils.MimeTypeHelper;
 import com.fxiaoke.common.image.SimpleImageInfo;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
-import org.apache.batik.transcoder.TranscoderException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -32,6 +32,8 @@ import java.io.OutputStream;
 public class ResourceController {
     @Autowired
     PreviewInfoDao previewInfoDao;
+    @Autowired
+    DocConvertService docConvertService;
 
     @RequestMapping("/preview/js/{fileName:.+}")
     public String getStatic(@PathVariable String fileName) throws IOException {
@@ -102,7 +104,7 @@ public class ResourceController {
         return FileUtils.readFileToByteArray(new File(filePath));
     }
 
-    private byte[] handleSvg(String filePath, int width, HttpServletResponse response) throws IOException, TranscoderException {
+    private byte[] handleSvg(String filePath, int width, HttpServletResponse response) throws IOException {
         if (width == 0) {
             response.setContentType("image/svg+xml");
             return FileUtils.readFileToByteArray(new File(filePath));
@@ -112,8 +114,8 @@ public class ResourceController {
         String pngFilePath = FilenameUtils.concat(FilenameUtils.getFullPathNoEndSeparator(filePath), getFileNameNoEx(svgFileName) + ".png");
         File pngFile = new File(pngFilePath);
         if (!pngFile.exists()) {
-            log.info("begin convert svg to png,svgFilePath:{},pngFilePath:{}", filePath, pngFilePath);
-            ImageHandler.convertSvgToPng(filePath, pngFilePath);
+            ConvertSvg2PngArg svg2PngArg = ConvertSvg2PngArg.builder().svgFilePath(filePath).pngFilePath(pngFilePath).build();
+            docConvertService.convertSvg2Png(svg2PngArg);
         }
         //缩略
         SimpleImageInfo simpleImageInfo = new SimpleImageInfo(pngFile);
@@ -124,7 +126,7 @@ public class ResourceController {
     }
 
 
-    private byte[] handlePng(String filePath, int width, HttpServletResponse response) throws IOException, TranscoderException {
+    private byte[] handlePng(String filePath, int width, HttpServletResponse response) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         //缩略:如果制定大小就从原图中缩略到指定大小，如果不指定大小生成固定大小给手机预览使用
         SimpleImageInfo simpleImageInfo = new SimpleImageInfo(new File(filePath));

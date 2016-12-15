@@ -40,7 +40,6 @@ public class ImageHandler {
             throws TranscoderException, IOException {
         StopWatch stopWatch=new StopWatch();
         stopWatch.start();
-        log.info("begin convert svg to png,svgFilePath:{},pngFilePath:{}", svgFilePath, pngFilePath);
         InputStream inputStream = new FileInputStream(svgFilePath);
         OutputStream outputStream = new FileOutputStream(pngFilePath);
         try {

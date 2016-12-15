@@ -112,6 +112,7 @@ public class ResourceController {
         String pngFilePath = FilenameUtils.concat(FilenameUtils.getFullPathNoEndSeparator(filePath), getFileNameNoEx(svgFileName) + ".png");
         File pngFile = new File(pngFilePath);
         if (!pngFile.exists()) {
+            log.info("begin convert svg to png,svgFilePath:{},pngFilePath:{}", filePath, pngFilePath);
             ImageHandler.convertSvgToPng(filePath, pngFilePath);
         }
         //缩略

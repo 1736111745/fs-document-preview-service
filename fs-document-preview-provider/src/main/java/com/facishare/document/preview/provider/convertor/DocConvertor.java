@@ -26,7 +26,7 @@ public class DocConvertor {
             log.error("do convert happened,path:{}", path, e);
         } finally {
             stopWatch.stop();
-            log.info("convert file:{},page:{},result:{},cost:{}", path, page, stopWatch.getTime() + "ms", result);
+            log.info("convert file:{},page:{},result:{},cost:{}", path, page, result,stopWatch.getTime() + "ms");
             return result;
         }
     }

@@ -13,9 +13,8 @@ import org.springframework.stereotype.Component;
 public class DocConvertor {
     public String doConvert(String path, String originalFilePath, int page) throws Exception {
         StopWatch stopWatch = new StopWatch();
-        String baseDir = FilenameUtils.getFullPathNoEndSeparator(originalFilePath);
-        log.info("begin convert file:{},page:{}", path, page);
         stopWatch.start();
+        String baseDir = FilenameUtils.getFullPathNoEndSeparator(originalFilePath);
         IDocConvertor docConvertor = getDocConvert(path);
         if (docConvertor == null) {
             return "";
@@ -23,13 +22,12 @@ public class DocConvertor {
         String result = "";
         try {
             result = docConvertor.convert(page, page, originalFilePath, baseDir);
-            return result;
         } catch (Exception e) {
-            log.error("do convert happened error:{}", e);
-            return "";
+            log.error("do convert happened,path:{}", path, e);
         } finally {
             stopWatch.stop();
-            log.info("convert file:{},page:{},cost:{},result:{}", path, page, result, stopWatch.getTime() + "ms");
+            log.info("convert file:{},page:{},result:{},cost:{}", path, page, stopWatch.getTime() + "ms", result);
+            return result;
         }
     }
 

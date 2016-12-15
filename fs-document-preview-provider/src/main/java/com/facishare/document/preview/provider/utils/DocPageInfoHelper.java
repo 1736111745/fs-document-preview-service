@@ -6,6 +6,7 @@ import com.facishare.document.preview.common.utils.DocType;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.facishare.document.preview.provider.convertor.ConvertorPool;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.POIXMLDocument;
@@ -28,19 +29,29 @@ import java.util.List;
  */
 @Slf4j
 public class DocPageInfoHelper {
-    public static PageInfo GetPageInfo(byte[] data, String filePath) throws Exception {
-        DocType docType = DocTypeHelper.getDocType(filePath);
-        switch (docType) {
-            case Word:
-                return parseWordAndPPT(filePath);
-            case Excel:
-                return parseExcel(data, filePath);
-            case PPT:
-                return parseWordAndPPT(filePath);
-            case PDF:
-                return parsePDF(data, filePath);
-            default:
-                return new PageInfo();
+    public static PageInfo GetPageInfo(byte[] data, String filePath) {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        log.info("begin get page count,filePath:{}", filePath);
+        try {
+            DocType docType = DocTypeHelper.getDocType(filePath);
+            switch (docType) {
+                case Word:
+                    return parseWordAndPPT(filePath);
+                case Excel:
+                    return parseExcel(data, filePath);
+                case PPT:
+                    return parseWordAndPPT(filePath);
+                case PDF:
+                    return parsePDF(data, filePath);
+                default:
+                    return new PageInfo();
+            }
+        } catch (Exception e) {
+            return new PageInfo();
+        } finally {
+            stopWatch.stop();
+            log.info("get page count done,filePath:{},cost:{}", filePath, stopWatch.getTime() + "ms");
         }
     }
 

@@ -7,8 +7,8 @@
     <dubbo:registry address="${dubbo.registry.address}"/>
     <dubbo:application name="fs-dps"/>
     <dubbo:reference id="assService" interface="com.facishare.asm.api.service.ActiveSessionAuthorizeService"
-                     protocol="dubbo" retries="0" timeout="50000" version="1.0"/>
+                     protocol="dubbo" retries="0" timeout="50000"/>
     <dubbo:reference id="docConvertService" interface="com.facishare.document.preview.api.service.DocConvertService"
-                     protocol="dubbo" retries="0" timeout="50000" version="1.0"/>
+                     protocol="dubbo" retries="0" timeout="50000"/>
 
 </beans>

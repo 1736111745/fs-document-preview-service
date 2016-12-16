@@ -10,5 +10,6 @@
                      protocol="dubbo" retries="0" timeout="50000"/>
     <dubbo:reference id="docConvertService" interface="com.facishare.document.preview.api.service.DocConvertService"
                      protocol="dubbo" retries="0" timeout="50000"/>
+    <dubbo:consumer filter="tracerpc"/>
 
 </beans>

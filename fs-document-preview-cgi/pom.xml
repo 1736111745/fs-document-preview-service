@@ -311,6 +311,11 @@
             <artifactId>batik-transcoder</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.colin-lee</groupId>
+            <artifactId>core-filter</artifactId>
+            <version>1.1.2</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

@@ -38,7 +38,7 @@ public class ConvertorPool {
 
     private static ConvertorPool instance = null;
     private List<ConvertorObject> pool = new ArrayList();
-    private static final int maxSize = 16;
+    private static final int maxSize = 32;
     private int availSize = 0;
     private int current = 0;
 
@@ -107,7 +107,7 @@ public class ConvertorPool {
         convert.setEmptyCount(100, 200);
         convert.setHtmlEncoding("UTF-8");
         convert.setConvertForPhone(true);
-        convert.setTimeout(30);
+        convert.setTimeout(20);
         return convert;
     }
 

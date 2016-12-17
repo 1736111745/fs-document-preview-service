@@ -9,6 +9,6 @@
     <dubbo:protocol name="dubbo" port="28100" payload="16777216"/>
     <dubbo:registry address="${dubbo.registry.address}"/>
     <dubbo:service interface="com.facishare.document.preview.api.service.DocConvertService" ref="docConvertService"
-                   protocol="dubbo"  timeout="60000"/>
+                   protocol="dubbo"  timeout="30000"/>
     <dubbo:provider threadpool="cached" threads="300" queues="50" filter="tracerpc"/>
 </beans>

@@ -102,17 +102,17 @@ public class PreviewController {
     @RequestMapping(value = "/preview/getFilePath")
     public void getFilePath(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String path = safteGetRequestParameter(request, "path");
+        String page = safteGetRequestParameter(request, "page");
+        String securityGroup = safteGetRequestParameter(request, "sg");
         if (!isValidPath(path)) {
             response.setStatus(400);
             return;
         }
         try {
-            String page = safteGetRequestParameter(request, "page");
-            String securityGroup = safteGetRequestParameter(request, "sg");
             int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
-            log.info("begin get previewInfo,path:{},pageIndex:{},previewInfoEx:{}", path, pageIndex, previewInfoEx);
+            //log.info("begin get previewInfo,path:{},pageIndex:{},previewInfoEx:{}", path, pageIndex, previewInfoEx);
             if (previewInfoEx.isSuccess()) {
                 PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
                 if (previewInfo != null) {
@@ -122,9 +122,9 @@ public class PreviewController {
                     } else {
                         String originalFilePath = previewInfo.getOriginalFilePath();
                         ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
-                        log.info("begin do convert,arg:{}", convertDocArg);
+                        //log.info("begin do convert,arg:{}", convertDocArg);
                         ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
-                        log.info("end do convert,result:{}", convertDocResult);
+                        //log.info("end do convert,result:{}", convertDocResult);
                         dataFilePath = convertDocResult.getDataFilePath();
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
                             previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
@@ -143,7 +143,7 @@ public class PreviewController {
                 response.setStatus(404);
             }
         } catch (Exception e) {
-            log.error("can't resolve path:{},page:{}", path, e);
+            log.error("can't resolve path:{},page:{}", path,page,e);
             response.setStatus(404);
         }
     }
@@ -199,12 +199,12 @@ public class PreviewController {
     @RequestMapping(value = "/preview/DocPageByPath", method = RequestMethod.GET)
     public void docPageByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String path = RequestParamsHelper.safteGetRequestParameter(request, "npath") == "" ? RequestParamsHelper.safteGetRequestParameter(request, "path") : RequestParamsHelper.safteGetRequestParameter(request, "npath");
+        int pageIndex = NumberUtils.toInt(safteGetRequestParameter(request, "pageIndex"), 0);
         if (!isValidPath(path)) {
             response.setStatus(400);
             return;
         }
         try {
-            int pageIndex = NumberUtils.toInt(safteGetRequestParameter(request, "pageIndex"), 0);
             int width = NumberUtils.toInt(safteGetRequestParameter(request, "width"), 1024);
             width = width > 1920 ? 1920 : width;
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
@@ -238,7 +238,7 @@ public class PreviewController {
                 response.setStatus(404);
             }
         } catch (Exception e) {
-            log.warn("can't get previewInfo,path:{},pageIndex:{}", path, e);
+            log.warn("can't get previewInfo,path:{},pageIndex:{}", path,pageIndex,e);
             response.setStatus(404);
         }
     }

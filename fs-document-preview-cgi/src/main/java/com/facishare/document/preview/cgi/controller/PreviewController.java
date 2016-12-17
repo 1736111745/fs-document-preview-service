@@ -111,7 +111,7 @@ public class PreviewController {
         int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
-        log.info("begin get previewInfo,path:{},pageIndex:{},previewInfoEx:{}",path,pageIndex,previewInfoEx);
+        log.info("begin get previewInfo,path:{},pageIndex:{},previewInfoEx:{}", path, pageIndex, previewInfoEx);
         if (previewInfoEx.isSuccess()) {
             PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
             if (previewInfo != null) {
@@ -121,9 +121,9 @@ public class PreviewController {
                 } else {
                     String originalFilePath = previewInfo.getOriginalFilePath();
                     ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
-                    log.info("begin do convert,arg:{}",convertDocArg);
+                    log.info("begin do convert,arg:{}", convertDocArg);
                     ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
-                    log.info("end do convert,result:{}",convertDocResult);
+                    log.info("end do convert,result:{}", convertDocResult);
                     dataFilePath = convertDocResult.getDataFilePath();
                     if (!Strings.isNullOrEmpty(dataFilePath)) {
                         fileOutPutor.outPut(response, dataFilePath);
@@ -136,9 +136,10 @@ public class PreviewController {
                 log.warn("can't resolve path:{},page:{}", path, page);
                 response.setStatus(404);
             }
-        } else
+        } else {
             log.warn("can't resolve path:{},page:{}", path, page);
-        response.setStatus(404);
+            response.setStatus(404);
+        }
     }
 
     @ResponseBody

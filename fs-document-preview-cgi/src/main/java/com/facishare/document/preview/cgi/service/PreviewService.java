@@ -1,6 +1,5 @@
 package com.facishare.document.preview.cgi.service;
 
-import com.alibaba.fastjson.JSON;
 import com.facishare.document.preview.api.model.arg.GetPageInfoArg;
 import com.facishare.document.preview.api.model.result.GetPageInfoResult;
 import com.facishare.document.preview.api.service.DocConvertService;
@@ -61,7 +60,9 @@ public class PreviewService {
                     //下载下来保存便于文档转换方便 // TODO: 2016/11/10 当所有的页码都转码完毕后需要删除.
                     FileUtils.writeByteArrayToFile(new File(filePath), bytes);
                     GetPageInfoArg getPageInfoArg = GetPageInfoArg.builder().filePath(filePath).build();
+                    log.info("begin get page count,arg:{}",getPageInfoArg);
                     GetPageInfoResult getPageInfoResult = docConvertService.getPageInfo(getPageInfoArg);
+                    log.info("end get page count,result:{}",getPageInfoResult);
                     if (getPageInfoResult.isSuccess()) {
                         pageCount = getPageInfoResult.getPageCount();
                         sheetNames = getPageInfoResult.getSheetNames();

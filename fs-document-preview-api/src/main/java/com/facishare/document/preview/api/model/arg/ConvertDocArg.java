@@ -5,6 +5,7 @@ import com.github.trace.annotation.RpcParameterToString;
 import io.protostuff.Tag;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * Created by liuq on 2016/12/14.
@@ -12,6 +13,7 @@ import lombok.Data;
 @Data
 @Builder
 @RpcParameterToString
+@ToString
 public class ConvertDocArg extends ProtoBase {
     @Tag(1)
     private String path;

@@ -77,9 +77,9 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         }
         String filePath = "";
         if (!Strings.isNullOrEmpty(dataFileName)) {
-            filePath = FilenameUtils.concat(previewInfo.getDirName(), dataFileName);
+            filePath = FilenameUtils.concat(previewInfo.getDataDir(), dataFileName);
         }
-        dataFileInfo.setShortFilePath(filePath);
+        dataFileInfo.set(filePath);
         return dataFileInfo;
     }
 

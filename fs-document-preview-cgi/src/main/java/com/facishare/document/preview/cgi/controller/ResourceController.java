@@ -26,6 +26,7 @@ public class ResourceController {
     PreviewInfoDao previewInfoDao;
     @Autowired
     FileOutPutor fileOutPutor;
+
     @RequestMapping("/preview/js/{fileName:.+}")
     public String getStatic(@PathVariable String fileName) throws IOException {
         return "redirect:/static/common/" + fileName;
@@ -37,15 +38,5 @@ public class ResourceController {
         String filePath = baseDir + "/js/" + fileName;
         response.setHeader("Cache- Control", "max-age=315360000"); // HTTP/1.1
         fileOutPutor.outPut(response, filePath, 0);
-    }
-
-    @RequestMapping("/preview/{folder}/{fileName:.+}")
-    public void getStatic(@PathVariable String folder, @PathVariable String fileName, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String width = RequestParamsHelper.safteGetRequestParameter(request, "width");
-        int intWidth = NumberUtils.toInt(width, 0);
-        String baseDir = previewInfoDao.getBaseDir(folder);
-        String filePath = baseDir + "/" + fileName;
-        response.setHeader("Cache-Control", "max-age=315360000"); // HTTP/1.1
-        fileOutPutor.outPut(response, filePath, intWidth);
     }
 }

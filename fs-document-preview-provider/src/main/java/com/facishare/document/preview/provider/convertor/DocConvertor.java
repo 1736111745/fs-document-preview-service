@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class DocConvertor {
     public String doConvert(String path, String originalFilePath, int page) throws Exception {
-        log.info("begin convert file:{},path:{},page:{}",originalFilePath,path,page);
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         String baseDir = FilenameUtils.getFullPathNoEndSeparator(originalFilePath);

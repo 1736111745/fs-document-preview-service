@@ -9,7 +9,9 @@ import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.*;
 import com.facishare.document.preview.cgi.service.PreviewService;
 import com.facishare.document.preview.cgi.utils.DocPageInfoHelper;
+import com.facishare.document.preview.cgi.utils.FileOutPutor;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
+import com.facishare.document.preview.cgi.utils.RequestParamsHelper;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.fxiaoke.metrics.CounterService;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
@@ -54,93 +56,91 @@ public class PreviewController {
     private PreviewService previewService;
     @Autowired
     private CounterService counterService;
-
+    @Autowired
+    private FileOutPutor fileOutPutor;
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
 
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public WebAsyncTask<String> getPreviewInfo(HttpServletRequest request) throws Exception {
-        Callable<String> callable = () ->
-        {
-
-            String path = safteGetRequestParameter(request, "path");
-            String token = safteGetRequestParameter(request, "token");
-            EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-            String securityGroup = "";
-            if (path.equals("") && token.equals("")) {
-                return getPreviewInfoResult(false, 0, null, "", "", "参数错误!");
-            }
-            if (!token.equals("")) {
-                DownloadFileTokens fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
-                if (fileToken != null && fileToken.getFileType().toLowerCase().equals("preview")) {
-                    {
-                        path = Strings.isNullOrEmpty(fileToken.getFilePath()) ? "" : fileToken.getFilePath().trim();
-                        securityGroup = Strings.isNullOrEmpty(fileToken.getDownloadSecurityGroup()) ? "" : fileToken.getDownloadSecurityGroup().trim();
-                    }
+    public String getPreviewInfo(HttpServletRequest request) throws Exception {
+        String path = safteGetRequestParameter(request, "path");
+        String token = safteGetRequestParameter(request, "token");
+        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+        String securityGroup = "";
+        if (path.equals("") && token.equals("")) {
+            return getPreviewInfoResult(false, 0, null, "", "", "参数错误!");
+        }
+        if (!token.equals("")) {
+            DownloadFileTokens fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
+            if (fileToken != null && fileToken.getFileType().toLowerCase().equals("preview")) {
+                {
+                    path = Strings.isNullOrEmpty(fileToken.getFilePath()) ? "" : fileToken.getFilePath().trim();
+                    securityGroup = Strings.isNullOrEmpty(fileToken.getDownloadSecurityGroup()) ? "" : fileToken.getDownloadSecurityGroup().trim();
                 }
             }
-            if (!isValidPath(path)) {
-                return getPreviewInfoResult(false, 0, null, "", "", "参数错误!");
-            }
-            String extension = FilenameUtils.getExtension(path).toLowerCase();
-            if (allowPreviewExtension.indexOf(extension) == -1) {
-                return getPreviewInfoResult(false, 0, null, "", "", "该文件不支持预览!");
-            }
-            String defaultErrMsg = "该文件不可以预览!";
-            String docType = DocTypeHelper.getDocType(path).getName();
-            counterService.inc("docType." + docType);
-            PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
-            if (previewInfoEx.isSuccess()) {
-                PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
-                if (previewInfo == null || previewInfo.getPageCount() == 0) {
-                    return getPreviewInfoResult(false, 0, null, "", "", defaultErrMsg);
-                } else
-                    return getPreviewInfoResult(true, previewInfo.getPageCount(), previewInfo.getSheetNames(), path, securityGroup, "");
-            } else {
-                String errMsg = Strings.isNullOrEmpty(previewInfoEx.getErrorMsg()) ? defaultErrMsg : previewInfoEx.getErrorMsg();
-                return getPreviewInfoResult(false, 0, null, "", "", errMsg);
-            }
-        };
-        return new WebAsyncTask<>(1000 * 60, callable);
+        }
+        if (!isValidPath(path)) {
+            return getPreviewInfoResult(false, 0, null, "", "", "参数错误!");
+        }
+        String extension = FilenameUtils.getExtension(path).toLowerCase();
+        if (allowPreviewExtension.indexOf(extension) == -1) {
+            return getPreviewInfoResult(false, 0, null, "", "", "该文件不支持预览!");
+        }
+        String defaultErrMsg = "该文件不可以预览!";
+        String docType = DocTypeHelper.getDocType(path).getName();
+        counterService.inc("docType." + docType);
+        PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
+        if (previewInfoEx.isSuccess()) {
+            PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
+            if (previewInfo == null || previewInfo.getPageCount() == 0) {
+                return getPreviewInfoResult(false, 0, null, "", "", defaultErrMsg);
+            } else
+                return getPreviewInfoResult(true, previewInfo.getPageCount(), previewInfo.getSheetNames(), path, securityGroup, "");
+        } else {
+            String errMsg = Strings.isNullOrEmpty(previewInfoEx.getErrorMsg()) ? defaultErrMsg : previewInfoEx.getErrorMsg();
+            return getPreviewInfoResult(false, 0, null, "", "", errMsg);
+        }
     }
 
     @RequestMapping(value = "/preview/getFilePath")
-    public WebAsyncTask getFilePath(HttpServletRequest request) throws Exception {
-        Callable<ModelAndView> callable = () -> {
-            String path = safteGetRequestParameter(request, "path");
-            if (!isValidPath(path)) {
-                return handModelAndView("");
-            }
-            String page = safteGetRequestParameter(request, "page");
-            String securityGroup = safteGetRequestParameter(request, "sg");
-            int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
-            EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-            String ea = employeeInfo.getEa();
-            PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
-            if (previewInfoEx.isSuccess()) {
-                PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
-                if (previewInfo != null) {
-                    DataFileInfo dataFileInfo = previewInfoDao.getDataFileInfo(ea, path, pageIndex, previewInfo);
-                    if (!dataFileInfo.getShortFilePath().equals("")) {
-                        return handModelAndView(dataFileInfo.getShortFilePath());
-                    } else {
-                        String originalFilePath = dataFileInfo.getOriginalFilePath();
-                        ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
-                        ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
-                        String dataFilePath = convertDocResult.getDataFilePath();
-                        if (!Strings.isNullOrEmpty(dataFilePath)) {
-                            previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
-                        }
-                        return handModelAndView(dataFilePath);
-                    }
+    public void getFilePath(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String path = safteGetRequestParameter(request, "path");
+        if (!isValidPath(path)) {
+            response.setStatus(400);
+            return;
+        }
+        String page = safteGetRequestParameter(request, "page");
+        String securityGroup = safteGetRequestParameter(request, "sg");
+        int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
+        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+        String ea = employeeInfo.getEa();
+        PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
+        if (previewInfoEx.isSuccess()) {
+            PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
+            if (previewInfo != null) {
+                DataFileInfo dataFileInfo = previewInfoDao.getDataFileInfo(ea, path, pageIndex, previewInfo);
+                if (!dataFileInfo.getShortFilePath().equals("")) {
+                    fileOutPutor.outPut(response, dataFileInfo.getShortFilePath());
                 } else {
-                    return handModelAndView("");
+                    String originalFilePath = dataFileInfo.getOriginalFilePath();
+                    ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
+                    ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
+                    String dataFilePath = convertDocResult.getDataFilePath();
+                    if (!Strings.isNullOrEmpty(dataFilePath)) {
+                        fileOutPutor.outPut(response, dataFilePath);
+                    } else {
+                        log.warn("can't resolve path:{},page:{}", path, page);
+                        response.setStatus(404);
+                    }
                 }
-            } else
-                return handModelAndView("");
-        };
-        return new WebAsyncTask(1000 * 60, callable);
+            } else {
+                log.warn("can't resolve path:{},page:{}", path, page);
+                response.setStatus(404);
+            }
+        } else
+            log.warn("can't resolve path:{},page:{}", path, page);
+        response.setStatus(404);
     }
 
     @ResponseBody
@@ -166,86 +166,71 @@ public class PreviewController {
         return JSONObject.toJSONString(map);
     }
 
-    private ModelAndView handModelAndView(String dataFilePath) {
-        return handModelAndView(dataFilePath, 0);
-    }
-
-    private ModelAndView handModelAndView(String dataFilePath, int width) {
-        if (dataFilePath.length() > 0) {
-            String[] array = dataFilePath.split("/");
-            if (array.length == 2) {
-                return new ModelAndView("redirect:/preview/" + array[0] + "/" + array[1] + "?width=" + width);
-            } else
-                return new ModelAndView("redirect:/static/images/pixel.gif");
-        } else {
-            return new ModelAndView("redirect:/static/images/pixel.gif");
-        }
-    }
 
     @ResponseBody
     @RequestMapping(value = "/preview/DocPreviewByPath", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public WebAsyncTask<String> docPreviewByPath(HttpServletRequest request) throws Exception {
-        Callable<String> callable = () ->
-        {
-            int pageCount = 0;
-            EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-            String path = safteGetRequestParameter(request, "npath") == "" ? safteGetRequestParameter(request, "path") : safteGetRequestParameter(request, "path");
-            if (!isValidPath(path)) {
-                return "";
+    public String docPreviewByPath(HttpServletRequest request) throws Exception {
+        int pageCount = 0;
+        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+        String path = RequestParamsHelper.safteGetRequestParameter(request, "npath") == "" ? RequestParamsHelper.safteGetRequestParameter(request, "path") : RequestParamsHelper.safteGetRequestParameter(request, "path");
+        if (!isValidPath(path)) {
+            return getDocPreviewInfoResult(path,0);
+        }
+        String extension = FilenameUtils.getExtension(path).toLowerCase();
+        if (allowPreviewExtension.indexOf(extension) == -1) {
+            return getDocPreviewInfoResult(path,0);
+        }
+        PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, "");
+        if (previewInfoEx.isSuccess()) {
+            PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
+            if (previewInfo != null) {
+                pageCount = previewInfo.getPageCount();
             }
-            String extension = FilenameUtils.getExtension(path).toLowerCase();
-            if (allowPreviewExtension.indexOf(extension) == -1) {
-                return "";
-            }
-            PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, "");
-            if (previewInfoEx.isSuccess()) {
-                PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
-                if (previewInfo != null) {
-                    pageCount = previewInfo.getPageCount();
-                }
-            }
-            return getDocPreviewInfoResult(path, pageCount);
-        };
-        return new WebAsyncTask<>(1000 * 60, callable);
+        }
+        return getDocPreviewInfoResult(path, pageCount);
     }
 
     @ResponseBody
     @RequestMapping(value = "/preview/DocPageByPath", method = RequestMethod.GET)
-    public WebAsyncTask docPageByPath(HttpServletRequest request) throws Exception {
-        Callable<ModelAndView> callable = () -> {
-            String path = safteGetRequestParameter(request, "npath") == "" ? safteGetRequestParameter(request, "path") : safteGetRequestParameter(request, "npath");
-            if (!isValidPath(path)) {
-                return handModelAndView("");
-            }
-            int pageIndex = NumberUtils.toInt(safteGetRequestParameter(request, "pageIndex"), 0);
-            int width = NumberUtils.toInt(safteGetRequestParameter(request, "width"), 1024);
-            width = width > 1920 ? 1920 : width;
-            EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-            String ea = employeeInfo.getEa();
-            PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, "");
-            if (previewInfoEx.isSuccess()) {
-                PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
-                if (previewInfo != null) {
-                    DataFileInfo dataFileInfo = previewInfoDao.getDataFileInfo(ea, path, pageIndex, previewInfo);
-                    if (!dataFileInfo.getShortFilePath().equals("")) {
-                        return handModelAndView(dataFileInfo.getShortFilePath(), width);
-                    } else {
-                        String originalFilePath = dataFileInfo.getOriginalFilePath();
-                        ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
-                        ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
-                        String dataFilePath = convertDocResult.getDataFilePath();
-                        if (!Strings.isNullOrEmpty(dataFilePath)) {
-                            previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
-                        }
-                        return handModelAndView(dataFilePath, width);
-                    }
+    public void docPageByPath(HttpServletRequest request,HttpServletResponse response) throws Exception {
+        String path = RequestParamsHelper.safteGetRequestParameter(request, "npath") == "" ? RequestParamsHelper.safteGetRequestParameter(request, "path") : RequestParamsHelper.safteGetRequestParameter(request, "npath");
+        if (!isValidPath(path)) {
+            response.setStatus(400);
+            return;
+        }
+        int pageIndex = NumberUtils.toInt(safteGetRequestParameter(request, "pageIndex"), 0);
+        int width = NumberUtils.toInt(safteGetRequestParameter(request, "width"), 1024);
+        width = width > 1920 ? 1920 : width;
+        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+        String ea = employeeInfo.getEa();
+        PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, "");
+        if (previewInfoEx.isSuccess()) {
+            PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
+            if (previewInfo != null) {
+                DataFileInfo dataFileInfo = previewInfoDao.getDataFileInfo(ea, path, pageIndex, previewInfo);
+                if (!dataFileInfo.getShortFilePath().equals("")) {
+                    fileOutPutor.outPut(response, dataFileInfo.getShortFilePath(), width);
                 } else {
-                    return handModelAndView("");
+                    String originalFilePath = dataFileInfo.getOriginalFilePath();
+                    ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
+                    ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
+                    String dataFilePath = convertDocResult.getDataFilePath();
+                    if (!Strings.isNullOrEmpty(dataFilePath)) {
+                        previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
+                        fileOutPutor.outPut(response, dataFileInfo.getShortFilePath(), width);
+                    } else {
+                        log.warn("can't resolve path:{},page:{}", path, pageIndex);
+                        response.setStatus(404);
+                    }
                 }
-            } else
-                return handModelAndView("");
-        };
-        return new WebAsyncTask(1000 * 30, callable);
+            } else {
+                log.warn("can't resolve path:{},page:{}", path, pageIndex);
+                response.setStatus(404);
+            }
+        } else {
+            log.warn("can't get previewInfo,path:{},pageIndex:{}", path, pageIndex);
+            response.setStatus(404);
+        }
     }
 
     private String safteGetRequestParameter(HttpServletRequest request, String paramName) {
@@ -272,12 +257,6 @@ public class PreviewController {
         return JSONObject.toJSONString(docPageInfo);
     }
 
-    @ExceptionHandler
-    @ResponseBody
-    public void handleException(HttpServletResponse req, Exception e) {
-        log.error("error:", e);
-        req.setStatus(500);
-    }
 
     private boolean isValidPath(String path) {
         if (Strings.isNullOrEmpty(path))

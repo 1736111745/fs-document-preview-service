@@ -1,17 +1,13 @@
 package com.facishare.document.preview.provider.service;
 
 import com.facishare.document.preview.api.model.arg.ConvertDocArg;
-import com.facishare.document.preview.api.model.arg.ConvertSvg2PngArg;
 import com.facishare.document.preview.api.model.arg.GetPageInfoArg;
 import com.facishare.document.preview.api.model.result.ConvertDocResult;
-import com.facishare.document.preview.api.model.result.ConvertSvg2PngResult;
 import com.facishare.document.preview.api.model.result.GetPageInfoResult;
 import com.facishare.document.preview.api.service.DocConvertService;
 import com.facishare.document.preview.common.model.PageInfo;
 import com.facishare.document.preview.provider.convertor.DocConvertor;
 import com.facishare.document.preview.provider.utils.DocPageInfoHelper;
-import com.facishare.document.preview.provider.utils.ImageHandler;
-import org.apache.batik.transcoder.TranscoderException;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -47,15 +43,6 @@ public class DocConvertServiceImpl implements DocConvertService {
         int page = arg.getPage();
         String dataFilePath = docConvertor.doConvert(path, originalFilePath, page);
         ConvertDocResult result = ConvertDocResult.builder().dataFilePath(dataFilePath).build();
-        return result;
-    }
-
-    @Override
-    public ConvertSvg2PngResult convertSvg2Png(ConvertSvg2PngArg arg) throws IOException {
-        String svgFilePath = arg.getSvgFilePath();
-        String pngFilePath = arg.getPngFilePath();
-        boolean sucess = ImageHandler.convertSvgToPng(svgFilePath, pngFilePath);
-        ConvertSvg2PngResult result = ConvertSvg2PngResult.builder().success(sucess).build();
         return result;
     }
 }

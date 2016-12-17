@@ -1,10 +1,9 @@
-package com.facishare.document.preview.provider.utils;
+package com.facishare.document.preview.cgi.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.JPEGTranscoder;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.commons.lang3.time.StopWatch;
 

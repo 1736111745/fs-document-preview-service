@@ -126,6 +126,7 @@ public class PreviewController {
                     log.info("end do convert,result:{}", convertDocResult);
                     dataFilePath = convertDocResult.getDataFilePath();
                     if (!Strings.isNullOrEmpty(dataFilePath)) {
+                        previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
                         fileOutPutor.outPut(response, dataFilePath);
                     } else {
                         log.warn("can't resolve path:{},page:{}", path, page);

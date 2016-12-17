@@ -83,6 +83,7 @@ public class DocPageInfoHelper {
         try {
             InputStream input = new ByteArrayInputStream(data);
             XMLSlideShow ppt = new XMLSlideShow(input);
+            pageInfo.setSuccess(true);
             pageInfo.setPageCount(ppt.getSlides().size());
         } catch (EncryptedDocumentException e) {
             pageInfo.setSuccess(false);

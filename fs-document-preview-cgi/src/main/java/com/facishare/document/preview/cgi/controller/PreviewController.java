@@ -106,39 +106,44 @@ public class PreviewController {
             response.setStatus(400);
             return;
         }
-        String page = safteGetRequestParameter(request, "page");
-        String securityGroup = safteGetRequestParameter(request, "sg");
-        int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
-        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
-        log.info("begin get previewInfo,path:{},pageIndex:{},previewInfoEx:{}", path, pageIndex, previewInfoEx);
-        if (previewInfoEx.isSuccess()) {
-            PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
-            if (previewInfo != null) {
-                String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), previewInfo.getFilePathList());
-                if (!Strings.isNullOrEmpty(dataFilePath)) {
-                    fileOutPutor.outPut(response, dataFilePath);
-                } else {
-                    String originalFilePath = previewInfo.getOriginalFilePath();
-                    ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
-                    log.info("begin do convert,arg:{}", convertDocArg);
-                    ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
-                    log.info("end do convert,result:{}", convertDocResult);
-                    dataFilePath = convertDocResult.getDataFilePath();
+        try {
+            String page = safteGetRequestParameter(request, "page");
+            String securityGroup = safteGetRequestParameter(request, "sg");
+            int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
+            EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+            PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
+            log.info("begin get previewInfo,path:{},pageIndex:{},previewInfoEx:{}", path, pageIndex, previewInfoEx);
+            if (previewInfoEx.isSuccess()) {
+                PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
+                if (previewInfo != null) {
+                    String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), previewInfo.getFilePathList());
                     if (!Strings.isNullOrEmpty(dataFilePath)) {
-                        previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
                         fileOutPutor.outPut(response, dataFilePath);
                     } else {
-                        log.warn("can't resolve path:{},page:{}", path, page);
-                        response.setStatus(404);
+                        String originalFilePath = previewInfo.getOriginalFilePath();
+                        ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
+                        log.info("begin do convert,arg:{}", convertDocArg);
+                        ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
+                        log.info("end do convert,result:{}", convertDocResult);
+                        dataFilePath = convertDocResult.getDataFilePath();
+                        if (!Strings.isNullOrEmpty(dataFilePath)) {
+                            previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
+                            fileOutPutor.outPut(response, dataFilePath);
+                        } else {
+                            log.warn("can't resolve path:{},page:{}", path, page);
+                            response.setStatus(404);
+                        }
                     }
+                } else {
+                    log.warn("can't resolve path:{},page:{}", path, page);
+                    response.setStatus(404);
                 }
             } else {
                 log.warn("can't resolve path:{},page:{}", path, page);
                 response.setStatus(404);
             }
-        } else {
-            log.warn("can't resolve path:{},page:{}", path, page);
+        } catch (Exception e) {
+            log.error("can't resolve path:{},page:{}", path, e);
             response.setStatus(404);
         }
     }
@@ -198,37 +203,42 @@ public class PreviewController {
             response.setStatus(400);
             return;
         }
-        int pageIndex = NumberUtils.toInt(safteGetRequestParameter(request, "pageIndex"), 0);
-        int width = NumberUtils.toInt(safteGetRequestParameter(request, "width"), 1024);
-        width = width > 1920 ? 1920 : width;
-        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        String ea = employeeInfo.getEa();
-        PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, "");
-        if (previewInfoEx.isSuccess()) {
-            PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
-            if (previewInfo != null) {
-                String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), previewInfo.getFilePathList());
-                if (!Strings.isNullOrEmpty(dataFilePath)) {
-                    fileOutPutor.outPut(response, dataFilePath, width);
-                } else {
-                    String originalFilePath = previewInfo.getOriginalFilePath();
-                    ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
-                    ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
-                    dataFilePath = convertDocResult.getDataFilePath();
+        try {
+            int pageIndex = NumberUtils.toInt(safteGetRequestParameter(request, "pageIndex"), 0);
+            int width = NumberUtils.toInt(safteGetRequestParameter(request, "width"), 1024);
+            width = width > 1920 ? 1920 : width;
+            EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+            String ea = employeeInfo.getEa();
+            PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, "");
+            if (previewInfoEx.isSuccess()) {
+                PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
+                if (previewInfo != null) {
+                    String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), previewInfo.getFilePathList());
                     if (!Strings.isNullOrEmpty(dataFilePath)) {
-                        previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
                         fileOutPutor.outPut(response, dataFilePath, width);
                     } else {
-                        log.warn("can't resolve path:{},page:{}", path, pageIndex);
-                        response.setStatus(404);
+                        String originalFilePath = previewInfo.getOriginalFilePath();
+                        ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
+                        ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
+                        dataFilePath = convertDocResult.getDataFilePath();
+                        if (!Strings.isNullOrEmpty(dataFilePath)) {
+                            previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
+                            fileOutPutor.outPut(response, dataFilePath, width);
+                        } else {
+                            log.warn("can't resolve path:{},page:{}", path, pageIndex);
+                            response.setStatus(404);
+                        }
                     }
+                } else {
+                    log.warn("can't resolve path:{},page:{}", path, pageIndex);
+                    response.setStatus(404);
                 }
             } else {
-                log.warn("can't resolve path:{},page:{}", path, pageIndex);
+                log.warn("can't get previewInfo,path:{},pageIndex:{}", path, pageIndex);
                 response.setStatus(404);
             }
-        } else {
-            log.warn("can't get previewInfo,path:{},pageIndex:{}", path, pageIndex);
+        } catch (Exception e) {
+            log.warn("can't get previewInfo,path:{},pageIndex:{}", path, e);
             response.setStatus(404);
         }
     }

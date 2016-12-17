@@ -116,7 +116,7 @@ public class PreviewController {
             PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
             if (previewInfo != null) {
                 String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), previewInfo.getFilePathList());
-                if (Strings.isNullOrEmpty(dataFilePath)) {
+                if (!Strings.isNullOrEmpty(dataFilePath)) {
                     fileOutPutor.outPut(response, dataFilePath);
                 } else {
                     String originalFilePath = previewInfo.getOriginalFilePath();

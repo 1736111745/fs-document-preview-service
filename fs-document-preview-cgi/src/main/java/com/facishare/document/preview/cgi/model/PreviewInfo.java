@@ -1,6 +1,7 @@
 package com.facishare.document.preview.cgi.model;
 
 import lombok.Data;
+import lombok.ToString;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.*;
 
@@ -15,6 +16,7 @@ import java.util.List;
         @Index(fields = {@Field("path")})}
 )
 @Data
+@ToString
 public class PreviewInfo {
     @Id
     private ObjectId id;

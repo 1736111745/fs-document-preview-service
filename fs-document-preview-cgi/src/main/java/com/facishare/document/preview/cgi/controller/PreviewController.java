@@ -111,6 +111,7 @@ public class PreviewController {
         int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
+        log.info("begin get previewInfo,path:{},pageIndex:{}",path,pageIndex,previewInfoEx);
         if (previewInfoEx.isSuccess()) {
             PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
             if (previewInfo != null) {

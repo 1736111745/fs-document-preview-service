@@ -1,7 +1,6 @@
 package com.facishare.document.preview.cgi.dao.impl;
 
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
-import com.facishare.document.preview.cgi.model.DataFileInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfo;
 import com.facishare.document.preview.common.utils.DateUtil;
 import com.github.mongo.support.DatastoreExt;
@@ -51,14 +50,11 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     }
 
     @Override
-    public DataFileInfo getDataFileInfo(String ea, String path, int page, PreviewInfo previewInfo) throws IOException {
-        DataFileInfo dataFileInfo = new DataFileInfo();
-        dataFileInfo.setOriginalFilePath(previewInfo.getOriginalFilePath());
-        dataFileInfo.setDataDir(previewInfo.getDataDir());
+    public String getDataFilePath(String path, int page, String dataDir, List<String> filePathList) throws IOException {
+        String dataFilePath = "";
         String fileExtension = FilenameUtils.getExtension(path).toLowerCase();
         String dataFileName = "";
         int pageIndex = page + 1;
-        List<String> filePathList = previewInfo.getFilePathList();
         if (filePathList != null && filePathList.size() > 0) {
             switch (fileExtension) {
                 case "pdf": {
@@ -75,12 +71,10 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
                 }
             }
         }
-        String filePath = "";
         if (!Strings.isNullOrEmpty(dataFileName)) {
-            filePath = FilenameUtils.concat(previewInfo.getDataDir(), dataFileName);
+            dataFilePath = FilenameUtils.concat(dataDir, dataFileName);
         }
-        dataFileInfo.set(filePath);
-        return dataFileInfo;
+        return dataFilePath;
     }
 
     @Override

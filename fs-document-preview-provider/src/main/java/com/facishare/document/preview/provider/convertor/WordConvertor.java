@@ -10,8 +10,7 @@ public class WordConvertor implements IDocConvertor {
 
     @Override
     public String convert(int page1, int page2, String filePath, String baseDir) throws Exception {
-        String svgFilePath = ConvertorHelper.toSvg(page1, page2, filePath, baseDir);
-        return Strings.isNullOrEmpty(svgFilePath) ? svgFilePath : FilenameUtils.getBaseName(baseDir) + "/" + FilenameUtils.getName(svgFilePath);
+        return ConvertorHelper.toSvg(page1, page2, filePath, baseDir);
     }
 
 }

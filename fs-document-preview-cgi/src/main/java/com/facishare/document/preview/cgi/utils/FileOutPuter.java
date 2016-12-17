@@ -19,7 +19,7 @@ import java.io.OutputStream;
  */
 @Slf4j
 @Component
-public class FileOutPutor {
+public class FileOutPuter {
 
     public void outPut(HttpServletResponse response, String filePath) throws IOException {
         outPut(response, filePath, 0);

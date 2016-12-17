@@ -22,7 +22,6 @@ public class ExcelConvertor implements IDocConvertor {
             File file = new File(htmlFilePath);
             String dirName = FilenameUtils.getBaseName(baseDir);
             handleHtml(file, dirName);
-            return dirName + "/" + FilenameUtils.getName(htmlFilePath);
         }
         return htmlFilePath;
     }

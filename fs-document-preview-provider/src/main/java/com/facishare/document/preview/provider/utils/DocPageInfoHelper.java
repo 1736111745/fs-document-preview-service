@@ -10,9 +10,12 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.POIXMLDocument;
+import org.apache.poi.hslf.usermodel.HSLFSlideShow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.sl.usermodel.SlideShow;
+import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -37,11 +40,11 @@ public class DocPageInfoHelper {
             DocType docType = DocTypeHelper.getDocType(filePath);
             switch (docType) {
                 case Word:
-                    return parseWordAndPPT(filePath);
+                    return pareWord(filePath);
                 case Excel:
                     return parseExcel(data, filePath);
                 case PPT:
-                    return parseWordAndPPT(filePath);
+                    return parsePPT(data, filePath);
                 case PDF:
                     return parsePDF(data, filePath);
                 default:
@@ -70,6 +73,47 @@ public class DocPageInfoHelper {
         return 2003;
     }
 
+    private static PageInfo parsePPT(byte[] data, String filePath) throws IOException {
+        int version = checkFileVersion(data);
+        return version == 2003 ? parsePPT2003(filePath, data) : parsePPT2007(filePath, data);
+    }
+
+    private static PageInfo parsePPT2007(String filePath, byte[] data) {
+        PageInfo pageInfo = new PageInfo();
+        try {
+            InputStream input = new ByteArrayInputStream(data);
+            XMLSlideShow ppt = new XMLSlideShow(input);
+            pageInfo.setPageCount(ppt.getSlides().size());
+        } catch (EncryptedDocumentException e) {
+            pageInfo.setSuccess(false);
+            pageInfo.setErrorMsg("该文档是为加密文档，暂不支持预览！");
+            log.error("parse excel happened error,path:{}!", filePath, e);
+        } catch (Exception ex) {
+            pageInfo.setSuccess(false);
+            log.error("parse excel happened error,path:{}!", filePath, ex);
+        } finally {
+            return pageInfo;
+        }
+    }
+
+    private static PageInfo parsePPT2003(String filePath, byte[] data) {
+        PageInfo pageInfo = new PageInfo();
+        try {
+            InputStream input = new ByteArrayInputStream(data);
+            SlideShow ppt = new HSLFSlideShow(input);
+            pageInfo.setSuccess(true);
+            pageInfo.setPageCount(ppt.getSlides().size());
+        } catch (EncryptedDocumentException e) {
+            pageInfo.setSuccess(false);
+            pageInfo.setErrorMsg("该文档是为加密文档，暂不支持预览！");
+            log.error("parse excel happened error,path:{}!", filePath, e);
+        } catch (Exception ex) {
+            pageInfo.setSuccess(false);
+            log.error("parse excel happened error,path:{}!", filePath, ex);
+        } finally {
+            return pageInfo;
+        }
+    }
 
     private static PageInfo parseExcel(byte[] data, String filePath) throws Exception {
         int version = checkFileVersion(data);
@@ -91,7 +135,7 @@ public class DocPageInfoHelper {
         return pageInfo;
     }
 
-    private static PageInfo parseWordAndPPT(String filePath) {
+    private static PageInfo pareWord(String filePath) {
         PageInfo pageInfo = new PageInfo();
         ConvertorPool.ConvertorObject convertObj = ConvertorPool.getInstance().getConvertor();
         try {

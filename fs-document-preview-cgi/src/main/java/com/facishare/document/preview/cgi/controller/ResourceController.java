@@ -1,16 +1,13 @@
 package com.facishare.document.preview.cgi.controller;
 
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
-import com.facishare.document.preview.cgi.utils.FileOutPutor;
-import com.facishare.document.preview.cgi.utils.RequestParamsHelper;
+import com.facishare.document.preview.cgi.utils.FileOutPuter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -25,7 +22,7 @@ public class ResourceController {
     @Autowired
     PreviewInfoDao previewInfoDao;
     @Autowired
-    FileOutPutor fileOutPutor;
+    FileOutPuter fileOutPutor;
 
     @RequestMapping("/preview/js/{fileName:.+}")
     public String getStatic(@PathVariable String fileName) throws IOException {

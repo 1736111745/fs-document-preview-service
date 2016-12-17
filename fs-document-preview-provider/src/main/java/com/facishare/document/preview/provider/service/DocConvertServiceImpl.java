@@ -12,7 +12,6 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -21,7 +20,6 @@ import java.util.List;
 public class DocConvertServiceImpl implements DocConvertService {
     @Autowired
     DocConvertor docConvertor;
-
 
 
     public GetPageInfoResult getPageInfo(GetPageInfoArg arg) throws Exception {

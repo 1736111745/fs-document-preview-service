@@ -9,7 +9,7 @@ import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.*;
 import com.facishare.document.preview.cgi.service.PreviewService;
 import com.facishare.document.preview.cgi.utils.DocPageInfoHelper;
-import com.facishare.document.preview.cgi.utils.FileOutPutor;
+import com.facishare.document.preview.cgi.utils.FileOutPuter;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.cgi.utils.RequestParamsHelper;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
@@ -21,19 +21,15 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.async.WebAsyncTask;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 
 /**
@@ -57,7 +53,7 @@ public class PreviewController {
     @Autowired
     private CounterService counterService;
     @Autowired
-    private FileOutPutor fileOutPutor;
+    private FileOutPuter fileOutPutor;
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
 
@@ -114,19 +110,18 @@ public class PreviewController {
         String securityGroup = safteGetRequestParameter(request, "sg");
         int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        String ea = employeeInfo.getEa();
         PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
         if (previewInfoEx.isSuccess()) {
             PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
             if (previewInfo != null) {
-                DataFileInfo dataFileInfo = previewInfoDao.getDataFileInfo(ea, path, pageIndex, previewInfo);
-                if (!dataFileInfo.getShortFilePath().equals("")) {
-                    fileOutPutor.outPut(response, dataFileInfo.getShortFilePath());
+                String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), previewInfo.getFilePathList());
+                if (Strings.isNullOrEmpty(dataFilePath)) {
+                    fileOutPutor.outPut(response, dataFilePath);
                 } else {
-                    String originalFilePath = dataFileInfo.getOriginalFilePath();
+                    String originalFilePath = previewInfo.getOriginalFilePath();
                     ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
                     ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
-                    String dataFilePath = convertDocResult.getDataFilePath();
+                    dataFilePath = convertDocResult.getDataFilePath();
                     if (!Strings.isNullOrEmpty(dataFilePath)) {
                         fileOutPutor.outPut(response, dataFilePath);
                     } else {
@@ -174,11 +169,11 @@ public class PreviewController {
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String path = RequestParamsHelper.safteGetRequestParameter(request, "npath") == "" ? RequestParamsHelper.safteGetRequestParameter(request, "path") : RequestParamsHelper.safteGetRequestParameter(request, "path");
         if (!isValidPath(path)) {
-            return getDocPreviewInfoResult(path,0);
+            return getDocPreviewInfoResult(path, 0);
         }
         String extension = FilenameUtils.getExtension(path).toLowerCase();
         if (allowPreviewExtension.indexOf(extension) == -1) {
-            return getDocPreviewInfoResult(path,0);
+            return getDocPreviewInfoResult(path, 0);
         }
         PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, "");
         if (previewInfoEx.isSuccess()) {
@@ -192,7 +187,7 @@ public class PreviewController {
 
     @ResponseBody
     @RequestMapping(value = "/preview/DocPageByPath", method = RequestMethod.GET)
-    public void docPageByPath(HttpServletRequest request,HttpServletResponse response) throws Exception {
+    public void docPageByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String path = RequestParamsHelper.safteGetRequestParameter(request, "npath") == "" ? RequestParamsHelper.safteGetRequestParameter(request, "path") : RequestParamsHelper.safteGetRequestParameter(request, "npath");
         if (!isValidPath(path)) {
             response.setStatus(400);
@@ -207,17 +202,17 @@ public class PreviewController {
         if (previewInfoEx.isSuccess()) {
             PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
             if (previewInfo != null) {
-                DataFileInfo dataFileInfo = previewInfoDao.getDataFileInfo(ea, path, pageIndex, previewInfo);
-                if (!dataFileInfo.getShortFilePath().equals("")) {
-                    fileOutPutor.outPut(response, dataFileInfo.getShortFilePath(), width);
+                String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), previewInfo.getFilePathList());
+                if (!Strings.isNullOrEmpty(dataFilePath)) {
+                    fileOutPutor.outPut(response, dataFilePath, width);
                 } else {
-                    String originalFilePath = dataFileInfo.getOriginalFilePath();
+                    String originalFilePath = previewInfo.getOriginalFilePath();
                     ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
                     ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
-                    String dataFilePath = convertDocResult.getDataFilePath();
+                    dataFilePath = convertDocResult.getDataFilePath();
                     if (!Strings.isNullOrEmpty(dataFilePath)) {
                         previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
-                        fileOutPutor.outPut(response, dataFileInfo.getShortFilePath(), width);
+                        fileOutPutor.outPut(response, dataFilePath, width);
                     } else {
                         log.warn("can't resolve path:{},page:{}", path, pageIndex);
                         response.setStatus(404);

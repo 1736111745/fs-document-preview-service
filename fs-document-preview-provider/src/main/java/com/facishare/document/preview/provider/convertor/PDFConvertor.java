@@ -6,6 +6,6 @@ package com.facishare.document.preview.provider.convertor;
 public class PDFConvertor implements IDocConvertor {
     @Override
     public String convert(int page1, int page2, String filePath, String baseDir) throws Exception {
-        return ConvertorHelper.toPng(page1, page2, filePath, baseDir, 1, 2);
+        return ConvertHelper.toPng(page1, page2, filePath, baseDir, 1, 2);
     }
 }

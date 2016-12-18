@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 public class ExcelConvertor implements IDocConvertor {
     @Override
     public String convert(int page1, int page2, String filePath, String baseDir) throws Exception {
-        String htmlFilePath = ConvertorHelper.toHtml(page1, filePath, baseDir);
+        String htmlFilePath = ConvertHelper.toHtml(page1, filePath, baseDir);
         if (!Strings.isNullOrEmpty(htmlFilePath)) {
             File file = new File(htmlFilePath);
             String dirName = FilenameUtils.getBaseName(baseDir);

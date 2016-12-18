@@ -12,8 +12,9 @@ import java.io.File;
  * Created by liuq on 2016/11/9.
  */
 @Slf4j
+@Deprecated
 public class ConvertorHelper {
-    public ConvertorHelper() throws Exception {
+    private ConvertorHelper() throws Exception {
     }
 
     public static String toSvg(int page1, int page2, String filePath, String baseDir) {
@@ -42,7 +43,7 @@ public class ConvertorHelper {
                 return "";
             }
         } catch (Exception e) {
-            log.error("toSvg,filepath:{}", filePath, e);
+            log.error("toSvg,filePath:{}", filePath, e);
             return "";
         } finally {
             ConvertorPool.getInstance().returnConvertor(convertobj);
@@ -72,7 +73,7 @@ public class ConvertorHelper {
                 return "";
             }
         } catch (Exception e) {
-            log.error("toPng,filepath:{}", filePath, e);
+            log.error("toPng,filePath:{}", filePath, e);
             return "";
         } finally {
             ConvertorPool.getInstance().returnConvertor(convertobj);
@@ -101,16 +102,10 @@ public class ConvertorHelper {
                 return "";
             }
         } catch (Exception e) {
-            log.error("toHtml,filepath:{}", filePath, e);
+            log.error("toHtml,filePath:{}", filePath, e);
             return "";
         } finally {
             ConvertorPool.getInstance().returnConvertor(convertobj);
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-
-
-
     }
 }

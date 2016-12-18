@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+@Deprecated
 public class ConvertorPool {
     private final static String root = Thread.currentThread().getContextClassLoader().getResource("").getPath();
 

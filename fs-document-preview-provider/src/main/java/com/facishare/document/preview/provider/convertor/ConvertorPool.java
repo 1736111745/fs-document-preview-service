@@ -38,7 +38,7 @@ public class ConvertorPool {
 
     private static ConvertorPool instance = null;
     private List<ConvertorObject> pool = new ArrayList();
-    private static final int maxSize = 200;
+    private static final int maxSize = 300;
     private int availSize = 0;
     private int current = 0;
 

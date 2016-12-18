@@ -80,7 +80,7 @@ public class PreviewService {
                 previewInfoEx.setPreviewInfo(previewInfo);
             }
         } catch (Exception e) {
-            log.error("getPreviewInfo happend exception!", e);
+            log.error("getPreviewInfo happend exception!,path:{}",path, e);
         }
         return previewInfoEx;
     }

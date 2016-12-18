@@ -109,33 +109,8 @@ public class ConvertorHelper {
     }
 
     public static void main(String[] args) throws Exception {
-//        String mongoServer = "mongodb://app_globaluser:A1366A48F63C5BD86DEDC20253B210137D2327C561B46729357EB373DD8F89C2@vlnx112044001.x.firstshare.cn:27017,vlnx112046001.x.firstshare.cn:27017,vlnx112045001.x.firstshare.cn:27017";
-//        Preconditions.checkNotNull(mongoServer, "The servers configuration is incorrect!");
-//        //如果密码是加密的,那就做解密处理
-//        Pattern p = Pattern.compile("mongodb://((.+):(.*)@)");
-//        Matcher m = p.matcher(mongoServer);
-//        if (m.find()) {
-//            try {
-//                String pwd = UrlEscapers.urlFormParameterEscaper().escape(PasswordUtil.decode(m.group(3)));
-//                mongoServer = mongoServer.substring(0, m.end(2) + 1) + pwd + mongoServer.substring(m.end(1) - 1);
-//            } catch (Exception e) {
-//               // log.error("cannot decode " + m.group(3), e);
-//            }
-//        }
 
-//        String path="/Users/liuq/Downloads/【纷享公开课】高效时间管理.pptx";
-//        String path1="/Users/liuq/Downloads";
-//        byte[] bytes= FileUtils.readFileToByteArray(new File(path));
-//        ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
-//
-//        for(int i=0;i<5;i++) {
-//            ExecutorService executorService = Executors.newSingleThreadExecutor();
-//            int finalI = i;
-//            int finalI1 = i;
-//            System.out.println("convert:"+finalI);
-//            executorService.execute(() ->
-//                  toPng(1, 1,path,path1,1,1));
-//        }
+
 
     }
 }

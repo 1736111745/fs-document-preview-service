@@ -38,7 +38,7 @@ public class ConvertorPool {
 
     private static ConvertorPool instance = null;
     private List<ConvertorObject> pool = new ArrayList();
-    private static final int maxSize = 32;
+    private static final int maxSize = 200;
     private int availSize = 0;
     private int current = 0;
 
@@ -51,6 +51,7 @@ public class ConvertorPool {
 
     //获取池内一个转换实例
     public synchronized ConvertorObject getConvertor() {
+        log.info("availSize:{}",availSize);
         if (availSize > 0) {
             return getIdleConvertor();
         } else if (pool.size() < maxSize) {

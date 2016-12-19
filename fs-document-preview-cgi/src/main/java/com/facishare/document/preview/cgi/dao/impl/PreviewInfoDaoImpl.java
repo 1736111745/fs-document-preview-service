@@ -53,22 +53,28 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     public String getDataFilePath(String path, int page, String dataDir, List<String> filePathList) throws IOException {
         String dataFilePath = "";
         String fileExtension = FilenameUtils.getExtension(path).toLowerCase();
+        fileExtension = fileExtension.substring(0, fileExtension.length() - 1);
         String dataFileName = "";
         if (filePathList != null && filePathList.size() > 0) {
             switch (fileExtension) {
                 case "pdf": {
-                    int pageIndex = page+1;
+                    int pageIndex = page + 1;
                     dataFileName = filePathList.stream().filter(x -> (x.equals(pageIndex + ".jpg") || x.equals(pageIndex + ".png"))).findFirst().orElse("");
                     break;
                 }
                 case "xls": {
-                    int pageIndex = page+1;
+                    int pageIndex = page + 1;
                     dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".html")).findFirst().orElse("");
                     break;
                 }
-                default: {
+                case "doc": {
+                    int pageIndex = page + 1;
+                    dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".jpg") || (x.equals(pageIndex + ".png") || x.equals(pageIndex + ".svg"))).findFirst().orElse("");
+                    break;
+                }
+                case "ppt": {
                     int pageIndex = page;
-                    dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".jpg")||(x.equals(pageIndex + ".png") || x.equals(pageIndex + ".svg"))).findFirst().orElse("");
+                    dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".jpg") || (x.equals(pageIndex + ".png") || x.equals(pageIndex + ".svg"))).findFirst().orElse("");
                     break;
                 }
             }

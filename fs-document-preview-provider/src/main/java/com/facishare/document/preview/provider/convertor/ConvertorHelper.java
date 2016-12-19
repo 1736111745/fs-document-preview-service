@@ -179,13 +179,15 @@ public class ConvertorHelper {
             int pageCount= ipicConvertor.getPageCount();
             pageInfo.setSuccess(true);
             pageInfo.setPageCount(pageCount);
+            return pageInfo;
         } catch (Exception e) {
             log.error("getWordPageCount fail,filepath:{}", filePath, e);
+            return pageInfo;
         } finally {
             if (convert != null) {
                 pool.returnObject(convert);
             }
-            return pageInfo;
+
         }
     }
 

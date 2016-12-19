@@ -64,6 +64,7 @@ public class FileOutPuter {
     }
 
     private byte[] handleSvg(String filePath, int width, HttpServletResponse response) throws IOException {
+        log.info("handleSvg,filePath:{},width:{}",filePath,width);
         if (width == 0) {
             response.setContentType("image/svg+xml");
             return FileUtils.readFileToByteArray(new File(filePath));
@@ -75,6 +76,7 @@ public class FileOutPuter {
         if (!pngFile.exists()) {
             ImageHandler.convertSvgToPng(filePath, pngFilePath);
         }
+        log.info("pngFile:{}",pngFilePath);
         //缩略
         SimpleImageInfo simpleImageInfo = new SimpleImageInfo(pngFile);
         int height = width * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();

@@ -16,8 +16,8 @@ public class IndexController {
     DocConvertor docConvertor;
     @RequestMapping(method = RequestMethod.GET)
     public String index() throws Exception {
-        String filePath = "/Users/liuq/Downloads/a.docx";
-        docConvertor.doConvert("a.docx", filePath, 1);
+        //String filePath = "/Users/liuq/Downloads/a.docx";
+        //docConvertor.doConvert("a.docx", filePath, 1);
         return "index";
     }
 }

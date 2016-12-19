@@ -54,18 +54,20 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         String dataFilePath = "";
         String fileExtension = FilenameUtils.getExtension(path).toLowerCase();
         String dataFileName = "";
-        int pageIndex = page + 1;
         if (filePathList != null && filePathList.size() > 0) {
             switch (fileExtension) {
                 case "pdf": {
+                    int pageIndex = page+1;
                     dataFileName = filePathList.stream().filter(x -> (x.equals(pageIndex + ".jpg") || x.equals(pageIndex + ".png"))).findFirst().orElse("");
                     break;
                 }
                 case "xls": {
+                    int pageIndex = page+1;
                     dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".html")).findFirst().orElse("");
                     break;
                 }
                 default: {
+                    int pageIndex = page;
                     dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".jpg")||(x.equals(pageIndex + ".png") || x.equals(pageIndex + ".svg"))).findFirst().orElse("");
                     break;
                 }

@@ -116,7 +116,8 @@ public class DocPageInfoHelper {
 
     }
 
-    private static PageInfo parseWord2003(String filePath, byte[] data) throws Exception {
+    private static PageInfo
+    parseWord2003(String filePath, byte[] data) throws Exception {
         PageInfo pageInfo = new PageInfo();
         try {
             InputStream input = new ByteArrayInputStream(data);

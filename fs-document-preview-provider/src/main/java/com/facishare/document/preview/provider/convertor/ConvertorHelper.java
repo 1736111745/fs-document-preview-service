@@ -49,6 +49,36 @@ public class ConvertorHelper {
         }
     }
 
+    public static String toJpg(int page1, int page2, String filePath, String baseDir, int startIndex, int type) {
+        ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
+        try {
+            IPICConvertor ipicConvertor = type == 1 ?
+                    convertobj.convertor.convertMStoPic(filePath) :
+                    convertobj.convertor.convertPdftoPic(filePath);
+            int resultCode = ipicConvertor.resultCode();
+            if (resultCode == 0) {
+                String fileName = (page1 + startIndex) + ".jpg";
+                String pngFilePath = baseDir + "/" + fileName;
+                ipicConvertor.convertToJPG(page1, page2, 1f, baseDir);
+                ipicConvertor.close();
+                File file = new File(pngFilePath);
+                if (file.exists()) {
+                    return pngFilePath;
+                } else {
+                    return "";
+                }
+            } else {
+                log.warn("filePath:{},pageIndex:{},resultCode:{}", filePath, page1, resultCode);
+                return "";
+            }
+        } catch (Exception e) {
+            log.error("toJpg,filepath:{}", filePath, e);
+            return "";
+        } finally {
+            ConvertorPool.getInstance().returnConvertor(convertobj);
+        }
+    }
+
     public static String toPng(int page1, int page2, String filePath, String baseDir, int startIndex, int type) {
         ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
         try {
@@ -59,7 +89,7 @@ public class ConvertorHelper {
             if (resultCode == 0) {
                 String fileName = (page1 + startIndex) + ".png";
                 String pngFilePath = baseDir + "/" + fileName;
-                ipicConvertor.convertToJPG(page1, page2, 1f, baseDir);
+                ipicConvertor.convertToPNG(page1, page2, 1f, baseDir);
                 ipicConvertor.close();
                 File file = new File(pngFilePath);
                 if (file.exists()) {

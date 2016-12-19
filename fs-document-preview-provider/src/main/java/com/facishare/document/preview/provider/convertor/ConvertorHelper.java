@@ -1,9 +1,12 @@
 package com.facishare.document.preview.provider.convertor;
 
+import application.dcs.Convert;
 import application.dcs.IHtmlConvertor;
 import application.dcs.IPICConvertor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import java.io.File;
 
@@ -16,10 +19,26 @@ public class ConvertorHelper {
     public ConvertorHelper() throws Exception {
     }
 
+    private static GenericObjectPool<Convert> pool;
+
+    static {
+        GenericObjectPoolConfig config = new GenericObjectPoolConfig();
+        config.setMaxTotal(100);
+        config.setMaxIdle(50);
+        config.setMinIdle(10);
+        config.setTestOnBorrow(false);
+        config.setTestOnCreate(false);
+        config.setTestWhileIdle(false);
+        config.setJmxEnabled(false);
+        config.setMaxWaitMillis(200000);
+        pool = new GenericObjectPool<>(new ConvertFactory(), config);
+    }
+
     public static String toSvg(int page1, int page2, String filePath, String baseDir) {
-        ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
+        Convert convert = null;
         try {
-            IPICConvertor ipicConvertor = convertobj.convertor.convertMStoPic(filePath);
+            convert = pool.borrowObject();
+            IPICConvertor ipicConvertor = convert.convertMStoPic(filePath);
             if (ipicConvertor != null) {
                 int resultCode = ipicConvertor.resultCode();
                 if (resultCode == 0) {
@@ -45,25 +64,28 @@ public class ConvertorHelper {
             log.error("toSvg,filepath:{}", filePath, e);
             return "";
         } finally {
-            ConvertorPool.getInstance().returnConvertor(convertobj);
+            if (convert != null) {
+                pool.returnObject(convert);
+            }
         }
     }
 
     public static String toJpg(int page1, int page2, String filePath, String baseDir, int startIndex, int type) {
-        ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
+        Convert convert = null;
         try {
+            convert = pool.borrowObject();
             IPICConvertor ipicConvertor = type == 1 ?
-                    convertobj.convertor.convertMStoPic(filePath) :
-                    convertobj.convertor.convertPdftoPic(filePath);
+                    convert.convertMStoPic(filePath) :
+                    convert.convertPdftoPic(filePath);
             int resultCode = ipicConvertor.resultCode();
             if (resultCode == 0) {
                 String fileName = (page1 + startIndex) + ".jpg";
-                String pngFilePath = baseDir + "/" + fileName;
+                String jpgFilePath = baseDir + "/" + fileName;
                 ipicConvertor.convertToJPG(page1, page2, 1f, baseDir);
                 ipicConvertor.close();
-                File file = new File(pngFilePath);
+                File file = new File(jpgFilePath);
                 if (file.exists()) {
-                    return pngFilePath;
+                    return jpgFilePath;
                 } else {
                     return "";
                 }
@@ -75,16 +97,19 @@ public class ConvertorHelper {
             log.error("toJpg,filepath:{}", filePath, e);
             return "";
         } finally {
-            ConvertorPool.getInstance().returnConvertor(convertobj);
+            if (convert != null) {
+                pool.returnObject(convert);
+            }
         }
     }
 
     public static String toPng(int page1, int page2, String filePath, String baseDir, int startIndex, int type) {
-        ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
+        Convert convert = null;
         try {
+            convert = pool.borrowObject();
             IPICConvertor ipicConvertor = type == 1 ?
-                    convertobj.convertor.convertMStoPic(filePath) :
-                    convertobj.convertor.convertPdftoPic(filePath);
+                    convert.convertMStoPic(filePath) :
+                    convert.convertPdftoPic(filePath);
             int resultCode = ipicConvertor.resultCode();
             if (resultCode == 0) {
                 String fileName = (page1 + startIndex) + ".png";
@@ -105,14 +130,17 @@ public class ConvertorHelper {
             log.error("toPng,filepath:{}", filePath, e);
             return "";
         } finally {
-            ConvertorPool.getInstance().returnConvertor(convertobj);
+            if (convert != null) {
+                pool.returnObject(convert);
+            }
         }
     }
 
     public static String toHtml(int page1, String filePath, String baseDir) {
-        ConvertorPool.ConvertorObject convertobj = ConvertorPool.getInstance().getConvertor();
+        Convert convert = null;
         try {
-            IHtmlConvertor htmlConvertor = convertobj.convertor.convertMStoHtml(filePath);
+            convert = pool.borrowObject();
+            IHtmlConvertor htmlConvertor = convert.convertMStoHtml(filePath);
             int resultCode = htmlConvertor.resultCode();
             if (resultCode == 0) {
                 htmlConvertor.setNormal(true);
@@ -134,7 +162,9 @@ public class ConvertorHelper {
             log.error("toHtml,filepath:{}", filePath, e);
             return "";
         } finally {
-            ConvertorPool.getInstance().returnConvertor(convertobj);
+            if (convert != null) {
+                pool.returnObject(convert);
+            }
         }
     }
 

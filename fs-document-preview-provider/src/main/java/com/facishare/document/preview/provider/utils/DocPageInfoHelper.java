@@ -4,7 +4,6 @@ import application.dcs.IPICConvertor;
 import com.facishare.document.preview.common.model.PageInfo;
 import com.facishare.document.preview.common.utils.DocType;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
-import com.facishare.document.preview.provider.convertor.ConvertorPool;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -13,16 +12,15 @@ import org.apache.poi.POIXMLDocument;
 import org.apache.poi.hslf.usermodel.HSLFSlideShow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.sl.usermodel.SlideShow;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PushbackInputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,13 +38,13 @@ public class DocPageInfoHelper {
             DocType docType = DocTypeHelper.getDocType(filePath);
             switch (docType) {
                 case Word:
-                    return pareWord(filePath);
+                    return pareWord(filePath,data);
                 case Excel:
-                    return parseExcel(data, filePath);
+                    return parseExcel(filePath,data);
                 case PPT:
-                    return parsePPT(data, filePath);
+                    return parsePPT(filePath,data);
                 case PDF:
-                    return parsePDF(data, filePath);
+                    return parsePDF(filePath,data);
                 default:
                     return new PageInfo();
             }
@@ -73,7 +71,7 @@ public class DocPageInfoHelper {
         return 2003;
     }
 
-    private static PageInfo parsePPT(byte[] data, String filePath) throws IOException {
+    private static PageInfo parsePPT(String filePath,byte[] data) throws IOException {
         int version = checkFileVersion(data);
         return version == 2003 ? parsePPT2003(filePath, data) : parsePPT2007(filePath, data);
     }
@@ -85,6 +83,47 @@ public class DocPageInfoHelper {
             XMLSlideShow ppt = new XMLSlideShow(input);
             pageInfo.setSuccess(true);
             pageInfo.setPageCount(ppt.getSlides().size());
+        } catch (EncryptedDocumentException e) {
+            pageInfo.setSuccess(false);
+            pageInfo.setErrorMsg("该文档是为加密文档，暂不支持预览！");
+            log.error("parse excel happened error,path:{}!", filePath, e);
+        } catch (Exception ex) {
+            pageInfo.setSuccess(false);
+            log.error("parse excel happened error,path:{}!", filePath, ex);
+        } finally {
+            return pageInfo;
+        }
+    }
+
+    private static PageInfo parseWord2007(String filePath, byte[] data) throws Exception {
+        PageInfo pageInfo = new PageInfo();
+        try {
+            InputStream input = new ByteArrayInputStream(data);
+            XWPFDocument docx = new XWPFDocument(input);
+            int pageCount = docx.getProperties().getExtendedProperties().getUnderlyingProperties().getPages();//总页数
+            pageInfo.setSuccess(true);
+            pageInfo.setPageCount(pageCount);
+        } catch (EncryptedDocumentException e) {
+            pageInfo.setSuccess(false);
+            pageInfo.setErrorMsg("该文档是为加密文档，暂不支持预览！");
+            log.error("parse excel happened error,path:{}!", filePath, e);
+        } catch (Exception ex) {
+            pageInfo.setSuccess(false);
+            log.error("parse excel happened error,path:{}!", filePath, ex);
+        } finally {
+            return pageInfo;
+        }
+
+    }
+
+    private static PageInfo parseWord2003(String filePath, byte[] data) throws Exception {
+        PageInfo pageInfo = new PageInfo();
+        try {
+            InputStream input = new ByteArrayInputStream(data);
+            WordExtractor doc = new WordExtractor(input);
+            int pageCount = doc.getSummaryInformation().getPageCount();//总页数
+            pageInfo.setSuccess(true);
+            pageInfo.setPageCount(pageCount);
         } catch (EncryptedDocumentException e) {
             pageInfo.setSuccess(false);
             pageInfo.setErrorMsg("该文档是为加密文档，暂不支持预览！");
@@ -116,13 +155,13 @@ public class DocPageInfoHelper {
         }
     }
 
-    private static PageInfo parseExcel(byte[] data, String filePath) throws Exception {
+    private static PageInfo parseExcel(String filePath,byte[] data) throws Exception {
         int version = checkFileVersion(data);
         return version == 2003 ? parseExcel2003(filePath, data) : parseExcel2007(filePath, data);
     }
 
 
-    private static PageInfo parsePDF(byte[] data, String filePath) throws IOException {
+    private static PageInfo parsePDF(String filePath,byte[] data) throws IOException {
         PageInfo pageInfo = new PageInfo();
         try {
             InputStream input = new ByteArrayInputStream(data);
@@ -136,26 +175,9 @@ public class DocPageInfoHelper {
         return pageInfo;
     }
 
-    private static PageInfo pareWord(String filePath) {
-        PageInfo pageInfo = new PageInfo();
-        ConvertorPool.ConvertorObject convertObj = ConvertorPool.getInstance().getConvertor();
-        try {
-            IPICConvertor ipicConvertor = convertObj.convertor.convertMStoPic(filePath);
-            int pageCount = ipicConvertor.getPageCount();
-            pageInfo.setSuccess(true);
-            pageInfo.setPageCount(pageCount);
-            ipicConvertor.close();
-        } catch (EncryptedDocumentException e) {
-            pageInfo.setSuccess(false);
-            pageInfo.setErrorMsg("该文档是为加密文档，暂不支持预览！");
-            log.error("parse excel happened error,path:{}!", filePath, e);
-        } catch (Exception ex) {
-            pageInfo.setSuccess(false);
-            log.error("parse excel happened error,path:{}!", filePath, ex);
-        } finally {
-            ConvertorPool.getInstance().returnConvertor(convertObj);
-        }
-        return pageInfo;
+    private static PageInfo pareWord(String filePath,byte[] data) throws Exception {
+        int version = checkFileVersion(data);
+        return version == 2003 ? parseWord2003(filePath, data) : parseWord2007(filePath, data);
     }
 
     private static PageInfo parseExcel2007(String filePath, byte[] data) throws Exception {

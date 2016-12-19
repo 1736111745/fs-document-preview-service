@@ -66,7 +66,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
                     break;
                 }
                 default: {
-                    dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".svg")||(x.equals(pageIndex + ".jpg") || x.equals(pageIndex + ".png"))).findFirst().orElse("");
+                    dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".jpg")||(x.equals(pageIndex + ".png") || x.equals(pageIndex + ".svg"))).findFirst().orElse("");
                     break;
                 }
             }

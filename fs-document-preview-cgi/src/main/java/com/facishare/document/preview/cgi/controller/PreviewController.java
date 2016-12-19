@@ -122,9 +122,9 @@ public class PreviewController {
                     } else {
                         String originalFilePath = previewInfo.getOriginalFilePath();
                         ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
-                        //log.info("begin do convert,arg:{}", convertDocArg);
+                        log.info("begin do convert,arg:{}", convertDocArg);
                         ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
-                        //log.info("end do convert,result:{}", convertDocResult);
+                        log.info("end do convert,result:{}", convertDocResult);
                         dataFilePath = convertDocResult.getDataFilePath();
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
                             previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);

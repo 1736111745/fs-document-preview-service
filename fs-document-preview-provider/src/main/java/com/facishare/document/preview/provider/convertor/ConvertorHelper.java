@@ -185,8 +185,8 @@ public class ConvertorHelper {
             if (convert != null) {
                 pool.returnObject(convert);
             }
+            return pageInfo;
         }
-        return pageInfo;
     }
 
     public static void main(String[] args) throws Exception {

@@ -173,12 +173,7 @@ public class DocPageInfoHelper {
     }
 
     private static PageInfo pareWord(String filePath, byte[] data) throws Exception {
-        int version = checkFileVersion(data);
-        PageInfo pageInfo = version == 2003 ? parseWord2003(filePath, data) : parseWord2007(filePath, data);
-        if (pageInfo.getPageCount() == 0) {
-            pageInfo = ConvertorHelper.getWordPageCount(filePath);
-        }
-        return pageInfo;
+        return ConvertorHelper.getWordPageCount(filePath);
     }
 
     private static PageInfo parseExcel2007(String filePath, byte[] data) throws Exception {

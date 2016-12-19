@@ -59,7 +59,7 @@ public class ConvertorHelper {
             if (resultCode == 0) {
                 String fileName = (page1 + startIndex) + ".png";
                 String pngFilePath = baseDir + "/" + fileName;
-                ipicConvertor.convertToPNG(page1, page2, 1f, baseDir);
+                ipicConvertor.convertToJPG(page1, page2, 1f, baseDir);
                 ipicConvertor.close();
                 File file = new File(pngFilePath);
                 if (file.exists()) {

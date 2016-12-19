@@ -2,6 +2,7 @@ package com.facishare.document.preview.provider.convertor;
 
 import application.dcs.Convert;
 import com.facishare.document.preview.common.utils.PathHelper;
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
@@ -15,20 +16,20 @@ public class ConvertorPool {
 
     private static String getConfigDir() {
         String configDir;
-        String profile = System.getProperty("spring.profiles.active");
-        if (!profile.equals("foneshare")) {
-            configDir = root + "localhost";
-        } else {
-            InetAddress ia;
-            try {
+        try {
+            String profile = System.getProperty("spring.profiles.active");
+            if (!Strings.isNullOrEmpty(profile) && !profile.equals("foneshare")) {
+                configDir = root + "localhost";
+            } else {
+                InetAddress ia;
                 ia = InetAddress.getLocalHost();
                 String host = ia.getHostName();
                 configDir = root + host;
-            } catch (UnknownHostException e) {
-                configDir = root + "localhost";
             }
-            log.info("configDir:{}", configDir);
+        } catch (UnknownHostException e) {
+            configDir = root + "localhost";
         }
+        log.info("configDir:{}", configDir);
         return configDir;
     }
 
@@ -51,7 +52,7 @@ public class ConvertorPool {
 
     //获取池内一个转换实例
     public synchronized ConvertorObject getConvertor() {
-        log.info("availSize:{}",availSize);
+        log.info("availSize:{}", availSize);
         if (availSize > 0) {
             return getIdleConvertor();
         } else if (pool.size() < maxSize) {

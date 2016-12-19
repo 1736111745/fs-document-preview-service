@@ -53,4 +53,7 @@ public class DocConvertor {
         }
         return docConvertor;
     }
+
+    public static void main(String[] args) {
+    }
 }

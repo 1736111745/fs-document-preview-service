@@ -4,6 +4,7 @@ import application.dcs.IPICConvertor;
 import com.facishare.document.preview.common.model.PageInfo;
 import com.facishare.document.preview.common.utils.DocType;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
+import com.facishare.document.preview.provider.convertor.ConvertorHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -30,7 +31,7 @@ import java.util.List;
  */
 @Slf4j
 public class DocPageInfoHelper {
-    public static PageInfo GetPageInfo(byte[] data, String filePath) {
+    public static PageInfo GetPageInfo(byte[] data, String filePath) throws Exception {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         log.info("begin get page count,filePath:{}", filePath);
@@ -38,18 +39,16 @@ public class DocPageInfoHelper {
             DocType docType = DocTypeHelper.getDocType(filePath);
             switch (docType) {
                 case Word:
-                    return pareWord(filePath,data);
+                    return pareWord(filePath, data);
                 case Excel:
-                    return parseExcel(filePath,data);
+                    return parseExcel(filePath, data);
                 case PPT:
-                    return parsePPT(filePath,data);
+                    return parsePPT(filePath, data);
                 case PDF:
-                    return parsePDF(filePath,data);
+                    return parsePDF(filePath, data);
                 default:
                     return new PageInfo();
             }
-        } catch (Exception e) {
-            return new PageInfo();
         } finally {
             stopWatch.stop();
             log.info("get page count done,filePath:{},cost:{}", filePath, stopWatch.getTime() + "ms");
@@ -71,7 +70,7 @@ public class DocPageInfoHelper {
         return 2003;
     }
 
-    private static PageInfo parsePPT(String filePath,byte[] data) throws IOException {
+    private static PageInfo parsePPT(String filePath, byte[] data) throws IOException {
         int version = checkFileVersion(data);
         return version == 2003 ? parsePPT2003(filePath, data) : parsePPT2007(filePath, data);
     }
@@ -116,12 +115,10 @@ public class DocPageInfoHelper {
 
     }
 
-    private static PageInfo
-    parseWord2003(String filePath, byte[] data) throws Exception {
+    private static PageInfo parseWord2003(String filePath, byte[] data) throws Exception {
         PageInfo pageInfo = new PageInfo();
         try {
-            InputStream input = new ByteArrayInputStream(data);
-            WordExtractor doc = new WordExtractor(input);
+            WordExtractor doc = new WordExtractor(new FileInputStream(filePath));
             int pageCount = doc.getSummaryInformation().getPageCount();//总页数
             pageInfo.setSuccess(true);
             pageInfo.setPageCount(pageCount);
@@ -132,9 +129,8 @@ public class DocPageInfoHelper {
         } catch (Exception ex) {
             pageInfo.setSuccess(false);
             log.error("parse excel happened error,path:{}!", filePath, ex);
-        } finally {
-            return pageInfo;
         }
+        return pageInfo;
     }
 
     private static PageInfo parsePPT2003(String filePath, byte[] data) {
@@ -156,13 +152,13 @@ public class DocPageInfoHelper {
         }
     }
 
-    private static PageInfo parseExcel(String filePath,byte[] data) throws Exception {
+    private static PageInfo parseExcel(String filePath, byte[] data) throws Exception {
         int version = checkFileVersion(data);
         return version == 2003 ? parseExcel2003(filePath, data) : parseExcel2007(filePath, data);
     }
 
 
-    private static PageInfo parsePDF(String filePath,byte[] data) throws IOException {
+    private static PageInfo parsePDF(String filePath, byte[] data) throws IOException {
         PageInfo pageInfo = new PageInfo();
         try {
             InputStream input = new ByteArrayInputStream(data);
@@ -176,9 +172,13 @@ public class DocPageInfoHelper {
         return pageInfo;
     }
 
-    private static PageInfo pareWord(String filePath,byte[] data) throws Exception {
+    private static PageInfo pareWord(String filePath, byte[] data) throws Exception {
         int version = checkFileVersion(data);
-        return version == 2003 ? parseWord2003(filePath, data) : parseWord2007(filePath, data);
+        PageInfo pageInfo = version == 2003 ? parseWord2003(filePath, data) : parseWord2007(filePath, data);
+        if (pageInfo.getPageCount() == 0) {
+            pageInfo = ConvertorHelper.getWordPageCount(filePath);
+        }
+        return pageInfo;
     }
 
     private static PageInfo parseExcel2007(String filePath, byte[] data) throws Exception {

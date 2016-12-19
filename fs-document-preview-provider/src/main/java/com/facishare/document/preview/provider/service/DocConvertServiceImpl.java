@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -46,5 +47,11 @@ public class DocConvertServiceImpl implements DocConvertService {
         ConvertDocResult result = ConvertDocResult.builder().dataFilePath(dataFilePath).build();
         log.info("end convert doc,result:{}",result);
         return result;
+    }
+
+    public static void main(String[] args) throws Exception {
+        String filePath="/Users/liuq/Downloads/纷享销客使用规则.doc";
+        byte[] bytes = FileUtils.readFileToByteArray(new File(filePath));
+        PageInfo pageInfo = DocPageInfoHelper.GetPageInfo(bytes, filePath);
     }
 }

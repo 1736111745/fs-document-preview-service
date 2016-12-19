@@ -3,6 +3,7 @@ package com.facishare.document.preview.provider.convertor;
 import application.dcs.Convert;
 import application.dcs.IHtmlConvertor;
 import application.dcs.IPICConvertor;
+import com.facishare.document.preview.common.model.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.pool2.impl.GenericObjectPool;
@@ -166,6 +167,26 @@ public class ConvertorHelper {
                 pool.returnObject(convert);
             }
         }
+    }
+
+
+    public static PageInfo getWordPageCount(String filePath) {
+        PageInfo pageInfo=new PageInfo();
+        Convert convert = null;
+        try {
+            convert = pool.borrowObject();
+            IPICConvertor ipicConvertor = convert.convertMStoPic(filePath);
+            int pageCount= ipicConvertor.getPageCount();
+            pageInfo.setSuccess(true);
+            pageInfo.setPageCount(pageCount);
+        } catch (Exception e) {
+            log.error("getWordPageCount fail,filepath:{}", filePath, e);
+        } finally {
+            if (convert != null) {
+                pool.returnObject(convert);
+            }
+        }
+        return pageInfo;
     }
 
     public static void main(String[] args) throws Exception {

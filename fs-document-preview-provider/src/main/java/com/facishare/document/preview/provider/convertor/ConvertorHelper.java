@@ -82,7 +82,7 @@ public class ConvertorHelper {
             if (resultCode == 0) {
                 String fileName = (page1 + startIndex) + ".jpg";
                 String jpgFilePath = baseDir + "/" + fileName;
-                ipicConvertor.convertToJPG(page1, page2, 1f, baseDir);
+                ipicConvertor.convertToJPG(page1, page2, 2f, baseDir);
                 ipicConvertor.close();
                 File file = new File(jpgFilePath);
                 if (file.exists()) {

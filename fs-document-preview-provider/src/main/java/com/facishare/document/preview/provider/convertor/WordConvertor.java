@@ -7,7 +7,7 @@ public class WordConvertor implements IDocConvertor {
 
     @Override
     public String convert(int page1, int page2, String filePath, String baseDir) throws Exception {
-        return ConvertorHelper.toSvg(page1, page2, filePath, baseDir);
+        return ConvertorHelper.toPng(page1, page2, filePath, baseDir, 1, 0);
     }
 
 }

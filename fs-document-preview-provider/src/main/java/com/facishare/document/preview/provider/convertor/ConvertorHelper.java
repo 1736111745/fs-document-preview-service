@@ -17,16 +17,7 @@ import org.apache.commons.pool.impl.GenericObjectPool.Config;
  */
 @Slf4j
 public class ConvertorHelper {
-    private static ConvertorPoolFactory convertorPoolFactory;
 
-    static {
-        Config config = new Config();
-        config.maxActive = 32;
-        config.maxIdle = 10;
-        config.minIdle = 5;
-        config.maxWait = 30000;
-        convertorPoolFactory = new ConvertorPoolFactory(config);
-    }
 
     public static String toSvg(String filePath, int startPageIndex, int endPageIndex, int startIndex) throws Exception {
         StopWatch stopWatch = new StopWatch();
@@ -35,9 +26,10 @@ public class ConvertorHelper {
         log.info("start convert doc to svg,args:{}", args);
         String svgFileExt = "svg";
         String resultFilePath = "";
-        Convert convert = null;
+        ConvertorPool.ConvertorObject convertorObject = null;
         try {
-            convert = convertorPoolFactory.getConvert();
+            convertorObject=ConvertorPool.getInstance().getConvertor();
+            Convert convert = convertorObject.convertor;
             IPICConvertor picConvertor = convert.convertMStoPic(filePath);
             if (picConvertor != null) {
                 int resultCode = picConvertor.resultCode();
@@ -60,7 +52,7 @@ public class ConvertorHelper {
         } catch (Exception e) {
             log.error("toSvg happened exception,args:{}", args, e);
         } finally {
-            convertorPoolFactory.releaseConvert(convert);
+            ConvertorPool.getInstance().returnConvertor(convertorObject);
             stopWatch.stop();
             log.info("toSvg finished,args:{},cost:{}", args, stopWatch.getTime() + "ms");
             return resultFilePath;
@@ -74,9 +66,10 @@ public class ConvertorHelper {
         log.info("start convert doc to jpg,args:{}", args);
         String jpgFileExt = "jpg";
         String resultFilePath = "";
-        Convert convert = null;
+        ConvertorPool.ConvertorObject convertorObject = null;
         try {
-            convert = convertorPoolFactory.getConvert();
+            convertorObject=ConvertorPool.getInstance().getConvertor();
+            Convert convert = convertorObject.convertor;
             String fileExt = FilenameUtils.getExtension(filePath).toLowerCase();
             IPICConvertor picConvertor = fileExt.equals("pdf") ? convert.convertPdftoPic(filePath) : convert.convertMStoPic(filePath);
             if (picConvertor != null) {
@@ -100,7 +93,7 @@ public class ConvertorHelper {
         } catch (Exception e) {
             log.error("toJpg happened exception,args:{}", args, e);
         } finally {
-            convertorPoolFactory.releaseConvert(convert);
+            ConvertorPool.getInstance().returnConvertor(convertorObject);
             stopWatch.stop();
             log.info("toJpg finished,args:{},cost:{}", args, stopWatch.getTime() + "ms");
             return resultFilePath;
@@ -114,9 +107,10 @@ public class ConvertorHelper {
         log.info("start convert doc to png,args:{}", args);
         String pngFileExt = "png";
         String resultFilePath = "";
-        Convert convert = null;
+        ConvertorPool.ConvertorObject convertorObject = null;
         try {
-            convert = convertorPoolFactory.getConvert();
+            convertorObject=ConvertorPool.getInstance().getConvertor();
+            Convert convert = convertorObject.convertor;
             String fileExt = FilenameUtils.getExtension(filePath).toLowerCase();
             IPICConvertor picConvertor = fileExt.equals("pdf") ? convert.convertPdftoPic(filePath) : convert.convertMStoPic(filePath);
             if (picConvertor != null) {
@@ -140,7 +134,7 @@ public class ConvertorHelper {
         } catch (Exception e) {
             log.error("toPng happened exception,args:{}", args, e);
         } finally {
-            convertorPoolFactory.releaseConvert(convert);
+            ConvertorPool.getInstance().returnConvertor(convertorObject);
             stopWatch.stop();
             log.info("toPng finished,args:{},cost:{}", args, stopWatch.getTime() + "ms");
             return resultFilePath;
@@ -154,9 +148,10 @@ public class ConvertorHelper {
         log.info("start convert doc to html,args:{}", args);
         String htmlFileExt = "html";
         String resultFilePath = "";
-        Convert convert = null;
+        ConvertorPool.ConvertorObject convertorObject = null;
         try {
-            convert = convertorPoolFactory.getConvert();
+            convertorObject=ConvertorPool.getInstance().getConvertor();
+            Convert convert = convertorObject.convertor;
             IHtmlConvertor htmlConvertor = convert.convertMStoHtml(filePath);
             if (htmlConvertor != null) {
                 int resultCode = htmlConvertor.resultCode();
@@ -179,7 +174,7 @@ public class ConvertorHelper {
         } catch (Exception e) {
             log.error("toHtml happened exception,args:{}", args, e);
         } finally {
-            convertorPoolFactory.releaseConvert(convert);
+            ConvertorPool.getInstance().returnConvertor(convertorObject);
             stopWatch.stop();
             log.info("toHtml finished,args:{},cost:{},resultFilePath:{}", args, stopWatch.getTime() + "ms", resultFilePath);
             return resultFilePath;
@@ -189,9 +184,10 @@ public class ConvertorHelper {
 
     public static PageInfo getWordPageCount(String filePath) throws Exception {
         PageInfo pageInfo = new PageInfo();
-        Convert convert = null;
+        ConvertorPool.ConvertorObject convertorObject = null;
         try {
-            convert = convertorPoolFactory.getConvert();
+            convertorObject=ConvertorPool.getInstance().getConvertor();
+            Convert convert = convertorObject.convertor;
             IPICConvertor ipicConvertor = convert.convertMStoPic(filePath);
             int pageCount = ipicConvertor.getPageCount();
             pageInfo.setSuccess(true);
@@ -199,7 +195,7 @@ public class ConvertorHelper {
         } catch (Exception e) {
             log.error("getWordPageCount fail,filepath:{}", filePath, e);
         } finally {
-            convertorPoolFactory.releaseConvert(convert);
+            ConvertorPool.getInstance().returnConvertor(convertorObject);
             return pageInfo;
         }
     }

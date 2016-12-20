@@ -54,7 +54,7 @@ public class ConvertorHelper {
                     if (FileUtils.getFile(svgFilePath).exists()) {
                         resultFilePath = svgFilePath;
                     } else {
-                        log.warn("convert2Svg completed,bug aim file does't create,args:{},aim file:{}", args, svgFilePath);
+                        log.warn("convert2Svg completed,but aim file does't create,args:{},aim file:{}", args, svgFilePath);
                     }
                 } else {
                     log.warn("get picConvertor fail,args:{},resultCode:{}", args, resultCode);
@@ -63,7 +63,7 @@ public class ConvertorHelper {
                 log.warn("picConvertor is null,args:{}", args);
             }
         } catch (Exception e) {
-            log.error("toSpg happened exception,args:{}", args, e);
+            log.error("toSvg happened exception,args:{}", args, e);
         } finally {
             if (convert != null) {
                 pool.returnObject(convert);

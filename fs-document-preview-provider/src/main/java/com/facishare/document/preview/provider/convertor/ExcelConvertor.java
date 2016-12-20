@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.LineIterator;
+import org.apache.commons.jexl3.JxltEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -59,22 +60,29 @@ public class ExcelConvertor implements IDocConvertor {
     }
 
     private void handleHtml(File file, String dirName) throws Exception {
-        String cssFilePath = file.getParent() + "/js/stylesheet.css";
-        String css = readFile(new File(cssFilePath)).trim();
-        String html = readFile(file).trim();
-        //检测image如果超过里面的width为1.0就去掉
-        html=remove1pixPic(html);
-        String regex = "<head>[\\s\\S]*</head>";
-        html = html.replaceAll(regex, "");
-        html = html.replaceAll("<script[^>]*>[\\d\\D]*?</script>", "");//去掉script
-        html = html.replace("<!DOCTYPE html><html>", "").trim();
-        html = html.replace("</html>", "").trim();
-        html = html.replace("<body>", "").trim();
-        html = html.replace("</body>", "").trim();
-        html = html.replace("./js", "./" + dirName + "/js");
-        css = "table, tbody, tfoot, thead, tr, th, td {border: 1px solid #dddddd;}" + css;
-        html = "<style>" + css + "</style>" + html;
-        FileUtils.writeStringToFile(file, html, false);
+        try {
+            String cssFilePath = file.getParent() + "/js/stylesheet.css";
+            String css = readFile(new File(cssFilePath)).trim();
+            String html = readFile(file).trim();
+            //检测image如果超过里面的width为1.0就去掉
+            html=remove1pixPic(html);
+            String regex = "<head>[\\s\\S]*</head>";
+            html = html.replaceAll(regex, "");
+            html = html.replaceAll("<script[^>]*>[\\d\\D]*?</script>", "");//去掉script
+            html = html.replace("<!DOCTYPE html><html>", "").trim();
+            html = html.replace("</html>", "").trim();
+            html = html.replace("<body>", "").trim();
+            html = html.replace("</body>", "").trim();
+            html = html.replace("./js", "./" + dirName + "/js");
+            css = "table, tbody, tfoot, thead, tr, th, td {border: 1px solid #dddddd;}" + css;
+            html = "<style>" + css + "</style>" + html;
+            FileUtils.writeStringToFile(file, html, false);
+        }
+        catch (JxltEngine.Exception ex)
+        {
+
+        }
+
     }
 
     private String remove1pixPic(String html) {

@@ -6,7 +6,7 @@ package com.facishare.document.preview.provider.convertor;
 public class PPTConvertor implements IDocConvertor {
     @Override
     public String convert2Svg(String filePath, int startPageIndex, int endPageIndex) throws Exception {
-        return ConvertorHelper.toSvg(filePath, startPageIndex, endPageIndex, 0);
+        return ConvertorHelper.toSvg(filePath, startPageIndex, endPageIndex, 1);
     }
 
     @Override

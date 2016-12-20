@@ -8,6 +8,7 @@ import com.facishare.document.preview.api.model.result.GetPageInfoResult;
 /**
  * Created by liuq on 2016/12/14.
  */
+
 public interface DocConvertService {
     GetPageInfoResult getPageInfo(GetPageInfoArg arg) throws Exception;
 

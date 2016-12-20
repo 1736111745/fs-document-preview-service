@@ -21,11 +21,11 @@ import java.io.OutputStream;
 @Component
 public class FileOutPuter {
 
-    public void outPut(HttpServletResponse response, String filePath) throws IOException {
+    public  static  void outPut(HttpServletResponse response, String filePath) throws IOException {
         outPut(response, filePath, 0);
     }
 
-    public void outPut(HttpServletResponse response, String filePath, int width) throws IOException {
+    public static void outPut(HttpServletResponse response, String filePath, int width) throws IOException {
         File file = new File(filePath);
         if (!file.exists()) {
             response.setStatus(404);
@@ -54,7 +54,7 @@ public class FileOutPuter {
         }
     }
 
-    private byte[] handleFile(String filePath, HttpServletResponse response) throws IOException {
+    private static byte[] handleFile(String filePath, HttpServletResponse response) throws IOException {
         String fileName = FilenameUtils.getName(filePath);
         fileName = fileName.toLowerCase();
         String ext = FilenameUtils.getExtension(fileName);
@@ -63,7 +63,7 @@ public class FileOutPuter {
         return FileUtils.readFileToByteArray(new File(filePath));
     }
 
-    private byte[] handleSvg(String filePath, int width, HttpServletResponse response) throws IOException {
+    private static byte[] handleSvg(String filePath, int width, HttpServletResponse response) throws IOException {
         log.info("handleSvg,filePath:{},width:{}",filePath,width);
         if (width == 0) {
             response.setContentType("image/svg+xml");
@@ -86,7 +86,7 @@ public class FileOutPuter {
     }
 
 
-    private byte[] handlePng(String filePath, int width, HttpServletResponse response) throws IOException {
+    private static byte[] handlePng(String filePath, int width, HttpServletResponse response) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         //缩略:如果制定大小就从原图中缩略到指定大小，如果不指定大小生成固定大小给手机预览使用
         SimpleImageInfo simpleImageInfo = new SimpleImageInfo(new File(filePath));

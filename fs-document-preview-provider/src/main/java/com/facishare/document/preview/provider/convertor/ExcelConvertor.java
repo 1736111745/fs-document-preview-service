@@ -4,6 +4,8 @@ import com.google.common.base.Strings;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.LineIterator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,16 +16,35 @@ import java.util.regex.Pattern;
 /**
  * Created by liuq on 16/9/9.
  */
+@Component
 public class ExcelConvertor implements IDocConvertor {
+    @Autowired
+    ConvertorHelper convertorHelper;
+
     @Override
-    public String convert(int page1, int page2, String filePath, String baseDir) throws Exception {
-        String htmlFilePath = ConvertorHelper.toHtml(page1, filePath, baseDir);
-        if (!Strings.isNullOrEmpty(htmlFilePath)) {
-            File file = new File(htmlFilePath);
-            String dirName = FilenameUtils.getBaseName(baseDir);
+    public String convert2Svg(String filePath, int startPageIndex, int endPageIndex) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String convert2Png(String filePath, int startPageIndex, int endPageIndex) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String convert2Jpg(String filePath, int startPageIndex, int endPageIndex) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String convert2Html(String filePath, int startPageIndex, int endPageIndex) throws Exception {
+        String resultFilePath = convertorHelper.toHtml(filePath, startPageIndex, endPageIndex);
+        if (!Strings.isNullOrEmpty(resultFilePath)) {
+            File file = new File(resultFilePath);
+            String dirName = FilenameUtils.getBaseName(FilenameUtils.getFullPathNoEndSeparator(filePath));
             handleHtml(file, dirName);
         }
-        return htmlFilePath;
+        return resultFilePath;
     }
 
     private static String readFile(File file) throws IOException {
@@ -71,18 +92,5 @@ public class ExcelConvertor implements IDocConvertor {
         return html;
     }
 
-    public static void main(String[] args) throws IOException {
-//        String htmlPath="/nfsshare/normal/dps/201612/11/23/2/dsn79ha4/1.html";
-//        String html = readFile(new File(htmlPath)).trim();
-//        String imgRegex="<img[^>]+src\\\\s*=\\\\s*['\"]([^'\"]+)['\"][^>]*>";
-//        Pattern p = Pattern.compile("<img[^>]+src\\s*=\\s*['\"]([^'\"]+)['\"][^>]*>");
-//        Matcher m = p.matcher(html);
-//        System.out.println(m.find());
-//        System.out.println(m.groupCount());
-//        while(m.find()){
-//            System.out.println(m.group()+"-------------↓↓↓↓↓↓");
-//        }
 
-
-    }
 }

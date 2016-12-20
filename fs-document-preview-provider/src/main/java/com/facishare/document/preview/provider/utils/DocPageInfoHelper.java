@@ -20,6 +20,8 @@ import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -30,8 +32,11 @@ import java.util.List;
  * Created by liuq on 16/9/7.
  */
 @Slf4j
+@Component
 public class DocPageInfoHelper {
-    public static PageInfo GetPageInfo(byte[] data, String filePath) throws Exception {
+    @Autowired
+    ConvertorHelper convertorHelper;
+    public  PageInfo GetPageInfo(byte[] data, String filePath) throws Exception {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         log.info("begin get page count,filePath:{}", filePath);
@@ -56,7 +61,7 @@ public class DocPageInfoHelper {
     }
 
 
-    private static int checkFileVersion(byte[] data) throws IOException {
+    private  int checkFileVersion(byte[] data) throws IOException {
         InputStream inp = new ByteArrayInputStream(data);
         if (!inp.markSupported()) {
             inp = new PushbackInputStream(inp, 8);
@@ -70,7 +75,7 @@ public class DocPageInfoHelper {
         return 2003;
     }
 
-    private static PageInfo parsePPT(String filePath, byte[] data) throws IOException {
+    private  PageInfo parsePPT(String filePath, byte[] data) throws IOException {
         int version = checkFileVersion(data);
         return version == 2003 ? parsePPT2003(filePath, data) : parsePPT2007(filePath, data);
     }
@@ -94,7 +99,7 @@ public class DocPageInfoHelper {
         }
     }
 
-    private static PageInfo parseWord2007(String filePath, byte[] data) throws Exception {
+    private  PageInfo parseWord2007(String filePath, byte[] data) throws Exception {
         PageInfo pageInfo = new PageInfo();
         try {
             InputStream input = new ByteArrayInputStream(data);
@@ -115,7 +120,7 @@ public class DocPageInfoHelper {
 
     }
 
-    private static PageInfo parseWord2003(String filePath, byte[] data) throws Exception {
+    private  PageInfo parseWord2003(String filePath, byte[] data) throws Exception {
         PageInfo pageInfo = new PageInfo();
         try {
             WordExtractor doc = new WordExtractor(new FileInputStream(filePath));
@@ -152,13 +157,13 @@ public class DocPageInfoHelper {
         }
     }
 
-    private static PageInfo parseExcel(String filePath, byte[] data) throws Exception {
+    private  PageInfo parseExcel(String filePath, byte[] data) throws Exception {
         int version = checkFileVersion(data);
         return version == 2003 ? parseExcel2003(filePath, data) : parseExcel2007(filePath, data);
     }
 
 
-    private static PageInfo parsePDF(String filePath, byte[] data) throws IOException {
+    private  PageInfo parsePDF(String filePath, byte[] data) throws IOException {
         PageInfo pageInfo = new PageInfo();
         try {
             InputStream input = new ByteArrayInputStream(data);
@@ -172,8 +177,8 @@ public class DocPageInfoHelper {
         return pageInfo;
     }
 
-    private static PageInfo pareWord(String filePath, byte[] data) throws Exception {
-        return ConvertorHelper.getWordPageCount(filePath);
+    private  PageInfo pareWord(String filePath, byte[] data) throws Exception {
+        return convertorHelper.getWordPageCount(filePath);
     }
 
     private static PageInfo parseExcel2007(String filePath, byte[] data) throws Exception {

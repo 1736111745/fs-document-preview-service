@@ -1,8 +1,11 @@
 package com.facishare.document.preview.provider.convertor;
 
+import com.facishare.document.preview.common.utils.DocType;
+import com.facishare.document.preview.common.utils.DocTypeHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.StopWatch;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,49 +14,36 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class DocConvertor {
-    public String doConvert(String path, String originalFilePath, int page) throws Exception {
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        String baseDir = FilenameUtils.getFullPathNoEndSeparator(originalFilePath);
-        IDocConvertor docConvertor = getDocConvert(path);
-        if (docConvertor == null) {
-            return "";
-        }
-        String result = "";
-        try {
-            result = docConvertor.convert(page, page, originalFilePath, baseDir);
-        } catch (Exception e) {
-            log.error("do convert happened,path:{}", path, e);
-        } finally {
-            stopWatch.stop();
-            log.info("convert file:{},page:{},result:{},cost:{}", path, page, result,stopWatch.getTime() + "ms");
-            return result;
-        }
-    }
+    @Autowired
+    WordConvertor wordConvertor;
+    @Autowired
+    ExcelConvertor excelConvertor;
+    @Autowired
+    PPTConvertor pptConvertor;
+    @Autowired
+    PDFConvertor pdfConvertor;
 
-    private IDocConvertor getDocConvert(String path) {
-        IDocConvertor docConvertor = null;
-        String extension = FilenameUtils.getExtension(path).toLowerCase();
-        switch (extension) {
-            case "doc":
-            case "docx":
-                docConvertor = new WordConvertor();
-                break;
-            case "xls":
-            case "xlsx":
-                docConvertor = new ExcelConvertor();
-                break;
-            case "ppt":
-            case "pptx":
-                docConvertor = new PPTConvertor();
-                break;
-            case "pdf":
-                docConvertor = new PDFConvertor();
-                break;
-        }
-        return docConvertor;
-    }
 
-    public static void main(String[] args) {
+    public String doConvert(String path, String originalFilePath, int page, int type) throws Exception {
+        DocType docType = DocTypeHelper.getDocType(path);
+        String resultFilePath = "";
+        switch (docType) {
+            case Word: {
+                resultFilePath = type == 1 ? wordConvertor.convert2Svg(originalFilePath, page, page) : wordConvertor.convert2Png(originalFilePath, page, page);
+                break;
+            }
+            case PPT: {
+                resultFilePath = type == 1 ? wordConvertor.convert2Svg(originalFilePath, page, page) : wordConvertor.convert2Png(originalFilePath, page, page);
+                break;
+            }
+            case Excel: {
+                resultFilePath = excelConvertor.convert2Html(originalFilePath, page, page);
+                break;
+            }
+            case PDF: {
+                resultFilePath = pdfConvertor.convert2Png(originalFilePath, page, page);
+            }
+        }
+        return resultFilePath;
     }
 }

@@ -21,4 +21,6 @@ public class ConvertDocArg extends ProtoBase {
     private String originalFilePath;
     @Tag(3)
     int page;
+    @Tag(4)
+    int type;
 }

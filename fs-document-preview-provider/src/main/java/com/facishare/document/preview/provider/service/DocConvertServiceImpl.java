@@ -13,7 +13,6 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -23,12 +22,13 @@ import java.util.List;
 public class DocConvertServiceImpl implements DocConvertService {
     @Autowired
     DocConvertor docConvertor;
-
+    @Autowired
+    DocPageInfoHelper docPageInfoHelper;
 
     public GetPageInfoResult getPageInfo(GetPageInfoArg arg) throws Exception {
         String filePath = arg.getFilePath();
         byte[] bytes = FileUtils.readFileToByteArray(new File(filePath));
-        PageInfo pageInfo = DocPageInfoHelper.GetPageInfo(bytes, filePath);
+        PageInfo pageInfo = docPageInfoHelper.GetPageInfo(bytes, filePath);
         boolean success = pageInfo.isSuccess();
         String errorMsg = pageInfo.getErrorMsg();
         int pageCount = pageInfo.getPageCount();
@@ -39,19 +39,14 @@ public class DocConvertServiceImpl implements DocConvertService {
     }
 
     public ConvertDocResult convertDoc(ConvertDocArg arg) throws Exception {
-        log.info("begin convert doc,arg:{}",arg);
+        log.info("begin convert doc,arg:{}", arg);
         String path = arg.getPath();
         String originalFilePath = arg.getOriginalFilePath();
         int page = arg.getPage();
-        String dataFilePath = docConvertor.doConvert(path, originalFilePath, page);
+        int type = arg.getType();
+        String dataFilePath = docConvertor.doConvert(path, originalFilePath, page, type);
         ConvertDocResult result = ConvertDocResult.builder().dataFilePath(dataFilePath).build();
-        log.info("end convert doc,result:{}",result);
+        log.info("end convert doc,result:{}", result);
         return result;
-    }
-
-    public static void main(String[] args) throws Exception {
-        String filePath="/Users/liuq/Downloads/纷享销客使用规则.doc";
-        byte[] bytes = FileUtils.readFileToByteArray(new File(filePath));
-        PageInfo pageInfo = DocPageInfoHelper.GetPageInfo(bytes, filePath);
     }
 }

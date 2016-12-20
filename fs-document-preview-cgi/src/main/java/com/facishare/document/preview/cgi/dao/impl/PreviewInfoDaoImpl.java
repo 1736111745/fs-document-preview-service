@@ -52,10 +52,10 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     }
 
     @Override
-    public String getDataFilePath(String path, int page, String dataDir, List<String> filePathList) throws IOException {
+    public String getDataFilePath(String path, int page, String dataDir, int type, List<String> filePathList) throws IOException {
         String dataFilePath = "";
-        DocType docType= DocTypeHelper.getDocType(path);
-        String dataFileName="";
+        DocType docType = DocTypeHelper.getDocType(path);
+        String dataFileName = "";
         int pageIndex = page + 1;
         if (filePathList != null && filePathList.size() > 0) {
             switch (docType) {
@@ -68,12 +68,19 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
                     break;
                 }
                 case Word: {
-                    log.info("pageIndex:{}",pageIndex);
-                    dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".jpg") || (x.equals(pageIndex + ".png") || x.equals(pageIndex + ".svg"))).findFirst().orElse("");
+                    if (type == 1) {
+                        dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".svg")).findFirst().orElse("");
+                    } else {
+                        dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".jpg") || (x.equals(pageIndex + ".png"))).findFirst().orElse("");
+                    }
                     break;
                 }
                 case PPT: {
-                    dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".jpg") || (x.equals(pageIndex + ".png") || x.equals(pageIndex + ".svg"))).findFirst().orElse("");
+                    if (type == 1) {
+                        dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".svg")).findFirst().orElse("");
+                    } else {
+                        dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".jpg") || (x.equals(pageIndex + ".png"))).findFirst().orElse("");
+                    }
                     break;
                 }
             }

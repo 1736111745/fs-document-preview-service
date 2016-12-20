@@ -114,7 +114,7 @@ public class PreviewController {
                 PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
                 if (previewInfo != null) {
                     if(pageIndex<previewInfo.getPageCount()) {
-                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), previewInfo.getFilePathList());
+                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(),1, previewInfo.getFilePathList());
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
                             FileOutPuter.outPut(response, dataFilePath);
                         } else {
@@ -218,7 +218,7 @@ public class PreviewController {
                 PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
                 if (previewInfo != null) {
                     if(pageIndex<previewInfo.getPageCount()) {
-                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), previewInfo.getFilePathList());
+                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(),2,previewInfo.getFilePathList());
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
                             FileOutPuter.outPut(response, dataFilePath, width);
                         } else {

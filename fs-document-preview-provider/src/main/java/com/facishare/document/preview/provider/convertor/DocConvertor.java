@@ -27,7 +27,7 @@ public class DocConvertor {
             }
             case Excel: {
                 IDocConvertor docConvertor = new ExcelConvertor();
-                resultFilePath = docConvertor.convert2Html(originalFilePath, page, page);
+                resultFilePath = docConvertor.convert2Html(originalFilePath, page);
                 break;
             }
             case PDF: {

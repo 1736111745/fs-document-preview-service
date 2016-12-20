@@ -20,7 +20,8 @@ public class PPTConvertor implements IDocConvertor {
     }
 
     @Override
-    public String convert2Html(String filePath, int startPageIndex, int endPageIndex) throws Exception {
-        return "";
+    public String convert2Html(String filePath, int pageIndex) throws Exception {
+        return null;
     }
+
 }

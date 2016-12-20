@@ -21,7 +21,8 @@ public class WordConvertor implements IDocConvertor {
     }
 
     @Override
-    public String convert2Html(String filePath, int startPageIndex, int endPageIndex) throws Exception {
+    public String convert2Html(String filePath, int pageIndex) throws Exception {
         return null;
     }
+
 }

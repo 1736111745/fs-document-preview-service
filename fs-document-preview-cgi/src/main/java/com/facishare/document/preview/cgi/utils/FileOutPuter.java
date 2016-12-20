@@ -62,24 +62,22 @@ public class FileOutPuter {
     }
 
     private static byte[] handlePng(String filePath, int width, HttpServletResponse response) throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         //缩略:如果制定大小就从原图中缩略到指定大小，如果不指定大小生成固定大小给手机预览使用
         SimpleImageInfo simpleImageInfo = new SimpleImageInfo(new File(filePath));
         response.setContentType("image/png");
+        int defaultWidth = 750;//手机文档预览使用
+        int aimWidth = defaultWidth;
         if (width > 0) {
-            int height = width * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
-            Thumbnails.of(filePath).forceSize(width, height).outputQuality(0.8).outputFormat("png").toOutputStream(outputStream);
-            return outputStream.toByteArray();
-        } else {
-            int fixedWidth = 800;
-            int fixedHeight = fixedWidth * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
-            String pngFileName = FilenameUtils.getName(filePath);
-            String pngFixedFilePath = FilenameUtils.concat(FilenameUtils.getFullPathNoEndSeparator(filePath), FilenameUtils.getBaseName(pngFileName) + "fixed.png");
-            File pngFixedFile = new File(pngFixedFilePath);
-            if (!pngFixedFile.exists()) {
-                Thumbnails.of(filePath).forceSize(fixedWidth, fixedHeight).outputQuality(0.8).outputFormat("png").toFile(pngFixedFile);
-            }
-            return FileUtils.readFileToByteArray(pngFixedFile);
+            aimWidth = width;
         }
+        int aimHeight = aimWidth * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
+        String pngFileName = FilenameUtils.getName(filePath);
+        String thumbPngFileName = FilenameUtils.getBaseName(pngFileName) + "_" + aimWidth + "x" + aimHeight + ".png";
+        String thumbPngFilePath = FilenameUtils.concat(FilenameUtils.getFullPathNoEndSeparator(filePath), thumbPngFileName);
+        File thumbPngFile = new File(thumbPngFilePath);
+        if (!thumbPngFile.exists()) {
+            Thumbnails.of(filePath).forceSize(aimWidth, aimHeight).outputQuality(0.8).outputFormat("png").toFile(thumbPngFile);
+        }
+        return FileUtils.readFileToByteArray(thumbPngFile);
     }
 }

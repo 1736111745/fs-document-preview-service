@@ -6,6 +6,7 @@ import com.facishare.document.preview.common.utils.DocType;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.facishare.document.preview.provider.convertor.ConvertorHelper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.poi.EncryptedDocumentException;
@@ -34,9 +35,10 @@ import java.util.List;
 @Slf4j
 @Component
 public class DocPageInfoHelper {
-    public  PageInfo GetPageInfo(byte[] data, String filePath) throws Exception {
+    public  PageInfo GetPageInfo(String filePath) throws Exception {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
+        byte[] data= FileUtils.readFileToByteArray(new File(filePath));
         log.info("begin get page count,filePath:{}", filePath);
         try {
             DocType docType = DocTypeHelper.getDocType(filePath);

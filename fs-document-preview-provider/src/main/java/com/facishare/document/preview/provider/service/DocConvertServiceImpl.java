@@ -27,8 +27,7 @@ public class DocConvertServiceImpl implements DocConvertService {
 
     public GetPageInfoResult getPageInfo(GetPageInfoArg arg) throws Exception {
         String filePath = arg.getFilePath();
-        byte[] bytes = FileUtils.readFileToByteArray(new File(filePath));
-        PageInfo pageInfo = docPageInfoHelper.GetPageInfo(bytes, filePath);
+        PageInfo pageInfo = docPageInfoHelper.GetPageInfo(filePath);
         boolean success = pageInfo.isSuccess();
         String errorMsg = pageInfo.getErrorMsg();
         int pageCount = pageInfo.getPageCount();

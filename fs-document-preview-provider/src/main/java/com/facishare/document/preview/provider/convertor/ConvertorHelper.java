@@ -36,7 +36,7 @@ public class ConvertorHelper {
     public static String toSvg(String filePath, int startPageIndex, int endPageIndex, int startIndex) {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        String args = String.format("filePath:%s,startPageIndex:%s,endPageIndex:%s,startIndex:%s", filePath, startIndex, endPageIndex, startIndex);
+        String args = String.format("filePath:%s,startPageIndex:%s,endPageIndex:%s,startIndex:%s", filePath, startPageIndex, endPageIndex, startIndex);
         log.info("start convert doc to svg,args:{}", args);
         String svgFileExt = "svg";
         String resultFilePath = "";
@@ -69,7 +69,7 @@ public class ConvertorHelper {
                 pool.returnObject(convert);
             }
             stopWatch.stop();
-            log.info("toSpg finished,args:{},cost:{}", args, stopWatch.getTime() + "ms");
+            log.info("toSvg finished,args:{},cost:{}", args, stopWatch.getTime() + "ms");
             return resultFilePath;
         }
     }
@@ -77,7 +77,7 @@ public class ConvertorHelper {
     public static String toJpg(String filePath, int startPageIndex, int endPageIndex, int startIndex) {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        String args = String.format("filePath:%s,startPageIndex:%s,endPageIndex:%s,startIndex:%s", filePath, startIndex, endPageIndex, startIndex);
+        String args = String.format("filePath:%s,startPageIndex:%s,endPageIndex:%s,startIndex:%s", filePath, startPageIndex, endPageIndex, startIndex);
         log.info("start convert doc to jpg,args:{}", args);
         String jpgFileExt = "jpg";
         String resultFilePath = "";
@@ -119,7 +119,7 @@ public class ConvertorHelper {
     public static String toPng(String filePath, int startPageIndex, int endPageIndex, int startIndex) {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        String args = String.format("filePath:%s,startPageIndex:%s,endPageIndex:%s,startIndex:%s", filePath, startIndex, endPageIndex, startIndex);
+        String args = String.format("filePath:%s,startPageIndex:%s,endPageIndex:%s,startIndex:%s", filePath, startPageIndex, endPageIndex, startIndex);
         log.info("start convert doc to png,args:{}", args);
         String pngFileExt = "png";
         String resultFilePath = "";

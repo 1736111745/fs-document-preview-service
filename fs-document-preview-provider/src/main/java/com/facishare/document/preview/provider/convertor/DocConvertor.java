@@ -17,12 +17,12 @@ public class DocConvertor {
         switch (docType) {
             case Word: {
                 IDocConvertor docConvertor = new WordConvertor();
-                resultFilePath = type == 1 ? docConvertor.convert2Svg(originalFilePath, page, page) : docConvertor.convert2Png(originalFilePath, page, page);
+                resultFilePath = type == 1 ? docConvertor.convert2Svg(originalFilePath, page+1, page+1) : docConvertor.convert2Png(originalFilePath, page, page);
                 break;
             }
             case PPT: {
                 IDocConvertor docConvertor = new PPTConvertor();
-                resultFilePath = type == 1 ? docConvertor.convert2Svg(originalFilePath, page, page) : docConvertor.convert2Png(originalFilePath, page, page);
+                resultFilePath = type == 1 ? docConvertor.convert2Svg(originalFilePath, page + 1, page + 1) : docConvertor.convert2Png(originalFilePath, page, page);
                 break;
             }
             case Excel: {

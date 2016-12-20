@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 /**
  * Created by liuq on 16/9/9.
  */
-@Component
 public class ExcelConvertor implements IDocConvertor {
     @Autowired
     ConvertorHelper convertorHelper;

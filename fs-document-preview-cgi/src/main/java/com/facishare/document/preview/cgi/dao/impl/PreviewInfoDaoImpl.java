@@ -56,26 +56,23 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         String dataFilePath = "";
         DocType docType= DocTypeHelper.getDocType(path);
         String dataFileName="";
+        int pageIndex = page + 1;
         if (filePathList != null && filePathList.size() > 0) {
             switch (docType) {
                 case PDF: {
-                    int pageIndex = page + 1;
                     dataFileName = filePathList.stream().filter(x -> (x.equals(pageIndex + ".jpg") || x.equals(pageIndex + ".png"))).findFirst().orElse("");
                     break;
                 }
                 case Excel: {
-                    int pageIndex = page + 1;
                     dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".html")).findFirst().orElse("");
                     break;
                 }
                 case Word: {
-                    int pageIndex = page + 1;
                     log.info("pageIndex:{}",pageIndex);
                     dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".jpg") || (x.equals(pageIndex + ".png") || x.equals(pageIndex + ".svg"))).findFirst().orElse("");
                     break;
                 }
                 case PPT: {
-                    int pageIndex = page;
                     dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".jpg") || (x.equals(pageIndex + ".png") || x.equals(pageIndex + ".svg"))).findFirst().orElse("");
                     break;
                 }

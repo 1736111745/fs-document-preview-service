@@ -9,9 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.springframework.stereotype.Component;
+import org.apache.commons.pool.impl.GenericObjectPool.Config;
 
 
 /**
@@ -19,21 +17,18 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 public class ConvertorHelper {
-    private static GenericObjectPool<Convert> pool;
+    private static ConvertorPoolFactory convertorPoolFactory;
+
     static {
-        GenericObjectPoolConfig config = new GenericObjectPoolConfig();
-        config.setMaxTotal(100);
-        config.setMaxIdle(50);
-        config.setMinIdle(10);
-        config.setTestOnBorrow(false);
-        config.setTestOnCreate(false);
-        config.setTestWhileIdle(false);
-        config.setJmxEnabled(false);
-        config.setMaxWaitMillis(200000);
-        pool = new GenericObjectPool<>(new ConvertFactory(), config);
+        Config config = new Config();
+        config.maxActive = 32;
+        config.maxIdle = 10;
+        config.minIdle = 5;
+        config.maxWait = 30000;
+        convertorPoolFactory = new ConvertorPoolFactory(config);
     }
 
-    public static String toSvg(String filePath, int startPageIndex, int endPageIndex, int startIndex) {
+    public static String toSvg(String filePath, int startPageIndex, int endPageIndex, int startIndex) throws Exception {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         String args = String.format("filePath:%s,startPageIndex:%s,endPageIndex:%s,startIndex:%s", filePath, startPageIndex, endPageIndex, startIndex);
@@ -42,7 +37,7 @@ public class ConvertorHelper {
         String resultFilePath = "";
         Convert convert = null;
         try {
-            convert = pool.borrowObject();
+            convert = convertorPoolFactory.getConvert();
             IPICConvertor picConvertor = convert.convertMStoPic(filePath);
             if (picConvertor != null) {
                 int resultCode = picConvertor.resultCode();
@@ -65,16 +60,14 @@ public class ConvertorHelper {
         } catch (Exception e) {
             log.error("toSvg happened exception,args:{}", args, e);
         } finally {
-            if (convert != null) {
-                pool.returnObject(convert);
-            }
+            convertorPoolFactory.releaseConvert(convert);
             stopWatch.stop();
             log.info("toSvg finished,args:{},cost:{}", args, stopWatch.getTime() + "ms");
             return resultFilePath;
         }
     }
 
-    public static String toJpg(String filePath, int startPageIndex, int endPageIndex, int startIndex) {
+    public static String toJpg(String filePath, int startPageIndex, int endPageIndex, int startIndex) throws Exception {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         String args = String.format("filePath:%s,startPageIndex:%s,endPageIndex:%s,startIndex:%s", filePath, startPageIndex, endPageIndex, startIndex);
@@ -83,7 +76,7 @@ public class ConvertorHelper {
         String resultFilePath = "";
         Convert convert = null;
         try {
-            convert = pool.borrowObject();
+            convert = convertorPoolFactory.getConvert();
             String fileExt = FilenameUtils.getExtension(filePath).toLowerCase();
             IPICConvertor picConvertor = fileExt.equals("pdf") ? convert.convertPdftoPic(filePath) : convert.convertMStoPic(filePath);
             if (picConvertor != null) {
@@ -107,16 +100,14 @@ public class ConvertorHelper {
         } catch (Exception e) {
             log.error("toJpg happened exception,args:{}", args, e);
         } finally {
-            if (convert != null) {
-                pool.returnObject(convert);
-            }
+            convertorPoolFactory.releaseConvert(convert);
             stopWatch.stop();
             log.info("toJpg finished,args:{},cost:{}", args, stopWatch.getTime() + "ms");
             return resultFilePath;
         }
     }
 
-    public static String toPng(String filePath, int startPageIndex, int endPageIndex, int startIndex) {
+    public static String toPng(String filePath, int startPageIndex, int endPageIndex, int startIndex) throws Exception {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         String args = String.format("filePath:%s,startPageIndex:%s,endPageIndex:%s,startIndex:%s", filePath, startPageIndex, endPageIndex, startIndex);
@@ -125,7 +116,7 @@ public class ConvertorHelper {
         String resultFilePath = "";
         Convert convert = null;
         try {
-            convert = pool.borrowObject();
+            convert = convertorPoolFactory.getConvert();
             String fileExt = FilenameUtils.getExtension(filePath).toLowerCase();
             IPICConvertor picConvertor = fileExt.equals("pdf") ? convert.convertPdftoPic(filePath) : convert.convertMStoPic(filePath);
             if (picConvertor != null) {
@@ -149,16 +140,14 @@ public class ConvertorHelper {
         } catch (Exception e) {
             log.error("toPng happened exception,args:{}", args, e);
         } finally {
-            if (convert != null) {
-                pool.returnObject(convert);
-            }
+            convertorPoolFactory.releaseConvert(convert);
             stopWatch.stop();
             log.info("toPng finished,args:{},cost:{}", args, stopWatch.getTime() + "ms");
             return resultFilePath;
         }
     }
 
-    public static String toHtml(String filePath, int pageIndex, int startIndex) {
+    public static String toHtml(String filePath, int pageIndex, int startIndex) throws Exception {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         String args = String.format("filePath:%s,pageIndex:%s,startIndex:%s", filePath, startIndex, startIndex);
@@ -167,7 +156,7 @@ public class ConvertorHelper {
         String resultFilePath = "";
         Convert convert = null;
         try {
-            convert = pool.borrowObject();
+            convert = convertorPoolFactory.getConvert();
             IHtmlConvertor htmlConvertor = convert.convertMStoHtml(filePath);
             if (htmlConvertor != null) {
                 int resultCode = htmlConvertor.resultCode();
@@ -190,9 +179,7 @@ public class ConvertorHelper {
         } catch (Exception e) {
             log.error("toHtml happened exception,args:{}", args, e);
         } finally {
-            if (convert != null) {
-                pool.returnObject(convert);
-            }
+            convertorPoolFactory.releaseConvert(convert);
             stopWatch.stop();
             log.info("toHtml finished,args:{},cost:{},resultFilePath:{}", args, stopWatch.getTime() + "ms", resultFilePath);
             return resultFilePath;
@@ -200,11 +187,11 @@ public class ConvertorHelper {
     }
 
 
-    public static PageInfo getWordPageCount(String filePath) {
+    public static PageInfo getWordPageCount(String filePath) throws Exception {
         PageInfo pageInfo = new PageInfo();
         Convert convert = null;
         try {
-            convert = pool.borrowObject();
+            convert = convertorPoolFactory.getConvert();
             IPICConvertor ipicConvertor = convert.convertMStoPic(filePath);
             int pageCount = ipicConvertor.getPageCount();
             pageInfo.setSuccess(true);
@@ -212,9 +199,7 @@ public class ConvertorHelper {
         } catch (Exception e) {
             log.error("getWordPageCount fail,filepath:{}", filePath, e);
         } finally {
-            if (convert != null) {
-                pool.returnObject(convert);
-            }
+            convertorPoolFactory.releaseConvert(convert);
             return pageInfo;
         }
     }

@@ -22,7 +22,7 @@ public class DocConvertor {
             }
             case PPT: {
                 IDocConvertor docConvertor = new PPTConvertor();
-                resultFilePath = type == 1 ? docConvertor.convert2Svg(originalFilePath, page, page) : docConvertor.convert2Png(originalFilePath, page, page);
+                resultFilePath = type == 1 ? docConvertor.convert2Svg(originalFilePath, page+1, page+1) : docConvertor.convert2Png(originalFilePath, page, page);
                 break;
             }
             case Excel: {

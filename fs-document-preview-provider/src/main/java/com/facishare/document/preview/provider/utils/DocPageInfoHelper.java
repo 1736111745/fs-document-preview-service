@@ -34,8 +34,6 @@ import java.util.List;
 @Slf4j
 @Component
 public class DocPageInfoHelper {
-    @Autowired
-    ConvertorHelper convertorHelper;
     public  PageInfo GetPageInfo(byte[] data, String filePath) throws Exception {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -178,7 +176,7 @@ public class DocPageInfoHelper {
     }
 
     private  PageInfo pareWord(String filePath, byte[] data) throws Exception {
-        return convertorHelper.getWordPageCount(filePath);
+        return ConvertorHelper.getWordPageCount(filePath);
     }
 
     private static PageInfo parseExcel2007(String filePath, byte[] data) throws Exception {

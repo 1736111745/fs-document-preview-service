@@ -1,6 +1,5 @@
 package com.facishare.document.preview.provider.utils;
 
-import application.dcs.IPICConvertor;
 import com.facishare.document.preview.common.model.PageInfo;
 import com.facishare.document.preview.common.utils.DocType;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
@@ -15,14 +14,11 @@ import org.apache.poi.POIXMLDocument;
 import org.apache.poi.hslf.usermodel.HSLFSlideShow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.sl.usermodel.SlideShow;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -50,7 +46,7 @@ public class DocPageInfoHelper {
                 case Excel:
                     return parseExcel(filePath, data);
                 case PPT:
-                    return parsePPT(filePath, data);
+                    return parsePPT(filePath);
                 case PDF:
                     return parsePDF(filePath, data);
                 default:
@@ -77,9 +73,8 @@ public class DocPageInfoHelper {
         return 2003;
     }
 
-    private PageInfo parsePPT(String filePath, byte[] data) throws IOException {
-        int version = checkFileVersion(data);
-        return version == 2003 ? parsePPT2003(filePath, data) : parsePPT2007(filePath, data);
+    private PageInfo parsePPT(String filePath) throws Exception {
+        return ConvertorHelper.getWordPageCount(filePath);
     }
 
     private static PageInfo parsePPT2007(String filePath, byte[] data) {

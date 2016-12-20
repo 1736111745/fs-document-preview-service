@@ -5,6 +5,7 @@ import application.dcs.IHtmlConvertor;
 import application.dcs.IPICConvertor;
 import com.facishare.document.preview.common.model.PageInfo;
 import com.facishare.document.preview.provider.utils.FilePathHelper;
+import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -49,13 +50,12 @@ public class ConvertorHelper {
         Convert convert = null;
         try {
             convert = pool.borrowObject();
-            IPICConvertor picConvertor = convert.convertMStoPic(filePath);
+            @Cleanup IPICConvertor picConvertor = convert.convertMStoPic(filePath);
             if (picConvertor != null) {
                 int resultCode = picConvertor.resultCode();
                 if (resultCode == 0) {
                     String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
                     int retCode=picConvertor.convertToSVG(startPageIndex, endPageIndex, 1.0f, baseDir);
-                    picConvertor.close();
                     if(retCode==0) {
                         String svgFilePath = FilePathHelper.getFilePath(filePath, startPageIndex, startIndex, svgFileExt);
                         if (FileUtils.getFile(svgFilePath).exists()) {
@@ -97,13 +97,12 @@ public class ConvertorHelper {
         try {
             convert = pool.borrowObject();
             String fileExt = FilenameUtils.getExtension(filePath).toLowerCase();
-            IPICConvertor picConvertor = fileExt.equals("pdf") ? convert.convertPdftoPic(filePath) : convert.convertMStoPic(filePath);
+            @Cleanup IPICConvertor picConvertor = fileExt.equals("pdf") ? convert.convertPdftoPic(filePath) : convert.convertMStoPic(filePath);
             if (picConvertor != null) {
                 int resultCode = picConvertor.resultCode();
                 if (resultCode == 0) {
                     String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
                     picConvertor.convertToJPG(startPageIndex, endPageIndex, 2f, baseDir);
-                    picConvertor.close();
                     String jpgFilePath = FilePathHelper.getFilePath(filePath, startPageIndex, startIndex, jpgFileExt);
                     if (FileUtils.getFile(jpgFilePath).exists()) {
                         resultFilePath = jpgFilePath;
@@ -139,13 +138,12 @@ public class ConvertorHelper {
         try {
             convert = pool.borrowObject();
             String fileExt = FilenameUtils.getExtension(filePath).toLowerCase();
-            IPICConvertor picConvertor = fileExt.equals("pdf") ? convert.convertPdftoPic(filePath) : convert.convertMStoPic(filePath);
+            @Cleanup IPICConvertor picConvertor = fileExt.equals("pdf") ? convert.convertPdftoPic(filePath) : convert.convertMStoPic(filePath);
             if (picConvertor != null) {
                 int resultCode = picConvertor.resultCode();
                 if (resultCode == 0) {
                     String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
                     picConvertor.convertToPNG(startPageIndex, endPageIndex, 2f, baseDir);
-                    picConvertor.close();
                     String pngFilePath = FilePathHelper.getFilePath(filePath, startPageIndex, startIndex, pngFileExt);
                     if (FileUtils.getFile(pngFilePath).exists()) {
                         resultFilePath = pngFilePath;
@@ -180,14 +178,13 @@ public class ConvertorHelper {
         Convert convert = null;
         try {
             convert = pool.borrowObject();
-            IHtmlConvertor htmlConvertor = convert.convertMStoHtml(filePath);
+            @Cleanup IHtmlConvertor htmlConvertor = convert.convertMStoHtml(filePath);
             if (htmlConvertor != null) {
                 int resultCode = htmlConvertor.resultCode();
                 if (resultCode == 0) {
                     htmlConvertor.setNormal(true);
                     String htmlFilePath = FilePathHelper.getFilePath(filePath, pageIndex, startIndex, htmlFileExt);
                     htmlConvertor.convertToHtml(htmlFilePath, pageIndex);
-                    htmlConvertor.close();
                     if (FileUtils.getFile(htmlFilePath).exists()) {
                         resultFilePath = htmlFilePath;
                     } else {
@@ -217,9 +214,8 @@ public class ConvertorHelper {
         Convert convert = null;
         try {
             convert = pool.borrowObject();
-            IPICConvertor ipicConvertor = convert.convertMStoPic(filePath);
+            @Cleanup IPICConvertor ipicConvertor = convert.convertMStoPic(filePath);
             int pageCount = ipicConvertor.getPageCount();
-            ipicConvertor.close();
             pageInfo.setSuccess(true);
             pageInfo.setPageCount(pageCount);
         } catch (Exception e) {

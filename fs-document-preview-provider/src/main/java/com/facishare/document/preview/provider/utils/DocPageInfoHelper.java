@@ -5,6 +5,7 @@ import com.facishare.document.preview.common.model.PageInfo;
 import com.facishare.document.preview.common.utils.DocType;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.facishare.document.preview.provider.convertor.ConvertorHelper;
+import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -35,16 +36,17 @@ import java.util.List;
 @Slf4j
 @Component
 public class DocPageInfoHelper {
-    public  PageInfo GetPageInfo(String filePath) throws Exception {
+    public PageInfo GetPageInfo(String filePath) throws Exception {
+        //word只有排版后才知道页码数，excel，ppt，pdf的页码是固定的。
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        byte[] data= FileUtils.readFileToByteArray(new File(filePath));
+        byte[] data = FileUtils.readFileToByteArray(new File(filePath));
         log.info("begin get page count,filePath:{}", filePath);
         try {
             DocType docType = DocTypeHelper.getDocType(filePath);
             switch (docType) {
                 case Word:
-                    return pareWord(filePath, data);
+                    return pareWord(filePath);
                 case Excel:
                     return parseExcel(filePath, data);
                 case PPT:
@@ -61,7 +63,7 @@ public class DocPageInfoHelper {
     }
 
 
-    private  int checkFileVersion(byte[] data) throws IOException {
+    private int checkFileVersion(byte[] data) throws IOException {
         InputStream inp = new ByteArrayInputStream(data);
         if (!inp.markSupported()) {
             inp = new PushbackInputStream(inp, 8);
@@ -75,7 +77,7 @@ public class DocPageInfoHelper {
         return 2003;
     }
 
-    private  PageInfo parsePPT(String filePath, byte[] data) throws IOException {
+    private PageInfo parsePPT(String filePath, byte[] data) throws IOException {
         int version = checkFileVersion(data);
         return version == 2003 ? parsePPT2003(filePath, data) : parsePPT2007(filePath, data);
     }
@@ -83,50 +85,10 @@ public class DocPageInfoHelper {
     private static PageInfo parsePPT2007(String filePath, byte[] data) {
         PageInfo pageInfo = new PageInfo();
         try {
-            InputStream input = new ByteArrayInputStream(data);
-            XMLSlideShow ppt = new XMLSlideShow(input);
+            @Cleanup InputStream input = new ByteArrayInputStream(data);
+            @Cleanup XMLSlideShow ppt = new XMLSlideShow(input);
             pageInfo.setSuccess(true);
             pageInfo.setPageCount(ppt.getSlides().size());
-        } catch (EncryptedDocumentException e) {
-            pageInfo.setSuccess(false);
-            pageInfo.setErrorMsg("该文档是为加密文档，暂不支持预览！");
-            log.error("parse excel happened error,path:{}!", filePath, e);
-        } catch (Exception ex) {
-            pageInfo.setSuccess(false);
-            log.error("parse excel happened error,path:{}!", filePath, ex);
-        } finally {
-            return pageInfo;
-        }
-    }
-
-    private  PageInfo parseWord2007(String filePath, byte[] data) throws Exception {
-        PageInfo pageInfo = new PageInfo();
-        try {
-            InputStream input = new ByteArrayInputStream(data);
-            XWPFDocument docx = new XWPFDocument(input);
-            int pageCount = docx.getProperties().getExtendedProperties().getUnderlyingProperties().getPages();//总页数
-            pageInfo.setSuccess(true);
-            pageInfo.setPageCount(pageCount);
-        } catch (EncryptedDocumentException e) {
-            pageInfo.setSuccess(false);
-            pageInfo.setErrorMsg("该文档是为加密文档，暂不支持预览！");
-            log.error("parse excel happened error,path:{}!", filePath, e);
-        } catch (Exception ex) {
-            pageInfo.setSuccess(false);
-            log.error("parse excel happened error,path:{}!", filePath, ex);
-        } finally {
-            return pageInfo;
-        }
-
-    }
-
-    private  PageInfo parseWord2003(String filePath, byte[] data) throws Exception {
-        PageInfo pageInfo = new PageInfo();
-        try {
-            WordExtractor doc = new WordExtractor(new FileInputStream(filePath));
-            int pageCount = doc.getSummaryInformation().getPageCount();//总页数
-            pageInfo.setSuccess(true);
-            pageInfo.setPageCount(pageCount);
         } catch (EncryptedDocumentException e) {
             pageInfo.setSuccess(false);
             pageInfo.setErrorMsg("该文档是为加密文档，暂不支持预览！");
@@ -138,11 +100,12 @@ public class DocPageInfoHelper {
         return pageInfo;
     }
 
+
     private static PageInfo parsePPT2003(String filePath, byte[] data) {
         PageInfo pageInfo = new PageInfo();
         try {
-            InputStream input = new ByteArrayInputStream(data);
-            SlideShow ppt = new HSLFSlideShow(input);
+            @Cleanup InputStream input = new ByteArrayInputStream(data);
+            @Cleanup SlideShow ppt = new HSLFSlideShow(input);
             pageInfo.setSuccess(true);
             pageInfo.setPageCount(ppt.getSlides().size());
         } catch (EncryptedDocumentException e) {
@@ -152,22 +115,21 @@ public class DocPageInfoHelper {
         } catch (Exception ex) {
             pageInfo.setSuccess(false);
             log.error("parse excel happened error,path:{}!", filePath, ex);
-        } finally {
-            return pageInfo;
         }
+        return pageInfo;
     }
 
-    private  PageInfo parseExcel(String filePath, byte[] data) throws Exception {
+    private PageInfo parseExcel(String filePath, byte[] data) throws Exception {
         int version = checkFileVersion(data);
         return version == 2003 ? parseExcel2003(filePath, data) : parseExcel2007(filePath, data);
     }
 
 
-    private  PageInfo parsePDF(String filePath, byte[] data) throws IOException {
+    private PageInfo parsePDF(String filePath, byte[] data) throws IOException {
         PageInfo pageInfo = new PageInfo();
         try {
-            InputStream input = new ByteArrayInputStream(data);
-            PDDocument doc = PDDocument.load(input);
+            @Cleanup InputStream input = new ByteArrayInputStream(data);
+            @Cleanup PDDocument doc = PDDocument.load(input);
             pageInfo.setSuccess(true);
             pageInfo.setPageCount(doc.getNumberOfPages());
         } catch (Exception ex) {
@@ -177,15 +139,15 @@ public class DocPageInfoHelper {
         return pageInfo;
     }
 
-    private  PageInfo pareWord(String filePath, byte[] data) throws Exception {
+    private PageInfo pareWord(String filePath) throws Exception {
         return ConvertorHelper.getWordPageCount(filePath);
     }
 
     private static PageInfo parseExcel2007(String filePath, byte[] data) throws Exception {
         PageInfo pageInfo = new PageInfo();
         try {
-            InputStream input = new ByteArrayInputStream(data);
-            XSSFWorkbook workbook = new XSSFWorkbook(input);
+            @Cleanup InputStream input = new ByteArrayInputStream(data);
+            @Cleanup XSSFWorkbook workbook = new XSSFWorkbook(input);
             int pageCount = workbook.getNumberOfSheets();
             List<String> sheetNames = new ArrayList<>();
             for (int i = 0; i < pageCount; i++) {
@@ -216,8 +178,8 @@ public class DocPageInfoHelper {
     private static PageInfo parseExcel2003(String filePath, byte[] data) throws Exception {
         PageInfo pageInfo = new PageInfo();
         try {
-            InputStream input = new ByteArrayInputStream(data);
-            HSSFWorkbook hs = new HSSFWorkbook(input);
+            @Cleanup InputStream input = new ByteArrayInputStream(data);
+            @Cleanup HSSFWorkbook hs = new HSSFWorkbook(input);
             int pageCount = hs.getNumberOfSheets();
             List<String> sheetNames = new ArrayList<>();
             for (int i = 0; i < pageCount; i++) {

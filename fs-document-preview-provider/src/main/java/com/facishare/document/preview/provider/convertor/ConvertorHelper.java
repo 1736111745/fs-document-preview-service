@@ -55,7 +55,7 @@ public class ConvertorHelper {
                 int resultCode = picConvertor.resultCode();
                 if (resultCode == 0) {
                     String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
-                    int retCode=picConvertor.convertToSVG(startPageIndex, endPageIndex, 1.0f, baseDir);
+                    int retCode=picConvertor.convertToSVG(startPageIndex, endPageIndex, 0.5f, baseDir);
                     if(retCode==0) {
                         String svgFilePath = FilePathHelper.getFilePath(filePath, startPageIndex, startIndex, svgFileExt);
                         if (FileUtils.getFile(svgFilePath).exists()) {

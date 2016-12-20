@@ -113,23 +113,30 @@ public class PreviewController {
             if (previewInfoEx.isSuccess()) {
                 PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
                 if (previewInfo != null) {
-                    String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), previewInfo.getFilePathList());
-                    if (!Strings.isNullOrEmpty(dataFilePath)) {
-                        FileOutPuter.outPut(response, dataFilePath);
-                    } else {
-                        String originalFilePath = previewInfo.getOriginalFilePath();
-                        ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(1).build();
-                        log.info("begin do convert,arg:{}", convertDocArg);
-                        ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
-                        log.info("end do convert,result:{}", convertDocResult);
-                        dataFilePath = convertDocResult.getDataFilePath();
+                    if(pageIndex<previewInfo.getPageCount()) {
+                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), previewInfo.getFilePathList());
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
-                            previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
                             FileOutPuter.outPut(response, dataFilePath);
                         } else {
-                            log.warn("can't resolve path:{},page:{}", path, page);
-                            response.setStatus(404);
+                            String originalFilePath = previewInfo.getOriginalFilePath();
+                            ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(1).build();
+                            log.info("begin do convert,arg:{}", convertDocArg);
+                            ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
+                            log.info("end do convert,result:{}", convertDocResult);
+                            dataFilePath = convertDocResult.getDataFilePath();
+                            if (!Strings.isNullOrEmpty(dataFilePath)) {
+                                previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
+                                FileOutPuter.outPut(response, dataFilePath);
+                            } else {
+                                log.warn("can't resolve path:{},page:{}", path, page);
+                                response.setStatus(404);
+                            }
                         }
+                    }
+                    else
+                    {
+                        log.warn("invalid page,path:{},page:{}", path, page);
+                        response.setStatus(400);
                     }
                 } else {
                     log.warn("can't resolve path:{},page:{}", path, page);
@@ -210,21 +217,28 @@ public class PreviewController {
             if (previewInfoEx.isSuccess()) {
                 PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
                 if (previewInfo != null) {
-                    String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), previewInfo.getFilePathList());
-                    if (!Strings.isNullOrEmpty(dataFilePath)) {
-                        FileOutPuter.outPut(response, dataFilePath, width);
-                    } else {
-                        String originalFilePath = previewInfo.getOriginalFilePath();
-                        ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(2).build();
-                        ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
-                        dataFilePath = convertDocResult.getDataFilePath();
+                    if(pageIndex<previewInfo.getPageCount()) {
+                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), previewInfo.getFilePathList());
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
-                            previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
                             FileOutPuter.outPut(response, dataFilePath, width);
                         } else {
-                            log.warn("can't resolve path:{},page:{}", path, pageIndex);
-                            response.setStatus(404);
+                            String originalFilePath = previewInfo.getOriginalFilePath();
+                            ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(2).build();
+                            ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
+                            dataFilePath = convertDocResult.getDataFilePath();
+                            if (!Strings.isNullOrEmpty(dataFilePath)) {
+                                previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
+                                FileOutPuter.outPut(response, dataFilePath, width);
+                            } else {
+                                log.warn("can't resolve path:{},page:{}", path, pageIndex);
+                                response.setStatus(404);
+                            }
                         }
+                    }
+                    else
+                    {
+                        log.warn("invalid page,path:{},page:{}", path, pageIndex);
+                        response.setStatus(400);
                     }
                 } else {
                     log.warn("can't resolve path:{},page:{}", path, pageIndex);

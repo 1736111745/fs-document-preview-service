@@ -54,13 +54,19 @@ public class ConvertorHelper {
                 int resultCode = picConvertor.resultCode();
                 if (resultCode == 0) {
                     String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
-                    picConvertor.convertToSVG(startPageIndex, endPageIndex, 1.0f, baseDir);
+                    int retCode=picConvertor.convertToSVG(startPageIndex, endPageIndex, 1.0f, baseDir);
                     picConvertor.close();
-                    String svgFilePath = FilePathHelper.getFilePath(filePath, startPageIndex, startIndex, svgFileExt);
-                    if (FileUtils.getFile(svgFilePath).exists()) {
-                        resultFilePath = svgFilePath;
-                    } else {
-                        log.warn("convert2Svg completed,but aim file does't create,args:{},aim file:{}", args, svgFilePath);
+                    if(retCode==0) {
+                        String svgFilePath = FilePathHelper.getFilePath(filePath, startPageIndex, startIndex, svgFileExt);
+                        if (FileUtils.getFile(svgFilePath).exists()) {
+                            resultFilePath = svgFilePath;
+                        } else {
+                            log.warn("convert2Svg completed,but aim file does't create,args:{},aim file:{}", args, svgFilePath);
+                        }
+                    }
+                    else
+                    {
+                        log.warn("convert2Svg completed,but ret code is:{}",retCode, args);
                     }
                 } else {
                     log.warn("get picConvertor fail,args:{},resultCode:{}", args, resultCode);

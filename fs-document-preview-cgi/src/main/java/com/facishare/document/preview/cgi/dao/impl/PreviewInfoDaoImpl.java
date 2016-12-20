@@ -54,6 +54,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         String dataFilePath = "";
         String fileExtension = FilenameUtils.getExtension(path).toLowerCase();
         fileExtension = fileExtension.substring(0, fileExtension.length() - 1);
+        log.info("getDataFilePath,path:{},dataDir:{},fileExtension",page,dataDir,fileExtension);
         String dataFileName = "";
         if (filePathList != null && filePathList.size() > 0) {
             switch (fileExtension) {
@@ -69,6 +70,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
                 }
                 case "doc": {
                     int pageIndex = page + 1;
+                    log.info("pageIndex:{}",pageIndex);
                     dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".jpg") || (x.equals(pageIndex + ".png") || x.equals(pageIndex + ".svg"))).findFirst().orElse("");
                     break;
                 }

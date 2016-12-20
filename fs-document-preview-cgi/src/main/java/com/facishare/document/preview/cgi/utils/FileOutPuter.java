@@ -35,13 +35,11 @@ public class FileOutPuter {
             OutputStream out = response.getOutputStream();
             byte[] buffer;
             try {
-                if (fileName.contains(".svg")) {
-                    buffer = handleSvg(filePath, width, response);
-                } else if (fileName.contains(".png")) {
+               if (fileName.contains(".png")) {
                     buffer = handlePng(filePath, width, response);
                 } else {
-                    buffer = handleFile(filePath, response);
-                }
+                   buffer = handleFile(filePath, response);
+               }
                 response.setContentLength(buffer.length);
                 out.write(buffer);
             } catch (Exception ex) {
@@ -62,29 +60,6 @@ public class FileOutPuter {
         response.setContentType(mime);
         return FileUtils.readFileToByteArray(new File(filePath));
     }
-
-    private static byte[] handleSvg(String filePath, int width, HttpServletResponse response) throws IOException {
-        log.info("handleSvg,filePath:{},width:{}",filePath,width);
-        if (width == 0) {
-            response.setContentType("image/svg+xml");
-            return FileUtils.readFileToByteArray(new File(filePath));
-        }
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        String svgFileName = FilenameUtils.getName(filePath);
-        String pngFilePath = FilenameUtils.concat(FilenameUtils.getFullPathNoEndSeparator(filePath), FilenameUtils.getBaseName(svgFileName) + ".png");
-        File pngFile = new File(pngFilePath);
-        if (!pngFile.exists()) {
-            ImageHandler.convertSvgToPng(filePath, pngFilePath);
-        }
-        log.info("pngFile:{}",pngFilePath);
-        //缩略
-        SimpleImageInfo simpleImageInfo = new SimpleImageInfo(pngFile);
-        int height = width * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
-        Thumbnails.of(pngFile).forceSize(width, height).outputFormat("png").toOutputStream(outputStream);
-        response.setContentType("image/png");
-        return outputStream.toByteArray();
-    }
-
 
     private static byte[] handlePng(String filePath, int width, HttpServletResponse response) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

@@ -3,9 +3,12 @@ package com.facishare.document.preview.cgi.dao.impl;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.PreviewInfo;
 import com.facishare.document.preview.common.utils.DateUtil;
+import com.facishare.document.preview.common.utils.DocType;
+import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.github.mongo.support.DatastoreExt;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -32,49 +35,46 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     private DatastoreExt dpsDataStore;
 
     @Override
+    @Synchronized
     public void savePreviewInfo(String ea, String path, String dataFilePath) {
         String dataFileName = FilenameUtils.getName(dataFilePath);
-        synchronized (this) {
-            Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
-            query.criteria("path").equal(path).criteria("ea").equal(ea);
-            PreviewInfo previewInfo = query.get();
-            List<String> filePathList = previewInfo.getFilePathList();
-            if (filePathList == null)
-                filePathList = Lists.newArrayList();
-            filePathList.add(dataFileName);
-            filePathList = filePathList.stream().sorted((o1, o2) -> NumberUtils.toInt(FilenameUtils.getBaseName(o1)) - NumberUtils.toInt(FilenameUtils.getBaseName(o2))).collect(Collectors.toList());
-            UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
-            update.set("filePathList", filePathList);
-            dpsDataStore.findAndModify(query, update);
-        }
+        Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+        query.criteria("path").equal(path).criteria("ea").equal(ea);
+        PreviewInfo previewInfo = query.get();
+        List<String> filePathList = previewInfo.getFilePathList();
+        if (filePathList == null)
+            filePathList = Lists.newArrayList();
+        filePathList.add(dataFileName);
+        filePathList = filePathList.stream().sorted((o1, o2) -> NumberUtils.toInt(FilenameUtils.getBaseName(o1)) - NumberUtils.toInt(FilenameUtils.getBaseName(o2))).collect(Collectors.toList());
+        UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
+        update.set("filePathList", filePathList);
+        dpsDataStore.findAndModify(query, update);
     }
 
     @Override
     public String getDataFilePath(String path, int page, String dataDir, List<String> filePathList) throws IOException {
         String dataFilePath = "";
-        String fileExtension = FilenameUtils.getExtension(path).toLowerCase();
-        fileExtension = fileExtension.substring(0, fileExtension.length() - 1);
-        log.info("getDataFilePath,path:{},dataDir:{},fileExtension:{}",path,dataDir,fileExtension);
-        String dataFileName = "";
+        DocType docType= DocTypeHelper.getDocType(path);
+        String dataFileName="";
         if (filePathList != null && filePathList.size() > 0) {
-            switch (fileExtension) {
-                case "pdf": {
+            switch (docType) {
+                case PDF: {
                     int pageIndex = page + 1;
                     dataFileName = filePathList.stream().filter(x -> (x.equals(pageIndex + ".jpg") || x.equals(pageIndex + ".png"))).findFirst().orElse("");
                     break;
                 }
-                case "xls": {
+                case Excel: {
                     int pageIndex = page + 1;
                     dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".html")).findFirst().orElse("");
                     break;
                 }
-                case "doc": {
+                case Word: {
                     int pageIndex = page + 1;
                     log.info("pageIndex:{}",pageIndex);
                     dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".jpg") || (x.equals(pageIndex + ".png") || x.equals(pageIndex + ".svg"))).findFirst().orElse("");
                     break;
                 }
-                case "ppt": {
+                case PPT: {
                     int pageIndex = page;
                     dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".jpg") || (x.equals(pageIndex + ".png") || x.equals(pageIndex + ".svg"))).findFirst().orElse("");
                     break;
@@ -97,26 +97,25 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
 
 
     @Override
+    @Synchronized
     public PreviewInfo initPreviewInfo(String ea, int employeeId, String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames) {
         PreviewInfo previewInfo = new PreviewInfo();
-        synchronized (this) {
-            previewInfo.setDocSize(docSize);
-            previewInfo.setDirName(FilenameUtils.getBaseName(dataDir));
-            previewInfo.setCreateTime(new Date());
-            int yyyyMMdd = DateUtil.getFormatDateInt("yyyyMMdd");
-            previewInfo.setCreateYYMMDD(yyyyMMdd);
-            previewInfo.setEa(ea);
-            previewInfo.setEmployeeId(employeeId);
-            previewInfo.setDataDir(dataDir);
-            previewInfo.setPath(path);
-            previewInfo.setSheetNames(sheetNames);
-            previewInfo.setPageCount(pageCount);
-            previewInfo.setOriginalFilePath(originalFilePath);
-            List<String> filePathList = new ArrayList<>();
-            previewInfo.setFilePathList(filePathList);
-            dpsDataStore.insert("PreviewInfo", previewInfo);
-            dpsDataStore.ensureIndexes();
-        }
+        previewInfo.setDocSize(docSize);
+        previewInfo.setDirName(FilenameUtils.getBaseName(dataDir));
+        previewInfo.setCreateTime(new Date());
+        int yyyyMMdd = DateUtil.getFormatDateInt("yyyyMMdd");
+        previewInfo.setCreateYYMMDD(yyyyMMdd);
+        previewInfo.setEa(ea);
+        previewInfo.setEmployeeId(employeeId);
+        previewInfo.setDataDir(dataDir);
+        previewInfo.setPath(path);
+        previewInfo.setSheetNames(sheetNames);
+        previewInfo.setPageCount(pageCount);
+        previewInfo.setOriginalFilePath(originalFilePath);
+        List<String> filePathList = new ArrayList<>();
+        previewInfo.setFilePathList(filePathList);
+        dpsDataStore.insert("PreviewInfo", previewInfo);
+        dpsDataStore.ensureIndexes();
         return previewInfo;
     }
 

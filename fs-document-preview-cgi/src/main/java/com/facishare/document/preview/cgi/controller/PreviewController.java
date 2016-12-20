@@ -110,7 +110,6 @@ public class PreviewController {
             int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
-            //log.info("begin get previewInfo,path:{},pageIndex:{},previewInfoEx:{}", path, pageIndex, previewInfoEx);
             if (previewInfoEx.isSuccess()) {
                 PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
                 if (previewInfo != null) {
@@ -216,7 +215,7 @@ public class PreviewController {
                         FileOutPuter.outPut(response, dataFilePath, width);
                     } else {
                         String originalFilePath = previewInfo.getOriginalFilePath();
-                        ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
+                        ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(2).build();
                         ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
                         dataFilePath = convertDocResult.getDataFilePath();
                         if (!Strings.isNullOrEmpty(dataFilePath)) {

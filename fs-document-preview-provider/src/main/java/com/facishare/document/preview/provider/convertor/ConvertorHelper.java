@@ -168,10 +168,10 @@ public class ConvertorHelper {
         }
     }
 
-    public static String toHtml(String filePath, int pageIndex, int startIndex) throws Exception {
+    public static String toHtml(String filePath, int startPageIndex, int endPageIndex, int startIndex) throws Exception {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        String args = String.format("filePath:%s,pageIndex:%s,startIndex:%s", filePath, startIndex, startIndex);
+        String args = String.format("filePath:%s,startPageIndex:%s,endPageIndex:%s,startIndex:%s", filePath, startPageIndex, endPageIndex, startIndex);
         log.info("start convert doc to html,args:{}", args);
         String htmlFileExt = "html";
         String resultFilePath = "";
@@ -183,8 +183,8 @@ public class ConvertorHelper {
                 int resultCode = htmlConvertor.resultCode();
                 if (resultCode == 0) {
                     htmlConvertor.setNormal(true);
-                    String htmlFilePath = FilePathHelper.getFilePath(filePath, pageIndex, startIndex, htmlFileExt);
-                    htmlConvertor.convertToHtml(htmlFilePath, pageIndex);
+                    String htmlFilePath=FilePathHelper.getFilePath(filePath,startPageIndex,startIndex,htmlFileExt);
+                    htmlConvertor.convertToHtml(htmlFilePath, startPageIndex,endPageIndex);
                     if (FileUtils.getFile(htmlFilePath).exists()) {
                         resultFilePath = htmlFilePath;
                     } else {
@@ -227,4 +227,5 @@ public class ConvertorHelper {
             return pageInfo;
         }
     }
+
 }

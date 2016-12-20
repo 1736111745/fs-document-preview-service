@@ -64,7 +64,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
                     break;
                 }
                 case Excel: {
-                    dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".html")).findFirst().orElse("");
+                    dataFileName = filePathList.stream().filter(x -> x.equals(page + ".html")).findFirst().orElse("");
                     break;
                 }
                 case Word: {

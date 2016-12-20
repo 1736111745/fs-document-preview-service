@@ -21,10 +21,13 @@ public class IndexController {
     DocPageInfoHelper docPageInfoHelper;
     @RequestMapping(method = RequestMethod.GET)
     public String index() throws Exception {
-        String filePath = "/Users/liuq/Downloads/a.docx";
-        docPageInfoHelper.GetPageInfo(filePath);
-        String a=docConvertor.doConvert("a.docx", filePath,0,1);
-        log.info(a);
+//        String filePath = "/Users/liuq/doctest/excel/监理费支付台账.xlsx";
+//        docConvertor.doConvert("a.xlsx", filePath,0,1);
+//        docConvertor.doConvert("a.xlsx", filePath,1,1);
+//        docConvertor.doConvert("a.xlsx", filePath,2,1);
+//        docConvertor.doConvert("a.xlsx", filePath,3,1);
+//        docConvertor.doConvert("a.xlsx", filePath,4,1);
+//        docConvertor.doConvert("a.xlsx", filePath,5,1);
         return "index";
     }
 }

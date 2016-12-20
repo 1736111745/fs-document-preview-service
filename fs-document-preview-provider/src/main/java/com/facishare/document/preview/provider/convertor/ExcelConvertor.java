@@ -35,7 +35,7 @@ public class ExcelConvertor implements IDocConvertor {
 
     @Override
     public String convert2Html(String filePath, int startPageIndex, int endPageIndex) throws Exception {
-        String resultFilePath = ConvertorHelper.toHtml(filePath, startPageIndex, endPageIndex);
+        String resultFilePath = ConvertorHelper.toHtml(filePath, startPageIndex, endPageIndex,0);
         if (!Strings.isNullOrEmpty(resultFilePath)) {
             File file = new File(resultFilePath);
             String dirName = FilenameUtils.getBaseName(FilenameUtils.getFullPathNoEndSeparator(filePath));

@@ -219,6 +219,7 @@ public class ConvertorHelper {
             convert = pool.borrowObject();
             IPICConvertor ipicConvertor = convert.convertMStoPic(filePath);
             int pageCount = ipicConvertor.getPageCount();
+            ipicConvertor.close();
             pageInfo.setSuccess(true);
             pageInfo.setPageCount(pageCount);
         } catch (Exception e) {

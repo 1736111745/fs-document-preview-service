@@ -18,11 +18,9 @@ import org.springframework.stereotype.Component;
  * Created by liuq on 2016/11/9.
  */
 @Slf4j
-@Component
 public class ConvertorHelper {
-    private GenericObjectPool<Convert> pool;
-
-    public ConvertorHelper() {
+    private static GenericObjectPool<Convert> pool;
+    static {
         GenericObjectPoolConfig config = new GenericObjectPoolConfig();
         config.setMaxTotal(100);
         config.setMaxIdle(50);
@@ -35,7 +33,7 @@ public class ConvertorHelper {
         pool = new GenericObjectPool<>(new ConvertFactory(), config);
     }
 
-    public String toSvg(String filePath, int startPageIndex, int endPageIndex, int startIndex) {
+    public static String toSvg(String filePath, int startPageIndex, int endPageIndex, int startIndex) {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         String args = String.format("filePath:%s,startPageIndex:%s,endPageIndex:%s,startIndex:%s", filePath, startIndex, endPageIndex, startIndex);
@@ -76,7 +74,7 @@ public class ConvertorHelper {
         }
     }
 
-    public String toJpg(String filePath, int startPageIndex, int endPageIndex, int startIndex) {
+    public static String toJpg(String filePath, int startPageIndex, int endPageIndex, int startIndex) {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         String args = String.format("filePath:%s,startPageIndex:%s,endPageIndex:%s,startIndex:%s", filePath, startIndex, endPageIndex, startIndex);
@@ -118,7 +116,7 @@ public class ConvertorHelper {
         }
     }
 
-    public String toPng(String filePath, int startPageIndex, int endPageIndex, int startIndex) {
+    public static String toPng(String filePath, int startPageIndex, int endPageIndex, int startIndex) {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         String args = String.format("filePath:%s,startPageIndex:%s,endPageIndex:%s,startIndex:%s", filePath, startIndex, endPageIndex, startIndex);
@@ -160,7 +158,7 @@ public class ConvertorHelper {
         }
     }
 
-    public String toHtml(String filePath, int pageIndex, int startIndex) {
+    public static String toHtml(String filePath, int pageIndex, int startIndex) {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         String args = String.format("filePath:%s,pageIndex:%s,startIndex:%s", filePath, startIndex, startIndex);
@@ -202,7 +200,7 @@ public class ConvertorHelper {
     }
 
 
-    public PageInfo getWordPageCount(String filePath) {
+    public static PageInfo getWordPageCount(String filePath) {
         PageInfo pageInfo = new PageInfo();
         Convert convert = null;
         try {

@@ -49,6 +49,7 @@ public class ConvertFactory implements PooledObjectFactory<Convert> {
     convert.setHtmlTitle("文档预览");
     convert.setShowTitle(true);
     convert.setShowPic(true);
+    convert.setXlsxMaxRowCol(1000,1000);//TODO:咨询下永中，如果超过了会如何处理
     convert.setEmptyCount(100, 200);
     convert.setHtmlEncoding("UTF-8");
     convert.setConvertForPhone(true);

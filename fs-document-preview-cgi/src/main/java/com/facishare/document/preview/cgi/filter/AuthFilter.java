@@ -49,6 +49,7 @@ public class AuthFilter extends OncePerRequestFilter {
                 } else {
                     log.warn("requestUri:{},is invalid auth", requestUri);
                     response.setStatus(403);
+                    return;
                 }
 
             } else {

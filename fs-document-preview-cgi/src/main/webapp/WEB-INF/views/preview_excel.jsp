@@ -20,7 +20,7 @@
     <link href="<%=request.getContextPath()%>/static/common/bootstrap.min.css" rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/common/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="<%=request.getContextPath()%>/static/common/style.css" rel="stylesheet">
-    <link href="<%=request.getContextPath()%>/static/css/excel.css?ts=v=<%=request.getAttribute("sv")%>"
+    <link href="<%=request.getContextPath()%>/static/css/excel.css?v=<%=request.getAttribute("sv")%>"
           rel="stylesheet">
     <script type="application/javascript" src="<%=request.getContextPath()%>/static/common/bootstrap.min.js"></script>
     <script type="text/javascript"

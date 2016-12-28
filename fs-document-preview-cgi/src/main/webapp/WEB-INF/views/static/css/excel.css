@@ -6,6 +6,7 @@ body, html {
 }
 
 #content {
+    position: relative;
     overflow-x: auto;
     overflow-y: scroll;
     width: 100%;

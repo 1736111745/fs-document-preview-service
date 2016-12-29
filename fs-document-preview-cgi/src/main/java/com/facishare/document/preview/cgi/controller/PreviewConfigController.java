@@ -33,10 +33,10 @@ public class PreviewConfigController {
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
         boolean newway = gray.isAllow(grayConfig, user);
-        String path=safteGetRequestParameter(request,"path");
+        String name=safteGetRequestParameter(request,"name");
         boolean useNewWay=true;
-        if(!Strings.isNullOrEmpty(path)) {
-            String extension = FilenameUtils.getExtension(path).toLowerCase();
+        if(!Strings.isNullOrEmpty(name)) {
+            String extension = FilenameUtils.getExtension(name).toLowerCase();
             if (allowPreviewExtension.indexOf(extension) == -1) {
                 useNewWay = false;
             }

@@ -33,7 +33,6 @@ public class ResourceController {
     public void getPreviewStaticContent(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
         String baseDir = previewInfoDao.getBaseDir(folder);
         String filePath = baseDir + "/js/" + fileName;
-        response.setHeader("Cache- Control", "max-age=315360000"); // HTTP/1.1
         fileOutPutor.outPut(response, filePath, 0);
     }
 }

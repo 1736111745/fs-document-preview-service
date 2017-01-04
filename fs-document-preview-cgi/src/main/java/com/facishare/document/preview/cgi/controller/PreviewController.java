@@ -13,6 +13,7 @@ import com.facishare.document.preview.cgi.utils.FileOutPuter;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.cgi.utils.RequestParamsHelper;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
+import com.fxiaoke.common.Guard;
 import com.fxiaoke.metrics.CounterService;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;

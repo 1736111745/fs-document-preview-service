@@ -44,7 +44,7 @@ public class ConvertFactory implements PooledObjectFactory<Convert> {
   @Override
   public PooledObject<Convert> makeObject() throws Exception {
     Convert convert = new Convert(CONFIG_DIR);
-    convert.setTempPath(new PathHelper().getConvertTempPath());
+    //convert.setTempPath(new PathHelper().getConvertTempPath());
     convert.setAutoDeleteTempFiles(true);
     convert.setHtmlTitle("文档预览");
     convert.setShowTitle(true);

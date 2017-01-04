@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,7 +46,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         if (filePathList == null)
             filePathList = Lists.newArrayList();
         filePathList.add(dataFileName);
-        filePathList = filePathList.stream().sorted((o1, o2) -> NumberUtils.toInt(FilenameUtils.getBaseName(o1)) - NumberUtils.toInt(FilenameUtils.getBaseName(o2))).collect(Collectors.toList());
+        filePathList = filePathList.stream().sorted(Comparator.comparingInt(o -> NumberUtils.toInt(FilenameUtils.getBaseName(o)))).collect(Collectors.toList());
         UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
         update.set("filePathList", filePathList);
         dpsDataStore.findAndModify(query, update);

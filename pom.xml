@@ -18,6 +18,4 @@
         <module>fs-document-preview-api</module>
         <module>fs-document-preview-common</module>
     </modules>
-
-
 </project>

@@ -10,5 +10,5 @@
     <dubbo:registry address="${dubbo.registry.address}"/>
     <dubbo:service interface="com.facishare.document.preview.api.service.DocConvertService" ref="docConvertService"
                    protocol="dubbo"  timeout="30000"/>
-    <dubbo:provider threadpool="cached" threads="300" queues="50" filter="tracerpc"/>
+    <dubbo:provider threadpool="cached" threads="300" queues="50" filter="tracerpc" version="1.0"/>
 </beans>

@@ -613,6 +613,11 @@
             <artifactId>poi</artifactId>
             <version>3.15.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.monitorjbl</groupId>
+            <artifactId>xlsx-streamer</artifactId>
+            <version>1.0.1</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

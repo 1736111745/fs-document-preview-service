@@ -40,7 +40,7 @@ public class FileOutPuter {
                 } else {
                    buffer = handleFile(filePath, response);
                 }
-                response.setHeader("Cache- Control", "max-age=315360000"); // HTTP/1.1
+                response.setHeader("Cache-Control", "max-age=315360000"); // HTTP/1.1
                 response.setContentLength(buffer.length);
                 out.write(buffer);
             } catch (Exception ex) {

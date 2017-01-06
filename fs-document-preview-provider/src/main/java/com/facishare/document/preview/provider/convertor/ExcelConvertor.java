@@ -78,7 +78,7 @@ public class ExcelConvertor implements IDocConvertor {
             html = "<style>" + css + "</style>" + html;
             FileUtils.writeStringToFile(file, html, false);
         }
-        catch (JxltEngine.Exception ex)
+        catch(Exception ex)
         {
 
         }

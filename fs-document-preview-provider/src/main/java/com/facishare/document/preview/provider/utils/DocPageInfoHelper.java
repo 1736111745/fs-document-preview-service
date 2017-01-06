@@ -4,7 +4,7 @@ import com.facishare.document.preview.common.model.PageInfo;
 import com.facishare.document.preview.common.utils.DocType;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.facishare.document.preview.provider.convertor.ConvertorHelper;
-import com.monitorjbl.xlsx.StreamingReader;
+import jxl.Workbook;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -15,8 +15,6 @@ import org.apache.poi.POIXMLDocument;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.dom4jyz.Attribute;
 import org.dom4jyz.Document;
 import org.dom4jyz.DocumentHelper;
@@ -29,6 +27,8 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
+
+//import org.apache.poi.ss.usermodel.Workbook;
 
 
 /**
@@ -108,43 +108,44 @@ public class DocPageInfoHelper {
     }
 
     private static PageInfo parseExcel2007(String filePath, byte[] data) throws Exception {
-        PageInfo pageInfo = new PageInfo();
-        InputStream ins = null;
-        Workbook workbook = null;
-        try {
-            ins = new ByteArrayInputStream(data);
-            workbook = StreamingReader.builder().open(ins);
-            int pageCount = workbook.getNumberOfSheets();
-            List<String> sheetNames = new ArrayList<>();
-            for (int i = 0; i < pageCount; i++) {
-                Sheet xssfSheet = workbook.getSheetAt(i);
-                String sheetName = xssfSheet.getSheetName();
-                boolean isHidden = false;
-                String hiddenFlag = isHidden ? "_$h1$" : "";
-                boolean isActive = i==0;
-                String activeFlag = isActive ? "_$a1$" : "";
-                sheetName = sheetName + hiddenFlag + activeFlag;
-                sheetNames.add(sheetName);
-            }
-            pageInfo.setSuccess(true);
-            pageInfo.setPageCount(pageCount);
-            pageInfo.setSheetNames(sheetNames);
-            return pageInfo;
-        } catch (EncryptedDocumentException e) {
-            pageInfo.setSuccess(false);
-            pageInfo.setErrorMsg("该文档是为加密文档，暂不支持预览！");
-            log.error("parse excel happened error,path:{}!", filePath, e);
-        } catch (Exception ex) {
-            pageInfo.setSuccess(false);
-            log.error("parse excel happened error,path:{}!", filePath, ex);
-        }
-        finally {
-            if (ins != null)
-                ins.close();
-            if (workbook != null)
-                workbook.close();
-        }
-        return pageInfo;
+//        PageInfo pageInfo = new PageInfo();
+//        InputStream ins = null;
+//        Workbook workbook = null;
+//        try {
+//            ins = new ByteArrayInputStream(data);
+//            workbook = StreamingReader.builder().open(ins);
+//            int pageCount = workbook.getNumberOfSheets();
+//            List<String> sheetNames = new ArrayList<>();
+//            for (int i = 0; i < pageCount; i++) {
+//                Sheet xssfSheet = workbook.getSheetAt(i);
+//                String sheetName = xssfSheet.getSheetName();
+//                boolean isHidden = false;
+//                String hiddenFlag = isHidden ? "_$h1$" : "";
+//                boolean isActive = i==0;
+//                String activeFlag = isActive ? "_$a1$" : "";
+//                sheetName = sheetName + hiddenFlag + activeFlag;
+//                sheetNames.add(sheetName);
+//            }
+//            pageInfo.setSuccess(true);
+//            pageInfo.setPageCount(pageCount);
+//            pageInfo.setSheetNames(sheetNames);
+//            return pageInfo;
+//        } catch (EncryptedDocumentException e) {
+//            pageInfo.setSuccess(false);
+//            pageInfo.setErrorMsg("该文档是为加密文档，暂不支持预览！");
+//            log.error("parse excel happened error,path:{}!", filePath, e);
+//        } catch (Exception ex) {
+//            pageInfo.setSuccess(false);
+//            log.error("parse excel happened error,path:{}!", filePath, ex);
+//        }
+//        finally {
+//            if (ins != null)
+//                ins.close();
+//            if (workbook != null)
+//                workbook.close();
+//        }
+//        return pageInfo;
+        return null;
     }
 
     private static PageInfo parseExcel2003(String filePath, byte[] data) throws Exception {
@@ -179,6 +180,26 @@ public class DocPageInfoHelper {
     }
 
     public static void main(String[] args) throws Exception {
+
+        String file01="/Users/liuq/Downloads/意大利高美价格表.xls";
+        StopWatch stopWatch=new StopWatch();
+        stopWatch.start();
+        Workbook workbook = Workbook.getWorkbook(new File(file01));
+        System.out.println("Number of sheets in this workbook : " + workbook.getNumberOfSheets());
+
+        String [] sheetNames = workbook.getSheetNames();
+
+        stopWatch.stop();
+
+        System.out.println(stopWatch.getTime());
+
+        for (int i = 0 ; i < sheetNames.length ; i ++ ) {
+            System.out.println("Sheet Name[" + i + "] = " + sheetNames[i]);
+        }
+
+        //Close and free allocated memory
+        workbook.close();
+
         String file = "/Users/liuq/Downloads/kylfklwv.xlsx";
         ZipFile zf = new ZipFile(file);
         InputStream in = new BufferedInputStream(new FileInputStream(file));

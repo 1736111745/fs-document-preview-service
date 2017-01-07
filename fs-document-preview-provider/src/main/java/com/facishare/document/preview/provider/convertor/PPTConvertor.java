@@ -11,7 +11,7 @@ public class PPTConvertor implements IDocConvertor {
 
     @Override
     public String convert2Png(String filePath, int startPageIndex, int endPageIndex) throws Exception {
-        return ConvertorHelper.toPng(filePath,startPageIndex,endPageIndex,0);
+        return ConvertorHelper.toPng(filePath,startPageIndex,endPageIndex,1);
     }
 
     @Override

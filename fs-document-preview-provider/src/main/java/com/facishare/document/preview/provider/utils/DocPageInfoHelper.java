@@ -1,24 +1,23 @@
 package com.facishare.document.preview.provider.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.facishare.document.preview.common.model.PageInfo;
 import com.facishare.document.preview.common.utils.DocType;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.facishare.document.preview.provider.convertor.ConvertorHelper;
-import jxl.Workbook;
+import com.facishare.document.preview.provider.model.SheetInfo;
+import com.fxiaoke.excel.Excel;
+import com.fxiaoke.excel.Sheet;
+import com.google.common.collect.Lists;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.POIXMLDocument;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.dom4jyz.Attribute;
-import org.dom4jyz.Document;
-import org.dom4jyz.DocumentHelper;
-import org.dom4jyz.Element;
+import org.dom4jyz.*;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -108,108 +107,64 @@ public class DocPageInfoHelper {
     }
 
     private static PageInfo parseExcel2007(String filePath, byte[] data) throws Exception {
-//        PageInfo pageInfo = new PageInfo();
-//        InputStream ins = null;
-//        Workbook workbook = null;
-//        try {
-//            ins = new ByteArrayInputStream(data);
-//            workbook = StreamingReader.builder().open(ins);
-//            int pageCount = workbook.getNumberOfSheets();
-//            List<String> sheetNames = new ArrayList<>();
-//            for (int i = 0; i < pageCount; i++) {
-//                Sheet xssfSheet = workbook.getSheetAt(i);
-//                String sheetName = xssfSheet.getSheetName();
-//                boolean isHidden = false;
-//                String hiddenFlag = isHidden ? "_$h1$" : "";
-//                boolean isActive = i==0;
-//                String activeFlag = isActive ? "_$a1$" : "";
-//                sheetName = sheetName + hiddenFlag + activeFlag;
-//                sheetNames.add(sheetName);
-//            }
-//            pageInfo.setSuccess(true);
-//            pageInfo.setPageCount(pageCount);
-//            pageInfo.setSheetNames(sheetNames);
-//            return pageInfo;
-//        } catch (EncryptedDocumentException e) {
-//            pageInfo.setSuccess(false);
-//            pageInfo.setErrorMsg("该文档是为加密文档，暂不支持预览！");
-//            log.error("parse excel happened error,path:{}!", filePath, e);
-//        } catch (Exception ex) {
-//            pageInfo.setSuccess(false);
-//            log.error("parse excel happened error,path:{}!", filePath, ex);
-//        }
-//        finally {
-//            if (ins != null)
-//                ins.close();
-//            if (workbook != null)
-//                workbook.close();
-//        }
-//        return pageInfo;
-        return null;
+        List<SheetInfo> sheetInfos = getSheetsForXlsx(filePath);
+        return convertSheetInfos2PageInfo(sheetInfos);
     }
 
     private static PageInfo parseExcel2003(String filePath, byte[] data) throws Exception {
+        List<SheetInfo> sheetInfos = getSheetsForXls(filePath);
+        return convertSheetInfos2PageInfo(sheetInfos);
+    }
+
+    private static PageInfo convertSheetInfos2PageInfo(List<SheetInfo> sheetInfos) {
         PageInfo pageInfo = new PageInfo();
-        try {
-            @Cleanup InputStream input = new ByteArrayInputStream(data);
-            @Cleanup HSSFWorkbook hs = new HSSFWorkbook(input);
-            int pageCount = hs.getNumberOfSheets();
+        if (sheetInfos == null) {
+            pageInfo.setSuccess(false);
+            pageInfo.setErrorMsg("该文档是为加密文档或者已经损坏，暂不支持预览！");
+        } else {
             List<String> sheetNames = new ArrayList<>();
-            for (int i = 0; i < pageCount; i++) {
-                HSSFSheet xssfSheet = hs.getSheetAt(i);
-                String sheetName = xssfSheet.getSheetName();
-                boolean isHidden = hs.isSheetHidden(i);
+            for (int i = 0; i < sheetInfos.size(); i++) {
+                SheetInfo sheetInfo = sheetInfos.get(i);
+                String sheetName = sheetInfo.getSheetName();
+                boolean isHidden = sheetInfo.isHidden();
                 String hiddenFlag = isHidden ? "_$h1$" : "_$h0$";
-                boolean isActive = xssfSheet.isActive();
+                boolean isActive = sheetInfo.isActvie();
                 String activeFlag = isActive ? "_$a1$" : "_$a0$";
                 sheetName = sheetName + hiddenFlag + activeFlag;
                 sheetNames.add(sheetName);
             }
             pageInfo.setSuccess(true);
-            pageInfo.setPageCount(pageCount);
+            pageInfo.setPageCount(sheetInfos.size());
             pageInfo.setSheetNames(sheetNames);
-        } catch (EncryptedDocumentException e) {
-            pageInfo.setSuccess(false);
-            pageInfo.setErrorMsg("该文档是为加密文档，暂不支持预览！");
-            log.error("parse excel happened error,path:{}!", filePath, e);
-        } catch (Exception ex) {
-            pageInfo.setSuccess(false);
-            log.error("parse excel happened error,path:{}!", filePath, ex);
         }
         return pageInfo;
     }
 
-    public static void main(String[] args) throws Exception {
-
-        String file01="/Users/liuq/Downloads/意大利高美价格表.xls";
-        StopWatch stopWatch=new StopWatch();
-        stopWatch.start();
-        Workbook workbook = Workbook.getWorkbook(new File(file01));
-        System.out.println("Number of sheets in this workbook : " + workbook.getNumberOfSheets());
-
-        String [] sheetNames = workbook.getSheetNames();
-
-        stopWatch.stop();
-
-        System.out.println(stopWatch.getTime());
-
-        for (int i = 0 ; i < sheetNames.length ; i ++ ) {
-            System.out.println("Sheet Name[" + i + "] = " + sheetNames[i]);
+    private static List<SheetInfo> getSheetsForXls(String file) throws Exception {
+        try {
+            Excel excel = new Excel(new File(file));
+            List<Sheet> sheets = excel.parse();
+            List<SheetInfo> sheetInfos = Lists.newArrayList();
+            for (Sheet sheet : sheets) {
+                SheetInfo sheetInfo = SheetInfo.builder().isHidden(sheet.getState()==1).sheetName(sheet.getName()).build();
+                sheetInfos.add(sheetInfo);
+            }
+            sheetInfos.get(0).setActvie(true);
+            return sheetInfos;
+        } catch (Exception e) {
+            return null;
         }
+    }
 
-        //Close and free allocated memory
-        workbook.close();
-
-        String file = "/Users/liuq/Downloads/kylfklwv.xlsx";
-        ZipFile zf = new ZipFile(file);
-        InputStream in = new BufferedInputStream(new FileInputStream(file));
-        ZipInputStream zin = new ZipInputStream(in);
-        ZipEntry ze;
-        String workBookXml = "";
-        while ((ze = zin.getNextEntry()) != null) {
-            if (ze.isDirectory()) {
-                //为空的文件夹什么都不做
-            } else {
+    private static List<SheetInfo> getSheetsForXlsx(String file) throws IOException, DocumentException {
+        try {
+            List<SheetInfo> sheetInfos = Lists.newArrayList();
+            ZipFile zf = new ZipFile(file);
+            InputStream in = new BufferedInputStream(new FileInputStream(file));
+            ZipInputStream zin = new ZipInputStream(in);
+            ZipEntry ze;
+            String workBookXml = "";
+            while ((ze = zin.getNextEntry()) != null) {
                 if (ze.getName().equals("xl/workbook.xml")) {
                     BufferedReader reader = null;
                     try {
@@ -225,29 +180,48 @@ public class DocPageInfoHelper {
                     break;
                 }
             }
+            in.close();
+            zin.close();
+            Document document = DocumentHelper.parseText(workBookXml);
+            Element root = document.getRootElement();//获取根节点
+            List sheets = root.element("sheets").elements();
+            for (Object e : sheets) {
+                Element sheet = (Element) e;
+                String sheetName = sheet.attributeValue("name");
+                Attribute state = sheet.attribute("state");
+                boolean isHidden = state != null && state.getValue().equals("hidden") ? true : false;
+                SheetInfo sheetInfo = SheetInfo.builder().sheetName(sheetName).isHidden(isHidden).build();
+                sheetInfos.add(sheetInfo);
+            }
+            int activeIndex = 0;
+            Element bookViews = root.element("bookViews");
+            if (bookViews != null) {
+                Element workbookView = bookViews.element("workbookView");
+                if (workbookView != null) {
+                    Attribute activeTab = workbookView.attribute("activeTab");
+                    if (activeTab != null) {
+                        activeIndex = NumberUtils.toInt(activeTab.getValue(), 0);
+                    }
+                }
+            }
+            sheetInfos.get(activeIndex).setActvie(true);
+            return sheetInfos;
+        } catch (Exception e) {
+            log.error("parse excel happened error,path:{}!", file, e);
+            return null;
         }
-        System.out.println(workBookXml);
-        Document document= DocumentHelper.parseText(workBookXml);
-        Element root = document.getRootElement();//获取根节点
-        getNodes(root);//从根节点开始遍历所有节点
     }
 
-    private static void getNodes(Element node){
-        System.out.println("--------------------");
+    public static void main(String[] args) throws Exception {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        String file = "/Users/liuq/Downloads/kylfklwv.xls";
+        List<SheetInfo> sheetInfos = getSheetsForXls(file);
+        stopWatch.stop();
+        System.out.println(stopWatch.getTime() + "ms");
+        String json = JSON.toJSONString(sheetInfos);
+        System.out.println(json);
 
-        //当前节点的名称、文本内容和属性
-        System.out.println("当前节点名称："+node.getName());//当前节点名称
-        System.out.println("当前节点的内容："+node.getTextTrim());//当前节点名称
-        List<Attribute> listAttr=node.attributes();//当前节点的所有属性的list
-        for(Attribute attr:listAttr){//遍历当前节点的所有属性
-            String name=attr.getName();//属性名称
-            String value=attr.getValue();//属性的值
-            System.out.println("属性名称："+name+"属性值："+value);
-        }
-        //递归遍历当前节点所有的子节点
-        List<Element> listElement=node.elements();//所有一级子节点的list
-        for(Element e:listElement){//遍历所有一级子节点
-            getNodes(e);//递归
-        }
     }
+
 }

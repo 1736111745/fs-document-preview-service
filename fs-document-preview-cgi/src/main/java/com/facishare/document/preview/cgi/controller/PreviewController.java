@@ -117,7 +117,7 @@ public class PreviewController {
                     if(pageIndex<previewInfo.getPageCount()) {
                         String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(),1, previewInfo.getFilePathList());
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
-                            FileOutPuter.outPut(response, dataFilePath);
+                            FileOutPuter.outPut(response, dataFilePath,true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
                             ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(1).build();
@@ -127,7 +127,7 @@ public class PreviewController {
                             dataFilePath = convertDocResult.getDataFilePath();
                             if (!Strings.isNullOrEmpty(dataFilePath)) {
                                 previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
-                                FileOutPuter.outPut(response, dataFilePath);
+                                FileOutPuter.outPut(response, dataFilePath,true);
                             } else {
                                 log.warn("can't resolve path:{},page:{}", path, page);
                                 response.setStatus(404);
@@ -221,7 +221,7 @@ public class PreviewController {
                     if(pageIndex<previewInfo.getPageCount()) {
                         String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(),2,previewInfo.getFilePathList());
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
-                            FileOutPuter.outPut(response, dataFilePath, width);
+                            FileOutPuter.outPut(response, dataFilePath, width,true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
                             ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(2).build();
@@ -229,7 +229,7 @@ public class PreviewController {
                             dataFilePath = convertDocResult.getDataFilePath();
                             if (!Strings.isNullOrEmpty(dataFilePath)) {
                                 previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
-                                FileOutPuter.outPut(response, dataFilePath, width);
+                                FileOutPuter.outPut(response, dataFilePath, width,true);
                             } else {
                                 log.warn("can't resolve path:{},page:{}", path, pageIndex);
                                 response.setStatus(404);

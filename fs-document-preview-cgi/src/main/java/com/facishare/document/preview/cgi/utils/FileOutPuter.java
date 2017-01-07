@@ -21,11 +21,11 @@ import java.io.OutputStream;
 @Component
 public class FileOutPuter {
 
-    public  static  void outPut(HttpServletResponse response, String filePath) throws IOException {
-        outPut(response, filePath, 0);
+    public  static  void outPut(HttpServletResponse response, String filePath,boolean needThumbnail) throws IOException {
+        outPut(response, filePath, 0,needThumbnail);
     }
 
-    public static void outPut(HttpServletResponse response, String filePath, int width) throws IOException {
+    public static void outPut(HttpServletResponse response, String filePath, int width,boolean needThumbnail) throws IOException {
         File file = new File(filePath);
         if (!file.exists()) {
             response.setStatus(404);
@@ -36,7 +36,7 @@ public class FileOutPuter {
             byte[] buffer;
             try {
                if (fileName.contains(".png")) {
-                    buffer = handlePng(filePath, width, response);
+                    buffer = handlePng(filePath, width, needThumbnail,response);
                 } else {
                    buffer = handleFile(filePath, response);
                 }
@@ -62,10 +62,13 @@ public class FileOutPuter {
         return FileUtils.readFileToByteArray(new File(filePath));
     }
 
-    private static byte[] handlePng(String filePath, int width, HttpServletResponse response) throws IOException {
+    private static byte[] handlePng(String filePath, int width,boolean needThumbnail, HttpServletResponse response) throws IOException {
         //缩略:如果制定大小就从原图中缩略到指定大小，如果不指定大小生成固定大小给手机预览使用
         SimpleImageInfo simpleImageInfo = new SimpleImageInfo(new File(filePath));
         response.setContentType("image/png");
+        if(width==0&&!needThumbnail) {
+            return FileUtils.readFileToByteArray(new File(filePath));
+        }
         int defaultWidth = 750;//手机文档预览使用
         int aimWidth = defaultWidth;
         if (width > 0) {

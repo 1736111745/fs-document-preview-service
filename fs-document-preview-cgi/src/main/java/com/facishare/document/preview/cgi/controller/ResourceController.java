@@ -33,6 +33,6 @@ public class ResourceController {
     public void getPreviewStaticContent(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
         String baseDir = previewInfoDao.getBaseDir(folder);
         String filePath = baseDir + "/js/" + fileName;
-        fileOutPutor.outPut(response, filePath, 0);
+        fileOutPutor.outPut(response, filePath, false);
     }
 }

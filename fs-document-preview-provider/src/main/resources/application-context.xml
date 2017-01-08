@@ -15,6 +15,7 @@
     <import resource="classpath:spring/spring-service.xml"/>
 
     <context:component-scan base-package="com.facishare.document.preview.provider"/>
+    <bean class="com.fxiaoke.metrics.MetricsConfiguration"/>
     <bean id="serviceProfiler" class="com.github.trace.aop.ServiceProfiler"/>
     <aop:config>
         <aop:aspect ref="serviceProfiler">

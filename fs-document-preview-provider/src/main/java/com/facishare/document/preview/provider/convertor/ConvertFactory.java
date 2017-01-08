@@ -1,7 +1,6 @@
 package com.facishare.document.preview.provider.convertor;
 
 import application.dcs.Convert;
-import com.facishare.document.preview.common.utils.PathHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;

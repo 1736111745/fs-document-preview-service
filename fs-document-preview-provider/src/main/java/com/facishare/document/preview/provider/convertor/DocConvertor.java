@@ -37,4 +37,11 @@ public class DocConvertor {
         }
         return resultFilePath;
     }
+
+    public static void main(String[] args) throws Exception {
+        String path="/Users/liuq/Downloads/【纷享公开课】高效时间管理.ppt";
+        String filePath="/Users/liuq/Downloads/【纷享公开课】高效时间管理.ppt";
+
+        new DocConvertor().doConvert(path,filePath,0,2);
+    }
 }

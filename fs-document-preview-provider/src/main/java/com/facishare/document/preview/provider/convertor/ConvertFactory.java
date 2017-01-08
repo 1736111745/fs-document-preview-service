@@ -25,18 +25,22 @@ public class ConvertFactory implements PooledObjectFactory<Convert> {
     if (profile == null || profile.length() == 0) {
       profile = System.getProperty("process.profile");
     }
-    if (!profile.equals("foneshare")) {
-      configDir = root + "localhost";
-    } else {
-      InetAddress ia;
-      try {
-        ia = InetAddress.getLocalHost();
-        String host = ia.getHostName();
-        configDir = root + host;
-      } catch (UnknownHostException e) {
+    if (profile != null) {
+      if (!profile.equals("foneshare")) {
         configDir = root + "localhost";
+      } else {
+        InetAddress ia;
+        try {
+          ia = InetAddress.getLocalHost();
+          String host = ia.getHostName();
+          configDir = root + host;
+        } catch (UnknownHostException e) {
+          configDir = root + "localhost";
+        }
+        log.info("configDir:{}", configDir);
       }
-      log.info("configDir:{}", configDir);
+    } else {
+      configDir = root + "localhost";
     }
     return configDir;
   }

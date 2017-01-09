@@ -33,6 +33,8 @@ public class ConvertorHelper {
     config.setTestWhileIdle(false);
     config.setJmxEnabled(false);
     config.setMaxWaitMillis(200000);
+    config.setSoftMinEvictableIdleTimeMillis(600000); //空闲超过10分钟则回收对象
+    config.setTimeBetweenEvictionRunsMillis(60000); // 1分钟检测1次空闲对象
     pool = new GenericObjectPool<>(new ConvertFactory(), config);
   }
 

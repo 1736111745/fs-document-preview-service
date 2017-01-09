@@ -48,7 +48,6 @@ public class ConvertorHelper {
         Convert convert = pool.borrowObject();
         IPICConvertor picConvertor = convert.convertMStoPic(filePath);
         try {
-            convert = pool.borrowObject();
             if (picConvertor != null) {
                 int resultCode = picConvertor.resultCode();
                 if (resultCode == 0) {
@@ -96,7 +95,6 @@ public class ConvertorHelper {
         String fileExt = FilenameUtils.getExtension(filePath).toLowerCase();
         IPICConvertor picConvertor = fileExt.equals("pdf") ? convert.convertPdftoPic(filePath) : convert.convertMStoPic(filePath);
         try {
-
             if (picConvertor != null) {
                 int resultCode = picConvertor.resultCode();
                 if (resultCode == 0) {
@@ -140,7 +138,6 @@ public class ConvertorHelper {
         String fileExt = FilenameUtils.getExtension(filePath).toLowerCase();
         IPICConvertor picConvertor = fileExt.equals("pdf") ? convert.convertPdftoPic(filePath) : convert.convertMStoPic(filePath);
         try {
-
             if (picConvertor != null) {
                 int resultCode = picConvertor.resultCode();
                 if (resultCode == 0) {

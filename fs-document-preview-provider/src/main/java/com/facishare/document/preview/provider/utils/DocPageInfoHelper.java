@@ -1,6 +1,5 @@
 package com.facishare.document.preview.provider.utils;
 
-import com.alibaba.fastjson.JSON;
 import com.facishare.document.preview.common.model.PageInfo;
 import com.facishare.document.preview.common.utils.DocType;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
@@ -17,7 +16,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.dom4jyz.*;
+import org.dom4j.*;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -27,7 +26,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-//import org.apache.poi.ss.usermodel.Workbook;
 
 
 /**
@@ -146,7 +144,7 @@ public class DocPageInfoHelper {
             List<Sheet> sheets = excel.parse();
             List<SheetInfo> sheetInfos = Lists.newArrayList();
             for (Sheet sheet : sheets) {
-                SheetInfo sheetInfo = SheetInfo.builder().isHidden(sheet.getState()==1).sheetName(sheet.getName()).build();
+                SheetInfo sheetInfo = SheetInfo.builder().isHidden(sheet.getState() == 1).sheetName(sheet.getName()).build();
                 sheetInfos.add(sheetInfo);
             }
             sheetInfos.get(0).setActvie(true);
@@ -213,14 +211,12 @@ public class DocPageInfoHelper {
     }
 
     public static void main(String[] args) throws Exception {
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        String file = "/Users/liuq/Downloads/kylfklwv.xls";
-        List<SheetInfo> sheetInfos = getSheetsForXls(file);
-        stopWatch.stop();
-        System.out.println(stopWatch.getTime() + "ms");
-        String json = JSON.toJSONString(sheetInfos);
-        System.out.println(json);
+//        String filePath="/Users/liuq/Downloads/doc/c426ufqr.doc";
+//        StopWatch stopWatch = new StopWatch();
+//        stopWatch.start();
+//        stopWatch.stop();
+//        System.out.println(stopWatch.getTime() + "ms");
+
 
     }
 

@@ -1,6 +1,6 @@
 package com.facishare.document.preview.provider.convertor;
 
-import com.facishare.document.preview.common.utils.DocType;
+import com.facishare.document.preview.common.model.DocType;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -39,9 +39,8 @@ public class DocConvertor {
     }
 
     public static void main(String[] args) throws Exception {
-        String path="/Users/liuq/Downloads/【纷享公开课】高效时间管理.ppt";
-        String filePath="/Users/liuq/Downloads/【纷享公开课】高效时间管理.ppt";
-
-        new DocConvertor().doConvert(path,filePath,0,2);
+        //String path = "/Users/liuq/Downloads/doc/bilugpmr.xlsx";
+        //String filePath = "/Users/liuq/Downloads/doc/bilugpmr.xlsx";
+        //new DocConvertor().doConvert(path, filePath, 0, 1);
     }
 }

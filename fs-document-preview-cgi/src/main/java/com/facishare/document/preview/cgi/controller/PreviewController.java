@@ -7,13 +7,14 @@ import com.facishare.document.preview.api.service.DocConvertService;
 import com.facishare.document.preview.cgi.dao.FileTokenDao;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.*;
+import com.facishare.document.preview.cgi.model.PreviewInfo;
 import com.facishare.document.preview.cgi.service.PreviewService;
-import com.facishare.document.preview.cgi.utils.DocPageInfoHelper;
 import com.facishare.document.preview.cgi.utils.FileOutPuter;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.cgi.utils.RequestParamsHelper;
+import com.facishare.document.preview.common.model.*;
+import com.facishare.document.preview.common.utils.DocPreviewInfoHelper;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
-import com.fxiaoke.common.Guard;
 import com.fxiaoke.metrics.CounterService;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
@@ -184,11 +185,11 @@ public class PreviewController {
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String path = RequestParamsHelper.safteGetRequestParameter(request, "npath") == "" ? RequestParamsHelper.safteGetRequestParameter(request, "path") : RequestParamsHelper.safteGetRequestParameter(request, "path");
         if (!isValidPath(path)) {
-            return getDocPreviewInfoResult(path, 0);
+            return getDocPreviewInfoResult(path, pageCount);
         }
         String extension = FilenameUtils.getExtension(path).toLowerCase();
         if (allowPreviewExtension.indexOf(extension) == -1) {
-            return getDocPreviewInfoResult(path, 0);
+            return getDocPreviewInfoResult(path, pageCount);
         }
         PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, "");
         if (previewInfoEx.isSuccess()) {
@@ -274,9 +275,9 @@ public class PreviewController {
     }
 
     private String getDocPreviewInfoResult(String path, int pageCount) throws Exception {
-        DocPageInfo docPageInfo = DocPageInfoHelper.getDocPageInfo(path);
-        docPageInfo.setPageCount(pageCount);
-        return JSONObject.toJSONString(docPageInfo);
+        com.facishare.document.preview.common.model.PreviewInfo docPreviewInfo = DocPreviewInfoHelper.getPreviewInfo(path);
+        docPreviewInfo.setPageCount(pageCount);
+        return JSONObject.toJSONString(docPreviewInfo);
     }
 
 

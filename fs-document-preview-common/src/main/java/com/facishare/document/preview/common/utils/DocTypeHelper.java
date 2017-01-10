@@ -1,6 +1,7 @@
 package com.facishare.document.preview.common.utils;
 
 
+import com.facishare.document.preview.common.model.DocType;
 import org.apache.commons.io.FilenameUtils;
 
 /**

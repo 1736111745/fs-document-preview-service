@@ -1,7 +1,6 @@
 package com.facishare.document.preview.provider.controller;
 
 import com.facishare.document.preview.provider.convertor.DocConvertor;
-import com.facishare.document.preview.provider.utils.DocPageInfoHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class IndexController {
     @Autowired
     DocConvertor docConvertor;
-    @Autowired
-    DocPageInfoHelper docPageInfoHelper;
     @RequestMapping(method = RequestMethod.GET)
     public String index() throws Exception {
 //        String filePath = "/Users/liuq/doctest/excel/监理费支付台账.xlsx";

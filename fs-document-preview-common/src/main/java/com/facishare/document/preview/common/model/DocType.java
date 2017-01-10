@@ -1,4 +1,4 @@
-package com.facishare.document.preview.common.utils;
+package com.facishare.document.preview.common.model;
 
 /**
  * Created by liuq on 16/9/9.

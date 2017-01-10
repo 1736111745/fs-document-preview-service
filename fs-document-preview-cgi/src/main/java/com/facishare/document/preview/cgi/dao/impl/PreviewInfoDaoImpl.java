@@ -3,7 +3,7 @@ package com.facishare.document.preview.cgi.dao.impl;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.PreviewInfo;
 import com.facishare.document.preview.common.utils.DateUtil;
-import com.facishare.document.preview.common.utils.DocType;
+import com.facishare.document.preview.common.model.DocType;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.github.mongo.support.DatastoreExt;
 import com.google.common.base.Strings;

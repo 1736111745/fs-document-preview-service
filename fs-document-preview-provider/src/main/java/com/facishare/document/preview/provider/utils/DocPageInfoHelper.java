@@ -10,6 +10,7 @@ import com.fxiaoke.excel.Sheet;
 import com.google.common.collect.Lists;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -163,17 +164,19 @@ public class DocPageInfoHelper {
             ZipEntry ze;
             String workBookXml = "";
             while ((ze = zin.getNextEntry()) != null) {
-                if (ze.getName().equals("xl/workbook.xml")) {
+                if ("xl/workbook.xml".equals(ze.getName())) {
                     BufferedReader reader = null;
                     try {
-                        reader = new BufferedReader(new InputStreamReader(zf.getInputStream(ze), "utf-8"));
+                        reader = new BufferedReader(new InputStreamReader(zf.getInputStream(ze), Charsets.UTF_8));
                         String line;
                         while ((line = reader.readLine()) != null) {
                             workBookXml += line;
                         }
-                    } catch (IOException e) {
+                    } catch (IOException ignored) {
                     } finally {
-                        reader.close();
+                        if (reader != null) {
+                            reader.close();
+                        }
                     }
                     break;
                 }
@@ -187,7 +190,7 @@ public class DocPageInfoHelper {
                 Element sheet = (Element) e;
                 String sheetName = sheet.attributeValue("name");
                 Attribute state = sheet.attribute("state");
-                boolean isHidden = state != null && state.getValue().equals("hidden") ? true : false;
+                boolean isHidden = state != null && "hidden".equals(state.getValue());
                 SheetInfo sheetInfo = SheetInfo.builder().sheetName(sheetName).isHidden(isHidden).build();
                 sheetInfos.add(sheetInfo);
             }

@@ -20,7 +20,6 @@ import java.io.OutputStream;
 @Slf4j
 @Component
 public class FileOutPuter {
-
     public  static  void outPut(HttpServletResponse response, String filePath,boolean needThumbnail) throws IOException {
         outPut(response, filePath, 0,needThumbnail);
     }

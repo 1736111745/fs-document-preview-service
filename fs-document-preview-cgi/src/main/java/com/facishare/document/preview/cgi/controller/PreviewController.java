@@ -12,7 +12,6 @@ import com.facishare.document.preview.cgi.service.PreviewService;
 import com.facishare.document.preview.cgi.utils.FileOutPuter;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.cgi.utils.RequestParamsHelper;
-import com.facishare.document.preview.common.model.*;
 import com.facishare.document.preview.common.utils.DocPreviewInfoHelper;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.fxiaoke.metrics.CounterService;
@@ -115,10 +114,10 @@ public class PreviewController {
             if (previewInfoEx.isSuccess()) {
                 PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
                 if (previewInfo != null) {
-                    if(pageIndex<previewInfo.getPageCount()) {
-                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(),1, previewInfo.getFilePathList());
+                    if (pageIndex < previewInfo.getPageCount()) {
+                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), 1, previewInfo.getFilePathList());
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
-                            FileOutPuter.outPut(response, dataFilePath,true);
+                            FileOutPuter.outPut(response, dataFilePath, true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
                             ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(1).build();
@@ -128,28 +127,26 @@ public class PreviewController {
                             dataFilePath = convertDocResult.getDataFilePath();
                             if (!Strings.isNullOrEmpty(dataFilePath)) {
                                 previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
-                                FileOutPuter.outPut(response, dataFilePath,true);
+                                FileOutPuter.outPut(response, dataFilePath, true);
                             } else {
                                 log.warn("can't resolve path:{},page:{}", path, page);
                                 response.setStatus(404);
                             }
                         }
-                    }
-                    else
-                    {
+                    } else {
                         log.warn("invalid page,path:{},page:{}", path, page);
                         response.setStatus(400);
                     }
                 } else {
-                    log.warn("can't resolve path:{},page:{}", path, page);
+                    log.warn("can't resolve path:{},page:{},reason:can't get preview info", path, page);
                     response.setStatus(404);
                 }
             } else {
-                log.warn("can't resolve path:{},page:{}", path, page);
+                log.warn("can't resolve path:{},page:{},reason:can't get preview info", path, page);
                 response.setStatus(404);
             }
         } catch (Exception e) {
-            log.error("can't resolve path:{},page:{}", path,page,e);
+            log.error("can't resolve path:{},page:{},reason:happened exception!", path, page, e);
             response.setStatus(404);
         }
     }
@@ -219,10 +216,10 @@ public class PreviewController {
             if (previewInfoEx.isSuccess()) {
                 PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
                 if (previewInfo != null) {
-                    if(pageIndex<previewInfo.getPageCount()) {
-                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(),2,previewInfo.getFilePathList());
+                    if (pageIndex < previewInfo.getPageCount()) {
+                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), 2, previewInfo.getFilePathList());
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
-                            FileOutPuter.outPut(response, dataFilePath, width,true);
+                            FileOutPuter.outPut(response, dataFilePath, width, true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
                             ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(2).build();
@@ -230,15 +227,13 @@ public class PreviewController {
                             dataFilePath = convertDocResult.getDataFilePath();
                             if (!Strings.isNullOrEmpty(dataFilePath)) {
                                 previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
-                                FileOutPuter.outPut(response, dataFilePath, width,true);
+                                FileOutPuter.outPut(response, dataFilePath, width, true);
                             } else {
                                 log.warn("can't resolve path:{},page:{}", path, pageIndex);
                                 response.setStatus(404);
                             }
                         }
-                    }
-                    else
-                    {
+                    } else {
                         log.warn("invalid page,path:{},page:{}", path, pageIndex);
                         response.setStatus(400);
                     }
@@ -251,7 +246,7 @@ public class PreviewController {
                 response.setStatus(404);
             }
         } catch (Exception e) {
-            log.warn("can't get previewInfo,path:{},pageIndex:{}", path,pageIndex,e);
+            log.warn("can't get previewInfo,path:{},pageIndex:{}", path, pageIndex, e);
             response.setStatus(404);
         }
     }

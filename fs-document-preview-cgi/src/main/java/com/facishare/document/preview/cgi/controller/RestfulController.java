@@ -44,11 +44,9 @@ public class RestfulController {
         return ret;
     }
 
-
     public PreviewInfoEx getPreviewInfo(EmployeeInfo employeeInfo, String path) throws Exception {
         return previewService.getPreviewInfo(employeeInfo, path,"");
     }
-
     private EmployeeInfo createEmployeeInfo(String ea, int ei) {
         EmployeeInfo employeeInfo = new EmployeeInfo();
         employeeInfo.setEa(ea);

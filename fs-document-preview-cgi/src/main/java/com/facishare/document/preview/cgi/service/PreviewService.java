@@ -72,6 +72,10 @@ public class PreviewService {
                         previewInfoEx.setErrorMsg(pageInfo.getErrorMsg());
                     }
                 }
+                else
+                {
+                    log.warn("path:{} can't been download!",path);
+                }
             } else {
                 previewInfoEx.setSuccess(true);
                 previewInfoEx.setPreviewInfo(previewInfo);

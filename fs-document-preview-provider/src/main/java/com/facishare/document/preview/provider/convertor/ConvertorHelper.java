@@ -222,26 +222,4 @@ public class ConvertorHelper {
     }
 
 
-    public static PageInfo getWordPageCount(String filePath) throws Exception {
-        PageInfo pageInfo = new PageInfo();
-        Convert convert = null;
-        IPICConvertor ipicConvertor = null;
-        try {
-            convert = pool.borrowObject();
-            ipicConvertor = convert.convertMStoPic(filePath);
-            int pageCount = ipicConvertor.getPageCount();
-            pageInfo.setSuccess(true);
-            pageInfo.setPageCount(pageCount);
-        } catch (Exception e) {
-            log.error("getWordPageCount fail,filepath:{}", filePath, e);
-        } finally {
-            if (ipicConvertor != null) {
-                ipicConvertor.close();
-            }
-            if (convert != null) {
-                pool.returnObject(convert);
-            }
-            return pageInfo;
-        }
-    }
 }

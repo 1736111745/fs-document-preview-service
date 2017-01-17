@@ -1,8 +1,11 @@
 package com.facishare.document.preview.provider.service;
 
 import com.facishare.document.preview.api.model.arg.ConvertDocArg;
+import com.facishare.document.preview.api.model.arg.GetPageCountArg;
 import com.facishare.document.preview.api.model.result.ConvertDocResult;
+import com.facishare.document.preview.api.model.result.GetPageCountResult;
 import com.facishare.document.preview.api.service.DocConvertService;
+import com.facishare.document.preview.provider.convertor.ConvertorHelper;
 import com.facishare.document.preview.provider.convertor.DocConvertor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class DocConvertServiceImpl implements DocConvertService {
     @Autowired
     DocConvertor docConvertor;
+
+    @Override
+    public GetPageCountResult getPageCount(GetPageCountArg arg) throws Exception {
+        log.info("begin get page count:{}",arg);
+        int pageCount= ConvertorHelper.getOldWordOrPPTPageCount(arg.getFilePath());
+        return GetPageCountResult.builder().pageCount(pageCount).build();
+    }
 
     public ConvertDocResult convertDoc(ConvertDocArg arg) throws Exception {
         log.info("begin convert doc,arg:{}", arg);

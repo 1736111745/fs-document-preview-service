@@ -1,5 +1,6 @@
 package com.facishare.document.preview.cgi.service;
 
+import com.facishare.document.preview.api.model.arg.GetPageCountArg;
 import com.facishare.document.preview.api.service.DocConvertService;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
@@ -59,7 +60,18 @@ public class PreviewService {
                     String filePath = FilenameUtils.concat(dataDir, fileName);
                     //下载下来保存便于文档转换方便 // TODO: 2016/11/10 当所有的页码都转码完毕后需要删除.
                     FileUtils.writeByteArrayToFile(new File(filePath), bytes);
-                    PageInfo pageInfo = DocPageInfoHelper.getPageInfo(filePath);
+                    PageInfo pageInfo=null;
+                    if(extension=="doc"||extension=="ppt") {
+                        GetPageCountArg arg = GetPageCountArg.builder().filePath(filePath).build();
+                        pageCount = docConvertService.getPageCount(arg).getPageCount();
+                        pageInfo = new PageInfo();
+                        pageInfo.setErrorMsg("");
+                        pageInfo.setPageCount(pageCount);
+                        pageInfo.setSuccess(pageCount > 0);
+                    }
+                    else {
+                        pageInfo = DocPageInfoHelper.getPageInfo(filePath);
+                    }
                     if (pageInfo.isSuccess()) {
                         pageCount = pageInfo.getPageCount();
                         sheetNames = pageInfo.getSheetNames();

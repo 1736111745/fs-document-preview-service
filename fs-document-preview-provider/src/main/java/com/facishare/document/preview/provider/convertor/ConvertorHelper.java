@@ -146,6 +146,7 @@ public class ConvertorHelper {
             convert = pool.borrowObject();
             picConvertor = fileExt.equals("pdf") ? convert.convertPdftoPic(filePath) : convert.convertMStoPic(filePath);
             if (picConvertor != null) {
+                picConvertor.getPageCount();
                 int resultCode = picConvertor.resultCode();
                 if (resultCode == 0) {
                     String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
@@ -221,5 +222,22 @@ public class ConvertorHelper {
         }
     }
 
-
+    public static int getOldWordOrPPTPageCount(String filePath) throws Exception {
+        int pageCount=0;
+        Convert convert = pool.borrowObject();
+        IPICConvertor ipicConvertor = convert.convertMStoPic(filePath);
+        try {
+            pageCount = ipicConvertor.getPageCount();
+        } catch (Exception e) {
+            log.error("getWordPageCount fail,filepath:{}", filePath, e);
+        } finally {
+            if (ipicConvertor != null) {
+                ipicConvertor.close();
+            }
+            if (convert != null) {
+                pool.returnObject(convert);
+            }
+            return pageCount;
+        }
+    }
 }

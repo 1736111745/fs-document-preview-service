@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * Created by liuq on 2017/1/10.
  */
@@ -101,5 +102,9 @@ public class DocPageInfoHelper {
             pageInfo.setPageCount(pageCount);
         }
         return pageInfo;
+    }
+
+    public static void main(String[] args) throws Exception {
+
     }
 }

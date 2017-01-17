@@ -61,7 +61,7 @@ public class PreviewService {
                     //下载下来保存便于文档转换方便 // TODO: 2016/11/10 当所有的页码都转码完毕后需要删除.
                     FileUtils.writeByteArrayToFile(new File(filePath), bytes);
                     PageInfo pageInfo=null;
-                    if(extension=="doc"||extension=="ppt") {
+                    if(extension.equals("doc")||extension.equals("ppt")) {
                         GetPageCountArg arg = GetPageCountArg.builder().filePath(filePath).build();
                         pageCount = docConvertService.getPageCount(arg).getPageCount();
                         pageInfo = new PageInfo();

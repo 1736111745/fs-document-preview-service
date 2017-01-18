@@ -26,15 +26,16 @@ public class ConvertorHelper {
     static {
         GenericObjectPoolConfig config = new GenericObjectPoolConfig();
         config.setMaxTotal(300);
-        config.setMaxIdle(50);
-        config.setMinIdle(10);
+        config.setMaxIdle(100);
+        config.setMinIdle(30);
         config.setTestOnBorrow(false);
         config.setTestOnCreate(false);
         config.setTestWhileIdle(false);
-        config.setJmxEnabled(false);
+        config.setJmxEnabled(true);
         config.setMaxWaitMillis(200000);
-        config.setSoftMinEvictableIdleTimeMillis(600000); //空闲超过10分钟则回收对象
-        config.setTimeBetweenEvictionRunsMillis(60000); // 1分钟检测1次空闲对象
+        config.setMinEvictableIdleTimeMillis(1000L * 60L * 60L * 24);
+        //config.setSoftMinEvictableIdleTimeMillis(600000); //空闲超过30分钟则回收对象
+        //config.setTimeBetweenEvictionRunsMillis(60000); // 1分钟检测1次空闲对象
         pool = new GenericObjectPool<>(new ConvertFactory(), config);
     }
 

@@ -95,6 +95,7 @@ public class DocPageInfoHelper {
         PageInfo pageInfo = new PageInfo();
         if (pageCount < 0) {
             pageInfo.setSuccess(false);
+            pageInfo.setPageCount(pageCount);
             pageInfo.setErrorMsg("该文档是为加密文档或者已经损坏，暂不支持预览！");
             log.warn("file:{} get page count is {},may be isn't normal",filePath, pageCount);
         } else {

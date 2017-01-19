@@ -60,14 +60,16 @@ public class PreviewService {
                     String filePath = FilenameUtils.concat(dataDir, fileName);
                     //下载下来保存便于文档转换方便 // TODO: 2016/11/10 当所有的页码都转码完毕后需要删除.
                     FileUtils.writeByteArrayToFile(new File(filePath), bytes);
-                    PageInfo pageInfo=null;
-                    if(extension.equals("doc")||extension.equals("ppt")) {
-                        GetPageCountArg arg = GetPageCountArg.builder().filePath(filePath).build();
-                        pageCount = docConvertService.getPageCount(arg).getPageCount();
-                        pageInfo = new PageInfo();
-                        pageInfo.setErrorMsg("");
-                        pageInfo.setPageCount(pageCount);
-                        pageInfo.setSuccess(pageCount > 0);
+                    PageInfo pageInfo;
+                    if(extension.equals("docx"))
+                    {
+                        pageInfo = DocPageInfoHelper.getPageInfo(filePath);
+                        if(pageInfo.getPageCount()==-1) {
+                            pageInfo = getPageInfoWithYozo(filePath);
+                        }
+                    }
+                    else if(extension.equals("doc")||extension.equals("ppt")) {
+                        pageInfo = getPageInfoWithYozo(filePath);
                     }
                     else {
                         pageInfo = DocPageInfoHelper.getPageInfo(filePath);
@@ -96,5 +98,14 @@ public class PreviewService {
             log.error("getPreviewInfo happend exception!,path:{}",path, e);
         }
         return previewInfoEx;
+    }
+    private PageInfo getPageInfoWithYozo(String filePath) throws Exception {
+        GetPageCountArg arg = GetPageCountArg.builder().filePath(filePath).build();
+        int pageCount = docConvertService.getPageCount(arg).getPageCount();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setErrorMsg("");
+        pageInfo.setPageCount(pageCount);
+        pageInfo.setSuccess(pageCount > 0);
+        return pageInfo;
     }
 }

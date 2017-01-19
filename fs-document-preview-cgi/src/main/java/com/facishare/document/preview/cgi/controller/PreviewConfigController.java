@@ -52,9 +52,7 @@ public class PreviewConfigController {
             entity.setPreviewByTokenUrlFormat(byTokenUrl);
         } else
             entity.setWay(0);
-        if(isIOS) {
-            log.info("getPreviewConfig,client:{},employeeInfo:{},newway:{}", client, JSON.toJSON(employeeInfo),entity.getWay());
-        }
+        log.info("getPreviewConfig,client:{},employeeInfo:{},newway:{}", client, JSON.toJSON(employeeInfo),entity.getWay());
         String json = JSON.toJSONString(entity);
         return json;
     }

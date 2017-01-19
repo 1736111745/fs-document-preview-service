@@ -2,6 +2,7 @@ package com.facishare.document.preview.common.utils;
 
 import com.facishare.document.preview.common.model.DocType;
 import com.facishare.document.preview.common.model.PageInfo;
+import com.fxiaoke.common.Guard;
 import com.fxiaoke.excel.Excel;
 import com.fxiaoke.excel.Sheet;
 import com.fxiaoke.pdf.PdfHelper;

@@ -7,6 +7,7 @@ import com.fxiaoke.release.FsGrayRelease;
 import com.fxiaoke.release.FsGrayReleaseBiz;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Created by liuq on 16/9/29.
  */
+@Slf4j
 @Controller
 @RequestMapping("/")
 public class PreviewConfigController {
@@ -27,10 +29,14 @@ public class PreviewConfigController {
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewConfig", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getPreviewWay(HttpServletRequest request) {
-        String client = safteGetRequestParameter(request, "client");
-        String grayConfig = client.toLowerCase().equals("ios") ? "newway_iOS" : "newway_android";
-        PreviewWayEntity entity = new PreviewWayEntity();
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+        String client = safteGetRequestParameter(request, "client");
+        boolean isIOS=client.toLowerCase().equals("ios");
+        if(isIOS) {
+            log.info("getPreviewConfig,client:{},employeeInfo", client, JSON.toJSON(employeeInfo));
+        }
+        String grayConfig = isIOS ? "newway_iOS" : "newway_android";
+        PreviewWayEntity entity = new PreviewWayEntity();
         String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
         boolean newway = gray.isAllow(grayConfig, user);
         String name=safteGetRequestParameter(request,"name");

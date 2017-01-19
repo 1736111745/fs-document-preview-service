@@ -33,7 +33,7 @@ public class PreviewConfigController {
         String client = safteGetRequestParameter(request, "client");
         boolean isIOS=client.toLowerCase().equals("ios");
         if(isIOS) {
-            log.info("getPreviewConfig,client:{},employeeInfo", client, JSON.toJSON(employeeInfo));
+            log.info("getPreviewConfig,client:{},employeeInfo:{}", client, JSON.toJSON(employeeInfo));
         }
         String grayConfig = isIOS ? "newway_iOS" : "newway_android";
         PreviewWayEntity entity = new PreviewWayEntity();

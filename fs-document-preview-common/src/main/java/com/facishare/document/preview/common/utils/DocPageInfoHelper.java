@@ -2,7 +2,6 @@ package com.facishare.document.preview.common.utils;
 
 import com.facishare.document.preview.common.model.DocType;
 import com.facishare.document.preview.common.model.PageInfo;
-import com.fxiaoke.common.Guard;
 import com.fxiaoke.excel.Excel;
 import com.fxiaoke.excel.Sheet;
 import com.fxiaoke.pdf.PdfHelper;
@@ -77,27 +76,27 @@ public class DocPageInfoHelper {
 
     private PageInfo parseWord(String filePath) {
         int pageCount = WordHelper.getPageCount(new File(filePath));
-        return getPageInfo(pageCount);
+        return getPageInfo(filePath,pageCount);
     }
 
 
     private PageInfo parsePPT(String filePath) throws Exception {
         int pageCount = PPTHelper.getSlideCount(new File(filePath));
-        return getPageInfo(pageCount);
+        return getPageInfo(filePath,pageCount);
     }
 
 
     private PageInfo parsePdf(String filePath) throws Exception {
         int pageCount = PdfHelper.getPageCount(filePath);
-        return getPageInfo(pageCount);
+        return getPageInfo(filePath,pageCount);
     }
 
-    private PageInfo getPageInfo(int pageCount) {
+    private PageInfo getPageInfo(String filePath,int pageCount) {
         PageInfo pageInfo = new PageInfo();
         if (pageCount < 0) {
             pageInfo.setSuccess(false);
             pageInfo.setErrorMsg("该文档是为加密文档或者已经损坏，暂不支持预览！");
-            log.warn("file:{} get page count is {},may be isn't normal", pageCount);
+            log.warn("file:{} get page count is {},may be isn't normal",filePath, pageCount);
         } else {
             pageInfo.setSuccess(true);
             pageInfo.setPageCount(pageCount);

@@ -52,13 +52,9 @@ public class AuthHelper {
 
     private static String getCookie(HttpServletRequest request) {
         Cookie cookie=WebUtil.getCookie(request,"FSAuthXC");
-        if(cookie==null) {
-            cookie = WebUtil.getCookie(request, "FSAuthX");
-        }
-        if (cookie == null) {
-            log.warn("[authorizeByCookieValue] [fail] [can't find FSAuthX/FsAuthXC cookie] [cookie:{}] [cookieInHeader:{}]", Arrays.toString(request.getCookies()), request.getHeader("cookie"));
-            return "";
-        } else
-            return cookie.getValue();
+        if(cookie==null) cookie = WebUtil.getCookie(request, "FSAuthX");
+        if (cookie != null) return cookie.getValue();
+        log.warn("[authorizeByCookieValue] [fail] [can't find FSAuthX/FsAuthXC cookie] [cookie:{}] [cookieInHeader:{}]", Arrays.toString(request.getCookies()), request.getHeader("cookie"));
+        return "";
     }
 }

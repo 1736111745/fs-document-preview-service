@@ -32,9 +32,6 @@ public class PreviewConfigController {
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String client = safteGetRequestParameter(request, "client");
         boolean isIOS=client.toLowerCase().equals("ios");
-        if(isIOS) {
-            log.info("getPreviewConfig,client:{},employeeInfo:{}", client, JSON.toJSON(employeeInfo));
-        }
         String grayConfig = isIOS ? "newway_iOS" : "newway_android";
         PreviewWayEntity entity = new PreviewWayEntity();
         String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
@@ -55,6 +52,9 @@ public class PreviewConfigController {
             entity.setPreviewByTokenUrlFormat(byTokenUrl);
         } else
             entity.setWay(0);
+        if(isIOS) {
+            log.info("getPreviewConfig,client:{},employeeInfo:{},newway:{}", client, JSON.toJSON(employeeInfo),entity.getWay());
+        }
         String json = JSON.toJSONString(entity);
         return json;
     }

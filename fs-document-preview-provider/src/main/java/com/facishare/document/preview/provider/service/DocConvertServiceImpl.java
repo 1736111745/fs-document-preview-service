@@ -7,6 +7,7 @@ import com.facishare.document.preview.api.model.result.GetPageCountResult;
 import com.facishare.document.preview.api.service.DocConvertService;
 import com.facishare.document.preview.provider.convertor.ConvertorHelper;
 import com.facishare.document.preview.provider.convertor.DocConvertor;
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,6 +23,9 @@ public class DocConvertServiceImpl implements DocConvertService {
     public GetPageCountResult getPageCount(GetPageCountArg arg) throws Exception {
         log.info("begin get page count:{}",arg);
         int pageCount= ConvertorHelper.getOldWordOrPPTPageCount(arg.getFilePath());
+        if (pageCount < 0) {
+            throw new RuntimeException("convertor is busy, file: " + arg.getFilePath());
+        }
         return GetPageCountResult.builder().pageCount(pageCount).build();
     }
 
@@ -32,6 +36,9 @@ public class DocConvertServiceImpl implements DocConvertService {
         int page = arg.getPage();
         int type = arg.getType();
         String dataFilePath = docConvertor.doConvert(path, originalFilePath, page, type);
+        if (Strings.isNullOrEmpty(dataFilePath)) {
+            throw new RuntimeException("cannot convert, file: " + originalFilePath);
+        }
         ConvertDocResult result = ConvertDocResult.builder().dataFilePath(dataFilePath).build();
         log.info("end convert doc,result:{}", result);
         return result;

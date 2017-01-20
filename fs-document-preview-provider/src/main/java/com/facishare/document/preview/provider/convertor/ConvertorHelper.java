@@ -61,7 +61,7 @@ public class ConvertorHelper {
   }
 
   /**
-   * 异步执行任务，最多等待60秒，否则主动停止任务
+   * 异步执行任务，最多等待30秒，否则主动停止任务
    *
    * @param callable
    * @param <V>
@@ -69,6 +69,7 @@ public class ConvertorHelper {
    * @throws Exception
    */
   private <V> V asyncExec(Callable<V> callable) throws Exception {
+    log.info("begin async exec~");
     Future<V> future = executorService.submit(callable);
     try {
       return future.get(30, TimeUnit.SECONDS);

@@ -23,65 +23,66 @@ import java.util.concurrent.*;
 @Slf4j
 @UtilityClass
 public class ConvertorHelper {
-    private GenericObjectPool<Convert> pool;
-    private final ThreadFactory factory =
-            new ThreadFactoryBuilder().setDaemon(true).setNameFormat("convertor-%d").build();
-    private final ExecutorService executorService = Executors.newCachedThreadPool(factory);
+  private GenericObjectPool<Convert> pool;
+  private final ThreadFactory factory =
+    new ThreadFactoryBuilder().setDaemon(true).setNameFormat("convertor-%d").build();
+  private final ExecutorService executorService = Executors.newCachedThreadPool(factory);
 
 
-    private interface IConvertJob<V> {
-        V doConvert(Convert convert) throws Exception;
+  private interface IConvertJob<V> {
+    V doConvert(Convert convert) throws Exception;
+  }
+
+
+  static {
+    ConfigFactory.getConfig("fs-dps-config", conf -> {
+      GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
+      poolConfig.setMaxTotal(300);
+      poolConfig.setMaxIdle(100);
+      poolConfig.setMinIdle(30);
+      poolConfig.setTestOnBorrow(false);
+      poolConfig.setTestOnCreate(false);
+      poolConfig.setTestWhileIdle(false);
+      poolConfig.setJmxEnabled(true);
+      poolConfig.setMaxWaitMillis(20000);
+      if (conf.getBool("removeIdleConvertor", true)) {
+        poolConfig.setSoftMinEvictableIdleTimeMillis(600000); //空闲超过30分钟则回收对象
+        poolConfig.setTimeBetweenEvictionRunsMillis(60000); // 1分钟检测1次空闲对象
+      }
+      GenericObjectPool<Convert> old = null;
+      if (pool != null) {
+        old = pool;
+      }
+      pool = new GenericObjectPool<>(new ConvertFactory(), poolConfig);
+      if (old != null) {
+        old.clear();
+        old.close();
+      }
+    });
+  }
+
+  /**
+   * 异步执行任务，最多等待30秒，否则主动停止任务
+   *
+   * @param callable
+   * @param <V>
+   * @return
+   * @throws Exception
+   */
+  private <V> V asyncExec(Callable<V> callable) throws Exception {
+    Future<V> future = executorService.submit(callable);
+    try {
+      return future.get(30, TimeUnit.SECONDS);
+    } catch (TimeoutException e) {
+      log.info("async time out~");
+      future.cancel(true);
+      return null;
+    } finally {
+      if (!future.isDone()) {
+        future.cancel(true);
+      }
     }
-
-    static {
-        ConfigFactory.getConfig("fs-dps-config", conf -> {
-            GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
-            poolConfig.setMaxTotal(300);
-            poolConfig.setMaxIdle(100);
-            poolConfig.setMinIdle(30);
-            poolConfig.setTestOnBorrow(false);
-            poolConfig.setTestOnCreate(false);
-            poolConfig.setTestWhileIdle(false);
-            poolConfig.setJmxEnabled(true);
-            poolConfig.setMaxWaitMillis(20000);
-            if (conf.getBool("removeIdleConvertor", true)) {
-                poolConfig.setSoftMinEvictableIdleTimeMillis(600000); //空闲超过30分钟则回收对象
-                poolConfig.setTimeBetweenEvictionRunsMillis(60000); // 1分钟检测1次空闲对象
-            }
-            GenericObjectPool<Convert> old = null;
-            if (pool != null) {
-                old = pool;
-            }
-            pool = new GenericObjectPool<>(new ConvertFactory(), poolConfig);
-            if (old != null) {
-                old.clear();
-                old.close();
-            }
-        });
-    }
-
-    /**
-     * 异步执行任务，最多等待30秒，否则主动停止任务
-     *
-     * @param callable
-     * @param <V>
-     * @return
-     * @throws Exception
-     */
-    private <V> V asyncExec(Callable<V> callable) throws Exception {
-        Future<V> future = executorService.submit(callable);
-        try {
-            return future.get(30, TimeUnit.SECONDS);
-        } catch (TimeoutException e) {
-            log.info("async time out~");
-            future.cancel(true);
-            return null;
-        } finally {
-            if (!future.isDone()) {
-                future.cancel(true);
-            }
-        }
-    }
+  }
 
 
   /**
@@ -120,151 +121,156 @@ public class ConvertorHelper {
   public String toSvg(String filePath, int startPageIndex, int endPageIndex, int startIndex) throws Exception {
     String args =
       String.format("filePath:%s,startPageIndex:%s,endPageIndex:%s,startIndex:%s", filePath, startPageIndex, endPageIndex, startIndex);
-    log.info("start convert doc to svg,args:{}", args);
-    String svgFileExt = "svg";
-    String resultFilePath = "";
-    IPICConvertor picConvertor = doConvert(convert -> convert.convertMStoPic(filePath), args);
-    if (picConvertor != null) {
-      int resultCode = picConvertor.resultCode();
-      if (resultCode == 0) {
-        String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
-        int retCode;
-        try {
-          retCode = asyncExec(() -> picConvertor.convertToSVG(startPageIndex, endPageIndex, 1.0f, baseDir));
-        } finally {
-          picConvertor.close();
-        }
-        if (retCode == 0) {
-          String svgFilePath = FilePathHelper.getFilePath(filePath, startPageIndex, startIndex, svgFileExt);
-          if (FileUtils.getFile(svgFilePath).exists()) {
-            resultFilePath = svgFilePath;
+    log.info("start convert doc to svg, args:{}", args);
+    return doConvert(convert -> {
+      String svgFileExt = "svg";
+      String resultFilePath = "";
+      IPICConvertor picConvertor = convert.convertMStoPic(filePath);
+      if (picConvertor != null) {
+        int resultCode = picConvertor.resultCode();
+        if (resultCode == 0) {
+          String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
+          int retCode;
+          try {
+            retCode = picConvertor.convertToSVG(startPageIndex, endPageIndex, 1.0f, baseDir);
+          } finally {
+            picConvertor.close();
+          }
+          if (retCode == 0) {
+            String svgFilePath = FilePathHelper.getFilePath(filePath, startPageIndex, startIndex, svgFileExt);
+            if (FileUtils.getFile(svgFilePath).exists()) {
+              resultFilePath = svgFilePath;
+            } else {
+              log.warn("convert2Svg completed,but aim file does't create,args:{},aim file:{}", args, svgFilePath);
+            }
           } else {
-            log.warn("convert2Svg completed,but aim file does't create,args:{},aim file:{}", args, svgFilePath);
+            log.warn("convert2Svg completed,but ret code is:{}", retCode, args);
           }
         } else {
-          log.warn("convert2Svg completed,but ret code is:{}", retCode, args);
+          log.warn("get picConvertor fail,args:{},resultCode:{}", args, resultCode);
         }
       } else {
-        log.warn("get picConvertor fail,args:{},resultCode:{}", args, resultCode);
+        log.warn("picConvertor is null,args:{}", args);
       }
-    } else {
-      log.warn("picConvertor is null,args:{}", args);
-    }
-    return resultFilePath;
+      return resultFilePath;
+    }, args);
   }
 
   public String toJpg(String filePath, int startPageIndex, int endPageIndex, int startIndex) throws Exception {
     String args =
       String.format("filePath:%s,startPageIndex:%s,endPageIndex:%s,startIndex:%s", filePath, startPageIndex, endPageIndex, startIndex);
     log.info("start convert doc to jpg,args:{}", args);
-    String jpgFileExt = "jpg";
-    String resultFilePath = "";
-    String fileExt = FilenameUtils.getExtension(filePath).toLowerCase();
-    IPICConvertor picConvertor = fileExt.equals("pdf") ?
-      doConvert(convert -> convert.convertPdftoPic(filePath), args) :
-      doConvert(convert -> convert.convertMStoPic(filePath), args);
-    if (picConvertor != null) {
-      int resultCode = picConvertor.resultCode();
-      if (resultCode == 0) {
-        String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
-        try {
-          asyncExec(() -> picConvertor.convertToJPG(startPageIndex, endPageIndex, 2f, baseDir));
-        } finally {
-          picConvertor.close();
-        }
-        String jpgFilePath = FilePathHelper.getFilePath(filePath, startPageIndex, startIndex, jpgFileExt);
-        if (FileUtils.getFile(jpgFilePath).exists()) {
-          resultFilePath = jpgFilePath;
+    return doConvert(convert -> {
+      String jpgFileExt = "jpg";
+      String resultFilePath = "";
+      String fileExt = FilenameUtils.getExtension(filePath).toLowerCase();
+      IPICConvertor picConvertor =
+        fileExt.equals("pdf") ? convert.convertPdftoPic(filePath) : convert.convertMStoPic(filePath);
+      if (picConvertor != null) {
+        int resultCode = picConvertor.resultCode();
+        if (resultCode == 0) {
+          String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
+          try {
+            picConvertor.convertToJPG(startPageIndex, endPageIndex, 2f, baseDir);
+          } finally {
+            picConvertor.close();
+          }
+          String jpgFilePath = FilePathHelper.getFilePath(filePath, startPageIndex, startIndex, jpgFileExt);
+          if (FileUtils.getFile(jpgFilePath).exists()) {
+            resultFilePath = jpgFilePath;
+          } else {
+            log.warn("convert2Jpg completed,bug aim file does't create,args:{},aim file:{}", args, jpgFilePath);
+          }
         } else {
-          log.warn("convert2Jpg completed,bug aim file does't create,args:{},aim file:{}", args, jpgFilePath);
+          log.warn("get picConvertor fail,args:{},resultCode:{}", args, resultCode);
         }
       } else {
-        log.warn("get picConvertor fail,args:{},resultCode:{}", args, resultCode);
+        log.warn("picConvertor is null,args:{}", args);
       }
-    } else {
-      log.warn("picConvertor is null,args:{}", args);
-    }
-    return resultFilePath;
+      return resultFilePath;
+    }, args);
   }
 
   public String toPng(String filePath, int startPageIndex, int endPageIndex, int startIndex) throws Exception {
     String args =
       String.format("filePath:%s,startPageIndex:%s,endPageIndex:%s,startIndex:%s", filePath, startPageIndex, endPageIndex, startIndex);
     log.info("start convert doc to png,args:{}", args);
-    String pngFileExt = "png";
-    String resultFilePath = "";
-    String fileExt = FilenameUtils.getExtension(filePath).toLowerCase();
-    IPICConvertor picConvertor = fileExt.equals("pdf") ?
-      doConvert(convert -> convert.convertPdftoPic(filePath), args) :
-      doConvert(convert -> convert.convertMStoPic(filePath), args);
-    if (picConvertor != null) {
-      // picConvertor.getPageCount();
-      int resultCode = picConvertor.resultCode();
-      if (resultCode == 0) {
-        String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
-        try {
-          asyncExec(() -> picConvertor.convertToPNG(startPageIndex, endPageIndex, 2f, baseDir));
-        } finally {
-          picConvertor.close();
-        }
-        String pngFilePath = FilePathHelper.getFilePath(filePath, startPageIndex, startIndex, pngFileExt);
-        if (FileUtils.getFile(pngFilePath).exists()) {
-          resultFilePath = pngFilePath;
+    return doConvert(convert -> {
+      String pngFileExt = "png";
+      String resultFilePath = "";
+      String fileExt = FilenameUtils.getExtension(filePath).toLowerCase();
+      IPICConvertor picConvertor =
+        fileExt.equals("pdf") ? convert.convertPdftoPic(filePath) : convert.convertMStoPic(filePath);
+      if (picConvertor != null) {
+        // picConvertor.getPageCount();
+        int resultCode = picConvertor.resultCode();
+        if (resultCode == 0) {
+          String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
+          try {
+            picConvertor.convertToPNG(startPageIndex, endPageIndex, 2f, baseDir);
+          } finally {
+            picConvertor.close();
+          }
+          String pngFilePath = FilePathHelper.getFilePath(filePath, startPageIndex, startIndex, pngFileExt);
+          if (FileUtils.getFile(pngFilePath).exists()) {
+            resultFilePath = pngFilePath;
+          } else {
+            log.warn("convert2Png completed,bug aim file does't create,args:{},aim file:{}", args, pngFilePath);
+          }
         } else {
-          log.warn("convert2Png completed,bug aim file does't create,args:{},aim file:{}", args, pngFilePath);
+          log.warn("get picConvertor fail,args:{},resultCode:{}", args, resultCode);
         }
       } else {
-        log.warn("get picConvertor fail,args:{},resultCode:{}", args, resultCode);
+        log.warn("picConvertor is null,args:{}", args);
       }
-    } else {
-      log.warn("picConvertor is null,args:{}", args);
-    }
-    return resultFilePath;
+      return resultFilePath;
+    }, args);
   }
 
   public String toHtml(String filePath, int pageIndex, int startIndex) throws Exception {
     String args = String.format("filePath:%s,pageIndex:%s,startIndex:%s", filePath, pageIndex, startIndex);
     log.info("start convert doc to html,args:{}", args);
-    String htmlFileExt = "html";
-    String resultFilePath = "";
-    IHtmlConvertor htmlConvertor = doConvert(convert -> convert.convertMStoHtml(filePath), args);
-    if (htmlConvertor != null) {
-      int resultCode = htmlConvertor.resultCode();
-      if (resultCode == 0) {
-        htmlConvertor.setNormal(true);
-        String htmlFilePath = FilePathHelper.getFilePath(filePath, pageIndex, startIndex, htmlFileExt);
-        try {
-          asyncExec(() -> {
+    return doConvert(convert -> {
+      String htmlFileExt = "html";
+      String resultFilePath = "";
+      IHtmlConvertor htmlConvertor = convert.convertMStoHtml(filePath);
+      if (htmlConvertor != null) {
+        int resultCode = htmlConvertor.resultCode();
+        if (resultCode == 0) {
+          htmlConvertor.setNormal(true);
+          String htmlFilePath = FilePathHelper.getFilePath(filePath, pageIndex, startIndex, htmlFileExt);
+          try {
             htmlConvertor.convertToHtml(htmlFilePath, pageIndex);
-            return null;
-          });
-        } finally {
-          htmlConvertor.close();
-        }
-        if (FileUtils.getFile(htmlFilePath).exists()) {
-          resultFilePath = htmlFilePath;
+          } finally {
+            htmlConvertor.close();
+          }
+          if (FileUtils.getFile(htmlFilePath).exists()) {
+            resultFilePath = htmlFilePath;
+          } else {
+            log.warn("convert2Html completed,bug aim file does't create,args:{},aim file:{}", args, resultFilePath);
+          }
         } else {
-          log.warn("convert2Html completed,bug aim file does't create,args:{},aim file:{}", args, resultFilePath);
+          log.warn("get htmlConvertor fail,args:{},resultCode:{}", args, resultCode);
         }
       } else {
-        log.warn("get htmlConvertor fail,args:{},resultCode:{}", args, resultCode);
+        log.warn("htmlConvertor is null,args:{}", args);
       }
-    } else {
-      log.warn("htmlConvertor is null,args:{}", args);
-    }
-    return resultFilePath;
+      return resultFilePath;
+    }, args);
   }
 
   public int getOldWordOrPPTPageCount(String filePath) throws Exception {
-    int pageCount = 0;
-    IPICConvertor ipicConvertor = doConvert(convert -> convert.convertMStoPic(filePath), filePath);
-    if (ipicConvertor != null) {
+    return doConvert(convert -> {
+      IPICConvertor ipicConvertor = convert.convertMStoPic(filePath);
+      if (ipicConvertor == null) {
+        log.warn("cannot getPageCount for {}", filePath);
+        return -1;
+      }
       try {
-        pageCount = ipicConvertor.getPageCount();
+        return ipicConvertor.getPageCount();
       } finally {
         ipicConvertor.close();
       }
-    }
-    return pageCount;
+    }, filePath);
   }
 }

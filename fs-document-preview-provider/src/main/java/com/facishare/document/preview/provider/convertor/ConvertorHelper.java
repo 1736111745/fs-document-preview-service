@@ -23,62 +23,66 @@ import java.util.concurrent.*;
 @Slf4j
 @UtilityClass
 public class ConvertorHelper {
-  private GenericObjectPool<Convert> pool;
-  private final ThreadFactory factory =
-    new ThreadFactoryBuilder().setDaemon(true).setNameFormat("convertor-%d").build();
-  private final ExecutorService executorService = Executors.newCachedThreadPool(factory);
+    private GenericObjectPool<Convert> pool;
+    private final ThreadFactory factory =
+            new ThreadFactoryBuilder().setDaemon(true).setNameFormat("convertor-%d").build();
+    private final ExecutorService executorService = Executors.newCachedThreadPool(factory);
 
 
-  private interface IConvertJob<V> {
-    V doConvert(Convert convert) throws Exception;
-  }
-
-  static {
-    ConfigFactory.getConfig("fs-dps-config", conf -> {
-      GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
-      poolConfig.setMaxTotal(300);
-      poolConfig.setMaxIdle(100);
-      poolConfig.setMinIdle(30);
-      poolConfig.setTestOnBorrow(false);
-      poolConfig.setTestOnCreate(false);
-      poolConfig.setTestWhileIdle(false);
-      poolConfig.setJmxEnabled(true);
-      poolConfig.setMaxWaitMillis(20000);
-      if (conf.getBool("removeIdleConvertor", true)) {
-        poolConfig.setSoftMinEvictableIdleTimeMillis(600000); //空闲超过30分钟则回收对象
-        poolConfig.setTimeBetweenEvictionRunsMillis(60000); // 1分钟检测1次空闲对象
-      }
-      GenericObjectPool<Convert> old = null;
-      if (pool != null) {
-        old = pool;
-      }
-      pool = new GenericObjectPool<>(new ConvertFactory(), poolConfig);
-      if (old != null) {
-        old.clear();
-        old.close();
-      }
-    });
-  }
-
-  /**
-   * 异步执行任务，最多等待30秒，否则主动停止任务
-   *
-   * @param callable
-   * @param <V>
-   * @return
-   * @throws Exception
-   */
-  private <V> V asyncExec(Callable<V> callable) throws Exception {
-    log.info("begin async exec~");
-    Future<V> future = executorService.submit(callable);
-    try {
-      return future.get(30, TimeUnit.SECONDS);
-    } finally {
-      if (!future.isDone()) {
-        future.cancel(true);
-      }
+    private interface IConvertJob<V> {
+        V doConvert(Convert convert) throws Exception;
     }
-  }
+
+    static {
+        ConfigFactory.getConfig("fs-dps-config", conf -> {
+            GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
+            poolConfig.setMaxTotal(300);
+            poolConfig.setMaxIdle(100);
+            poolConfig.setMinIdle(30);
+            poolConfig.setTestOnBorrow(false);
+            poolConfig.setTestOnCreate(false);
+            poolConfig.setTestWhileIdle(false);
+            poolConfig.setJmxEnabled(true);
+            poolConfig.setMaxWaitMillis(20000);
+            if (conf.getBool("removeIdleConvertor", true)) {
+                poolConfig.setSoftMinEvictableIdleTimeMillis(600000); //空闲超过30分钟则回收对象
+                poolConfig.setTimeBetweenEvictionRunsMillis(60000); // 1分钟检测1次空闲对象
+            }
+            GenericObjectPool<Convert> old = null;
+            if (pool != null) {
+                old = pool;
+            }
+            pool = new GenericObjectPool<>(new ConvertFactory(), poolConfig);
+            if (old != null) {
+                old.clear();
+                old.close();
+            }
+        });
+    }
+
+    /**
+     * 异步执行任务，最多等待30秒，否则主动停止任务
+     *
+     * @param callable
+     * @param <V>
+     * @return
+     * @throws Exception
+     */
+    private <V> V asyncExec(Callable<V> callable) throws Exception {
+        Future<V> future = executorService.submit(callable);
+        try {
+            return future.get(30, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            log.info("async time out~");
+            future.cancel(true);
+            return null;
+        } finally {
+            if (!future.isDone()) {
+                future.cancel(true);
+            }
+        }
+    }
+
 
   /**
    * 把从pool借对象以及在另外一个线程执行任务的逻辑封装起来

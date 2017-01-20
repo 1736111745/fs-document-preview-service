@@ -12,7 +12,7 @@ public class ConvertorHelperTest {
   @Test
   public void toSvg() throws Exception {
     ThreadFactory tf = new ThreadFactoryBuilder().setDaemon(true).setNameFormat("test-%d").build();
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 1; i++) {
       Thread t1 = tf.newThread(() -> {
         try {
           ConvertorHelper.toSvg(System.getenv("HOME") + "/Downloads/dead.docx", 0, 1, 1);

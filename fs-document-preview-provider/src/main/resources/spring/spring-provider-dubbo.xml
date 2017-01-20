@@ -8,8 +8,9 @@
     <dubbo:application name="fs-video-provider"/>
     <!-- 设置端口为-1，则默认从20880开始，寻找空闲端口 -->
     <dubbo:protocol name="dubbo" port="-1" payload="16777216"/>
+    <dubbo:protocol name="hessian" port="-1" payload="16777216"/>
     <dubbo:registry address="${dubbo.registry.address}"/>
     <dubbo:service interface="com.facishare.document.preview.api.service.DocConvertService" ref="docConvertService"
-                   protocol="dubbo"  timeout="30000"/>
+                   protocol="dubbo,hessian"  timeout="30000"/>
     <dubbo:provider threadpool="cached" threads="300" queues="50" filter="tracerpc"/>
 </beans>

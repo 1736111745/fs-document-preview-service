@@ -25,7 +25,7 @@ import java.util.concurrent.*;
 public class ConvertorHelper {
   private GenericObjectPool<Convert> pool;
   private final ThreadFactory factory =
-    new ThreadFactoryBuilder().setDaemon(true).setNameFormat("convertor-%d").build();
+    new ThreadFactoryBuilder().setDaemon(true).setNameFormat("convertHelper-%d").build();
   private final ExecutorService executorService = Executors.newCachedThreadPool(factory);
 
 
@@ -46,7 +46,7 @@ public class ConvertorHelper {
       poolConfig.setJmxEnabled(true);
       poolConfig.setMaxWaitMillis(20000);
       if (conf.getBool("removeIdleConvertor", true)) {
-        poolConfig.setSoftMinEvictableIdleTimeMillis(600000); //空闲超过30分钟则回收对象
+        poolConfig.setSoftMinEvictableIdleTimeMillis(600000); //空闲超过10分钟则回收对象
         poolConfig.setTimeBetweenEvictionRunsMillis(60000); // 1分钟检测1次空闲对象
       }
       GenericObjectPool<Convert> old = null;
@@ -72,13 +72,10 @@ public class ConvertorHelper {
   private <V> V asyncExec(Callable<V> callable) throws Exception {
     Future<V> future = executorService.submit(callable);
     try {
-      return future.get(30, TimeUnit.SECONDS);
-    } catch (TimeoutException e) {
-      log.info("async time out~");
-      future.cancel(true);
-      return null;
+      return future.get(10, TimeUnit.SECONDS);
     } finally {
       if (!future.isDone()) {
+        log.warn("cancel it because timeout");
         future.cancel(true);
       }
     }
@@ -105,7 +102,6 @@ public class ConvertorHelper {
     try {
       val = asyncExec(() -> job.doConvert(convert));
       pool.returnObject(convert);
-      return val;
     } catch (Exception e) {
       log.error("cannot convert, args: {}", args, e);
       try {
@@ -121,8 +117,8 @@ public class ConvertorHelper {
   public String toSvg(String filePath, int startPageIndex, int endPageIndex, int startIndex) throws Exception {
     String args =
       String.format("filePath:%s,startPageIndex:%s,endPageIndex:%s,startIndex:%s", filePath, startPageIndex, endPageIndex, startIndex);
-    log.info("start convert doc to svg, args:{}", args);
     return doConvert(convert -> {
+      log.info("start convert doc to svg, args:{}", args);
       String svgFileExt = "svg";
       String resultFilePath = "";
       IPICConvertor picConvertor = convert.convertMStoPic(filePath);
@@ -159,8 +155,8 @@ public class ConvertorHelper {
   public String toJpg(String filePath, int startPageIndex, int endPageIndex, int startIndex) throws Exception {
     String args =
       String.format("filePath:%s,startPageIndex:%s,endPageIndex:%s,startIndex:%s", filePath, startPageIndex, endPageIndex, startIndex);
-    log.info("start convert doc to jpg,args:{}", args);
     return doConvert(convert -> {
+      log.info("start convert doc to jpg,args:{}", args);
       String jpgFileExt = "jpg";
       String resultFilePath = "";
       String fileExt = FilenameUtils.getExtension(filePath).toLowerCase();
@@ -194,8 +190,8 @@ public class ConvertorHelper {
   public String toPng(String filePath, int startPageIndex, int endPageIndex, int startIndex) throws Exception {
     String args =
       String.format("filePath:%s,startPageIndex:%s,endPageIndex:%s,startIndex:%s", filePath, startPageIndex, endPageIndex, startIndex);
-    log.info("start convert doc to png,args:{}", args);
     return doConvert(convert -> {
+      log.info("start convert doc to png,args:{}", args);
       String pngFileExt = "png";
       String resultFilePath = "";
       String fileExt = FilenameUtils.getExtension(filePath).toLowerCase();
@@ -229,8 +225,8 @@ public class ConvertorHelper {
 
   public String toHtml(String filePath, int pageIndex, int startIndex) throws Exception {
     String args = String.format("filePath:%s,pageIndex:%s,startIndex:%s", filePath, pageIndex, startIndex);
-    log.info("start convert doc to html,args:{}", args);
     return doConvert(convert -> {
+      log.info("start convert doc to html,args:{}", args);
       String htmlFileExt = "html";
       String resultFilePath = "";
       IHtmlConvertor htmlConvertor = convert.convertMStoHtml(filePath);

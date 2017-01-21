@@ -62,6 +62,7 @@ public class ConvertFactory implements PooledObjectFactory<Convert> {
   @Override
   public void destroyObject(PooledObject<Convert> p) throws Exception {
     p.getObject().close();
+    System.gc();
   }
 
   @Override

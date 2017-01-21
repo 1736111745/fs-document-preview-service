@@ -75,8 +75,8 @@ public class ConvertorHelper {
       return future.get(10, TimeUnit.SECONDS);
     } finally {
       if (!future.isDone()) {
-        log.warn("cancel it because timeout");
-        future.cancel(true);
+          log.warn("cancel it because timeout");
+          future.cancel(true);
       }
     }
   }

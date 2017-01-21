@@ -61,17 +61,9 @@ public class PreviewService {
                     //下载下来保存便于文档转换方便 // TODO: 2016/11/10 当所有的页码都转码完毕后需要删除.
                     FileUtils.writeByteArrayToFile(new File(filePath), bytes);
                     PageInfo pageInfo;
-                    if(extension.equals("docx"))
-                    {
-                        pageInfo = DocPageInfoHelper.getPageInfo(filePath);
-                        if(pageInfo.getPageCount()==-1) {
-                            pageInfo = getPageInfoWithYozo(filePath);
-                        }
-                    }
-                    else if(extension.equals("doc")||extension.equals("ppt")) {
+                    if(extension.equals("docx")||extension.equals("doc")||extension.equals("ppt")) {
                         pageInfo = getPageInfoWithYozo(filePath);
-                    }
-                    else {
+                    } else {
                         pageInfo = DocPageInfoHelper.getPageInfo(filePath);
                     }
                     if (pageInfo.isSuccess()) {

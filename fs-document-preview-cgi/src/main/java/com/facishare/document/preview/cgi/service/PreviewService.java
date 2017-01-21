@@ -43,7 +43,6 @@ public class PreviewService {
      * @throws Exception
      */
     public PreviewInfoEx getPreviewInfo(EmployeeInfo employeeInfo, String path, String securityGroup) throws Exception {
-        //log.info("employeeInfo:{},path:{},securityGroup:{}", JSON.toJSONString(employeeInfo), path, securityGroup);
         String ea = employeeInfo.getEa();
         int employeeId = employeeInfo.getEmployeeId();
         PreviewInfoEx previewInfoEx = new PreviewInfoEx();

@@ -198,7 +198,6 @@ public class ConvertorHelper {
       IPICConvertor picConvertor =
         fileExt.equals("pdf") ? convert.convertPdftoPic(filePath) : convert.convertMStoPic(filePath);
       if (picConvertor != null) {
-        // picConvertor.getPageCount();
         int resultCode = picConvertor.resultCode();
         if (resultCode == 0) {
           String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);

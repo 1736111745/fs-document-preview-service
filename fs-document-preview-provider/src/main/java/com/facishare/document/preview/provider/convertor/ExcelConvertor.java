@@ -82,7 +82,6 @@ public class ExcelConvertor implements IDocConvertor {
         {
 
         }
-
     }
 
     private String remove1pixPic(String html) {
@@ -96,6 +95,4 @@ public class ExcelConvertor implements IDocConvertor {
         }
         return html;
     }
-
-
 }

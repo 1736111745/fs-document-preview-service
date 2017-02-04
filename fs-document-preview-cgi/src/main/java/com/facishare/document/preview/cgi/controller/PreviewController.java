@@ -67,7 +67,7 @@ public class PreviewController {
             return getPreviewInfoResult(false, 0, null, "", "", "参数错误!");
         }
         if (!token.equals("")) {
-            log.info("getTokenInfo,ea:{},token:{},sourceUser:{}",employeeInfo.getEa(),token,employeeInfo.getSourceUser());
+            log.info("getTokenInfo,ea:{},token:{},sourceUser:{}", employeeInfo.getEa(), token, employeeInfo.getSourceUser());
             DownloadFileTokens fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
             if (fileToken != null && fileToken.getFileType().toLowerCase().equals("preview")) {
                 {

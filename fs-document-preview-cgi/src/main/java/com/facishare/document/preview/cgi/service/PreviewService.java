@@ -9,6 +9,7 @@ import com.facishare.document.preview.cgi.model.PreviewInfoEx;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.common.model.PageInfo;
 import com.facishare.document.preview.common.utils.DocPageInfoHelper;
+import com.facishare.document.preview.common.utils.OfficeFileEncryptChecker;
 import com.facishare.document.preview.common.utils.PathHelper;
 import com.facishare.document.preview.common.utils.SampleUUID;
 import lombok.extern.slf4j.Slf4j;
@@ -59,22 +60,30 @@ public class PreviewService {
                     String filePath = FilenameUtils.concat(dataDir, fileName);
                     //下载下来保存便于文档转换方便 // TODO: 2016/11/10 当所有的页码都转码完毕后需要删除.
                     FileUtils.writeByteArrayToFile(new File(filePath), bytes);
+                    //首先检测文档是否加密
+                    boolean isEncrypt = OfficeFileEncryptChecker.check(path);
                     PageInfo pageInfo;
-                    if(extension.equals("docx")||extension.equals("doc")||extension.equals("ppt")) {
-                        pageInfo = getPageInfoWithYozo(filePath);
-                    } else {
-                        pageInfo = DocPageInfoHelper.getPageInfo(filePath);
-                    }
-                    if (pageInfo.isSuccess()) {
-                        pageCount = pageInfo.getPageCount();
-                        sheetNames = pageInfo.getSheetNames();
-                        previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, path, filePath, dataDir, bytes.length, pageCount, sheetNames);
-                        previewInfoEx.setSuccess(true);
-                        previewInfoEx.setPreviewInfo(previewInfo);
+                    if (!isEncrypt) {
+                        if (extension.equals("docx") || extension.equals("doc") || extension.equals("ppt")) {
+                            pageInfo = getPageInfoWithYozo(filePath);
+                        } else {
+                            pageInfo = DocPageInfoHelper.getPageInfo(filePath);
+                        }
+                        if (pageInfo.isSuccess()) {
+                            pageCount = pageInfo.getPageCount();
+                            sheetNames = pageInfo.getSheetNames();
+                            previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, path, filePath, dataDir, bytes.length, pageCount, sheetNames);
+                            previewInfoEx.setSuccess(true);
+                            previewInfoEx.setPreviewInfo(previewInfo);
+                        } else {
+                            previewInfoEx.setSuccess(false);
+                            previewInfoEx.setPreviewInfo(null);
+                            previewInfoEx.setErrorMsg(pageInfo.getErrorMsg());
+                        }
                     } else {
                         previewInfoEx.setSuccess(false);
                         previewInfoEx.setPreviewInfo(null);
-                        previewInfoEx.setErrorMsg(pageInfo.getErrorMsg());
+                        previewInfoEx.setErrorMsg("该文档是为加密文档，暂不支持预览！");
                     }
                 }
                 else

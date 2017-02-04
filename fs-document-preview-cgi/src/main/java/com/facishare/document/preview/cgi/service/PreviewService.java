@@ -61,7 +61,7 @@ public class PreviewService {
                     //下载下来保存便于文档转换方便 // TODO: 2016/11/10 当所有的页码都转码完毕后需要删除.
                     FileUtils.writeByteArrayToFile(new File(filePath), bytes);
                     //首先检测文档是否加密
-                    boolean isEncrypt = OfficeFileEncryptChecker.check(path);
+                    boolean isEncrypt = OfficeFileEncryptChecker.check(filePath);
                     PageInfo pageInfo;
                     if (!isEncrypt) {
                         if (extension.equals("docx") || extension.equals("doc") || extension.equals("ppt")) {

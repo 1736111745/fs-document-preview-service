@@ -8,9 +8,13 @@ import com.facishare.fsi.proxy.model.warehouse.n.fileupload.NDownloadFile;
 import com.facishare.fsi.proxy.service.AFileStorageService;
 import com.facishare.fsi.proxy.service.GFileStorageService;
 import com.facishare.fsi.proxy.service.NFileStorageService;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by liuq on 16/8/15.
@@ -25,7 +29,7 @@ public class FileStorageProxy {
     @Autowired
     GFileStorageService gFileStorageService;
 
-    public byte[] GetBytesByPath(String path, EmployeeInfo employeeInfo,String securityGroup) {
+    public byte[] GetBytesByPath(String path, EmployeeInfo employeeInfo, String securityGroup) {
         try {
             if (path.startsWith("G_")) {
                 GFileDownload.Arg arg = new GFileDownload.Arg();
@@ -54,4 +58,13 @@ public class FileStorageProxy {
         }
     }
 
+    public void DownloadAndSave(String path, EmployeeInfo employeeInfo, String securityGroup, String originalFilePath) throws IOException {
+        File originalFile = new File(originalFilePath);
+        if (!originalFile.exists()) {
+            byte[] bytes = GetBytesByPath(path, employeeInfo, securityGroup);
+            if (bytes != null && bytes.length > 0) {
+                FileUtils.writeByteArrayToFile(originalFile, bytes);
+            }
+        }
+    }
 }

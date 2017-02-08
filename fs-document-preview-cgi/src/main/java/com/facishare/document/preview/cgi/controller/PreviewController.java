@@ -18,6 +18,7 @@ import com.fxiaoke.metrics.CounterService;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -223,6 +225,10 @@ public class PreviewController {
                             FileOutPuter.outPut(response, dataFilePath, width, true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
+                            File originalFile=new File(originalFilePath);
+                            if(!originalFile.exists()) {
+                                fileStorageProxy.DownloadAndSave(path, employeeInfo, "", originalFilePath);
+                            }
                             ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(2).build();
                             ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
                             dataFilePath = convertDocResult.getDataFilePath();

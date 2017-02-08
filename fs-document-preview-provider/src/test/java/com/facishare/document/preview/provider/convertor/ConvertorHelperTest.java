@@ -41,4 +41,11 @@ public class ConvertorHelperTest {
       e.printStackTrace();
     }
   }
+
+  @Test
+  public void getSheetInfo() throws Exception {
+     String filePath="/Users/liuq/Downloads/x7rqazvx.xls";
+     String[][] sheets= ConvertorHelper.getExcelSheetInfo(filePath);
+    System.out.println(sheets);
+  }
 }

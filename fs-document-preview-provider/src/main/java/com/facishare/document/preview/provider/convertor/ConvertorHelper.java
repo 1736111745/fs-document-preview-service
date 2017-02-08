@@ -268,4 +268,21 @@ public class ConvertorHelper {
       }
     }, filePath);
   }
+
+
+  public String[][] getExcelSheetInfo(String filePath) throws  Exception
+  {
+    return doConvert(convert -> {
+      IHtmlConvertor ipicConvertor = convert.convertMStoHtml(filePath);
+      if (ipicConvertor == null) {
+        log.warn("cannot getPageCount for {}", filePath);
+        return null;
+      }
+      try {
+        return ipicConvertor.getSheetInfo();
+      } finally {
+        ipicConvertor.close();
+      }
+    }, filePath);
+  }
 }

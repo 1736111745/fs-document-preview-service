@@ -21,7 +21,7 @@ function getPreviewInfo() {
                 doPreview();
             }
             else {
-                document.write("<h4>"+data.errorMsg+"</h4>");
+                document.write("<h3>"+data.errorMsg+"</h3>");
             }
         }
     });

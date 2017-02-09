@@ -10,9 +10,9 @@ $(function() {
     {
         if($(window).scrollTop()+$(window).height()>=$(document).height()*0.75)
         {
-            __start__++;
             if(__start__<pageCount){
                 loadData(__start__);
+                __start__++;
             }
         }
     }

@@ -4,7 +4,7 @@ var path = getQueryStringByName("path");
 var end=pageCount>3?3:pageCount;
 $(function() {
     loadPrev3Page();
-    var __start__=pageCount-end;
+    var __start__=end;
     $(window).bind('scroll',function(){show()});
     function show()
     {

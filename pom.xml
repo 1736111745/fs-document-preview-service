@@ -17,5 +17,6 @@
         <module>fs-document-preview-provider</module>
         <module>fs-document-preview-api</module>
         <module>fs-document-preview-common</module>
+        <module>fs-document-preview-pdf2html</module>
     </modules>
 </project>

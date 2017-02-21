@@ -1,5 +1,6 @@
 package com.facishare.document.preview.cgi.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfoEx;
 import com.facishare.document.preview.cgi.service.PreviewService;
@@ -30,11 +31,11 @@ public class RestfulController {
         String ret;
         try {
             Preconditions.checkNotNull(filePath, "filePath is null");
-            Preconditions.checkNotNull(ea, "enterpriseAccount is null");
+            Preconditions.checkNotNull(ea, "ea is null");
             Preconditions.checkNotNull(employeeId, "employeeId is null");
             PreviewInfoEx previewInfoEx = getPreviewInfo(createEmployeeInfo(ea, employeeId), filePath);
             Preconditions.checkNotNull(previewInfoEx.getPreviewInfo(), "document can't found!");
-            ret = String.format("{\"value\":%d}", previewInfoEx.getPreviewInfo());
+            ret = JSON.toJSONString(previewInfoEx.getPreviewInfo());
         } catch (Exception e) {
             log.error("/document/getPageCount |filePath: {} | ea: {} | ei: {} ", filePath, ea, employeeId, e);
             ret = String.format("{\"error\":\"%s\"}", e.getMessage());

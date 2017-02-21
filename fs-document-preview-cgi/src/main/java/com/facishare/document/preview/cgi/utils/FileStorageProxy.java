@@ -1,5 +1,6 @@
 package com.facishare.document.preview.cgi.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.fsi.proxy.model.warehouse.a.ADownloadFile;
 import com.facishare.fsi.proxy.model.warehouse.a.User;
@@ -8,9 +9,8 @@ import com.facishare.fsi.proxy.model.warehouse.n.fileupload.NDownloadFile;
 import com.facishare.fsi.proxy.service.AFileStorageService;
 import com.facishare.fsi.proxy.service.GFileStorageService;
 import com.facishare.fsi.proxy.service.NFileStorageService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
@@ -19,9 +19,9 @@ import java.io.IOException;
 /**
  * Created by liuq on 16/8/15.
  */
+@Slf4j
 public class FileStorageProxy {
 
-    public static final Logger LOG = LoggerFactory.getLogger(FileStorageProxy.class);
     @Autowired
     AFileStorageService aFileStorageService;
     @Autowired
@@ -42,7 +42,9 @@ public class FileStorageProxy {
                 arg.setaPath(path);
                 arg.setBusiness("Preview");
                 arg.setFileSecurityGroup(securityGroup);
-                arg.setUser(new User(employeeInfo.getEmployeeAccount(), employeeInfo.getEmployeeId()));
+                User user=new User(employeeInfo.getEmployeeAccount(),employeeInfo.getEmployeeId());
+                arg.setUser(user);
+                log.info("download a file,arg:{}", JSON.toJSONString(arg));
                 return aFileStorageService.downloadFile(arg).getData();
             } else {
                 NDownloadFile.Arg arg = new NDownloadFile.Arg();
@@ -53,7 +55,7 @@ public class FileStorageProxy {
                 return nFileStorageService.nDownloadFile(arg, employeeInfo.getEa()).getData();
             }
         } catch (Exception e) {
-            LOG.error("downloadFile:ea:{},sourceUser:{},path:{},securityGroup:{}", employeeInfo.getEa(), employeeInfo.getSourceUser(), path, securityGroup, e);
+            log.error("downloadFile:ea:{},sourceUser:{},path:{},securityGroup:{}", employeeInfo.getEa(), employeeInfo.getSourceUser(), path, securityGroup, e);
             return null;
         }
     }

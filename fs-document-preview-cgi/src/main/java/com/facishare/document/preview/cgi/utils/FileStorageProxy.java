@@ -42,7 +42,7 @@ public class FileStorageProxy {
                 arg.setaPath(path);
                 arg.setBusiness("Preview");
                 arg.setFileSecurityGroup(securityGroup);
-                User user=new User(employeeInfo.getEmployeeAccount(),employeeInfo.getEmployeeId());
+                User user=new User(employeeInfo.getEa(),employeeInfo.getEmployeeId());
                 arg.setUser(user);
                 log.info("download a file,arg:{}", JSON.toJSONString(arg));
                 return aFileStorageService.downloadFile(arg).getData();

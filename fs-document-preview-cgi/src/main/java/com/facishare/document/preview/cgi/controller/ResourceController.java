@@ -35,4 +35,11 @@ public class ResourceController {
         String filePath = baseDir + "/js/" + fileName;
         fileOutPutor.outPut(response, filePath, false);
     }
+
+    @RequestMapping("/preview/{folder}/{fileName:.+}")
+    public void getStaticContent(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
+        String baseDir = previewInfoDao.getBaseDir(folder);
+        String filePath = baseDir + "/" + fileName;
+        fileOutPutor.outPut(response, filePath, false);
+    }
 }

@@ -2,8 +2,11 @@ package com.facishare.document.preview.cgi.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.facishare.document.preview.api.model.arg.ConvertDocArg;
+import com.facishare.document.preview.api.model.arg.Pdf2HtmlArg;
 import com.facishare.document.preview.api.model.result.ConvertDocResult;
+import com.facishare.document.preview.api.model.result.Pdf2HtmlResult;
 import com.facishare.document.preview.api.service.DocConvertService;
+import com.facishare.document.preview.api.service.Pdf2HtmlService;
 import com.facishare.document.preview.cgi.dao.FileTokenDao;
 import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.*;
@@ -12,6 +15,7 @@ import com.facishare.document.preview.cgi.service.PreviewService;
 import com.facishare.document.preview.cgi.utils.FileOutPuter;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.cgi.utils.RequestParamsHelper;
+import com.facishare.document.preview.common.model.DocType;
 import com.facishare.document.preview.common.utils.DocPreviewInfoHelper;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.fxiaoke.metrics.CounterService;
@@ -51,6 +55,8 @@ public class PreviewController {
     FileTokenDao fileTokenDao;
     @Autowired
     DocConvertService docConvertService;
+    @Autowired
+    Pdf2HtmlService pdf2HtmlService;
     @Autowired
     private PreviewService previewService;
     @Autowired
@@ -106,6 +112,7 @@ public class PreviewController {
         String path = safteGetRequestParameter(request, "path");
         String page = safteGetRequestParameter(request, "page");
         String securityGroup = safteGetRequestParameter(request, "sg");
+        String version=safteGetRequestParameter(request,"ver");
         if (!isValidPath(path)) {
             response.setStatus(400);
             return;
@@ -123,11 +130,21 @@ public class PreviewController {
                             FileOutPuter.outPut(response, dataFilePath, true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
-                            ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(1).build();
-                            log.info("begin do convert,arg:{}", convertDocArg);
-                            ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
-                            log.info("end do convert,result:{}", convertDocResult);
-                            dataFilePath = convertDocResult.getDataFilePath();
+                            DocType docType = DocTypeHelper.getDocType(path);
+                            if(docType==DocType.PDF&&Strings.isNullOrEmpty(version)) {
+                                Pdf2HtmlArg pdf2HtmlArg = Pdf2HtmlArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
+                                log.info("begin do convert,arg:{}", pdf2HtmlArg);
+                                Pdf2HtmlResult pdf2HtmlResult = pdf2HtmlService.convertPdf2Html(pdf2HtmlArg);
+                                dataFilePath = pdf2HtmlResult.getDataFilePath();
+                                log.info("end do convert,result:{}", pdf2HtmlResult);
+                            }
+                            else {
+                                ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(1).build();
+                                log.info("begin do convert,arg:{}", convertDocArg);
+                                ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
+                                dataFilePath = convertDocResult.getDataFilePath();
+                                log.info("end do convert,result:{}", convertDocResult);
+                            }
                             if (!Strings.isNullOrEmpty(dataFilePath)) {
                                 previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
                                 FileOutPuter.outPut(response, dataFilePath, true);
@@ -169,6 +186,30 @@ public class PreviewController {
             if (previewInfo != null) {
                 map.put("success", true);
                 map.put("sheets", previewInfo.getSheetNames());
+            } else {
+                map.put("success", false);
+                map.put("errorMsg", "系统错误!");
+            }
+        }
+        return JSONObject.toJSONString(map);
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "/preview/getDirName", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String getDirName(HttpServletRequest request) {
+        String path = safteGetRequestParameter(request, "path");
+        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+        String ea = employeeInfo.getEa();
+        Map<String, Object> map = new HashMap<>();
+        if (path.equals("")) {
+            map.put("success", false);
+            map.put("errorMsg", "参数错误!");
+        } else {
+            PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
+            if (previewInfo != null) {
+                map.put("success", true);
+                map.put("dirName", previewInfo.getDirName());
             } else {
                 map.put("success", false);
                 map.put("errorMsg", "系统错误!");

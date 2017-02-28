@@ -186,6 +186,7 @@ public class MimeTypeHelper {
         s_mapMimeTypes.put("xyz", "chemical/x-xyz");
         s_mapMimeTypes.put("z", "application/compress");
         s_mapMimeTypes.put("zip", "application/zip");
+        s_mapMimeTypes.put("woff","application/x-font-woff");
     }
 
     // Constructors /////////////////////////////////////////////////////////////

@@ -265,7 +265,7 @@
         <dependency>
             <groupId>batik-util</groupId>
             <artifactId>batik-util</artifactId>
-            <version>1.2.0</version>
+            <version>1.2.2</version>
         </dependency>
         <dependency>
             <groupId>batik-xml</groupId>
@@ -643,7 +643,7 @@
                 <configuration>
                     <server>tomcat-development-server</server>
                     <uriEncoding>UTF-8</uriEncoding>
-                    <port>9002</port>
+                    <port>9120</port>
                     <path>/</path>
                 </configuration>
             </plugin>

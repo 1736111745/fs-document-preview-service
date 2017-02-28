@@ -408,7 +408,7 @@
                 <configuration>
                     <server>tomcat-development-server</server>
                     <uriEncoding>UTF-8</uriEncoding>
-                    <port>9191</port>
+                    <port>9330</port>
                     <path>/</path>
                 </configuration>
             </plugin>

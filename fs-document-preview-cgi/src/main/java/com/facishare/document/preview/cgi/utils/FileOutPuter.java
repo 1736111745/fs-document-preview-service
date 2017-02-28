@@ -43,7 +43,7 @@ public class FileOutPuter {
                 response.setContentLength(buffer.length);
                 out.write(buffer);
             } catch (Exception ex) {
-                log.error("filepath:{}", filePath, ex);
+                log.error("filePath:{}", filePath, ex);
                 response.setStatus(404);
             } finally {
                 out.flush();

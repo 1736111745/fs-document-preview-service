@@ -79,7 +79,7 @@ public class CleanerThread extends Thread implements AutoCloseable {
     }
   }
 
-  protected CleanerThread() {
+   CleanerThread() {
     super("Batik CleanerThread");
     queue = new ReferenceQueue();
     setDaemon(true);

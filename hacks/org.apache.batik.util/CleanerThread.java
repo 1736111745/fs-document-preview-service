@@ -18,8 +18,9 @@
  */
 package org.apache.batik.util;
 
-import java.lang.ref.*;
-import java.util.concurrent.atomic.LongAdder;
+import java.lang.ref.PhantomReference;
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 
 /**
  * One line Class Desc
@@ -29,13 +30,17 @@ import java.util.concurrent.atomic.LongAdder;
  * @author <a href="mailto:deweese@apache.org">l449433</a>
  * @version $Id$
  */
-public class CleanerThread extends Thread implements AutoCloseable {
-  volatile ReferenceQueue queue;
-  public static final CleanerThread THREAD = new CleanerThread();
+public class CleanerThread {
+  private static final CleanerWorker WORKER = new CleanerWorker();
+  private static final Thread CONTAINER;
 
-  public synchronized ReferenceQueue getReferenceQueue() {
-    return queue;
+  static {
+    CONTAINER = new Thread(WORKER, "Batik CleanerThread");
+    Runtime.getRuntime().addShutdownHook(new Thread(CleanerThread::close));
+    CONTAINER.setDaemon(true);
+    CONTAINER.start();
   }
+
 
   /**
    * If objects registered with the reference queue associated with
@@ -54,7 +59,7 @@ public class CleanerThread extends Thread implements AutoCloseable {
    */
   public abstract static class SoftReferenceCleared extends SoftReference implements ReferenceCleared {
     public SoftReferenceCleared(Object o) {
-      super(o, THREAD.getReferenceQueue());
+      super(o, WORKER.getQueue());
     }
   }
 
@@ -65,7 +70,7 @@ public class CleanerThread extends Thread implements AutoCloseable {
    */
   public abstract static class WeakReferenceCleared extends WeakReference implements ReferenceCleared {
     public WeakReferenceCleared(Object o) {
-      super(o, THREAD.getReferenceQueue());
+      super(o, WORKER.getQueue());
     }
   }
 
@@ -76,69 +81,24 @@ public class CleanerThread extends Thread implements AutoCloseable {
    */
   public abstract static class PhantomReferenceCleared extends PhantomReference implements ReferenceCleared {
     public PhantomReferenceCleared(Object o) {
-      super(o, THREAD.getReferenceQueue());
+      super(o, WORKER.getQueue());
     }
-  }
-
-  private static volatile int num = 0;
-  private static final int getSeqNo() {
-    try {
-      throw new RuntimeException("detect stacktrace");
-    } catch (RuntimeException e) {
-      e.printStackTrace();
-    }
-    return ++num;
   }
 
   protected CleanerThread() {
-    super("Batik CleanerThread-" + getSeqNo());
-    queue = new ReferenceQueue();
-    setDaemon(true);
-    start();
   }
 
-  public void run() {
-    ReferenceQueue rq;
-    while ((rq = getReferenceQueue()) != null) {
-      try {
-        Reference ref;
-        try {
-          ref = rq.remove();
-        } catch (InterruptedException ie) {
-          break;
-        }
-
-        if (ref instanceof ReferenceCleared) {
-          ReferenceCleared rc = (ReferenceCleared) ref;
-          rc.cleared();
-        }
-      } catch (ThreadDeath td) {
-        throw td;
-      } catch (Throwable t) {
-        t.printStackTrace();
-      }
-    }
-    System.err.println(Thread.currentThread().getName() + " exited");
-  }
 
   /**
    * Stops the cleaner thread. Calling this method is recommended in all long running applications
    * with custom class loaders (e.g., web applications).
    */
-  public void close() {
-    // try to stop it gracefully
-    synchronized (this) {
-      queue = null;
-    }
-    this.interrupt();
+  public static void close() {
     try {
-      this.join(500);
-    } catch (InterruptedException e) {
-      // join failed
-    }
-    // last resort tentative to kill the cleaner thread
-    if (this.isAlive()) {
-      this.stop();
+      WORKER.close();
+      CONTAINER.join(3000);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 }

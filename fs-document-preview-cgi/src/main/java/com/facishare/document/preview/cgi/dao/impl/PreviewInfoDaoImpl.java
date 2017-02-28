@@ -61,7 +61,11 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         if (filePathList != null && filePathList.size() > 0) {
             switch (docType) {
                 case PDF: {
-                    dataFileName = filePathList.stream().filter(x -> (x.equals(pageIndex + ".html")|| (x.equals(pageIndex + ".jpg") || x.equals(pageIndex + ".png")))).findFirst().orElse("");
+                    if (type == 1) {
+                        dataFileName = filePathList.stream().filter(x -> (x.equals(pageIndex + ".jpg") || x.equals(pageIndex + ".png"))).findFirst().orElse("");
+                    } else {
+                        dataFileName = filePathList.stream().filter(x -> (x.equals(pageIndex + ".html"))).findFirst().orElse("");
+                    }
                     break;
                 }
                 case Excel: {

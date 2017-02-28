@@ -36,7 +36,7 @@ function  loadPageLoader() {
 }
 
 function loadData(i,element) {
-    var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg;
+    var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg+"&ver=1.0";
     $.ajax({
         type: 'get',
         timeout: 1800000,

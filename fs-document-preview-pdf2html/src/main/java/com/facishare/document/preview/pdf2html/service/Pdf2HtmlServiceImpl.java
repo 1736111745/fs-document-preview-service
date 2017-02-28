@@ -50,6 +50,7 @@ public class Pdf2HtmlServiceImpl implements Pdf2HtmlService {
     private static void executeCmd(int page, String filePath) throws IOException, InterruptedException {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
+        log.info("begin convert pdf2html");
         String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
         String outPutDir = FilenameUtils.concat(basedDir, "p" + page);
         StringBuilder stringBuilder = new StringBuilder();
@@ -69,14 +70,18 @@ public class Pdf2HtmlServiceImpl implements Pdf2HtmlService {
         stringBuilder.append(" --dest-dir " + outPutDir);//输出目录
         stringBuilder.append(" " + filePath);
         String cmd = stringBuilder.toString();
+        log.info("cmd:{}", cmd);
         String[] cmds = {"/bin/sh", "-c", cmd};
         Process pro = Runtime.getRuntime().exec(cmds);
         int ret = pro.waitFor();
         stopWatch.stop();
-        System.out.println("ret:" + ret + ",cost:" + stopWatch.getTime() + "ms");
+        log.info("end convert pdf2html,ret:{},cost:{}ms", ret, stopWatch.getTime());
     }
 
     private static String handleResult(int page, String filePath,String dirName) throws IOException {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        log.info("begin handle html!");
         String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
         String pageDirPath = FilenameUtils.concat(basedDir, "p" + page);
         String cssName = "css" + page + ".css";
@@ -89,9 +94,11 @@ public class Pdf2HtmlServiceImpl implements Pdf2HtmlService {
         File pageFile = new File(pagePath);
         String newPagePath = FilenameUtils.concat(basedDir, newPageName);
         handleCss(page, cssFile, newCssPath);
-        handleHtml(page, pageFile, newPagePath,dirName);
+        handleHtml(page, pageFile, newPagePath, dirName);
         handleStaticResource(basedDir, pageDirPath);
         FileUtils.deleteDirectory(new File(pageDirPath));
+        stopWatch.stop();
+        log.info("end handle html,cost:{}ms",stopWatch.getNanoTime());
         return newPagePath;
     }
 

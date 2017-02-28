@@ -19,6 +19,7 @@
 package org.apache.batik.util;
 
 import java.lang.ref.*;
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * One line Class Desc
@@ -79,8 +80,18 @@ public class CleanerThread extends Thread implements AutoCloseable {
     }
   }
 
+  private static volatile int num = 0;
+  private static final int getSeqNo() {
+    try {
+      throw new RuntimeException("detect stacktrace");
+    } catch (RuntimeException e) {
+      e.printStackTrace();
+    }
+    return ++num;
+  }
+
   protected CleanerThread() {
-    super("Batik CleanerThread");
+    super("Batik CleanerThread-" + getSeqNo());
     queue = new ReferenceQueue();
     setDaemon(true);
     start();

@@ -18,6 +18,7 @@ public class CleanerWorker implements Runnable, AutoCloseable {
 
   @Override
   public void run() {
+    running = true;
     while (running) {
       try {
         Reference ref;
@@ -36,7 +37,7 @@ public class CleanerWorker implements Runnable, AutoCloseable {
         e.printStackTrace();
       }
     }
-    System.out.println(Thread.currentThread().getName() + " exited");
+    System.out.println("WARN " + Thread.currentThread().getName() + " exited, loader: " + CleanerWorker.class.getClassLoader());
   }
 
   @Override

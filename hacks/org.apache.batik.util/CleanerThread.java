@@ -37,7 +37,7 @@ public class CleanerThread {
   static {
     CONTAINER = new Thread(WORKER, "Batik CleanerThread");
     CONTAINER.start();
-    System.out.println("thread started: " + CONTAINER.getName());
+    System.out.println("WARN thread started: " + CONTAINER.getName() + ", loader: " + CleanerThread.class.getClassLoader());
   }
 
 

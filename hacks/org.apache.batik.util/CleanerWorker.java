@@ -36,7 +36,7 @@ public class CleanerWorker implements Runnable, AutoCloseable {
         e.printStackTrace();
       }
     }
-    System.err.println(Thread.currentThread().getName() + " exited");
+    System.out.println(Thread.currentThread().getName() + " exited");
   }
 
   @Override

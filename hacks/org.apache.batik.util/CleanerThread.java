@@ -36,9 +36,8 @@ public class CleanerThread {
 
   static {
     CONTAINER = new Thread(WORKER, "Batik CleanerThread");
-    Runtime.getRuntime().addShutdownHook(new Thread(CleanerThread::close));
-    CONTAINER.setDaemon(true);
     CONTAINER.start();
+    System.out.println("thread started: " + CONTAINER.getName());
   }
 
 
@@ -86,19 +85,5 @@ public class CleanerThread {
   }
 
   protected CleanerThread() {
-  }
-
-
-  /**
-   * Stops the cleaner thread. Calling this method is recommended in all long running applications
-   * with custom class loaders (e.g., web applications).
-   */
-  public static void close() {
-    try {
-      WORKER.close();
-      CONTAINER.join(3000);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
   }
 }

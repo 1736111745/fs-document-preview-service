@@ -38,6 +38,7 @@ public class CleanerThread {
     CONTAINER = new Thread(WORKER, "Batik CleanerThread");
     CONTAINER.start();
     System.out.println("WARN thread started: " + CONTAINER.getName() + ", loader: " + CleanerThread.class.getClassLoader());
+    Runtime.getRuntime().addShutdownHook(new Thread(CleanerThread::close));
   }
 
 
@@ -85,5 +86,13 @@ public class CleanerThread {
   }
 
   protected CleanerThread() {
+  }
+
+  public static void close() {
+    try {
+      WORKER.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }

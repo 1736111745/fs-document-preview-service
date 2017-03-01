@@ -72,7 +72,7 @@ public class ConvertorHelper {
   private <V> V asyncExec(Callable<V> callable) throws Exception {
     Future<V> future = executorService.submit(callable);
     try {
-      return future.get(30, TimeUnit.SECONDS);
+      return future.get(60, TimeUnit.SECONDS);
     } finally {
       if (!future.isDone()) {
           log.warn("cancel it because timeout");

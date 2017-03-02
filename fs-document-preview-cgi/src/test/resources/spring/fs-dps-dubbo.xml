@@ -1,0 +1,17 @@
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+    <dubbo:registry address="${dubbo.registry.address}"/>
+    <dubbo:application name="fs-dps"/>
+    <dubbo:reference id="assService" interface="com.facishare.asm.api.service.ActiveSessionAuthorizeService"
+                     protocol="dubbo" retries="0" timeout="40000"/>
+    <dubbo:reference id="docConvertService" interface="com.facishare.document.preview.api.service.DocConvertService"
+                     protocol="dubbo" retries="0" timeout="40000" url="dubbo://localhost:20880"/>
+    <dubbo:reference id="pdf2HtmlService" interface="com.facishare.document.preview.api.service.Pdf2HtmlService"
+                     protocol="dubbo" retries="0" timeout="40000"/>
+    <dubbo:consumer filter="tracerpc"/>
+
+</beans>

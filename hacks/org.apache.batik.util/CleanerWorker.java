@@ -18,14 +18,17 @@ public class CleanerWorker implements Runnable, AutoCloseable {
 
   @Override
   public void run() {
-    while (running) {
+    running = true;
+    long last = System.currentTimeMillis();
+    // 如果十分钟没有任务，那就可以退出了
+    while (running && (System.currentTimeMillis() - last < 600000L)) {
       try {
         Reference ref;
         ref = queue.remove(3000L);
         if (ref == null) {
           continue;
         }
-
+        last = System.currentTimeMillis();
         if (ref instanceof CleanerThread.ReferenceCleared) {
           CleanerThread.ReferenceCleared rc = (CleanerThread.ReferenceCleared) ref;
           rc.cleared();
@@ -36,7 +39,8 @@ public class CleanerWorker implements Runnable, AutoCloseable {
         e.printStackTrace();
       }
     }
-    System.out.println(Thread.currentThread().getName() + " exited");
+    String name = Thread.currentThread().getName();
+    System.out.println("WARN " + name + " exited, loader: " + CleanerWorker.class.getClassLoader());
   }
 
   @Override

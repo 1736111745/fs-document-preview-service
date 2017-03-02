@@ -29,7 +29,7 @@
         div.lazy {
             width:98%;
             height: 300px;
-            background-color: url("<%=request.getContextPath()%>/static/images/loading.gif");
+            background: url("<%=request.getContextPath()%>/static/images/loading.gif") no-repeat center;
         }
     </style>
     <title>文档预览</title>

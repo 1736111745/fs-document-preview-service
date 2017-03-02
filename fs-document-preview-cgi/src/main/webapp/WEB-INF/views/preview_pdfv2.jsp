@@ -32,7 +32,7 @@
             background: url("<%=request.getContextPath()%>/static/images/loading.gif") no-repeat center;
         }
     </style>
-    <title>文档预览</title>
+    <title>pdf文档预览</title>
 </head>
 <body>
 <div class="loading"></div>

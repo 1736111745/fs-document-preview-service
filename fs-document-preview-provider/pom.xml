@@ -153,14 +153,21 @@
             <artifactId>log4j-over-slf4j</artifactId>
             <version>1.7.20</version>
         </dependency>
+        <!-- common-logging 实际调用slf4j -->
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.1.7</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>1.7.20</version>
+        </dependency>
+        <!-- java.util.logging 实际调用slf4j -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <version>1.7.20</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
+            <artifactId>logback-classic</artifactId>
             <version>1.1.7</version>
         </dependency>
         <!-- End SLF4j -->

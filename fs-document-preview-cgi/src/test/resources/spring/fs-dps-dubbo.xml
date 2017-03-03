@@ -11,7 +11,7 @@
     <dubbo:reference id="docConvertService" interface="com.facishare.document.preview.api.service.DocConvertService"
                      protocol="dubbo" retries="0" timeout="40000" url="dubbo://localhost:20880"/>
     <dubbo:reference id="pdf2HtmlService" interface="com.facishare.document.preview.api.service.Pdf2HtmlService"
-                     protocol="dubbo" retries="0" timeout="40000"/>
+                     protocol="dubbo" retries="0" timeout="40000" url="dubbo://localhost:28888"/>
     <dubbo:consumer filter="tracerpc"/>
 
 </beans>

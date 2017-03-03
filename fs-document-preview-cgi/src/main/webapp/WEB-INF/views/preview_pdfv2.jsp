@@ -28,8 +28,13 @@
     <style type="text/css">
         div.lazy {
             width:98%;
-            height: 300px;
+            height: 500px;
             background: url("<%=request.getContextPath()%>/static/images/loading.gif") no-repeat center;
+        }
+        div.center
+        {
+            text-align: center;
+            margin-bottom: 10px;
         }
     </style>
     <title>pdf文档预览</title>

@@ -5,6 +5,7 @@ import com.facishare.document.preview.api.model.arg.Pdf2HtmlArg;
 import com.facishare.document.preview.api.model.result.Pdf2HtmlResult;
 import com.facishare.document.preview.api.service.Pdf2HtmlService;
 import com.facishare.document.preview.pdf2html.utils.CssHandler;
+import com.facishare.document.preview.pdf2html.utils.ProcessUtils;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -52,19 +53,9 @@ public class Pdf2HtmlServiceImpl implements Pdf2HtmlService {
         }
     }
 
-    private boolean  asyncExcute(String cmd) throws InterruptedException, ExecutionException, TimeoutException {
-        Future<Boolean> future = executorService.submit(() -> exec(cmd));
-        try {
-            return future.get(30, TimeUnit.SECONDS);
-        } finally {
-            if (!future.isDone()) {
-                log.warn("cancel it because timeout");
-                future.cancel(true);
-            }
-        }
-    }
 
-    private  boolean executeCmd(int page, String filePath) throws IOException, InterruptedException, TimeoutException, ExecutionException {
+
+    private  boolean executeCmd(int page, String filePath) throws InterruptedException, TimeoutException, IOException {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         log.info("begin convert pdf2html");
@@ -87,28 +78,12 @@ public class Pdf2HtmlServiceImpl implements Pdf2HtmlService {
         paramsBuilder.append(" " + filePath);
         String cmd = paramsBuilder.toString();
         log.info("cmd:{}", cmd);
-        boolean result = asyncExcute(cmd);
+        boolean result = ProcessUtils.execute(30000,cmd).exitCode==0;
         stopWatch.stop();
         log.info("end convert pdf2html,ret:{},cost:{}ms", result, stopWatch.getTime());
         return result;
     }
 
-
-    public  boolean exec(String command) throws IOException, InterruptedException {
-        log.info("执行脚本:" + command);
-        try {
-            Process process = Runtime.getRuntime().exec(command);
-            process.waitFor(30,TimeUnit.SECONDS);
-            int exitValue= process.exitValue();
-            if (process != null) {
-                process.destroy();
-            }
-            return exitValue == 0;
-        } catch (Exception e) {
-            log.error("exe cmd happened exception", e);
-            return false;
-        }
-    }
 
 
     private  String handleResult(int page, String filePath, String dirName) throws IOException {

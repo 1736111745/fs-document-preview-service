@@ -25,7 +25,7 @@ public class Pdf2HtmlProcessHelper {
         try {
             future = new ProcessExecutor().command(args).start().getFuture();
             try {
-                ProcessResult processResult = future.get(15, TimeUnit.SECONDS);
+                ProcessResult processResult = future.get(30, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 log.error("do convert happened interrupted exception!", e);
             } catch (ExecutionException e) {

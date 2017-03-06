@@ -37,7 +37,7 @@ public class ViewController {
         String grayConfig = "pdf2html";
         String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
         boolean pd2html = gray.isAllow(grayConfig, user);
-        return pd2html ? "preview_pdfv2" : "preview_pdf";
+        return pd2html ? "pdf2html" : "preview_pdf";
     }
 
     @RequestMapping(value = "/preview/handleWordAndPPT", method = RequestMethod.GET)

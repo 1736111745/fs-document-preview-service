@@ -19,7 +19,7 @@ function loadAllPages() {
 
 function loadViewPort() {
     var docWidth = $(window).width();
-    var scale = docWidth / 1000;
+    var scale = docWidth * 0.98 / 1000;
     var viewport = document.querySelector("meta[name=viewport]");
     viewport.setAttribute('content', 'initial-scale=' + scale + ', width=device-width');
 }

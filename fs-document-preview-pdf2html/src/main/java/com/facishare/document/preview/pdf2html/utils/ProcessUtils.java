@@ -1,9 +1,11 @@
 package com.facishare.document.preview.pdf2html.utils;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -13,10 +15,9 @@ public class ProcessUtils {
     /**
      * 运行一个外部命令，返回状态.若超过指定的超时时间，抛出TimeoutException
      */
-    public static ProcessStatus execute(final long timeout, final String... command)
+    public static ProcessStatus execute(final long timeout, final List<String> cmds)
             throws IOException, InterruptedException, TimeoutException {
-
-        ProcessBuilder pb = new ProcessBuilder(command);
+        ProcessBuilder pb = new ProcessBuilder(cmds);
         pb.redirectErrorStream(true);
         Process process = pb.start();
 
@@ -33,7 +34,6 @@ public class ProcessUtils {
                 return ps;
             }
         } catch (InterruptedException e) {
-            // canceled by other thread.
             worker.interrupt();
             throw e;
         } finally {

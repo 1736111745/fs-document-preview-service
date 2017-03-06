@@ -41,7 +41,7 @@ function loadData(i,element) {
         type: 'get',
         timeout: 1800000,
         dataType: 'json',
-        async: true,
+        async: false,
         url: url,
         beforeSend: function () {
         },

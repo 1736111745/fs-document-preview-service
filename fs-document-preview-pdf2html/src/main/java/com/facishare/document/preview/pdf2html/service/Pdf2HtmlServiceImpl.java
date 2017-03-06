@@ -6,6 +6,7 @@ import com.facishare.document.preview.api.model.result.Pdf2HtmlResult;
 import com.facishare.document.preview.api.service.Pdf2HtmlService;
 import com.facishare.document.preview.pdf2html.utils.CssHandler;
 import com.facishare.document.preview.pdf2html.utils.ProcessUtils;
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,9 +28,7 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 public class Pdf2HtmlServiceImpl implements Pdf2HtmlService {
-    private final ThreadFactory factory =
-            new ThreadFactoryBuilder().setDaemon(true).setNameFormat("excuteCmd-%d").build();
-    private final ExecutorService executorService = Executors.newCachedThreadPool(factory);
+
     @Override
     public Pdf2HtmlResult convertPdf2Html(Pdf2HtmlArg arg) {
         String filePath = arg.getOriginalFilePath();
@@ -61,26 +61,38 @@ public class Pdf2HtmlServiceImpl implements Pdf2HtmlService {
         log.info("begin convert pdf2html");
         String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
         String outPutDir = FilenameUtils.concat(basedDir, "p" + page);
-        StringBuilder paramsBuilder = new StringBuilder();
-        paramsBuilder.append("pdf2htmlEX");//命令行开始
-        paramsBuilder.append(" -f " + page + " -l " + page);//一页页的转换
-        paramsBuilder.append(" --fit-width 1000");//缩放
-        paramsBuilder.append(" --embed-outline 0");//链接文件单独输出
-        paramsBuilder.append(" --embed-css 0");
-        paramsBuilder.append(" --css-filename css" + page + ".css");
-        paramsBuilder.append(" --split-pages 1");
-        paramsBuilder.append(" --embed-image 0");
-        paramsBuilder.append(" --bg-format jpg");
-        paramsBuilder.append(" --process-outline 0");
-        paramsBuilder.append(" --optimize-text 1");
-        paramsBuilder.append(" --embed-javascript 0");//js文件单独引用
-        paramsBuilder.append(" --dest-dir " + outPutDir);//输出目录
-        paramsBuilder.append(" " + filePath);
-        String cmd = paramsBuilder.toString();
-        log.info("cmd:{}", cmd);
-        boolean result = ProcessUtils.execute(30000,cmd).exitCode==0;
+        List<String>  args = Lists.newArrayList();
+        args.add("pdf2htmlEX");//命令行开始
+        args.add("-f");
+        args.add(String.valueOf(page));
+        args.add("-l");
+        args.add(String.valueOf(page));
+        args.add("--fit-width");//缩放
+        args.add("1000");
+        args.add("--embed-outline");//链接文件单独输出
+        args.add("0");
+        args.add("--embed-css");
+        args.add("0");
+        args.add("--css-filename");
+        args.add("css" + page + ".css");
+        args.add("--split-pages");
+        args.add("1");
+        args.add("--embed-image");
+        args.add("0");
+        args.add("--bg-format");
+        args.add("jpg");
+        args.add("--process-outline");
+        args.add("0");
+        args.add("--optimize-text");
+        args.add("1");
+        args.add("--embed-javascript");//js文件单独引用
+        args.add("0");
+        args.add("--dest-dir");//输出目录
+        args.add(outPutDir);
+        args.add(filePath);
+        boolean result = ProcessUtils.execute(30000,args).exitCode==0;
         stopWatch.stop();
-        log.info("end convert pdf2html,ret:{},cost:{}ms", result, stopWatch.getTime());
+        log.info("end convert pdf2html,page:{},ret:{},cost:{}ms",page,result, stopWatch.getTime());
         return result;
     }
 
@@ -106,7 +118,7 @@ public class Pdf2HtmlServiceImpl implements Pdf2HtmlService {
         handleStaticResource(basedDir, pageDirPath);
         FileUtils.deleteDirectory(new File(pageDirPath));
         stopWatch.stop();
-        log.info("end handle html,cost:{}ms", stopWatch.getNanoTime());
+        log.info("end handle html,cost:{}ms", stopWatch.getTime());
         return newPagePath;
     }
 

@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
  * Created by liuq on 2017/3/6.
  */
 @Slf4j
-public  class ProcessHandler extends NuAbstractProcessHandler {
+public class ProcessHandler extends NuAbstractProcessHandler {
     private NuProcess nuProcess;
 
     @Override
@@ -20,7 +20,6 @@ public  class ProcessHandler extends NuAbstractProcessHandler {
 
     @Override
     public boolean onStdinReady(ByteBuffer buffer) {
-        buffer.put("Hello world!".getBytes());
         buffer.flip();
         return false; // false means we have nothing else to write at this time
     }

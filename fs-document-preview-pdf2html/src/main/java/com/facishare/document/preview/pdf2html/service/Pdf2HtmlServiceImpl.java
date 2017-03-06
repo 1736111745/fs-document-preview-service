@@ -49,7 +49,7 @@ public class Pdf2HtmlServiceImpl implements Pdf2HtmlService {
         try {
             future = new ProcessExecutor().command(args).start().getFuture();
             try {
-                ProcessResult processResult = future.get(5, TimeUnit.SECONDS);
+                ProcessResult processResult = future.get(15, TimeUnit.SECONDS);
                 if (processResult.getExitValue() == 0) {
                     dataFilePath = handleResult(page, filePath, dirName);
                 }

@@ -12,7 +12,7 @@ $(function () {
 
 function loadAllPages() {
     for (var i = 0; i < pageCount; i++) {
-        var pageIndex=i+1;
+        var pageIndex = i + 1;
         var div = "<div id='pf" + pageIndex + "' class='lazy pf ww" + pageIndex + " hh" + pageIndex + "' data-page-no='" + i + "' data-loader='pageLoader'>";
         $('#page-container').append($(div));
         loadPageLoader();
@@ -21,22 +21,22 @@ function loadAllPages() {
 
 function loadViewPort() {
     var docWidth = $(window).width();
-    var scale=docWidth/1000;
+    var scale = docWidth / 1000;
     var viewport = document.querySelector("meta[name=viewport]");
     viewport.setAttribute('content', 'initial-scale=' + scale + ', width=device-width');
 }
 
-function  loadPageLoader() {
+function loadPageLoader() {
     $('.lazy').lazy({
         pageLoader: function (element) {
-            var pageIndex =parseInt(element.attr("data-page-no"));
-            loadData(pageIndex,element);
+            var pageIndex = parseInt(element.attr("data-page-no"));
+            loadData(pageIndex, element);
         }
     });
 }
 
-function loadData(i,element) {
-    var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg+"&ver=1.0";
+function loadData(i, element) {
+    var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg + "&ver=1.0";
     $.ajax({
         type: 'get',
         timeout: 1800000,
@@ -47,8 +47,7 @@ function loadData(i,element) {
         },
         complete: function (request) {
             var data = $(request.responseText)
-            loadCss(i);
-            var child=$(data.prop("innerHTML"));
+            var child = $(data.prop("innerHTML"));
             element.append(child).load();
             var nav = $("<div class='center'><span>第" + (i + 1) + "页,共" + pageCount + "页</span></div>");
             element.after(nav);
@@ -70,13 +69,3 @@ function getDirName() {
     });
 }
 
-function loadCss(i) {
-    var cssLink = window.contextPath + '/preview/' + dirName + "/css" + (i + 1) + ".css";
-    $("head").append("<link>");
-    var css = $("head").children(":last");
-    css.attr({
-        rel: "stylesheet",
-        type: "text/css",
-        href: cssLink
-    });
-}

@@ -5,13 +5,13 @@ import com.facishare.document.preview.api.model.arg.Pdf2HtmlArg;
 import com.facishare.document.preview.api.model.result.Pdf2HtmlResult;
 import com.facishare.document.preview.api.service.Pdf2HtmlService;
 import com.facishare.document.preview.pdf2html.utils.CssHandler;
-import com.facishare.document.preview.pdf2html.utils.ProcessUtils;
 import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.StopWatch;
+import org.zeroturnaround.exec.ProcessExecutor;
+import org.zeroturnaround.exec.ProcessResult;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +19,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,9 +31,6 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 public class Pdf2HtmlServiceImpl implements Pdf2HtmlService {
-    private final ThreadFactory factory =
-            new ThreadFactoryBuilder().setDaemon(true).setNameFormat("excuteCmd-%d").build();
-    private final ExecutorService executorService = Executors.newCachedThreadPool(factory);
 
     @Override
     public Pdf2HtmlResult convertPdf2Html(Pdf2HtmlArg arg) {
@@ -43,35 +43,31 @@ public class Pdf2HtmlServiceImpl implements Pdf2HtmlService {
     }
 
     private String doConvert(int page, String filePath, String dirName) {
-
         String dataFilePath = "";
+        List<String> args = createProcessArgs(page, filePath);
+        Future<ProcessResult> future;
         try {
-            boolean success = asyncExec(() -> executeCmd(page, filePath));
-            if (success) {
-                dataFilePath = handleResult(page, filePath, dirName);
+            future = new ProcessExecutor().command(args).start().getFuture();
+            try {
+                ProcessResult processResult = future.get(5, TimeUnit.SECONDS);
+                if (processResult.getExitValue() == 0) {
+                    dataFilePath = handleResult(page, filePath, dirName);
+                }
+            } catch (InterruptedException e) {
+                log.error("do convert happened exception!", e);
+            } catch (ExecutionException e) {
+                log.error("do convert happened exception!", e);
+            } catch (TimeoutException e) {
+                log.error("do convert happened exception!", e);
             }
-        } catch (Exception e) {
-            dataFilePath = "";
-        } finally {
-            return dataFilePath;
+        } catch (IOException e) {
+            log.error("get future fail!", e);
         }
+        return dataFilePath;
     }
 
-    private <V> V asyncExec(Callable<V> callable) throws Exception {
-        Future<V> future = executorService.submit(callable);
-        try {
-            return future.get(60, TimeUnit.SECONDS);
-        } finally {
-            if (!future.isDone()) {
-                future.cancel(true);
-            }
-        }
-    }
 
-    private boolean executeCmd(int page, String filePath) throws InterruptedException {
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        log.info("begin convert pdf2html");
+    private static List<String> createProcessArgs(int page, String filePath) {
         String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
         String outPutDir = FilenameUtils.concat(basedDir, "p" + page);
         List<String> args = Lists.newArrayList();
@@ -103,10 +99,7 @@ public class Pdf2HtmlServiceImpl implements Pdf2HtmlService {
         args.add("--dest-dir");//输出目录
         args.add(outPutDir);
         args.add(filePath);
-        boolean result = ProcessUtils.DoProcess(args);
-        stopWatch.stop();
-        log.info("end convert pdf2html,page:{},ret:{},cost:{}ms", page, result, stopWatch.getTime());
-        return result;
+        return args;
     }
 
 
@@ -119,14 +112,12 @@ public class Pdf2HtmlServiceImpl implements Pdf2HtmlService {
         String cssName = "css" + page + ".css";
         String cssPath = FilenameUtils.concat(pageDirPath, cssName);
         File cssFile = new File(cssPath);
-        String newCssPath = FilenameUtils.concat(basedDir, cssName);
         String pageName = FilenameUtils.getBaseName(filePath) + page + ".page";
         String pagePath = FilenameUtils.concat(pageDirPath, pageName);
         String newPageName = page + ".html";
         File pageFile = new File(pagePath);
         String newPagePath = FilenameUtils.concat(basedDir, newPageName);
-        handleCss(page, cssFile, newCssPath);
-        handleHtml(page, pageFile, newPagePath, dirName);
+        handleHtml(page, cssFile, pageFile, newPagePath, dirName);
         handleStaticResource(basedDir, pageDirPath);
         FileUtils.deleteDirectory(new File(pageDirPath));
         stopWatch.stop();
@@ -150,7 +141,7 @@ public class Pdf2HtmlServiceImpl implements Pdf2HtmlService {
     }
 
 
-    private void handleHtml(int page, File pageFile, String newPageFilePath, String dirName) throws IOException {
+    private void handleHtml(int page, File cssFile, File pageFile, String newPageFilePath, String dirName) throws IOException {
         String pageContent = FileUtils.readFileToString(pageFile);
         String style1 = "pf w0 h0";
         String style2 = "pf ww" + page + " hh" + page;
@@ -161,15 +152,11 @@ public class Pdf2HtmlServiceImpl implements Pdf2HtmlService {
             String newSrcStr = srcStr.replace("src=\"", "src=\"./" + dirName + "/");
             pageContent = pageContent.replace(srcStr, newSrcStr);
         }
-        File newPageFile = new File(newPageFilePath);
-        FileUtils.writeByteArrayToFile(newPageFile, pageContent.getBytes());
-    }
-
-    private void handleCss(int page, File cssFile, String newCssFilePath) throws IOException {
         String cssContent = FileUtils.readFileToString(cssFile);
         String newCssContent = CssHandler.reWrite(cssContent, page);
-        File newCssFile = new File(newCssFilePath);
-        FileUtils.writeByteArrayToFile(newCssFile, newCssContent.getBytes());
+        String newPageContent = "<style>" + newCssContent + "</style>" + pageContent;
+        File newPageFile = new File(newPageFilePath);
+        FileUtils.writeByteArrayToFile(newPageFile, newPageContent.getBytes());
     }
 
 }

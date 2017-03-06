@@ -27,7 +27,7 @@
     </script>
     <style type="text/css">
         div.lazy {
-            width:98%;
+            width:96%;
             height: 500px;
             background: url("<%=request.getContextPath()%>/static/images/loading.gif") no-repeat center;
         }

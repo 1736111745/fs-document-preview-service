@@ -1,77 +1,27 @@
 package com.facishare.document.preview.pdf2html.utils;
 
-import com.google.common.collect.Lists;
-import org.apache.commons.io.IOUtils;
+import com.zaxxer.nuprocess.NuAbstractProcessHandler;
+import com.zaxxer.nuprocess.NuProcess;
+import com.zaxxer.nuprocess.NuProcessBuilder;
+import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liuq on 2017/3/3.
  */
+@Slf4j
 public class ProcessUtils {
-    /**
-     * 运行一个外部命令，返回状态.若超过指定的超时时间，抛出TimeoutException
-     */
-    public static ProcessStatus execute(final long timeout, final List<String> cmds)
-            throws IOException, InterruptedException, TimeoutException {
-        ProcessBuilder pb = new ProcessBuilder(cmds);
-        pb.redirectErrorStream(true);
-        Process process = pb.start();
 
-        Worker worker = new Worker(process);
-        worker.start();
-        ProcessStatus ps = worker.getProcessStatus();
-        try {
-            worker.join(timeout);
-            if (ps.exitCode == ProcessStatus.CODE_STARTED) {
-                // not finished
-                worker.interrupt();
-                throw new TimeoutException();
-            } else {
-                return ps;
-            }
-        } catch (InterruptedException e) {
-            worker.interrupt();
-            throw e;
-        } finally {
-            process.destroy();
-        }
-    }
-
-    private static class Worker extends Thread {
-        private final Process process;
-        private ProcessStatus ps;
-
-        private Worker(Process process) {
-            this.process = process;
-            this.ps = new ProcessStatus();
-        }
-
-        public void run() {
-            try {
-                InputStream is = process.getInputStream();
-                try {
-                    ps.output = IOUtils.toString(is, "UTF-8");
-                } catch (IOException ignore) {
-                }
-                ps.exitCode = process.waitFor();
-
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-
-        public ProcessStatus getProcessStatus() {
-            return this.ps;
-        }
-    }
-
-    public static class ProcessStatus {
-        public static final int CODE_STARTED = -257;
-        public volatile int exitCode;
-        public volatile String output;
+    public static int DoProcess(List<String> args) throws InterruptedException {
+        NuProcessBuilder pb = new NuProcessBuilder(args);
+        ProcessHandler handler = new ProcessHandler();
+        pb.setProcessListener(handler);
+        NuProcess process = pb.start();
+        process.wantWrite();
+        process.waitFor(30, TimeUnit.SECONDS);
+        return 0;
     }
 }

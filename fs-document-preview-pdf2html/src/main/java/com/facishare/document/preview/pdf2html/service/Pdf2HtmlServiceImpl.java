@@ -90,7 +90,7 @@ public class Pdf2HtmlServiceImpl implements Pdf2HtmlService {
         args.add("--dest-dir");//输出目录
         args.add(outPutDir);
         args.add(filePath);
-        boolean result = ProcessUtils.execute(30000,args).exitCode==0;
+        boolean result =ProcessUtils.DoProcess(args)==0;
         stopWatch.stop();
         log.info("end convert pdf2html,page:{},ret:{},cost:{}ms",page,result, stopWatch.getTime());
         return result;

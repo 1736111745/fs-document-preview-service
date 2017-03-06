@@ -47,8 +47,8 @@ function loadData(i, element) {
         },
         complete: function (request) {
             var data = $(request.responseText)
-            var childStyle=data[0];
-            var dataDiv=data[1]
+            var childStyle=$(data[0]);
+            var dataDiv=$(data[1]);
             var childDiv = dataDiv.prop("innerHTML");
             element.append(childStyle).append(childDiv).load();
             var nav = $("<div class='center'><span>第" + (i + 1) + "页,共" + pageCount + "页</span></div>");

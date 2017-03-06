@@ -2,10 +2,8 @@ var sg = getQueryStringByName("sg");
 var pageCount = getQueryStringByName("pageCount");
 var path = getQueryStringByName("path");
 var end = pageCount > 3 ? 3 : pageCount;
-var dirName = "";
 $(function () {
     loadViewPort();
-    getDirName();
     loadAllPages();
     loadPageLoader();
 });
@@ -41,7 +39,7 @@ function loadData(i, element) {
         type: 'get',
         timeout: 1800000,
         dataType: 'json',
-        async: false,
+        async: true,
         url: url,
         beforeSend: function () {
         },
@@ -54,19 +52,6 @@ function loadData(i, element) {
             var nav = $("<div class='center'><span>第" + (i + 1) + "页,共" + pageCount + "页</span></div>");
             element.after(nav);
             element.removeClass("lazy");
-        }
-    });
-}
-function getDirName() {
-    $.ajax({
-        type: 'get',
-        dataType: 'json',
-        async: false,
-        url: window.contextPath + '/preview/getDirName?path=' + path,
-        success: function (data) {
-            if (data.success) {
-                dirName = data.dirName;
-            }
         }
     });
 }

@@ -13,13 +13,20 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class ProcessUtils {
 
-    public static int DoProcess(List<String> args) throws InterruptedException {
-        NuProcessBuilder pb = new NuProcessBuilder(args);
-        ProcessHandler handler = new ProcessHandler();
-        pb.setProcessListener(handler);
-        NuProcess process = pb.start();
-        process.wantWrite();
-        process.waitFor(30, TimeUnit.SECONDS);
-        return 0;
+    public static boolean DoProcess(List<String> args)  {
+        boolean success=false;
+        try {
+            NuProcessBuilder pb = new NuProcessBuilder(args);
+            ProcessHandler handler = new ProcessHandler();
+            pb.setProcessListener(handler);
+            NuProcess process = pb.start();
+            process.wantWrite();
+            process.waitFor(30, TimeUnit.SECONDS);
+            process.destroy(true);
+            success=true;
+        } catch (InterruptedException e) {
+            log.warn("DoProcess Happened Error!",e);
+        }
+        return success;
     }
 }

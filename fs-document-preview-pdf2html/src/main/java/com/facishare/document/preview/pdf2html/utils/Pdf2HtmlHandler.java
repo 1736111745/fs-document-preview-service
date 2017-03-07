@@ -75,10 +75,8 @@ public class Pdf2HtmlHandler {
         args.add("1");
         args.add("--embed-image");
         args.add("0");
-        args.add("--hdpi");
-        args.add("90");
-        args.add("--vdpi");
-        args.add("90");
+        args.add("--bg-format");
+        args.add("jpg");
         args.add("--process-outline");
         args.add("0");
         args.add("--optimize-text");

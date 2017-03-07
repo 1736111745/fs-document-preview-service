@@ -77,6 +77,10 @@ public class Pdf2HtmlHandler {
         args.add("0");
         args.add("--bg-format");
         args.add("jpg");
+        args.add("--hdpi");
+        args.add("90");
+        args.add("--vdpi");
+        args.add("90");
         args.add("--process-outline");
         args.add("0");
         args.add("--optimize-text");
@@ -115,7 +119,7 @@ public class Pdf2HtmlHandler {
 
     private void handleStaticResource(String destDirPath, String pageDirPath) throws IOException {
         Path path = Paths.get(pageDirPath);
-        Files.list(path).filter(i -> i.toString().endsWith(".svg")).forEach(f ->
+        Files.list(path).filter(i -> i.toString().endsWith(".jpg")).forEach(f ->
         {
             File file = f.toFile();
             String name = FilenameUtils.getName(file.getAbsolutePath());

@@ -36,7 +36,7 @@ public class Pdf2HtmlHandler {
         try {
             future = new ProcessExecutor().command(args).start().getFuture();
             try {
-                ProcessResult processResult = future.get(15, TimeUnit.SECONDS);
+                ProcessResult processResult = future.get(30, TimeUnit.SECONDS);
                 if (processResult.getExitValue() == 0) {
                     dataFilePath = handleResult(page, filePath, dirName);
                 }

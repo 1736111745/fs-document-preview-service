@@ -13,7 +13,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta Name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文档预览</title>
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/static/css/base.min.css"/>
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/static/css/base.min.css??v=<%=request.getAttribute("sv")%>"/>
     <link rel="stylesheet"
           href="<%=request.getContextPath()%>/static/css/fancy.min.css?v=<%=request.getAttribute("sv")%>"/>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery-1.11.1.min.js"></script>

@@ -14,6 +14,23 @@
     overflow: auto
 }
 
+body {
+    background-color: lightgray;
+}
+
+html, body {
+    overflow-y: scroll;
+}
+
+html, body {
+    overflow: scroll;
+    min-height: 101%;
+}
+
+html {
+    overflow: -moz-scrollbars-vertical;
+}
+
 #page-container {
     /*position: absolute;*/
     top: 0;
@@ -21,7 +38,6 @@
     margin: 0;
     padding: 0;
     border: 0;
-    background-color: lightgray;
 }
 
 @media screen {

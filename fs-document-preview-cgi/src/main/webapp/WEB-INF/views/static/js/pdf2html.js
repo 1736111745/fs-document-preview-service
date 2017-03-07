@@ -44,13 +44,19 @@ function loadData(i, element) {
         beforeSend: function () {
         },
         complete: function (request) {
-            var data = $(request.responseText)
-            var childStyle=$(data[0]);
-            var dataDiv=$(data[1]);
-            var childDiv = dataDiv.prop("innerHTML");
-            element.append(childStyle).append(childDiv).load();
-            var nav = $("<div class='center'><span>第" + (i + 1) + "页,共" + pageCount + "页</span></div>");
-            element.after(nav);
+            if(request.status==200) {
+                var data = $(request.responseText)
+                var childStyle = $(data[0]);
+                var dataDiv = $(data[1]);
+                var childDiv = dataDiv.prop("innerHTML");
+                element.append(childStyle).append(childDiv).load();
+                var nav = $("<div class='center'><span>第" + (i + 1) + "页,共" + pageCount + "页</span></div>");
+                element.after(nav);
+            }
+            else {
+                var spanMsg = $("<span>改页面无法预览！</span>");
+                element.append(spanMsg).load();
+            }
             element.removeClass("lazy");
         }
     });

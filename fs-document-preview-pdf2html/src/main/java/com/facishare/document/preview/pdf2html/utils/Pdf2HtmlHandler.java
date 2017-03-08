@@ -1,5 +1,6 @@
 package com.facishare.document.preview.pdf2html.utils;
 
+import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -28,7 +29,8 @@ import java.util.regex.Pattern;
 @Slf4j
 @Component
 public class Pdf2HtmlHandler {
-
+    @ReloadableProperty("pdf2HtmlTimeout")
+    private int pdf2HtmlTimeout = 30;
     public String doConvert(int page, String filePath, String dirName) {
         String dataFilePath = "";
         List<String> args = createProcessArgs(page, filePath);
@@ -36,7 +38,7 @@ public class Pdf2HtmlHandler {
         try {
             future = new ProcessExecutor().command(args).start().getFuture();
             try {
-                ProcessResult processResult = future.get(30, TimeUnit.SECONDS);
+                ProcessResult processResult = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
                 if (processResult.getExitValue() == 0) {
                     dataFilePath = handleResult(page, filePath, dirName);
                 }

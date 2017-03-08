@@ -29,7 +29,7 @@
         div.lazy {
             width:96%;
             height: 500px;
-            background: url("<%=request.getContextPath()%>/static/images/loading1.gif") no-repeat center;
+            background: #FFFFFF url("<%=request.getContextPath()%>/static/images/loading1.gif") no-repeat center;
         }
         div.center
         {

@@ -114,7 +114,7 @@
 
     .pf {
         margin: 13px auto;
-        box-shadow: 1px 1px 3px 1px #333;
+        width:1000px;
         border-collapse: separate
     }
 

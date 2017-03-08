@@ -14,9 +14,6 @@
     overflow: auto
 }
 
-body {
-    background-color: lightgray;
-}
 
 html, body {
     overflow-y: scroll;

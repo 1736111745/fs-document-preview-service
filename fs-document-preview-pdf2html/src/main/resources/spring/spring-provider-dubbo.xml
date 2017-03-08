@@ -10,6 +10,6 @@
     <dubbo:protocol name="dubbo" port="28888" payload="16777216"/>
     <dubbo:registry address="${dubbo.registry.address}"/>
     <dubbo:service interface="com.facishare.document.preview.api.service.Pdf2HtmlService" ref="pdf2HtmlService"
-                   protocol="dubbo"  timeout="30000" filter="tracerpc"/>
+                   protocol="dubbo"  timeout="60000" filter="tracerpc"/>
     <dubbo:provider threadpool="cached" threads="300" queues="50"/>
 </beans>

@@ -83,6 +83,8 @@ public class Pdf2HtmlHandler {
         args.add("90");
         args.add("--vdpi");
         args.add("90");
+        args.add("--no-drm");
+        args.add("1");
         args.add("--process-outline");
         args.add("0");
         args.add("--optimize-text");

@@ -29,13 +29,11 @@ public class Pdf2HtmlServiceImpl implements Pdf2HtmlService {
         String dataFilePath = pdf2HtmlHandler.doConvert(page, filePath, dirName);
         if (Strings.isNullOrEmpty(dataFilePath)) {
             counterService.inc("convert-pdf2html-fail");
-            throw new RuntimeException("cannot convert, file: " + filePath);
+            throw new RuntimeException("cannot convert, file: " + filePath + ",page:" + page);
         } else {
             counterService.inc("convert-pdf2html-ok");
         }
         Pdf2HtmlResult result = Pdf2HtmlResult.builder().dataFilePath(dataFilePath).build();
         return result;
     }
-
-
 }

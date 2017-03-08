@@ -43,11 +43,11 @@ public class Pdf2HtmlHandler {
                     dataFilePath = handleResult(page, filePath, dirName);
                 }
             } catch (InterruptedException e) {
-                log.error("do convert happened exception!", e);
+                log.error("do convert happened InterruptedException!", e);
             } catch (ExecutionException e) {
-                log.error("do convert happened exception!", e);
+                log.error("do convert happened ExecutionException!", e);
             } catch (TimeoutException e) {
-                log.error("do convert happened exception!", e);
+                log.error("do convert happened TimeoutException!", e);
             }
         } catch (IOException e) {
             log.error("get future fail!", e);
@@ -99,7 +99,7 @@ public class Pdf2HtmlHandler {
     private String handleResult(int page, String filePath, String dirName) throws IOException {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        log.info("begin handle html!");
+        log.info("begin handle html!filePath:{},page:{}", filePath, page);
         String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
         String pageDirPath = FilenameUtils.concat(basedDir, "p" + page);
         String cssName = "css" + page + ".css";
@@ -112,9 +112,14 @@ public class Pdf2HtmlHandler {
         String newPagePath = FilenameUtils.concat(basedDir, newPageName);
         handleHtml(page, cssFile, pageFile, newPagePath, dirName);
         handleStaticResource(basedDir, pageDirPath);
-        FileUtils.deleteDirectory(new File(pageDirPath));
+        try {
+            FileUtils.deleteDirectory(new File(pageDirPath));
+        }
+        catch (Exception e) {
+            log.warn("delete directory:{},fail!", pageDirPath);
+        }
         stopWatch.stop();
-        log.info("end handle html,cost:{}ms", stopWatch.getTime());
+        log.info("end handle html!,filePath:{},page:{},cost:{}ms", filePath, page, stopWatch.getTime());
         return newPagePath;
     }
 

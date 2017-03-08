@@ -140,20 +140,23 @@ public class Pdf2HtmlHandler {
 
 
     private void handleHtml(int page, File cssFile, File pageFile, String newPageFilePath, String dirName) throws IOException {
-        String pageContent = FileUtils.readFileToString(pageFile);
-        String style1 = "pf w0 h0";
-        String style2 = "pf ww" + page + " hh" + page;
-        pageContent = pageContent.replace(style1, style2);
-        Matcher m = Pattern.compile("src\\s*=\\s*\"?(.*?)(\"|>|\\s+)").matcher(pageContent);
-        while (m.find()) {
-            String srcStr = m.group();
-            String newSrcStr = srcStr.replace("src=\"", "src=\"./" + dirName + "/");
-            pageContent = pageContent.replace(srcStr, newSrcStr);
-        }
-        String cssContent = FileUtils.readFileToString(cssFile);
-        String newCssContent = CssHandler.reWrite(cssContent, page);
-        String newPageContent = "<style>" + newCssContent + "</style>" + pageContent;
-        File newPageFile = new File(newPageFilePath);
-        FileUtils.writeByteArrayToFile(newPageFile, newPageContent.getBytes());
+        if (pageFile.exists()) {
+            String pageContent = FileUtils.readFileToString(pageFile);
+            String style1 = "pf w0 h0";
+            String style2 = "pf ww" + page + " hh" + page;
+            pageContent = pageContent.replace(style1, style2);
+            Matcher m = Pattern.compile("src\\s*=\\s*\"?(.*?)(\"|>|\\s+)").matcher(pageContent);
+            while (m.find()) {
+                String srcStr = m.group();
+                String newSrcStr = srcStr.replace("src=\"", "src=\"./" + dirName + "/");
+                pageContent = pageContent.replace(srcStr, newSrcStr);
+            }
+            String cssContent = FileUtils.readFileToString(cssFile);
+            String newCssContent = CssHandler.reWrite(cssContent, page);
+            String newPageContent = "<style>" + newCssContent + "</style>" + pageContent;
+            File newPageFile = new File(newPageFilePath);
+            FileUtils.writeByteArrayToFile(newPageFile, newPageContent.getBytes());
+        } else
+            log.warn("page file isn't exists,filePath:{}", pageFile.getAbsolutePath());
     }
 }

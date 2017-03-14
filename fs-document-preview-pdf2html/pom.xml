@@ -13,7 +13,6 @@
     <properties>
         <spring.version>4.2.6.RELEASE</spring.version>
     </properties>
-    <!-- spring begin -->
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>

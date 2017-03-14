@@ -1,4 +1,4 @@
-package com.facishare.document.preview.cgi.model;
+package com.facishare.document.preview.common.model;
 
 /**
  * Created by Aaron on 16/5/9.

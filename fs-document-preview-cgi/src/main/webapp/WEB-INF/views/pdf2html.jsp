@@ -13,9 +13,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta Name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文档预览</title>
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/static/css/base.css??v=<%=request.getAttribute("sv")%>"/>
-    <link rel="stylesheet"
-          href="<%=request.getContextPath()%>/static/css/fancy.min.css?v=<%=request.getAttribute("sv")%>"/>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/jquery.lazy.min.js"></script>
     <script type="text/javascript"
@@ -27,12 +24,18 @@
     </script>
     <style type="text/css">
         div.lazy {
-            width:96%;
-            height: 500px;
             background: #FFFFFF url("<%=request.getContextPath()%>/static/images/loading1.gif") no-repeat center;
+            height: 500px;
         }
-        div.center
-        {
+
+        div.border {
+            text-align: center;
+            width: 1000px;
+            margin: 13px auto;
+            border: 1px solid rgb(27, 30, 33)
+        }
+
+        div.center {
             text-align: center;
             margin-bottom: 10px;
         }
@@ -40,8 +43,7 @@
     <title>pdf文档预览</title>
 </head>
 <body>
-<div class="loading"></div>
-<div id="page-container">
+<div id="main">
 </div>
 </body>
 </html>

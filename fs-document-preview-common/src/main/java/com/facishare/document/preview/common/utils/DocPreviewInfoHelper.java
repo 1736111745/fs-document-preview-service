@@ -1,13 +1,13 @@
 package com.facishare.document.preview.common.utils;
 
 import com.facishare.document.preview.common.model.DocType;
-import com.facishare.document.preview.common.model.PreviewInfo;
+import com.facishare.document.preview.common.model.PreviewJsonInfo;
 
 /**
  * Created by liuq on 2017/1/10.
  */
 public class DocPreviewInfoHelper {
-    public static PreviewInfo getPreviewInfo(String filePath) throws Exception {
+    public static PreviewJsonInfo getPreviewInfo(String filePath) throws Exception {
         String docFormat = "", previewFormat = "", contentType = "";
         DocType docType = DocTypeHelper.getDocType(filePath);
         switch (docType) {
@@ -35,7 +35,7 @@ public class DocPreviewInfoHelper {
                 contentType = "image/png";
             }
         }
-        PreviewInfo docPreviewInfo = PreviewInfo.builder().previewFormat(previewFormat).documentFormat(docFormat).contentType(contentType).build();
+        PreviewJsonInfo docPreviewInfo = PreviewJsonInfo.builder().previewFormat(previewFormat).documentFormat(docFormat).contentType(contentType).build();
         return docPreviewInfo;
     }
 }

@@ -7,22 +7,24 @@ import com.facishare.document.preview.api.model.result.ConvertDocResult;
 import com.facishare.document.preview.api.model.result.Pdf2HtmlResult;
 import com.facishare.document.preview.api.service.DocConvertService;
 import com.facishare.document.preview.api.service.Pdf2HtmlService;
-import com.facishare.document.preview.cgi.dao.FileTokenDao;
-import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
-import com.facishare.document.preview.cgi.model.*;
-import com.facishare.document.preview.cgi.model.PreviewInfo;
+import com.facishare.document.preview.cgi.model.EmployeeInfo;
+import com.facishare.document.preview.cgi.model.PreviewInfoEx;
 import com.facishare.document.preview.cgi.service.PreviewService;
-import com.facishare.document.preview.cgi.utils.FileOutPuter;
+import com.facishare.document.preview.cgi.utils.FileOutPutor;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.cgi.utils.RequestParamsHelper;
+import com.facishare.document.preview.common.dao.FileTokenDao;
+import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.DocType;
+import com.facishare.document.preview.common.model.DownloadFileTokens;
+import com.facishare.document.preview.common.model.PreviewInfo;
+import com.facishare.document.preview.common.model.PreviewJsonInfo;
 import com.facishare.document.preview.common.utils.DocPreviewInfoHelper;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.fxiaoke.metrics.CounterService;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,7 +130,7 @@ public class PreviewController {
                         int type=Strings.isNullOrEmpty(version)?1:2;
                         String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), type, previewInfo.getFilePathList());
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
-                            FileOutPuter.outPut(response, dataFilePath, true);
+                            FileOutPutor.outPut(response, dataFilePath, true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
                             DocType docType = DocTypeHelper.getDocType(path);
@@ -148,7 +150,7 @@ public class PreviewController {
                             }
                             if (!Strings.isNullOrEmpty(dataFilePath)) {
                                 previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
-                                FileOutPuter.outPut(response, dataFilePath, true);
+                                FileOutPutor.outPut(response, dataFilePath, true);
                             } else {
                                 log.warn("can't resolve path:{},page:{}", path, page);
                                 response.setStatus(404);
@@ -264,7 +266,7 @@ public class PreviewController {
                     if (pageIndex < previewInfo.getPageCount()) {
                         String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), 2, previewInfo.getFilePathList());
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
-                            FileOutPuter.outPut(response, dataFilePath, width, true);
+                            FileOutPutor.outPut(response, dataFilePath, width, true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
                             File originalFile=new File(originalFilePath);
@@ -276,7 +278,7 @@ public class PreviewController {
                             dataFilePath = convertDocResult.getDataFilePath();
                             if (!Strings.isNullOrEmpty(dataFilePath)) {
                                 previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
-                                FileOutPuter.outPut(response, dataFilePath, width, true);
+                                FileOutPutor.outPut(response, dataFilePath, width, true);
                             } else {
                                 log.warn("can't resolve path:{},page:{}", path, pageIndex);
                                 response.setStatus(404);
@@ -319,7 +321,7 @@ public class PreviewController {
     }
 
     private String getDocPreviewInfoResult(String path, int pageCount) throws Exception {
-        com.facishare.document.preview.common.model.PreviewInfo docPreviewInfo = DocPreviewInfoHelper.getPreviewInfo(path);
+        PreviewJsonInfo docPreviewInfo = DocPreviewInfoHelper.getPreviewInfo(path);
         docPreviewInfo.setPageCount(pageCount);
         return JSONObject.toJSONString(docPreviewInfo);
     }

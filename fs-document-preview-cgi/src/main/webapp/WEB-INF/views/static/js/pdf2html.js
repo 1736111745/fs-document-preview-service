@@ -5,14 +5,12 @@ var end = pageCount > 3 ? 3 : pageCount;
 $(function () {
     loadViewPort();
     loadAllPages();
-    loadPageLoader();
 });
 
 function loadAllPages() {
     for (var i = 0; i < pageCount; i++) {
-        var pageIndex = i + 1;
-        var div = "<div id='pf" + pageIndex + "' class='lazy pf ww" + pageIndex + " hh" + pageIndex + "' data-page-no='" + i + "' data-loader='pageLoader'>";
-        $('#page-container').append($(div));
+        var div = "<div class='lazy border' data-page-no='" + i + "' data-loader='pageLoader'>";
+        $('#main').append($(div));
         loadPageLoader();
     }
 }
@@ -35,30 +33,17 @@ function loadPageLoader() {
 
 function loadData(i, element) {
     var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg + "&ver=1.0";
-    $.ajax({
-        type: 'get',
-        timeout: 1800000,
-        dataType: 'json',
-        async: true,
-        url: url,
-        beforeSend: function () {
-        },
-        complete: function (request) {
-            if(request.status==200) {
-                var data = $(request.responseText)
-                var childStyle = $(data[0]);
-                var dataDiv = $(data[1]);
-                var childDiv = dataDiv.prop("innerHTML");
-                element.append(childStyle).append(childDiv).load();
-                var nav = $("<div class='center'><span>第" + (i + 1) + "页,共" + pageCount + "页</span></div>");
-                element.after(nav);
-            }
-            else {
-                var spanMsg = $("<span>该页面无法预览！</span>");
-                element.append(spanMsg).load();
-            }
-            element.removeClass("lazy");
-        }
-    });
+    var iframeId = 'frame' + i;
+    $("<iframe id='" + iframeId + "' src='"+url+"' onload='resize("+i+",this)' onresize='resize("+i+",this)' scrolling='no' frameborder='0' width='100%'></iframe>").prependTo(element);
+    element.load();
 }
+
+function resize(i,obj) {
+    var height=$(obj.contentWindow.document).find("div[id='page-container']").height()
+    $(obj).height(height+20);
+    $(obj.parentElement).removeClass("lazy");
+    var nav=$("<div class='center'><span>第" + (i + 1) + "页,共" + pageCount + "页</span></div>");
+    $(obj.parentElement).after(nav);
+}
+
 

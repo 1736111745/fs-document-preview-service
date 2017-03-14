@@ -34,6 +34,7 @@
 
         function update() {
             var counter = 0;
+
             elements.each(function() {
                 var $this = $(this);
                 if (settings.skip_invisible && !$this.is(":visible")) {
@@ -41,12 +42,12 @@
                 }
                 if ($.abovethetop(this, settings) ||
                     $.leftofbegin(this, settings)) {
-                        /* Nothing. */
+                    /* Nothing. */
                 } else if (!$.belowthefold(this, settings) &&
                     !$.rightoffold(this, settings)) {
-                        $this.trigger("appear");
-                        /* if we found an image we'll load, reset the counter */
-                        counter = 0;
+                    $this.trigger("appear");
+                    /* if we found an image we'll load, reset the counter */
+                    counter = 0;
                 } else {
                     if (++counter > settings.failure_limit) {
                         return false;
@@ -72,11 +73,11 @@
 
         /* Cache container as jQuery as object. */
         $container = (settings.container === undefined ||
-                      settings.container === window) ? $window : $(settings.container);
+        settings.container === window) ? $window : $(settings.container);
 
         /* Fire one scroll event per scroll. Not one scroll event per image. */
         if (0 === settings.event.indexOf("scroll")) {
-            $container.on(settings.event, function() {
+            $container.bind(settings.event, function() {
                 return update();
             });
         }
@@ -89,7 +90,7 @@
 
             /* If no src attribute given use data:uri. */
             if ($self.attr("src") === undefined || $self.attr("src") === false) {
-                if ($self.is("img")||$self.is("iframe")) {
+                if ($self.is("img")) {
                     $self.attr("src", settings.placeholder);
                 }
             }
@@ -101,14 +102,12 @@
                         var elements_left = elements.length;
                         settings.appear.call(self, elements_left, settings);
                     }
-                    $("<img/>,<iframe/>,<embed/>")
-                        .one("load", function() {
+                    if ($self.is("img")) {
+                        $("<img />").bind("load", function() {
                             var original = $self.attr("data-" + settings.data_attribute);
                             $self.hide();
-                            if ($self.is("img")||$self.is("iframe")) {
+                            if ($self.is("img")) {
                                 $self.attr("src", original);
-                                $self.attr("width","100%");
-                                $self.attr("height","100%");
                             } else {
                                 $self.css("background-image", "url('" + original + "')");
                             }
@@ -126,15 +125,31 @@
                                 var elements_left = elements.length;
                                 settings.load.call(self, elements_left, settings);
                             }
-                        })
-                        .attr("src", $self.attr("data-" + settings.data_attribute));
+                        }).attr("src", $self.attr("data-" + settings.data_attribute));
+                    }
+                    else if ($self.is("iframe")) {
+                        $self.bind("load", function() {
+                            self.loaded = true;
+
+                            /* Remove image from array so it is not looped next time. */
+                            var temp = $.grep(elements, function(element) {
+                                return !element.loaded;
+                            });
+                            elements = $(temp);
+
+                            if (settings.load) {
+                                var elements_left = elements.length;
+                                settings.load.call(self, elements_left, settings);
+                            }
+                        }).attr("src", $self.attr("data-" + settings.data_attribute));
+                    }
                 }
             });
 
             /* When wanted event is triggered load original image */
             /* by triggering appear.                              */
             if (0 !== settings.event.indexOf("scroll")) {
-                $self.on(settings.event, function() {
+                $self.bind(settings.event, function() {
                     if (!self.loaded) {
                         $self.trigger("appear");
                     }
@@ -143,14 +158,14 @@
         });
 
         /* Check if something appears when window is resized. */
-        $window.on("resize", function() {
+        $window.bind("resize", function() {
             update();
         });
 
         /* With IOS5 force loading images when navigating with back button. */
         /* Non optimal workaround. */
         if ((/(?:iphone|ipod|ipad).*os 5/gi).test(navigator.appVersion)) {
-            $window.on("pageshow", function(event) {
+            $window.bind("pageshow", function(event) {
                 if (event.originalEvent && event.originalEvent.persisted) {
                     elements.each(function() {
                         $(this).trigger("appear");
@@ -219,9 +234,9 @@
     };
 
     $.inviewport = function(element, settings) {
-         return !$.rightoffold(element, settings) && !$.leftofbegin(element, settings) &&
-                !$.belowthefold(element, settings) && !$.abovethetop(element, settings);
-     };
+        return !$.rightoffold(element, settings) && !$.leftofbegin(element, settings) &&
+            !$.belowthefold(element, settings) && !$.abovethetop(element, settings);
+    };
 
     /* Custom selectors for your convenience.   */
     /* Use as $("img:below-the-fold").something() or */

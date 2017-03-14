@@ -26,8 +26,8 @@
     <bean class="com.fxiaoke.metrics.MetricsConfiguration"/>
 
     <bean id="fileProxy" class="com.facishare.document.preview.cgi.utils.FileStorageProxy"/>
-    <bean id="previewInfoDao" class="com.facishare.document.preview.cgi.dao.impl.PreviewInfoDaoImpl"/>
-    <bean id="fileTokenDao" class="com.facishare.document.preview.cgi.dao.impl.FileTokenDaoImpl"/>
+    <bean id="previewInfoDao" class="com.facishare.document.preview.common.dao.impl.PreviewInfoDaoImpl"/>
+    <bean id="fileTokenDao" class="com.facishare.document.preview.common.dao.impl.FileTokenDaoImpl"/>
     <bean id="authFilter" class="com.facishare.document.preview.cgi.filter.AuthFilter"/>
     <bean id="authHelper" class="com.facishare.document.preview.cgi.utils.AuthHelper"/>
     </beans>

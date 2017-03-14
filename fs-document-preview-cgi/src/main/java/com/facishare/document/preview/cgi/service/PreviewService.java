@@ -2,12 +2,12 @@ package com.facishare.document.preview.cgi.service;
 
 import com.facishare.document.preview.api.model.arg.GetPageCountArg;
 import com.facishare.document.preview.api.service.DocConvertService;
-import com.facishare.document.preview.cgi.dao.PreviewInfoDao;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
-import com.facishare.document.preview.cgi.model.PreviewInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfoEx;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
+import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.PageInfo;
+import com.facishare.document.preview.common.model.PreviewInfo;
 import com.facishare.document.preview.common.utils.DocPageInfoHelper;
 import com.facishare.document.preview.common.utils.OfficeFileEncryptChecker;
 import com.facishare.document.preview.common.utils.PathHelper;

@@ -1,4 +1,4 @@
-package com.facishare.document.preview.cgi.model;
+package com.facishare.document.preview.common.model;
 
 import lombok.Data;
 import org.bson.types.ObjectId;

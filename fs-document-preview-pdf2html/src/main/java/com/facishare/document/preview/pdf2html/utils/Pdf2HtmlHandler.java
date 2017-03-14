@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.stereotype.Component;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -13,15 +14,12 @@ import org.zeroturnaround.exec.ProcessResult;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by liuq on 2017/3/7.
@@ -31,26 +29,31 @@ import java.util.regex.Pattern;
 public class Pdf2HtmlHandler {
     @ReloadableProperty("pdf2HtmlTimeout")
     private int pdf2HtmlTimeout = 30;
-    public String doConvert(int page, String filePath, String dirName) {
+
+    public String doConvert(int page, String filePath) {
         String dataFilePath = "";
         List<String> args = createProcessArgs(page, filePath);
+
+
         Future<ProcessResult> future;
         try {
-            future = new ProcessExecutor().command(args).start().getFuture();
-            try {
-                ProcessResult processResult = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
-                if (processResult.getExitValue() == 0) {
-                    dataFilePath = handleResult(page, filePath, dirName);
-                }
-            } catch (InterruptedException e) {
-                log.error("do convert happened InterruptedException!", e);
-            } catch (ExecutionException e) {
-                log.error("do convert happened ExecutionException!", e);
-            } catch (TimeoutException e) {
-                log.error("do convert happened TimeoutException!", e);
+            future = new ProcessExecutor()
+                    .command(args)
+                    .readOutput(true)
+                    .start().getFuture();
+            ProcessResult processResult = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
+            if (processResult.getExitValue() == 0) {
+                dataFilePath = handleResult(page, filePath);
             }
+            log.info("output:{0}", processResult.outputUTF8());
         } catch (IOException e) {
-            log.error("get future fail!", e);
+            log.error("do convert happened IOException!", e);
+        } catch (InterruptedException e) {
+            log.error("do convert happened InterruptedException!", e);
+        } catch (ExecutionException e) {
+            log.error("do convert happened ExecutionException!", e);
+        } catch (TimeoutException e) {
+            log.error("do convert happened TimeoutException!", e);
         }
         return dataFilePath;
     }
@@ -73,8 +76,8 @@ public class Pdf2HtmlHandler {
         args.add("0");
         args.add("--css-filename");
         args.add("css" + page + ".css");
-        args.add("--split-pages");
-        args.add("1");
+//        args.add("--split-pages");
+//        args.add("1");
         args.add("--embed-image");
         args.add("0");
         args.add("--bg-format");
@@ -83,6 +86,8 @@ public class Pdf2HtmlHandler {
         args.add("90");
         args.add("--vdpi");
         args.add("90");
+//        args.add("--page-filename");
+//        args.add(".html");
         args.add("--no-drm");
         args.add("1");
         args.add("--process-outline");
@@ -97,68 +102,56 @@ public class Pdf2HtmlHandler {
         return args;
     }
 
-
-    private String handleResult(int page, String filePath, String dirName) throws IOException {
+    private String handleResult(int page, String filePath) throws IOException {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         log.info("begin handle html!filePath:{},page:{}", filePath, page);
-        String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
-        String pageDirPath = FilenameUtils.concat(basedDir, "p" + page);
-        String cssName = "css" + page + ".css";
-        String cssPath = FilenameUtils.concat(pageDirPath, cssName);
-        File cssFile = new File(cssPath);
-        String pageName = FilenameUtils.getBaseName(filePath) + page + ".page";
-        String pagePath = FilenameUtils.concat(pageDirPath, pageName);
-        String newPageName = page + ".html";
+        String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
+        String pageBaseDir = baseDir + "/p" + page;
+        String dataFileName = FilenameUtils.getBaseName(filePath) + ".html";
+        String dataFilePath = FilenameUtils.concat(pageBaseDir, dataFileName);
+        String pageName = page + ".html";
+        String pagePath = FilenameUtils.concat(baseDir, pageName);
+        File dataFile = new File(dataFilePath);
         File pageFile = new File(pagePath);
-        String newPagePath = FilenameUtils.concat(basedDir, newPageName);
-        handleHtml(page, cssFile, pageFile, newPagePath, dirName);
-        handleStaticResource(basedDir, pageDirPath);
-        try {
-            FileUtils.deleteDirectory(new File(pageDirPath));
-        }
-        catch (Exception e) {
-            log.warn("delete directory:{},fail!", pageDirPath);
-        }
+        String dirName = FilenameUtils.getBaseName(baseDir);
+        handleHtml(dataFile, pageFile, page, dirName);
+        Files.list(Paths.get(pageBaseDir)).filter(file -> {
+            String fileName = file.toFile().getName();
+            return fileName.startsWith("css") || fileName.startsWith("bg");
+        }).forEach(f -> {
+            File file = f.toFile();
+            String fileName = file.getName();
+            String newFilePath = FilenameUtils.concat(baseDir, fileName);
+            file.renameTo(new File(newFilePath));
+        });
+        FileUtils.deleteDirectory(new File(pageBaseDir));
         stopWatch.stop();
         log.info("end handle html!,filePath:{},page:{},cost:{}ms", filePath, page, stopWatch.getTime());
-        return newPagePath;
+        return pagePath;
     }
 
-
-    private void handleStaticResource(String destDirPath, String pageDirPath) throws IOException {
-        Path path = Paths.get(pageDirPath);
-        Files.list(path).filter(i -> i.toString().endsWith(".jpg")).forEach(f ->
-        {
-            File file = f.toFile();
-            String name = FilenameUtils.getName(file.getAbsolutePath());
-            String newFileName = FilenameUtils.concat(destDirPath, name);
-            File newFile = new File(newFileName);
-            if (!newFile.exists()) {
-                file.renameTo(newFile);
-            }
-        });
-    }
-
-
-    private void handleHtml(int page, File cssFile, File pageFile, String newPageFilePath, String dirName) throws IOException {
-        if (pageFile.exists()) {
-            String pageContent = FileUtils.readFileToString(pageFile);
-            String style1 = "pf w0 h0";
-            String style2 = "pf ww" + page + " hh" + page;
-            pageContent = pageContent.replace(style1, style2);
-            Matcher m = Pattern.compile("src\\s*=\\s*\"?(.*?)(\"|>|\\s+)").matcher(pageContent);
-            while (m.find()) {
-                String srcStr = m.group();
-                String newSrcStr = srcStr.replace("src=\"", "src=\"./" + dirName + "/");
-                pageContent = pageContent.replace(srcStr, newSrcStr);
-            }
-            String cssContent = FileUtils.readFileToString(cssFile);
-            String newCssContent = CssHandler.reWrite(cssContent, page);
-            String newPageContent = "<style>" + newCssContent + "</style>" + pageContent;
-            File newPageFile = new File(newPageFilePath);
-            FileUtils.writeByteArrayToFile(newPageFile, newPageContent.getBytes());
-        } else
-            log.warn("page file isn't exists,filePath:{}", pageFile.getAbsolutePath());
+    private void handleHtml(File dataFile, File pageFile, int page, String dirName) throws IOException {
+        String html = FileUtils.readFileToString(dataFile);
+        html = html.replace("base.min.css", "../static/css/base.min.css");
+        html = html.replace("<link rel=\"stylesheet\" href=\"fancy.min.css\"/>", "");
+        String cssLink = "css" + page + ".css";
+        html = html.replace(cssLink, "./" + dirName + "/" + cssLink);
+        html = html.replace("<script src=\"compatibility.min.js\"></script>", "");
+        html = html.replace("<script src=\"pdf2htmlEX.min.js\"></script>", "");
+        html = html.replace("<script>\n" +
+                "try{\n" +
+                "pdf2htmlEX.defaultViewer = new pdf2htmlEX.Viewer({});\n" +
+                "}catch(e){}\n" +
+                "</script>", "");
+        html = html.replace("<div id=\"sidebar\">\n" +
+                "<div id=\"outline\">\n" +
+                "</div>\n" +
+                "</div>", "");
+        html = html.replace("<div class=\"loading-indicator\">", "");
+        html = html.replace("<img alt=\"\" src=\"pdf2htmlEX-64x64.png\"/>", "");
+        html = html.replace("src=\"", "src=\"./" + dirName + "/");
+        html = html.replace("\n", "");
+        FileUtils.writeByteArrayToFile(pageFile, html.getBytes());
     }
 }

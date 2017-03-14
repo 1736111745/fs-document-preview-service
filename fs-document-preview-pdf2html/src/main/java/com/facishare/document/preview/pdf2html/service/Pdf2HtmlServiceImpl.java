@@ -25,8 +25,7 @@ public class Pdf2HtmlServiceImpl implements Pdf2HtmlService {
     public Pdf2HtmlResult convertPdf2Html(Pdf2HtmlArg arg) {
         String filePath = arg.getOriginalFilePath();
         int page = arg.getPage() + 1;
-        String dirName = FilenameUtils.getBaseName(FilenameUtils.getFullPathNoEndSeparator(filePath));
-        String dataFilePath = pdf2HtmlHandler.doConvert(page, filePath, dirName);
+        String dataFilePath = pdf2HtmlHandler.doConvert(page, filePath);
         if (Strings.isNullOrEmpty(dataFilePath)) {
             counterService.inc("convert-pdf2html-fail");
             throw new RuntimeException("cannot convert, file: " + filePath + ",page:" + page);

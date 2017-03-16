@@ -121,6 +121,7 @@ public class ConvertorHelper {
       log.info("start convert doc to svg, args:{}", args);
       String svgFileExt = "svg";
       String resultFilePath = "";
+      convert.setAutoDeleteTempFiles(true);
       IPICConvertor picConvertor = convert.convertMStoPic(filePath);
       if (picConvertor != null) {
         int resultCode = picConvertor.resultCode();
@@ -160,6 +161,7 @@ public class ConvertorHelper {
       String jpgFileExt = "jpg";
       String resultFilePath = "";
       String fileExt = FilenameUtils.getExtension(filePath).toLowerCase();
+      convert.setAutoDeleteTempFiles(true);
       IPICConvertor picConvertor =
         fileExt.equals("pdf") ? convert.convertPdftoPic(filePath) : convert.convertMStoPic(filePath);
       if (picConvertor != null) {
@@ -194,6 +196,7 @@ public class ConvertorHelper {
       log.info("start convert doc to png,args:{}", args);
       String pngFileExt = "png";
       String resultFilePath = "";
+      convert.setAutoDeleteTempFiles(true);
       String fileExt = FilenameUtils.getExtension(filePath).toLowerCase();
       IPICConvertor picConvertor =
         fileExt.equals("pdf") ? convert.convertPdftoPic(filePath) : convert.convertMStoPic(filePath);
@@ -228,6 +231,7 @@ public class ConvertorHelper {
       log.info("start convert doc to html,args:{}", args);
       String htmlFileExt = "html";
       String resultFilePath = "";
+      convert.setAutoDeleteTempFiles(true);
       IHtmlConvertor htmlConvertor = convert.convertMStoHtml(filePath);
       if (htmlConvertor != null) {
         int resultCode = htmlConvertor.resultCode();
@@ -256,6 +260,7 @@ public class ConvertorHelper {
 
   public int getOldWordOrPPTPageCount(String filePath) throws Exception {
     return doConvert(convert -> {
+      convert.setAutoDeleteTempFiles(true);
       IPICConvertor ipicConvertor = convert.convertMStoPic(filePath);
       if (ipicConvertor == null) {
         log.warn("cannot getPageCount for {}", filePath);
@@ -273,6 +278,7 @@ public class ConvertorHelper {
   public String[][] getExcelSheetInfo(String filePath) throws  Exception
   {
     return doConvert(convert -> {
+      convert.setAutoDeleteTempFiles(true);
       IHtmlConvertor ipicConvertor = convert.convertMStoHtml(filePath);
       if (ipicConvertor == null) {
         log.warn("cannot getPageCount for {}", filePath);

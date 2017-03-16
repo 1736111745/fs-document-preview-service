@@ -32,6 +32,7 @@ function loadPageLoader() {
 }
 
 function loadData(i, element) {
+
     var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg + "&ver=1.0";
     var iframeId = 'frame' + i;
     $("<iframe id='" + iframeId + "' src='"+url+"' onload='resize("+i+",this)' onresize='resize("+i+",this)' scrolling='no' frameborder='0' width='100%'></iframe>").prependTo(element);

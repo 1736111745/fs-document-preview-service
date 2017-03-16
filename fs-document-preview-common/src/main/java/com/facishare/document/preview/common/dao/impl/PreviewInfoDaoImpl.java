@@ -123,7 +123,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         previewInfo.setOriginalFilePath(originalFilePath);
         List<String> filePathList = new ArrayList<>();
         previewInfo.setFilePathList(filePathList);
-        dpsDataStore.insert("PreviewJsonInfo", previewInfo);
+        dpsDataStore.insert("PreviewInfo", previewInfo);
         dpsDataStore.ensureIndexes();
         return previewInfo;
     }

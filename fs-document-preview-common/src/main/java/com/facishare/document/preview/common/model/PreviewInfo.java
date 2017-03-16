@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by liuq on 16/8/16.
  */
-@Entity(value = "PreviewJsonInfo", noClassnameStored = true)
+@Entity(value = "PreviewInfo", noClassnameStored = true)
 @Indexes({
         @Index(fields = {@Field("path")})}
 )

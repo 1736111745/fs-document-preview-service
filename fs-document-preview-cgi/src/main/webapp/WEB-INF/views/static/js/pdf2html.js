@@ -34,6 +34,13 @@ function loadPageLoader() {
     });
 }
 
+function loadAllData() {
+  for(var i=0;i<pageCount;i++)
+  {
+      loadData(i);
+  }
+}
+
 function loadData(i) {
     var htmlName = (i + 1) + ".html";
     if ($.inArray(htmlName, filePathList)>=0) {
@@ -73,7 +80,7 @@ function queryDocStatus() {
         url: url,
         success: function (data) {
             filePathList = data.list;
-            loadData(currentPage);
+            loadAllData();
         }
     });
 }

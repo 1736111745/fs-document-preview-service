@@ -36,7 +36,7 @@ function loadPageLoader() {
 
 function loadData(i) {
     var htmlName = (i + 1) + ".html";
-    if ($.inArray(htmlName, filePathList)>0) {
+    if ($.inArray(htmlName, filePathList)>=0) {
         var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg + "&ver=1.0";
         var iframeId = 'frame' + i;
         var element=$("div[data-page-no='"+i+"']");
@@ -57,10 +57,10 @@ function resize(i, obj) {
 
 function timingQuery() {
     var id = window.setInterval(function () {
+        queryDocStatus();
         if (filePathList.length == pageCount) {
             clearInterval(id);
         }
-        queryDocStatus()
     }, 1000);
 }
 

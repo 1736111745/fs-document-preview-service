@@ -68,7 +68,7 @@ public class Pdf2HtmlHandler {
         args.add("-l");
         args.add(String.valueOf(page));
         args.add("--fit-width");//缩放
-        args.add("1000");
+        args.add("1500");
         args.add("--embed-outline");//链接文件单独输出
         args.add("0");
         args.add("--embed-css");

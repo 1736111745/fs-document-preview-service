@@ -44,7 +44,7 @@ public class Pdf2HtmlHandler {
             if (processResult.getExitValue() == 0) {
                 dataFilePath = handleResult(page, filePath);
             }
-            log.info("output:{0}", processResult.outputUTF8());
+            log.info("output:{}", processResult.outputUTF8());
         } catch (IOException e) {
             log.error("do convert happened IOException!", e);
         } catch (InterruptedException e) {
@@ -75,8 +75,6 @@ public class Pdf2HtmlHandler {
         args.add("0");
         args.add("--css-filename");
         args.add("css" + page + ".css");
-//        args.add("--split-pages");
-//        args.add("1");
         args.add("--embed-image");
         args.add("0");
         args.add("--bg-format");
@@ -85,8 +83,6 @@ public class Pdf2HtmlHandler {
         args.add("90");
         args.add("--vdpi");
         args.add("90");
-//        args.add("--page-filename");
-//        args.add(".html");
         args.add("--no-drm");
         args.add("1");
         args.add("--process-outline");

@@ -2,6 +2,7 @@ var sg = getQueryStringByName("sg");
 var pageCount = getQueryStringByName("pageCount");
 var path = getQueryStringByName("path");
 var filePathList=[];
+
 var currentPage;
 $(function () {
     loadViewPort();
@@ -29,6 +30,7 @@ function loadPageLoader() {
         pageLoader: function (element) {
             var pageIndex = parseInt(element.attr("data-page-no"));
             currentPage = pageIndex;
+            console.log("loaded:"+pageIndex);
             loadData(currentPage);
         }
     });

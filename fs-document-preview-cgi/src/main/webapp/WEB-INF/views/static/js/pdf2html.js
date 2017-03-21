@@ -31,7 +31,7 @@ function loadPageLoader() {
         pageLoader: function (element) {
             var pageIndex = parseInt(element.attr("data-page-no"));
             if ($.inArray(pageIndex, loadedList) == -1) {
-                loadedList.add(pageIndex);
+                loadedList.push(pageIndex);
             }
             loadData(pageIndex);
         }

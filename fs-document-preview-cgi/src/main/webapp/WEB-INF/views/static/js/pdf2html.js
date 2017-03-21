@@ -8,6 +8,7 @@ $(function () {
     loadViewPort();
     checkConvertStatus();
     loadAllPages();
+    checkDocConvertStatus();
     checkPageLoaded();
 });
 
@@ -84,6 +85,19 @@ function checkConvertStatus() {
             clearInterval(id);
         }
     }, 1000);
+}
+
+function checkDocConvertStatus() {
+    var url = window.contextPath + '/preview/checkDocConvertStatus?path=' + path + "&sg=" + sg
+    $.ajax({
+        type: 'get',
+        dataType: 'json',
+        async: true,
+        url: url,
+        success: function (data) {
+            filePathList = data.list;
+        }
+    });
 }
 
 function queryDocStatus() {

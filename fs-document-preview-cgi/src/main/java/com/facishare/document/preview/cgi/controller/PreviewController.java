@@ -304,6 +304,42 @@ public class PreviewController {
         }
     }
 
+
+    @ResponseBody
+    @RequestMapping(value = "/preview/checkDocConvertStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public void checkDocConvertStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String path = safteGetRequestParameter(request, "path");
+        String securityGroup = safteGetRequestParameter(request, "sg");
+        if (!isValidPath(path)) {
+            response.setStatus(400);
+        }
+        try {
+            EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+            String ea = employeeInfo.getEa();
+            PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
+            if (previewInfoEx.isSuccess()) {
+                PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
+                if (previewInfo != null) {
+                    int pageCount = previewInfo.getPageCount();
+                    List<String> dataFilePathList = previewInfo.getFilePathList();
+                    for (int i = 1; i < pageCount + 1; i++) {
+                        if (!dataFilePathList.contains(i + ".html")) {
+                            int status = convertTaskDao.getTaskStatus(ea, path, i);
+                            if (status == -1) {
+                                ConvertorMessage convertorMessage = ConvertorMessage.builder().npath(path).ea(ea).page(i).filePath(previewInfo.getOriginalFilePath()).build();
+                                convertTaskDao.addTask(ea, path, i);
+                                convertorQueueProvider.enqueue(convertorMessage);
+
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+        }
+    }
+
+
     @ResponseBody
     @RequestMapping(value = "/preview/queryDocConvertStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String queryDocConvertStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -325,19 +361,7 @@ public class PreviewController {
                 if (previewInfo == null) {
                     return "";
                 } else {
-                    int pageCount = previewInfo.getPageCount();
                     List<String> dataFilePathList = previewInfo.getFilePathList();
-                    for (int i = 1; i < pageCount+1; i++) {
-                        if (!dataFilePathList.contains(i + ".html")) {
-                            int status = convertTaskDao.getTaskStatus(ea, path, i);
-                            if (status == -1) {
-                                ConvertorMessage convertorMessage = ConvertorMessage.builder().npath(path).ea(ea).page(i).filePath(previewInfo.getOriginalFilePath()).build();
-                                convertTaskDao.addTask(ea, path, i);
-                                convertorQueueProvider.enqueue(convertorMessage);
-
-                            }
-                        }
-                    }
                     return getQueryDocConvertStatus(dataFilePathList);
                 }
             }

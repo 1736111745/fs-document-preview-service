@@ -14,4 +14,5 @@
                      protocol="dubbo" retries="0" timeout="65000"/>
     <dubbo:consumer filter="tracerpc"/>
 
+
 </beans>

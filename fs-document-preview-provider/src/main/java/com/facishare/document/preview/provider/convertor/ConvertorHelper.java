@@ -242,6 +242,7 @@ public class ConvertorHelper {
             htmlConvertor.convertToHtml(htmlFilePath, pageIndex);
           } finally {
             htmlConvertor.close();
+            convert.deleteTempFiles();
           }
           if (FileUtils.getFile(htmlFilePath).exists()) {
             resultFilePath = htmlFilePath;

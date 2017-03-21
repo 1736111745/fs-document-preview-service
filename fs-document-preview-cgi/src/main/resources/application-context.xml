@@ -27,7 +27,12 @@
 
     <bean id="fileProxy" class="com.facishare.document.preview.cgi.utils.FileStorageProxy"/>
     <bean id="previewInfoDao" class="com.facishare.document.preview.common.dao.impl.PreviewInfoDaoImpl"/>
+    <bean id="convertTaskDao" class="com.facishare.document.preview.common.dao.impl.ConvertTaskDaoImpl"/>
     <bean id="fileTokenDao" class="com.facishare.document.preview.common.dao.impl.FileTokenDaoImpl"/>
     <bean id="authFilter" class="com.facishare.document.preview.cgi.filter.AuthFilter"/>
     <bean id="authHelper" class="com.facishare.document.preview.cgi.utils.AuthHelper"/>
+
+    <bean id="convertorQueueProvider" class="com.facishare.document.preview.common.mq.ConvertorQueueProvider">
+        <constructor-arg type="java.lang.String" value="${mq_config_name}"/>
+    </bean>
     </beans>

@@ -13,12 +13,11 @@ import com.facishare.document.preview.cgi.service.PreviewService;
 import com.facishare.document.preview.cgi.utils.FileOutPutor;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.cgi.utils.RequestParamsHelper;
+import com.facishare.document.preview.common.dao.ConvertTaskDao;
 import com.facishare.document.preview.common.dao.FileTokenDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
-import com.facishare.document.preview.common.model.DocType;
-import com.facishare.document.preview.common.model.DownloadFileTokens;
-import com.facishare.document.preview.common.model.PreviewInfo;
-import com.facishare.document.preview.common.model.PreviewJsonInfo;
+import com.facishare.document.preview.common.model.*;
+import com.facishare.document.preview.common.mq.ConvertorQueueProvider;
 import com.facishare.document.preview.common.utils.DocPreviewInfoHelper;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.fxiaoke.metrics.CounterService;
@@ -54,6 +53,8 @@ public class PreviewController {
     @Autowired
     PreviewInfoDao previewInfoDao;
     @Autowired
+    ConvertTaskDao convertTaskDao;
+    @Autowired
     FileTokenDao fileTokenDao;
     @Autowired
     DocConvertService docConvertService;
@@ -63,6 +64,8 @@ public class PreviewController {
     private PreviewService previewService;
     @Autowired
     private CounterService counterService;
+    @Autowired
+    private ConvertorQueueProvider convertorQueueProvider;
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
 
@@ -114,7 +117,7 @@ public class PreviewController {
         String path = safteGetRequestParameter(request, "path");
         String page = safteGetRequestParameter(request, "page");
         String securityGroup = safteGetRequestParameter(request, "sg");
-        String version=safteGetRequestParameter(request,"ver");
+        String version = safteGetRequestParameter(request, "ver");
         if (!isValidPath(path)) {
             response.setStatus(400);
             return;
@@ -127,21 +130,20 @@ public class PreviewController {
                 PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
                 if (previewInfo != null) {
                     if (pageIndex < previewInfo.getPageCount()) {
-                        int type=Strings.isNullOrEmpty(version)?1:2;
+                        int type = Strings.isNullOrEmpty(version) ? 1 : 2;
                         String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), type, previewInfo.getFilePathList());
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
                             FileOutPutor.outPut(response, dataFilePath, true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
                             DocType docType = DocTypeHelper.getDocType(path);
-                            if(docType==DocType.PDF&&!Strings.isNullOrEmpty(version)) {
+                            if (docType == DocType.PDF && !Strings.isNullOrEmpty(version)) {
                                 Pdf2HtmlArg pdf2HtmlArg = Pdf2HtmlArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
                                 log.info("begin do convert,arg:{}", pdf2HtmlArg);
                                 Pdf2HtmlResult pdf2HtmlResult = pdf2HtmlService.convertPdf2Html(pdf2HtmlArg);
                                 dataFilePath = pdf2HtmlResult.getDataFilePath();
                                 log.info("end do convert,result:{}", pdf2HtmlResult);
-                            }
-                            else {
+                            } else {
                                 ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(1).build();
                                 log.info("begin do convert,arg:{}", convertDocArg);
                                 ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
@@ -269,8 +271,8 @@ public class PreviewController {
                             FileOutPutor.outPut(response, dataFilePath, width, true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
-                            File originalFile=new File(originalFilePath);
-                            if(!originalFile.exists()) {
+                            File originalFile = new File(originalFilePath);
+                            if (!originalFile.exists()) {
                                 fileStorageProxy.DownloadAndSave(path, employeeInfo, "", originalFilePath);
                             }
                             ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(2).build();
@@ -302,6 +304,49 @@ public class PreviewController {
         }
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/preview/queryDocConvertStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String queryDocConvertStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        String path = safteGetRequestParameter(request, "path");
+        String securityGroup = safteGetRequestParameter(request, "sg");
+        if (!isValidPath(path)) {
+            response.setStatus(400);
+            return "";
+        }
+        try {
+            EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+            String ea = employeeInfo.getEa();
+            PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
+            if (!previewInfoEx.isSuccess()) {
+                return "";
+            } else {
+                PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
+                if (previewInfo == null) {
+                    return "";
+                } else {
+                    int pageCount = previewInfo.getPageCount();
+                    List<String> dataFilePathList = previewInfo.getFilePathList();
+                    for (int i = 1; i < pageCount+1; i++) {
+                        if (!dataFilePathList.contains(i + ".html")) {
+                            int status = convertTaskDao.getTaskStatus(ea, path, i);
+                            if (status == -1) {
+                                ConvertorMessage convertorMessage = ConvertorMessage.builder().npath(path).ea(ea).page(i).filePath(previewInfo.getOriginalFilePath()).build();
+                                convertTaskDao.addTask(ea, path, i);
+                                convertorQueueProvider.enqueue(convertorMessage);
+
+                            }
+                        }
+                    }
+                    return getQueryDocConvertStatus(dataFilePathList);
+                }
+            }
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+
     private String safteGetRequestParameter(HttpServletRequest request, String paramName) {
         String value = request.getParameter(paramName) == null ? "" : request.getParameter(paramName).trim();
         return value;
@@ -317,6 +362,13 @@ public class PreviewController {
             map.put("sheets", sheetNames);
         } else
             map.put("errorMsg", errorMsg);
+        return JSONObject.toJSONString(map);
+    }
+
+
+    private String getQueryDocConvertStatus(List<String> filePathList) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("list", filePathList);
         return JSONObject.toJSONString(map);
     }
 

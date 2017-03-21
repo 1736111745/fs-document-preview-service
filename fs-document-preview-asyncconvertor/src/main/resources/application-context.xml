@@ -18,11 +18,9 @@
             <aop:around method="profile" pointcut="execution(* com.facishare.document.preview.asyncconvertor..*(..))"/>
         </aop:aspect>
     </aop:config>
+    <bean id="previewInfoDao" class="com.facishare.document.preview.common.dao.impl.PreviewInfoDaoImpl"/>
+    <bean id="convertTaskDao" class="com.facishare.document.preview.common.dao.impl.ConvertTaskDaoImpl"/>
     <import resource="classpath:spring/spring-cms.xml"/>
     <bean class="com.fxiaoke.metrics.MetricsConfiguration"/>
-    <bean id="convertorQueueConsumer" class="com.facishare.document.preview.common.mq.ConvertorQueueConsumer">
-        <constructor-arg type="java.lang.String" value="${mq_config_name}"/>
-        <constructor-arg ref="docConvertorProcessor"/>
-    </bean>
-    <bean id="docConvertorProcessor" class="com.facishare.document.preview.asyncconvertor.service.DocConvertorProcessor"/>
+   <bean id="docConvertorProcessor" class="com.facishare.document.preview.asyncconvertor.service.DocConvertorProcessor" init-method="init"/>
 </beans>

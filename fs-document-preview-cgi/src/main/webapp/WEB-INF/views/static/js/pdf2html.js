@@ -39,13 +39,10 @@ function loadPageLoader() {
 }
 
 function reloadLoaded() {
-    var id = window.setInterval(function () {
+    window.setInterval(function () {
         for (var i = 0; i < loadedList; i++) {
             var index = loadedList[i];
             loadData(index);
-        }
-        if (filePathList.length == pageCount) {
-            clearInterval(id);
         }
     }, 1000);
 }

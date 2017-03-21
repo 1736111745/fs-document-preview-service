@@ -1,7 +1,7 @@
 var sg = getQueryStringByName("sg");
 var pageCount = getQueryStringByName("pageCount");
 var path = getQueryStringByName("path");
-var filePathList={};
+var filePathList=[];
 var currentPage;
 $(function () {
     loadViewPort();

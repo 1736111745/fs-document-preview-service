@@ -80,7 +80,6 @@ function queryDocStatus() {
         url: url,
         success: function (data) {
             filePathList = data.list;
-            loadAllData();
         }
     });
 }

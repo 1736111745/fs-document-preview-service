@@ -30,8 +30,8 @@ function loadPageLoader() {
     $('.lazy').lazy({
         pageLoader: function (element) {
             var pageIndex = parseInt(element.attr("data-page-no"));
-            if ($.inArray(i, loadedList) == -1) {
-                loadedList.add(i);
+            if ($.inArray(pageIndex, loadedList) == -1) {
+                loadedList.add(pageIndex);
             }
             loadData(pageIndex);
         }

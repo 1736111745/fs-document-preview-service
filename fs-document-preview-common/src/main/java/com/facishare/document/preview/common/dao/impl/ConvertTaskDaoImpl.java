@@ -44,7 +44,7 @@ public class ConvertTaskDaoImpl implements ConvertTaskDao {
 
     private void modifyTaskStatus(String ea, String path, int page,int status) {
         Query<ConvertTask> query = dpsDataStore.createQuery(ConvertTask.class);
-        query.criteria("ea").equal(ea).criteria("path").equal(path).criteria("page").equals(page);
+        query.criteria("ea").equal(ea).criteria("path").equal(path).criteria("page").equal(page);
         UpdateOperations<ConvertTask> update = dpsDataStore.createUpdateOperations(ConvertTask.class);
         update.set("status", status);
         update.set("lastModifyTime", new Date());

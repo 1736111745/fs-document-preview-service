@@ -32,6 +32,7 @@ public class DocConvertorProcessor {
     private static final String KEY_GROUP = "GROUP_PROVIDER";
     private static final String KEY_TOPICS = "TOPICS";
     public void init() {
+        log.info("begin consumer queue!");
         autoConfRocketMQProcessor = new AutoConfRocketMQProcessor("fs-dps-mq", KEY_NAME_SERVER, KEY_GROUP, KEY_TOPICS, (MessageListenerConcurrently) (list, consumeConcurrentlyContext) -> {
             list.forEach((MessageExt messageExt) -> {
                 ConvertorMessage convertorMessage = ConvertorMessage.builder().build();

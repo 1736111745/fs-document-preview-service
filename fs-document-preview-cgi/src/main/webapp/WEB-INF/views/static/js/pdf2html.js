@@ -29,18 +29,21 @@ function loadPageLoader() {
         pageLoader: function (element) {
             var pageIndex = parseInt(element.attr("data-page-no"));
             currentPage = pageIndex;
-            loadData(pageIndex, element);
+            loadData(currentPage);
         }
     });
 }
 
-function loadData(i, element) {
+function loadData(i) {
     var htmlName = (i + 1) + ".html";
     if ($.inArray(htmlName, filePathList)) {
         var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg + "&ver=1.0";
         var iframeId = 'frame' + i;
-        $("<iframe id='" + iframeId + "' src='" + url + "' onload='resize(" + i + ",this)' onresize='resize(" + i + ",this)' scrolling='no' frameborder='0' width='100%'></iframe>").prependTo(element);
-        element.load();
+        var element=$("div[data-page-no='"+i+"']");
+        if($('#'+iframeId).length==0) {
+            $("<iframe id='" + iframeId + "' src='" + url + "' onload='resize(" + i + ",this)' onresize='resize(" + i + ",this)' scrolling='no' frameborder='0' width='100%'></iframe>").prependTo(element);
+            element.load();
+        }
     }
 }
 

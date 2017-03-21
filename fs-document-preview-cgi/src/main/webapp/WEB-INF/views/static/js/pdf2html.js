@@ -49,7 +49,7 @@ function checkPageLoaded() {
             console.log("all page loaded!")
             clearInterval(id);
         }
-    }, 1000);
+    }, 200);
 }
 
 function loadData(i) {
@@ -83,7 +83,7 @@ function checkConvertStatus() {
         if (filePathList.length == pageCount) {
             clearInterval(id);
         }
-    }, 1000);
+    }, 200);
 }
 
 function queryDocStatus() {

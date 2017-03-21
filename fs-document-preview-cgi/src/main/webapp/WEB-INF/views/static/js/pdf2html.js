@@ -39,10 +39,17 @@ function loadPageLoader() {
 }
 
 function reloadLoaded() {
-    window.setInterval(function () {
+    var id = setInterval(function () {
         for (var i = 0; i < loadedList.length; i++) {
             var index = loadedList[i];
+            console.log("page:"+index+",has loaded!")
             loadData(index);
+            loadedList.splice(index);
+        }
+        console.log(loadedList);
+        if (loadedList.length == 0) {
+            console.log("all page loaded!")
+            clearInterval(id);
         }
     }, 1000);
 }

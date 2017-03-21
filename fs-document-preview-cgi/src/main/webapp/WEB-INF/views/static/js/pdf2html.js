@@ -1,14 +1,14 @@
 var sg = getQueryStringByName("sg");
 var pageCount = getQueryStringByName("pageCount");
 var path = getQueryStringByName("path");
-var filePathList = [];
-var loadedList = [];
-
+var filePathList = [];//已经转换完毕的页码.html
+var loadedList = [];//用户已经滑动过的页码
+var pageLoadedList=[];//用户已经加载的页码
 $(function () {
     loadViewPort();
-    timingQuery();
+    checkConvertStatus();
     loadAllPages();
-    reloadLoaded();
+    checkPageLoaded();
 });
 
 function loadAllPages() {
@@ -38,16 +38,14 @@ function loadPageLoader() {
     });
 }
 
-function reloadLoaded() {
+//定时检查用户滑动过的页码，如果用户页码都加载完毕了就停止检查
+function checkPageLoaded() {
     var id = setInterval(function () {
         for (var i = 0; i < loadedList.length; i++) {
             var index = loadedList[i];
-            console.log("page:"+index+",has loaded!")
             loadData(index);
-            loadedList.splice(index);
         }
-        console.log(loadedList);
-        if (loadedList.length == 0) {
+        if (pageLoadedList.length == pageCount) {
             console.log("all page loaded!")
             clearInterval(id);
         }
@@ -63,6 +61,9 @@ function loadData(i) {
         if ($('#' + iframeId).length == 0) {
             $("<iframe id='" + iframeId + "' src='" + url + "' onload='resize(" + i + ",this)' onresize='resize(" + i + ",this)' scrolling='no' frameborder='0' width='100%'></iframe>").prependTo(element);
             element.load();
+            if ($.inArray(i, pageLoadedList) == -1) {
+                pageLoadedList.push(i);
+            }
         }
     }
 }
@@ -75,7 +76,8 @@ function resize(i, obj) {
     $(obj.parentElement).after(nav);
 }
 
-function timingQuery() {
+//定时监测转换状态，当全部转换完毕停止监测
+function checkConvertStatus() {
     var id = window.setInterval(function () {
         queryDocStatus();
         if (filePathList.length == pageCount) {

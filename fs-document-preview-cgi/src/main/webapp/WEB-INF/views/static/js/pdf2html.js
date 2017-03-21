@@ -40,7 +40,7 @@ function loadPageLoader() {
 
 function reloadLoaded() {
     window.setInterval(function () {
-        for (var i = 0; i < loadedList; i++) {
+        for (var i = 0; i < loadedList.length; i++) {
             var index = loadedList[i];
             loadData(index);
         }

@@ -1,13 +1,14 @@
 var sg = getQueryStringByName("sg");
 var pageCount = getQueryStringByName("pageCount");
 var path = getQueryStringByName("path");
-var filePathList=[];
+var filePathList = [];
+var loadedList = [];
 
-var currentPage;
 $(function () {
     loadViewPort();
     timingQuery();
     loadAllPages();
+    reloadLoaded();
 });
 
 function loadAllPages() {
@@ -29,27 +30,33 @@ function loadPageLoader() {
     $('.lazy').lazy({
         pageLoader: function (element) {
             var pageIndex = parseInt(element.attr("data-page-no"));
-            currentPage = pageIndex;
-            console.log("loaded:"+pageIndex);
-            loadData(currentPage);
+            if ($.inArray(i, loadedList) == -1) {
+                loadedList.add(i);
+            }
+            loadData(pageIndex);
         }
     });
 }
 
-function loadAllData() {
-  for(var i=0;i<pageCount;i++)
-  {
-      loadData(i);
-  }
+function reloadLoaded() {
+    var id = window.setInterval(function () {
+        for (var i = 0; i < loadedList; i++) {
+            var index = loadedList[i];
+            loadData(index);
+        }
+        if (filePathList.length == pageCount) {
+            clearInterval(id);
+        }
+    }, 1000);
 }
 
 function loadData(i) {
     var htmlName = (i + 1) + ".html";
-    if ($.inArray(htmlName, filePathList)>=0) {
+    if ($.inArray(htmlName, filePathList) >= 0) {
         var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg + "&ver=1.0";
         var iframeId = 'frame' + i;
-        var element=$("div[data-page-no='"+i+"']");
-        if($('#'+iframeId).length==0) {
+        var element = $("div[data-page-no='" + i + "']");
+        if ($('#' + iframeId).length == 0) {
             $("<iframe id='" + iframeId + "' src='" + url + "' onload='resize(" + i + ",this)' onresize='resize(" + i + ",this)' scrolling='no' frameborder='0' width='100%'></iframe>").prependTo(element);
             element.load();
         }

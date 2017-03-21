@@ -83,7 +83,7 @@ function checkConvertStatus() {
         if (filePathList.length == pageCount) {
             clearInterval(id);
         }
-    }, 200);
+    }, 1000);
 }
 
 function queryDocStatus() {

@@ -14,8 +14,9 @@ $(function () {
 
 function loadAllPages() {
     for (var i = 0; i < pageCount; i++) {
-        var div = "<div class='lazy border' data-page-no='" + i + "' data-loader='pageLoader'>";
-        $('#main').append($(div));
+        var div = $("<div class='lazy border' data-page-no='" + i + "' data-loader='pageLoader'>");
+        var nav = $("<div class='center'><span>第" + (i + 1) + "页,共" + pageCount + "页</span></div>");
+        $('#main').append(div).append(nav);
         loadPageLoader();
     }
 }
@@ -73,8 +74,6 @@ function resize(i, obj) {
     var height = $(obj.contentWindow.document).find("div[id='page-container']").height()
     $(obj).height(height + 20);
     $(obj.parentElement).removeClass("lazy");
-    var nav = $("<div class='center'><span>第" + (i + 1) + "页,共" + pageCount + "页</span></div>");
-    $(obj.parentElement).after(nav);
 }
 
 //定时监测转换状态，当全部转换完毕停止监测

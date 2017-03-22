@@ -38,13 +38,12 @@ public class Pdf2HtmlHandler {
         try {
             future = new ProcessExecutor()
                     .command(args)
-                    .readOutput(true)
                     .start().getFuture();
             ProcessResult processResult = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
             if (processResult.getExitValue() == 0) {
                 dataFilePath = handleResult(page, filePath);
             }
-            log.info("output:{}", processResult.outputUTF8());
+            //log.info("output:{}", processResult.outputUTF8());
         } catch (IOException e) {
             log.error("do convert happened IOException!", e);
         } catch (InterruptedException e) {
@@ -68,7 +67,7 @@ public class Pdf2HtmlHandler {
         args.add("-l");
         args.add(String.valueOf(page));
         args.add("--fit-width");//缩放
-        args.add("1500");
+        args.add("1000");
         args.add("--embed-outline");//链接文件单独输出
         args.add("0");
         args.add("--embed-css");

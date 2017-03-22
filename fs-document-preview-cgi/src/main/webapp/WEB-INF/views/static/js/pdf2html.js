@@ -132,8 +132,8 @@ function checkConvertTimeout() {
                 var element = $("div[data-page-no='" + i + "']");
                 if ($('#' + iframeId).length == 0) {
                     var spanMsg = $("<span>该页面暂时无法预览，请稍后刷新重试！</span>");
-                    element.append(spanMsg).load();
                     element.removeClass("lazy");
+                    element.append(spanMsg).load();
                 }
             }
         }

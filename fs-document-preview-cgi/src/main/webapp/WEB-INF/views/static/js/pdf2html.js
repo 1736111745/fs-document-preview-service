@@ -123,13 +123,17 @@ function queryDocStatus() {
 var idChkConvertTimeout;//超时后还没有加载完毕就提示预览超时。同时停止查询轮询和检测页码轮询方法。
 function checkConvertTimeout() {
     idChkConvertTimeout = setTimeout(function () {
+        clearInterval(idChkConvertStatus);
+        clearInterval(idChkPageLoaded);
         for (var i = 0; i < pageCount; i++) {
-            if ($.inArray(i, pageLoadedList) == -1) {
+            var htmlName = (i + 1) + ".html";
+            if ($.inArray(htmlName, filePathList) == -1) {
+                var iframeId = 'frame' + i;
                 var element = $("div[data-page-no='" + i + "']");
-                var spanMsg = $("<span>该页面暂时无法预览，请稍后刷新重试！</span>");
-                element.append(spanMsg).load();
-                clearInterval(idChkConvertStatus);
-                clearInterval(idChkPageLoaded);
+                if ($('#' + iframeId).length == 0) {
+                    var spanMsg = $("<span>该页面暂时无法预览，请稍后刷新重试！</span>");
+                    element.append(spanMsg).load();
+                }
             }
         }
     }, timeout)

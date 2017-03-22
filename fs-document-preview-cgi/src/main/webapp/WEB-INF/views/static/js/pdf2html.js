@@ -82,7 +82,7 @@ function checkConvertStatus() {
         if (queryDocStatus()) {
             clearInterval(id);
         }
-    }, 1000);
+    }, 500);
 }
 
 function checkDocConvertStatus() {

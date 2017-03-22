@@ -4,12 +4,9 @@
     margin: 13px auto;
 }
 
-
 .pf {
     position: relative;
 }
-
-
 
 .bf {
     position: absolute;
@@ -34,7 +31,6 @@
     -webkit-user-select: none;
     user-select: none
 }
-
 
 .c {
     position: absolute;
@@ -83,7 +79,6 @@
 ::-moz-selection {
     background: rgba(127, 255, 255, 0.4)
 }
-
 
 .d {
     position: absolute;

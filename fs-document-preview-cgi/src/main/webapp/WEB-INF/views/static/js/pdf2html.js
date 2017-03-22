@@ -3,7 +3,7 @@ var pageCount = getQueryStringByName("pageCount");
 var path = getQueryStringByName("path");
 var filePathList = [];//已经转换完毕的页码.html
 var loadedList = [];//用户已经滑动过的页码
-var pageLoadedList=[];//用户已经加载的页码
+var pageLoadedList = [];//用户已经加载的页码
 $(function () {
     loadViewPort();
     checkConvertStatus();
@@ -61,7 +61,7 @@ function loadData(i) {
         var iframeId = 'frame' + i;
         var element = $("div[data-page-no='" + i + "']");
         if ($('#' + iframeId).length == 0) {
-            $("<iframe id='" + iframeId + "' src='" + url + "' onload='resize(" + i + ",this)' onresize='resize(" + i + ",this)' scrolling='no' frameborder='0' width='100%'></iframe>").prependTo(element);
+            $("<iframe id='" + iframeId + "' src='" + url + "' onload='resize(this)' onresize='resize(this)' scrolling='no' frameborder='0' width='100%'></iframe>").prependTo(element);
             element.load();
             if ($.inArray(i, pageLoadedList) == -1) {
                 pageLoadedList.push(i);
@@ -70,7 +70,7 @@ function loadData(i) {
     }
 }
 
-function resize(i, obj) {
+function resize(obj) {
     var height = $(obj.contentWindow.document).find("div[id='page-container']").height()
     $(obj).height(height + 20);
     $(obj.parentElement).removeClass("lazy");
@@ -79,8 +79,7 @@ function resize(i, obj) {
 //定时监测转换状态，当全部转换完毕停止监测
 function checkConvertStatus() {
     var id = window.setInterval(function () {
-        queryDocStatus();
-        if (filePathList.length == pageCount) {
+        if (queryDocStatus()) {
             clearInterval(id);
         }
     }, 1000);
@@ -100,15 +99,18 @@ function checkDocConvertStatus() {
 }
 
 function queryDocStatus() {
+    var flag = false;//是否转换完毕
     var url = window.contextPath + '/preview/queryDocConvertStatus?path=' + path + "&sg=" + sg
     $.ajax({
         type: 'get',
         dataType: 'json',
-        async: true,
+        async: false,
         url: url,
         success: function (data) {
             filePathList = data.list;
+            flag = (filePathList.length == pageCount);
         }
     });
+    return flag;
 }
 

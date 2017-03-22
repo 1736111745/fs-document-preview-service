@@ -4,11 +4,14 @@ var path = getQueryStringByName("path");
 var filePathList = [];//已经转换完毕的页码.html
 var loadedList = [];//用户已经滑动过的页码
 var pageLoadedList = [];//用户已经加载的页码
+var timeout = 4000;
+var excuteTime = 0;
 $(function () {
     loadViewPort();
-    checkConvertStatus();
-    loadAllPages();
+    checkConvertTimeout();
     checkDocConvertStatus();
+    loadAllPages();
+    checkConvertStatus();
     checkPageLoaded();
 });
 
@@ -40,16 +43,18 @@ function loadPageLoader() {
     });
 }
 
+var idChkPageLoaded;
 //定时检查用户滑动过的页码，如果用户页码都加载完毕了就停止检查
 function checkPageLoaded() {
-    var id = setInterval(function () {
+    idChkPageLoaded = setInterval(function () {
         for (var i = 0; i < loadedList.length; i++) {
             var index = loadedList[i];
             loadData(index);
         }
         if (pageLoadedList.length == pageCount) {
             console.log("all page loaded!")
-            clearInterval(id);
+            clearInterval(idChkPageLoaded);
+            clearInterval(idChkConvertTimeout);
         }
     }, 200);
 }
@@ -76,11 +81,12 @@ function resize(obj) {
     $(obj.parentElement).removeClass("lazy");
 }
 
-//定时监测转换状态，当全部转换完毕停止监测
+var idChkConvertStatus;
+//定时监测转换状态，当全部转换完毕停止检测
 function checkConvertStatus() {
-    var id = window.setInterval(function () {
+    idChkConvertStatus = setInterval(function () {
         if (queryDocStatus()) {
-            clearInterval(id);
+            clearInterval(idChkConvertStatus);
         }
     }, 500);
 }
@@ -99,6 +105,7 @@ function checkDocConvertStatus() {
 }
 
 function queryDocStatus() {
+    excuteTime += 500
     var flag = false;//是否转换完毕
     var url = window.contextPath + '/preview/queryDocConvertStatus?path=' + path + "&sg=" + sg
     $.ajax({
@@ -112,5 +119,19 @@ function queryDocStatus() {
         }
     });
     return flag;
+}
+var idChkConvertTimeout;//超时后还没有加载完毕就提示预览超时。同时停止查询轮询和检测页码轮询方法。
+function checkConvertTimeout() {
+    idChkConvertTimeout = setTimeout(function () {
+        for (var i = 0; i < pageCount; i++) {
+            if ($.inArray(i, pageLoadedList) == -1) {
+                var element = $("div[data-page-no='" + i + "']");
+                var spanMsg = $("<span>该页面暂时无法预览，请稍后刷新重试！</span>");
+                element.append(spanMsg).load();
+                clearInterval(idChkConvertStatus);
+                clearInterval(idChkPageLoaded);
+            }
+        }
+    }, timeout)
 }
 

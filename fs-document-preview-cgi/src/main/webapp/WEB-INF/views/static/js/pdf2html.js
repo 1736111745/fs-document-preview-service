@@ -5,7 +5,6 @@ var filePathList = [];//已经转换完毕的页码.html
 var loadedList = [];//用户已经滑动过的页码
 var pageLoadedList = [];//用户已经加载的页码
 var timeout = 60000;
-var excuteTime = 0;
 $(function () {
     loadViewPort();
     checkConvertTimeout();
@@ -105,7 +104,6 @@ function checkDocConvertStatus() {
 }
 
 function queryDocStatus() {
-    excuteTime += 500
     var flag = false;//是否转换完毕
     var url = window.contextPath + '/preview/queryDocConvertStatus?path=' + path + "&sg=" + sg
     $.ajax({

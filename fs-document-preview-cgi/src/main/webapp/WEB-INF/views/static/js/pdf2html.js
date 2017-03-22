@@ -122,7 +122,6 @@ var idChkConvertTimeout;//超时后还没有加载完毕就提示预览超时。
 function checkConvertTimeout() {
     idChkConvertTimeout = setTimeout(function () {
         clearInterval(idChkConvertStatus);
-        clearInterval(idChkPageLoaded);
         for (var i = 0; i < pageCount; i++) {
             var htmlName = (i + 1) + ".html";
             if ($.inArray(htmlName, filePathList) == -1) {

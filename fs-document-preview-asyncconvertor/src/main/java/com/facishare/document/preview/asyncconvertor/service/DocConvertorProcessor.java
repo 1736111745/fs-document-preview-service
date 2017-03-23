@@ -14,6 +14,7 @@ import com.github.autoconf.ConfigFactory;
 import com.github.autoconf.api.IConfig;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -64,6 +65,8 @@ public class DocConvertorProcessor {
         configName=config.get(host);
     }
     private void doConvert(ConvertorMessage convertorMessage) throws InterruptedException {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
         log.info("begin do convert,params:{}", JSON.toJSONString(convertorMessage));
         String ea = convertorMessage.getEa();
         String path = convertorMessage.getNpath();
@@ -82,5 +85,7 @@ public class DocConvertorProcessor {
                 convertTaskDao.excuteFail(ea, path, page);
             }
         }
+        stopWatch.stop();
+        log.info("end do convert,params:{},cost:{}", JSON.toJSONString(convertorMessage), stopWatch.getTime());
     }
 }

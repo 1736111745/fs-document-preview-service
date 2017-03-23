@@ -38,8 +38,8 @@ function loadPageLoader() {
                 loadedList.push(pageIndex);
             }
             loadData(pageIndex);
-            console.log("page " + i + " loaded!")
-            $("#log").html("page " + i + " loaded!");
+            console.log("page " + pageIndex + " loaded!")
+            $("#log").html("page " + pageIndex + " loaded!");
         }
     });
 }

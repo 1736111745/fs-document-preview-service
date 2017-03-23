@@ -16,7 +16,7 @@ $(function () {
 
 function loadAllPages() {
     for (var i = 0; i < pageCount; i++) {
-        var div = $("<div id='divPage" + i + "' class='lazy border' data-page-no='" + i + "'>");
+        var div = $("<div id='divPage" + i + "' class='lazy border' data-page-no='" + i + "' data-loader='pageLoader'>");
         var nav = $("<div class='center'><span>第" + (i + 1) + "页,共" + pageCount + "页</span></div>");
         $('#main').append(div).append(nav);
         loadPageLoader();
@@ -32,14 +32,14 @@ function loadViewPort() {
 
 function loadPageLoader() {
     $('.lazy').lazy({
-        afterLoad: function (element) {
+        pageLoader: function (element) {
             var pageIndex = parseInt(element.attr("data-page-no"));
             if ($.inArray(pageIndex, loadedList) == -1) {
                 loadedList.push(pageIndex);
             }
             loadData(pageIndex);
+            console.log("page " + pageIndex + " loaded!")
             $("#log").html(loadedList.join(", "));
-            console.log("#page " + pageIndex + " loaded!")
         }
     });
 }

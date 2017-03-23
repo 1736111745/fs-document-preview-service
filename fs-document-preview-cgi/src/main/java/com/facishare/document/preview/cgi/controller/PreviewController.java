@@ -25,6 +25,7 @@ import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.fxiaoke.metrics.CounterService;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -325,6 +327,8 @@ public class PreviewController {
                 if (previewInfo != null) {
                     int pageCount = previewInfo.getPageCount();
                     List<String> dataFilePathList = previewInfo.getFilePathList();
+                    if(dataFilePathList==null)
+                        dataFilePathList= Lists.newArrayList();
                     log.info("dataFilePathList:"+ JSON.toJSONString(dataFilePathList));
                     for (int i = 1; i < pageCount + 1; i++) {
                         if (!dataFilePathList.contains(i + ".html")) {
@@ -360,7 +364,6 @@ public class PreviewController {
         }
         try {
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-            String ea = employeeInfo.getEa();
             PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
             if (!previewInfoEx.isSuccess()) {
                 return "";
@@ -370,6 +373,8 @@ public class PreviewController {
                     return "";
                 } else {
                     List<String> dataFilePathList = previewInfo.getFilePathList();
+                    if(dataFilePathList==null)
+                        dataFilePathList= Lists.newArrayList();
                     return getQueryDocConvertStatus(dataFilePathList);
                 }
             }

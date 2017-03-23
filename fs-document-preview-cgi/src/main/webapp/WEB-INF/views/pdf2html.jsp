@@ -41,11 +41,22 @@
             text-align: center;
             margin-bottom: 10px;
         }
+
+        div.fix {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background-color: #202020;
+            color: white;
+            font-size: 32px;
+            width: 100px;
+            text-align: center;
+        }
     </style>
     <title>pdf文档预览</title>
 </head>
 <body>
-<div id="pageInfo" style="position:fixed;bottom:10px;right:10px;background-color: #202020"></div>
+<div id="pageInfo" class="fix"></div>
 <div id="main">
 </div>
 </body>

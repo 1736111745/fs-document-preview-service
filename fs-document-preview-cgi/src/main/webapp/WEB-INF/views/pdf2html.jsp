@@ -45,7 +45,7 @@
     <title>pdf文档预览</title>
 </head>
 <body>
-<div id="log" style="position:fixed;top:10px;left:10px;background:#369"></div>
+<div id="pageInfo" style="position:fixed;bottom:10px;right:10px;background-color: #202020"></div>
 <div id="main">
 </div>
 </body>

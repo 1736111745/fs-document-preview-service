@@ -40,7 +40,6 @@ function loadPageLoader() {
             }
             loadData(pageIndex);
             console.log("page " + pageIndex + " loaded!")
-            $("#log").html(loadedList.join(", "));
         }
     });
 }
@@ -144,8 +143,8 @@ function checkConvertTimeout() {
 
 function showPage() {
     $("div.border").each(function (index, element) {
-        $(element).waypoint(function (direction) {
-            console.log("index:" + index + ",direction:" + direction + ",id:" + element.id);
+        $(element).waypoint(function () {
+            $('#pageInfo').html((index + 1) + "/" + pageCount);
         })
     });
 }

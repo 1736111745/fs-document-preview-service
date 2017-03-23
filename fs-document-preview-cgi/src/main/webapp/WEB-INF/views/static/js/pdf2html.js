@@ -12,6 +12,7 @@ $(function () {
     loadAllPages();
     checkConvertStatus();
     checkPageLoaded();
+    showPage();
 });
 
 function loadAllPages() {
@@ -139,5 +140,13 @@ function checkConvertTimeout() {
             }
         }
     }, timeout)
+}
+
+function showPage() {
+    $("div.border").each(function (index, element) {
+        $(element).waypoint(function (direction) {
+            console.log("index:" + index + ",direction:" + direction + ",id:" + element.id);
+        })
+    });
 }
 

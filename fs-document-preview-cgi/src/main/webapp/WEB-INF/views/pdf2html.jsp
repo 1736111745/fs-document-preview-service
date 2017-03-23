@@ -15,10 +15,12 @@
     <title>文档预览</title>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/jquery.lazy.min.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/jquery.waypoints.min.js"></script>
     <script type="text/javascript"
             src="<%=request.getContextPath()%>/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
     <script type="text/javascript"
             src="<%=request.getContextPath()%>/static/js/pdf2html.js?v=<%=request.getAttribute("sv")%>"></script>
+
     <script>
         window.contextPath = "<%=request.getContextPath()%>";
     </script>

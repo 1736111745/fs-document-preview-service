@@ -19,4 +19,6 @@ public class ConvertorMessage extends ProtoBase {
     private String filePath;
     @Tag(4)
     private int page;
+    @Tag(5)
+    private int type;
 }

@@ -9,10 +9,15 @@ import com.facishare.document.preview.asyncconvertor.utils.Pdf2HtmlHandler;
 import com.facishare.document.preview.common.dao.ConvertTaskDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.ConvertorMessage;
+import com.github.autoconf.ConfigFactory;
+import com.github.autoconf.api.IConfig;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * Created by liuq on 2017/3/9.
@@ -29,25 +34,32 @@ public class DocConvertorProcessor {
     ConvertTaskDao convertTaskDao;
     private AutoConfRocketMQProcessor autoConfRocketMQProcessor;
     private static final String KEY_NAME_SERVER = "NAMESERVER";
-    private static final String KEY_GROUP = "GROUP_PROVIDER";
+    private static final String KEY_GROUP = "GROUP_CONSUMER";
     private static final String KEY_TOPICS = "TOPICS";
-    public void init() {
-        log.info("begin consumer queue!");
-        autoConfRocketMQProcessor = new AutoConfRocketMQProcessor("fs-dps-mq", KEY_NAME_SERVER, KEY_GROUP, KEY_TOPICS, (MessageListenerConcurrently) (list, consumeConcurrentlyContext) -> {
+    private static String configName="";
+    public void init() throws UnknownHostException {
+        //todo:根据不同的机器消息不通的tag
+        InetAddress ia = InetAddress.getLocalHost();
+        String host = ia.getHostName();
+        log.info("host:{},begin consumer queue!", host);
+        ConfigFactory.getInstance().getConfig("fs-dps-mq", config -> loadConfig(config, host));
+        autoConfRocketMQProcessor = new AutoConfRocketMQProcessor(configName, KEY_NAME_SERVER, KEY_GROUP, KEY_TOPICS, (MessageListenerConcurrently) (list, consumeConcurrentlyContext) -> {
             list.forEach((MessageExt messageExt) -> {
                 ConvertorMessage convertorMessage = ConvertorMessage.builder().build();
                 convertorMessage.fromProto(messageExt.getBody());
                 try {
                     doConvert(convertorMessage);
                 } catch (Exception ex) {
-                    log.error("do convert happened exception,params:{}",ex, JSON.toJSONString(convertorMessage));
+                    log.error("do convert happened exception,params:{}", ex, JSON.toJSONString(convertorMessage));
                 }
             });
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
         });
         autoConfRocketMQProcessor.init();
     }
-
+    public void loadConfig(IConfig config,String host) {
+        configName=config.get(host);
+    }
     private void doConvert(ConvertorMessage convertorMessage) throws InterruptedException {
         log.info("begin do convert,params:{}", JSON.toJSONString(convertorMessage));
         String ea = convertorMessage.getEa();

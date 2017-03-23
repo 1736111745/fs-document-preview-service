@@ -25,11 +25,17 @@ public class ConvertorQueueProvider {
         log.info("finish init rocketmq!");
     }
 
-    public void enqueue(ConvertorMessage message) {
+    private void enqueue(ConvertorMessage message, String tags) {
         log.info("enqueue:{}", com.alibaba.fastjson.JSON.toJSON(message));
         Message messageExt = new Message();
+        messageExt.setTags(tags);
         messageExt.setBody(message.toProto());
         autoConfRocketMQSender.send(messageExt);
         log.info("enqueue completed!");
     }
+
+    public void convertPdf(ConvertorMessage message) {
+        enqueue(message,"pdf2html");
+    }
+
 }

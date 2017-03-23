@@ -329,7 +329,7 @@ public class PreviewController {
                             if (status == -1) {
                                 ConvertorMessage convertorMessage = ConvertorMessage.builder().npath(path).ea(ea).page(i).filePath(previewInfo.getOriginalFilePath()).build();
                                 convertTaskDao.addTask(ea, path, i);
-                                convertorQueueProvider.enqueue(convertorMessage);
+                                convertorQueueProvider.convertPdf(convertorMessage);
 
                             }
                         }

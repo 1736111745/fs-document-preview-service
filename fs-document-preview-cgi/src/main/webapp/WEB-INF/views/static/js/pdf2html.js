@@ -39,7 +39,7 @@ function loadPageLoader() {
             }
             loadData(pageIndex);
             console.log("page " + pageIndex + " loaded!")
-            $("#log").html("page " + pageIndex + " loaded!");
+            $("#log").html(loadedList.join(", "));
         }
     });
 }

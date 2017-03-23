@@ -43,7 +43,7 @@
     <title>pdf文档预览</title>
 </head>
 <body>
-<div id="log"></div>
+<div id="log" style="position:fixed;top:10px;left:10px;background:#369"></div>
 <div id="main">
 </div>
 </body>

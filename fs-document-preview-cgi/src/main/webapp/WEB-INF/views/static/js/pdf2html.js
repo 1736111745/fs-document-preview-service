@@ -40,6 +40,10 @@ function loadPageLoader() {
             loadData(pageIndex);
             console.log("page " + pageIndex + " loaded!")
             $("#log").html(loadedList.join(", "));
+        },
+        afterLoad:function (element) {
+            var pageIndex = parseInt(element.attr("data-page-no"));
+            console.log("###page " + pageIndex + " loaded!")
         }
     });
 }

@@ -16,7 +16,7 @@ $(function () {
 
 function loadAllPages() {
     for (var i = 0; i < pageCount; i++) {
-        var div = $("<div class='lazy border' data-page-no='" + i + "' data-loader='pageLoader'>");
+        var div = $("<div id='divPage" + i + "' class='lazy border' data-page-no='" + i + "' data-loader='pageLoader'>");
         var nav = $("<div class='center'><span>第" + (i + 1) + "页,共" + pageCount + "页</span></div>");
         $('#main').append(div).append(nav);
         loadPageLoader();
@@ -65,7 +65,8 @@ function loadData(i) {
     if ($.inArray(htmlName, filePathList) >= 0) {
         var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg + "&ver=1.0";
         var iframeId = 'frame' + i;
-        var element = $("div[data-page-no='" + i + "']");
+        var divPageId = 'divPage' + i;
+        var element = $('#' + divPageId);
         if ($('#' + iframeId).length == 0) {
             $("<iframe id='" + iframeId + "' src='" + url + "' onload='resize(this)' onresize='resize(this)' scrolling='no' frameborder='0' width='100%'></iframe>").prependTo(element);
             element.load();
@@ -128,7 +129,8 @@ function checkConvertTimeout() {
             var htmlName = (i + 1) + ".html";
             if ($.inArray(htmlName, filePathList) == -1) {
                 var iframeId = 'frame' + i;
-                var element = $("div[data-page-no='" + i + "']");
+                var divPageId = 'divPage' + i;
+                var element = $('#' + divPageId);
                 if ($('#' + iframeId).length == 0) {
                     var spanMsg = $("<span>该页面暂时无法预览，请稍后刷新重试！</span>");
                     element.removeClass("lazy");

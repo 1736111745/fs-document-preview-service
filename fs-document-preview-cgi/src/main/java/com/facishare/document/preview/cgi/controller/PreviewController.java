@@ -1,6 +1,7 @@
 package com.facishare.document.preview.cgi.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.facishare.document.preview.api.model.arg.AsyncConvertDocArg;
 import com.facishare.document.preview.api.model.arg.ConvertDocArg;
 import com.facishare.document.preview.api.model.arg.Pdf2HtmlArg;
 import com.facishare.document.preview.api.model.result.ConvertDocResult;

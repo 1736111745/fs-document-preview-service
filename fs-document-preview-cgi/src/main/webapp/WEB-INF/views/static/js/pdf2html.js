@@ -142,10 +142,9 @@ function checkConvertTimeout() {
 }
 
 function showPage() {
-    $("div.border").each(function (index, element) {
-        $(element).waypoint(function () {
-            $('#pageInfo').html((index + 1) + "/" + pageCount);
-        })
-    });
+    $("div.border").waypoint(function () {
+        // $('#pageInfo').html((index + 1) + "/" + pageCount);
+        var el=this.element;
+    })
 }
 

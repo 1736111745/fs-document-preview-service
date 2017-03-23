@@ -326,6 +326,7 @@ public class PreviewController {
                     for (int i = 1; i < pageCount + 1; i++) {
                         if (!dataFilePathList.contains(i + ".html")) {
                             int status = convertTaskDao.getTaskStatus(ea, path, i);
+                            log.info("convert status:{}",status);
                             if (status == -1) {
                                 ConvertorMessage convertorMessage = ConvertorMessage.builder().npath(path).ea(ea).page(i).filePath(previewInfo.getOriginalFilePath()).build();
                                 convertTaskDao.addTask(ea, path, i);

@@ -38,6 +38,8 @@ function loadPageLoader() {
                 loadedList.push(pageIndex);
             }
             loadData(pageIndex);
+            console.log("page " + i + " loaded!")
+            $("#log").html("page " + i + " loaded!");
         }
     });
 }
@@ -50,8 +52,6 @@ function checkPageLoaded() {
             var index = loadedList[i];
             loadData(index);
         }
-        document.write(pageLoadedList.join(","));
-        console.log(pageLoadedList.join(","));
         if (pageLoadedList.length == pageCount) {
             console.log("all page loaded!")
             clearInterval(idChkPageLoaded);
@@ -69,7 +69,6 @@ function loadData(i) {
         if ($('#' + iframeId).length == 0) {
             $("<iframe id='" + iframeId + "' src='" + url + "' onload='resize(this)' onresize='resize(this)' scrolling='no' frameborder='0' width='100%'></iframe>").prependTo(element);
             element.load();
-            console.log("page " + i + " loaded!")
             if ($.inArray(i, pageLoadedList) == -1) {
                 pageLoadedList.push(i);
             }

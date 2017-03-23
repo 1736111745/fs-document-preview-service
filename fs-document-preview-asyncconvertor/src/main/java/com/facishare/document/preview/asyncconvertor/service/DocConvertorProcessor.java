@@ -42,7 +42,7 @@ public class DocConvertorProcessor {
         InetAddress ia = InetAddress.getLocalHost();
         String host = ia.getHostName();
         log.info("host:{},begin consumer queue!", host);
-        ConfigFactory.getInstance().getConfig("fs-dps-mq", config -> loadConfig(config, host));
+        ConfigFactory.getInstance().getConfig("fs-dps-config", config -> loadConfig(config, host));
         autoConfRocketMQProcessor = new AutoConfRocketMQProcessor(configName, KEY_NAME_SERVER, KEY_GROUP, KEY_TOPICS, (MessageListenerConcurrently) (list, consumeConcurrentlyContext) -> {
             list.forEach((MessageExt messageExt) -> {
                 ConvertorMessage convertorMessage = ConvertorMessage.builder().build();

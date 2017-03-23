@@ -39,7 +39,6 @@
 
         div.center {
             text-align: center;
-            margin-bottom: 10px;
         }
 
         /*div.fix {*/

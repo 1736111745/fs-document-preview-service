@@ -14,7 +14,8 @@ import java.util.Date;
  */
 @Entity(value = "ConvertTask", noClassnameStored = true)
 @Indexes({
-        @Index(fields = {@Field("ea"),@Field("path"),@Field("page")})}
+        @Index(fields = {@Field("ea"), @Field("path"), @Field("page")}),
+        @Index(fields ={@Field("createTime")} ,expireAfterSeconds=7200)}
 )
 @Data
 @ToString

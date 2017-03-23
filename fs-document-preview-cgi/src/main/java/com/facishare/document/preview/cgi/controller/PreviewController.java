@@ -1,5 +1,6 @@
 package com.facishare.document.preview.cgi.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.facishare.document.preview.api.model.arg.AsyncConvertDocArg;
 import com.facishare.document.preview.api.model.arg.ConvertDocArg;
@@ -140,16 +141,16 @@ public class PreviewController {
                             DocType docType = DocTypeHelper.getDocType(path);
                             if (docType == DocType.PDF && !Strings.isNullOrEmpty(version)) {
                                 Pdf2HtmlArg pdf2HtmlArg = Pdf2HtmlArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
-                                log.info("begin do convert,arg:{}", pdf2HtmlArg);
+                                //log.info("begin do convert,arg:{}", pdf2HtmlArg);
                                 Pdf2HtmlResult pdf2HtmlResult = pdf2HtmlService.convertPdf2Html(pdf2HtmlArg);
                                 dataFilePath = pdf2HtmlResult.getDataFilePath();
-                                log.info("end do convert,result:{}", pdf2HtmlResult);
+                                //log.info("end do convert,result:{}", pdf2HtmlResult);
                             } else {
                                 ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(1).build();
-                                log.info("begin do convert,arg:{}", convertDocArg);
+                                //log.info("begin do convert,arg:{}", convertDocArg);
                                 ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
                                 dataFilePath = convertDocResult.getDataFilePath();
-                                log.info("end do convert,result:{}", convertDocResult);
+                                //log.info("end do convert,result:{}", convertDocResult);
                             }
                             if (!Strings.isNullOrEmpty(dataFilePath)) {
                                 previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
@@ -318,11 +319,13 @@ public class PreviewController {
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             String ea = employeeInfo.getEa();
             PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
+            log.info("previewInfoEx:"+ JSON.toJSONString(previewInfoEx));
             if (previewInfoEx.isSuccess()) {
                 PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
                 if (previewInfo != null) {
                     int pageCount = previewInfo.getPageCount();
                     List<String> dataFilePathList = previewInfo.getFilePathList();
+                    log.info("dataFilePathList:"+ JSON.toJSONString(dataFilePathList));
                     for (int i = 1; i < pageCount + 1; i++) {
                         if (!dataFilePathList.contains(i + ".html")) {
                             int status = convertTaskDao.getTaskStatus(ea, path, i);
@@ -338,6 +341,9 @@ public class PreviewController {
                 }
             }
         } catch (Exception e) {
+        }
+        finally {
+            response.setStatus(200);
         }
     }
 

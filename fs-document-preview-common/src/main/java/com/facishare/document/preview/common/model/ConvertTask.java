@@ -20,7 +20,7 @@ public class ConvertTask {
     private String ea;
     private String path;
     private int page;
-    @Indexed(value= IndexDirection.ASC, name="createTime", expireAfterSeconds=7200)
+    @Indexed(value= IndexDirection.ASC, name="createTime", expireAfterSeconds=120)
     private Date createTime;
     private Date lastModifyTime;
     private int status;

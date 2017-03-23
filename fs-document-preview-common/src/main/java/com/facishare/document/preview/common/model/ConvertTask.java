@@ -2,10 +2,8 @@ package com.facishare.document.preview.common.model;
 
 import lombok.Data;
 import lombok.ToString;
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Field;
-import org.mongodb.morphia.annotations.Index;
-import org.mongodb.morphia.annotations.Indexes;
+import org.mongodb.morphia.annotations.*;
+import org.mongodb.morphia.utils.IndexDirection;
 
 import java.util.Date;
 
@@ -15,7 +13,6 @@ import java.util.Date;
 @Entity(value = "ConvertTask", noClassnameStored = true)
 @Indexes({
         @Index(fields = {@Field("ea"), @Field("path"), @Field("page")}),
-        @Index(fields ={@Field("createTime")} ,expireAfterSeconds=7200)}
 )
 @Data
 @ToString
@@ -23,6 +20,7 @@ public class ConvertTask {
     private String ea;
     private String path;
     private int page;
+    @Indexed(value= IndexDirection.ASC, name="createTime", expireAfterSeconds=7200)
     private Date createTime;
     private Date lastModifyTime;
     private int status;

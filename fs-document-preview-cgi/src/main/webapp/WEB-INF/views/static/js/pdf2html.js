@@ -143,7 +143,7 @@ function checkConvertTimeout() {
 
 function showPage() {
     $("div.border").waypoint(function () {
-        var pageIndex = parseInt(this.element.attr("data-page-no"));
+        var pageIndex = parseInt($(this.element).attr("data-page-no"));
         $('#pageInfo').html((pageIndex + 1) + "/" + pageCount);
     })
 }

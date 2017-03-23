@@ -50,6 +50,8 @@ function checkPageLoaded() {
             var index = loadedList[i];
             loadData(index);
         }
+        document.write(pageLoadedList.join(","));
+        console.log(pageLoadedList.join(","));
         if (pageLoadedList.length == pageCount) {
             console.log("all page loaded!")
             clearInterval(idChkPageLoaded);
@@ -73,8 +75,6 @@ function loadData(i) {
             }
         }
     }
-    document.write(pageLoadedList.join(","));
-    console.table(pageLoadedList);
 }
 
 function resize(obj) {

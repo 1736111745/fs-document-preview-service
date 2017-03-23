@@ -15,7 +15,7 @@
     <title>文档预览</title>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/jquery.lazy.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/jquery.waypoints.min.js"></script>
+    <%--<script type="text/javascript" src="<%=request.getContextPath()%>/static/js/jquery.waypoints.min.js"></script>--%>
     <script type="text/javascript"
             src="<%=request.getContextPath()%>/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
     <script type="text/javascript"
@@ -42,21 +42,21 @@
             margin-bottom: 10px;
         }
 
-        div.fix {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            background-color: #202020;
-            color: white;
-            font-size: 32px;
-            width: 100px;
-            text-align: center;
-        }
+        /*div.fix {*/
+            /*position: fixed;*/
+            /*bottom: 10px;*/
+            /*right: 10px;*/
+            /*background-color: #202020;*/
+            /*color: white;*/
+            /*font-size: 32px;*/
+            /*width: 100px;*/
+            /*text-align: center;*/
+        /*}*/
     </style>
     <title>pdf文档预览</title>
 </head>
 <body>
-<div id="pageInfo" class="fix"></div>
+<%--<div id="pageInfo" class="fix"></div>--%>
 <div id="main">
 </div>
 </body>

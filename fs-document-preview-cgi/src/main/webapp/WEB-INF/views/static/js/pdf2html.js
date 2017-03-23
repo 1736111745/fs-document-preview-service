@@ -67,12 +67,13 @@ function loadData(i) {
         if ($('#' + iframeId).length == 0) {
             $("<iframe id='" + iframeId + "' src='" + url + "' onload='resize(this)' onresize='resize(this)' scrolling='no' frameborder='0' width='100%'></iframe>").prependTo(element);
             element.load();
-            console.log("page "+i+"loaded!")
+            console.log("page" + i + " loaded!")
             if ($.inArray(i, pageLoadedList) == -1) {
                 pageLoadedList.push(i);
             }
         }
     }
+    console.log(pageLoadedList);
 }
 
 function resize(obj) {

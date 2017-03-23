@@ -72,8 +72,9 @@ public class DocConvertorProcessor {
             String dataFilePath = pdf2HtmlHandler.doConvert(page, filePath);
             if (!Strings.isNullOrEmpty(dataFilePath)) {
                 previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
-                convertTaskDao.endExcute(ea, path, page);
-            }
+                convertTaskDao.excuteSuccess(ea, path, page);
+            } else
+                convertTaskDao.excuteFail(ea, path, page);
         }
     }
 }

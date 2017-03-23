@@ -57,7 +57,14 @@ public class ConvertTaskDaoImpl implements ConvertTaskDao {
         modifyTaskStatus(ea,path,page,1);
     }
 
-    public void endExcute(String ea,String path,int page) {
+    @Override
+    public void excuteFail(String ea, String path, int page) {
+        modifyTaskStatus(ea, path, page, 3);
+    }
+
+    @Override
+    public void excuteSuccess(String ea, String path, int page) {
         modifyTaskStatus(ea, path, page, 2);
     }
+
 }

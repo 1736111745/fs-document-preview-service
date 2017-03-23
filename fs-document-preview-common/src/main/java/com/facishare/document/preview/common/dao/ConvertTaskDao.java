@@ -11,5 +11,8 @@ public interface ConvertTaskDao {
 
     void beginExcute(String ea,String path,int page);
 
-    void endExcute(String ea,String path,int page);
+    void excuteFail(String ea,String path,int page);
+
+    void excuteSuccess(String ea,String path,int page);
+
 }

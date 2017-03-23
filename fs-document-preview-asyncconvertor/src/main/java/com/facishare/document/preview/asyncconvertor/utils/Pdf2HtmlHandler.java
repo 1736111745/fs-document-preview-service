@@ -42,8 +42,8 @@ public class Pdf2HtmlHandler {
             ProcessResult processResult = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
             if (processResult.getExitValue() == 0) {
                 dataFilePath = handleResult(page, filePath);
-            }
-            //log.info("output:{}", processResult.outputUTF8());
+            } else
+                log.info("output:{},exit code:{}", processResult.outputUTF8(),processResult.getExitValue());
         } catch (IOException e) {
             log.error("do convert happened IOException!", e);
         } catch (InterruptedException e) {

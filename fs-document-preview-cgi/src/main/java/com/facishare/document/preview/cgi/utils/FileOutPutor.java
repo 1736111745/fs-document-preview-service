@@ -34,9 +34,9 @@ public class FileOutPutor {
             OutputStream out = response.getOutputStream();
             byte[] buffer;
             try {
+                response.setHeader("Cache-Control", "max-age=86400"); // HTTP/1.1
                 if (fileName.contains(".png")) {
                     buffer = handlePng(filePath, width, needThumbnail, response);
-                    response.setHeader("Cache-Control", "max-age=315360000"); // HTTP/1.1
                 } else {
                     buffer = handleFile(filePath, response);
                 }

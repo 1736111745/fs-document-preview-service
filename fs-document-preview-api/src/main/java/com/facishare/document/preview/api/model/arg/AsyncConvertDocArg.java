@@ -14,7 +14,7 @@ import lombok.ToString;
 @Builder
 @RpcParameterToString
 @ToString
-public class AsycConvertDocArg extends ProtoBase {
+public class AsyncConvertDocArg extends ProtoBase {
     @Tag(1)
     private String ea;
     @Tag(2)
@@ -22,5 +22,5 @@ public class AsycConvertDocArg extends ProtoBase {
     @Tag(3)
     private int type;  //1.图片 2.html
     @Tag(4)
-    private int width;//生产的文件预览宽度
+    private int maxWidth;//生产的文件预览的最大宽度
 }

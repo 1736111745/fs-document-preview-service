@@ -14,7 +14,7 @@ import lombok.ToString;
 @Builder
 @RpcParameterToString
 @ToString
-public class AsycConvertDocResult extends ProtoBase {
+public class AsyncConvertDocResult extends ProtoBase {
     @Tag(1)
     private boolean success;
 }

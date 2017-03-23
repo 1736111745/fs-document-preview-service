@@ -9,6 +9,7 @@ import com.facishare.document.preview.asyncconvertor.utils.Pdf2HtmlHandler;
 import com.facishare.document.preview.common.dao.ConvertTaskDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.ConvertorMessage;
+import com.fxiaoke.metrics.CounterService;
 import com.github.autoconf.ConfigFactory;
 import com.github.autoconf.api.IConfig;
 import com.google.common.base.Strings;
@@ -32,6 +33,8 @@ public class DocConvertorProcessor {
     PreviewInfoDao previewInfoDao;
     @Autowired
     ConvertTaskDao convertTaskDao;
+    @Autowired
+    private CounterService counterService;
     private AutoConfRocketMQProcessor autoConfRocketMQProcessor;
     private static final String KEY_NAME_SERVER = "NAMESERVER";
     private static final String KEY_GROUP = "GROUP_CONSUMER";
@@ -71,10 +74,13 @@ public class DocConvertorProcessor {
             String filePath = convertorMessage.getFilePath();
             String dataFilePath = pdf2HtmlHandler.doConvert(page, filePath);
             if (!Strings.isNullOrEmpty(dataFilePath)) {
+                counterService.inc("convert-pdf2html-ok");
                 previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
                 convertTaskDao.excuteSuccess(ea, path, page);
-            } else
+            } else {
+                counterService.inc("convert-pdf2html-fail");
                 convertTaskDao.excuteFail(ea, path, page);
+            }
         }
     }
 }

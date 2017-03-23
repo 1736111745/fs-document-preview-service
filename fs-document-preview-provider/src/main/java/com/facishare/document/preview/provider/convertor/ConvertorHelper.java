@@ -131,6 +131,7 @@ public class ConvertorHelper {
           try {
             retCode = picConvertor.convertToSVG(startPageIndex, endPageIndex, 1.0f, baseDir);
           } finally {
+            convert.deleteTempFiles();
             picConvertor.close();
           }
           if (retCode == 0) {
@@ -171,6 +172,7 @@ public class ConvertorHelper {
           try {
             picConvertor.convertToJPG(startPageIndex, endPageIndex, 2f, baseDir);
           } finally {
+            convert.deleteTempFiles();
             picConvertor.close();
           }
           String jpgFilePath = FilePathHelper.getFilePath(filePath, startPageIndex, startIndex, jpgFileExt);
@@ -207,6 +209,7 @@ public class ConvertorHelper {
           try {
             picConvertor.convertToPNG(startPageIndex, endPageIndex, 2f, baseDir);
           } finally {
+            convert.deleteTempFiles();
             picConvertor.close();
           }
           String pngFilePath = FilePathHelper.getFilePath(filePath, startPageIndex, startIndex, pngFileExt);

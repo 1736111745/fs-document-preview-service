@@ -638,7 +638,7 @@
         <dependency>
             <groupId>Yozo_Office</groupId>
             <artifactId>Yozo_Office</artifactId>
-            <version>1.20.5</version>
+            <version>1.20.6</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>

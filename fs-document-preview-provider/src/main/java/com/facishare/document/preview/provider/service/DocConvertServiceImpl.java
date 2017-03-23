@@ -1,7 +1,9 @@
 package com.facishare.document.preview.provider.service;
 
+import com.facishare.document.preview.api.model.arg.AsyncConvertDocArg;
 import com.facishare.document.preview.api.model.arg.ConvertDocArg;
 import com.facishare.document.preview.api.model.arg.GetPageCountArg;
+import com.facishare.document.preview.api.model.result.AsyncConvertDocResult;
 import com.facishare.document.preview.api.model.result.ConvertDocResult;
 import com.facishare.document.preview.api.model.result.GetPageCountResult;
 import com.facishare.document.preview.api.service.DocConvertService;
@@ -51,5 +53,10 @@ public class DocConvertServiceImpl implements DocConvertService {
     ConvertDocResult result = ConvertDocResult.builder().dataFilePath(dataFilePath).build();
     log.info("end convert doc,result:{}", result);
     return result;
+  }
+
+  @Override
+  public AsyncConvertDocResult asyncConvertDoc(AsyncConvertDocArg arg) throws Exception {
+    return null;
   }
 }

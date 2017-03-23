@@ -1,6 +1,7 @@
 package com.facishare.document.preview.provider.convertor;
 
 import application.dcs.Convert;
+import com.facishare.document.preview.common.utils.PathHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
@@ -55,6 +56,7 @@ public class ConvertFactory implements PooledObjectFactory<Convert> {
     convert.setEmptyCount(100, 200);
     convert.setHtmlEncoding("UTF-8");
     convert.setConvertForPhone(true);
+    convert.setTempPath(new PathHelper().getConvertTempPath());
     convert.setTimeout(20);
     return new DefaultPooledObject<>(convert);
   }

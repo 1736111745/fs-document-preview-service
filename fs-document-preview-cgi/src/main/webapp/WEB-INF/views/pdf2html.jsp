@@ -34,11 +34,12 @@
             text-align: center;
             width: 1000px;
             margin: 13px auto;
-            border: 20px solid rgb(27, 30, 33)
+            border: 1px solid rgb(27, 30, 33)
         }
 
         div.center {
             text-align: center;
+            font-size: 24px;
         }
 
         /*div.fix {*/

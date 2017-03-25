@@ -4,7 +4,7 @@ var path = getQueryStringByName("path");
 var filePathList = [];//已经转换完毕的页码.html
 var loadedList = [];//用户已经滑动过的页码
 var pageLoadedList = [];//用户已经加载的页码
-var timeout = 60000;
+var timeout = 100000;
 $(function () {
     loadViewPort();
     checkConvertTimeout();

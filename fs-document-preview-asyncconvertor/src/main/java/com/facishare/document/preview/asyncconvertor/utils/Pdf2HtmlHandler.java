@@ -27,7 +27,7 @@ import java.util.concurrent.TimeoutException;
 @Component
 public class Pdf2HtmlHandler {
     @ReloadableProperty("pdf2HtmlTimeout")
-    private int pdf2HtmlTimeout = 30;
+    private int pdf2HtmlTimeout = 60;
 
     public String doConvert(int page, String filePath) {
         String dataFilePath = "";

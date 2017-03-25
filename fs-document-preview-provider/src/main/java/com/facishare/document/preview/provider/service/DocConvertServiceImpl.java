@@ -57,6 +57,7 @@ public class DocConvertServiceImpl implements DocConvertService {
 
   @Override
   public AsyncConvertDocResult asyncConvertDoc(AsyncConvertDocArg arg) throws Exception {
-      return null;
+    AsyncConvertDocResult asyncConvertDocResult = AsyncConvertDocResult.builder().success(true).build();
+    return asyncConvertDocResult;
   }
 }

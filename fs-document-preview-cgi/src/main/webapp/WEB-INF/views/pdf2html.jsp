@@ -25,10 +25,10 @@
         window.contextPath = "<%=request.getContextPath()%>";
     </script>
     <style type="text/css">
-        div.lazy {
-            background: #FFFFFF url("<%=request.getContextPath()%>/static/images/loading1.gif") no-repeat center;
-            height: 500px;
-        }
+        <%--div.lazy {--%>
+            <%--background: #FFFFFF url("<%=request.getContextPath()%>/static/images/loading1.gif") no-repeat center;--%>
+            <%--height: 500px;--%>
+        <%--}--%>
 
         div.border {
             text-align: center;

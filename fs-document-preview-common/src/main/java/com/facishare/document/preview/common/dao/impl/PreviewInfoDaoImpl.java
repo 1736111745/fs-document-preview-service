@@ -46,10 +46,13 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         log.info("filePathList before:{}", filePathList);
         if (filePathList == null)
             filePathList = Lists.newArrayList();
+        if (!filePathList.contains(dataFileName)) {
+            filePathList.add(dataFileName);
+        }
         filePathList = filePathList.stream().sorted(Comparator.comparingInt(o -> NumberUtils.toInt(FilenameUtils.getBaseName(o)))).collect(Collectors.toList());
         UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
-        update.addAll("filePathList", filePathList, false);
         log.info("filePathList after:{}", filePathList);
+        update.addAll("filePathList", filePathList, false);
         dpsDataStore.findAndModify(query, update);
     }
 

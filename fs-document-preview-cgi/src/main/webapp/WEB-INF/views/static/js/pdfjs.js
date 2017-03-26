@@ -7,7 +7,7 @@ var path = getQueryStringByName("path");
 
 
 $(function () {
-    loadViewPort()
+   // loadViewPort()
     loadAllPages();
 });
 

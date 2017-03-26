@@ -36,7 +36,6 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     private DatastoreExt dpsDataStore;
 
     @Override
-    @Synchronized
     public void savePreviewInfo(String ea, String path, String dataFilePath) {
         String dataFileName = FilenameUtils.getName(dataFilePath);
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
@@ -45,7 +44,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         List<String> filePathList = previewInfo.getFilePathList();
         if (filePathList == null)
             filePathList = Lists.newArrayList();
-        if(!filePathList.contains(dataFileName)) {
+        if (!filePathList.contains(dataFileName)) {
             filePathList.add(dataFileName);
         }
         filePathList = filePathList.stream().sorted(Comparator.comparingInt(o -> NumberUtils.toInt(FilenameUtils.getBaseName(o)))).collect(Collectors.toList());

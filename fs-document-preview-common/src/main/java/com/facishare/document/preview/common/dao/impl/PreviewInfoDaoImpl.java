@@ -38,21 +38,18 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     @Override
     public void savePreviewInfo(String ea, String path, String dataFilePath) {
         String dataFileName = FilenameUtils.getName(dataFilePath);
-        log.info("ea:{},path:{},dataFilePath:{},dataFileName:{}",ea,path,dataFilePath,dataFileName);
+        log.info("ea:{},path:{},dataFilePath:{},dataFileName:{}", ea, path, dataFilePath, dataFileName);
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("path").equal(path).criteria("ea").equal(ea);
         PreviewInfo previewInfo = query.get();
         List<String> filePathList = previewInfo.getFilePathList();
-        log.info("filePathList before:{}",filePathList);
+        log.info("filePathList before:{}", filePathList);
         if (filePathList == null)
             filePathList = Lists.newArrayList();
-        if (!filePathList.contains(dataFileName)) {
-            filePathList.add(dataFileName);
-        }
         filePathList = filePathList.stream().sorted(Comparator.comparingInt(o -> NumberUtils.toInt(FilenameUtils.getBaseName(o)))).collect(Collectors.toList());
         UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
-        log.info("filePathList after:{}",filePathList);
-        update.set("filePathList", filePathList);
+        update.addAll("filePathList", filePathList, false);
+        log.info("filePathList after:{}", filePathList);
         dpsDataStore.findAndModify(query, update);
     }
 

@@ -33,7 +33,7 @@
             text-align: center;
             width: 1000px;
             margin: 5px auto;
-            border: 1px solid rgb(27, 30, 33)
+            /*border: 1px solid rgb(27, 30, 33)*/
         }
 
         div.center {

@@ -51,7 +51,7 @@ public class Pdf2HtmlHandler {
         } catch (ExecutionException e) {
             log.error("do convert happened ExecutionException!", e);
         } catch (TimeoutException e) {
-            log.error("do convert happened TimeoutException!", e);
+            log.error("do convert happened TimeoutException!filePath:{},page:{}", filePath, page, e);
         }
         return dataFilePath;
     }

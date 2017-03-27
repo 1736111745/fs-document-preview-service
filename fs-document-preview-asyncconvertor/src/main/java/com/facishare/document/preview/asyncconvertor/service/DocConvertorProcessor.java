@@ -40,9 +40,9 @@ public class DocConvertorProcessor {
     private static final String KEY_NAME_SERVER = "NAMESERVER";
     private static final String KEY_GROUP = "GROUP_CONSUMER";
     private static final String KEY_TOPICS = "TOPICS";
-    private static String configName="";
+    private static String configName = "";
+
     public void init() throws UnknownHostException {
-        //todo:根据不同的机器消息不通的tag
         InetAddress ia = InetAddress.getLocalHost();
         String host = ia.getHostName();
         log.info("host:{},begin consumer queue!", host);
@@ -61,9 +61,11 @@ public class DocConvertorProcessor {
         });
         autoConfRocketMQProcessor.init();
     }
-    public void loadConfig(IConfig config,String host) {
-        configName=config.get(host);
+
+    public void loadConfig(IConfig config, String host) {
+        configName = config.get(host);
     }
+
     private void doConvert(ConvertorMessage convertorMessage) throws InterruptedException {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();

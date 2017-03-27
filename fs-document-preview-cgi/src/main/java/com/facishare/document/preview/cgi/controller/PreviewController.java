@@ -2,7 +2,6 @@ package com.facishare.document.preview.cgi.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.facishare.document.preview.api.model.arg.AsyncConvertDocArg;
 import com.facishare.document.preview.api.model.arg.ConvertDocArg;
 import com.facishare.document.preview.api.model.arg.Pdf2HtmlArg;
 import com.facishare.document.preview.api.model.result.ConvertDocResult;
@@ -14,7 +13,6 @@ import com.facishare.document.preview.cgi.model.PreviewInfoEx;
 import com.facishare.document.preview.cgi.service.PreviewService;
 import com.facishare.document.preview.cgi.utils.FileOutPutor;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
-import com.facishare.document.preview.cgi.utils.PdfHelper;
 import com.facishare.document.preview.cgi.utils.RequestParamsHelper;
 import com.facishare.document.preview.common.dao.ConvertTaskDao;
 import com.facishare.document.preview.common.dao.FileTokenDao;
@@ -38,7 +36,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -381,37 +378,6 @@ public class PreviewController {
             }
         } catch (Exception e) {
             return "";
-        }
-    }
-
-
-    @ResponseBody
-    @RequestMapping(value = "/preview/pdf/getData", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public void getPdfData(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String path = safteGetRequestParameter(request, "path");
-        String page = safteGetRequestParameter(request, "page");
-        String securityGroup = safteGetRequestParameter(request, "sg");
-        int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
-        if (!isValidPath(path)) {
-            response.setStatus(400);
-        }
-        try {
-            EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-            PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
-            if (!previewInfoEx.isSuccess()) {
-                response.setStatus(400);
-            } else {
-                PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
-                if (previewInfo == null) {
-                    response.setStatus(400);
-                } else {
-
-                    String partFilePath= PdfHelper.getPdfData(previewInfo.getOriginalFilePath(),pageIndex);
-                    FileOutPutor.outPut(response,partFilePath,false);
-                }
-            }
-        } catch (Exception e) {
-            response.setStatus(400);
         }
     }
 

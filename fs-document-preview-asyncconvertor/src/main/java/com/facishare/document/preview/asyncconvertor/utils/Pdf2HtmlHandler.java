@@ -32,18 +32,13 @@ public class Pdf2HtmlHandler {
     public String doConvert(int page, String filePath) {
         String dataFilePath = "";
         List<String> args = createProcessArgs(page, filePath);
-
-
-        Future<ProcessResult> future;
         try {
-            future = new ProcessExecutor()
-                    .command(args)
-                    .start().getFuture();
+            Future<ProcessResult> future = new ProcessExecutor().command(args).readOutput(true).start().getFuture();
             ProcessResult processResult = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
             if (processResult.getExitValue() == 0) {
                 dataFilePath = handleResult(page, filePath);
             } else
-                log.info("output:{},exit code:{}", processResult.outputUTF8(),processResult.getExitValue());
+                log.error("output:{},exit code:{}", processResult.outputUTF8(), processResult.getExitValue());
         } catch (IOException e) {
             log.error("do convert happened IOException!", e);
         } catch (InterruptedException e) {

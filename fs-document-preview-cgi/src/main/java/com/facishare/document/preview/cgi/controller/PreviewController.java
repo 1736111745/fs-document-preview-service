@@ -319,32 +319,35 @@ public class PreviewController {
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             String ea = employeeInfo.getEa();
             PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
-            log.info("previewInfoEx:"+ JSON.toJSONString(previewInfoEx));
+            log.info("previewInfoEx:" + JSON.toJSONString(previewInfoEx));
             if (previewInfoEx.isSuccess()) {
                 PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
                 if (previewInfo != null) {
                     int pageCount = previewInfo.getPageCount();
                     List<String> dataFilePathList = previewInfo.getFilePathList();
-                    if(dataFilePathList==null)
-                        dataFilePathList= Lists.newArrayList();
-                    log.info("dataFilePathList:"+ JSON.toJSONString(dataFilePathList));
+                    if (dataFilePathList == null)
+                        dataFilePathList = Lists.newArrayList();
+                    log.info("dataFilePathList:" + JSON.toJSONString(dataFilePathList));
+                    List<Integer> hasNotConvertPageList = Lists.newArrayList();
                     for (int i = 1; i < pageCount + 1; i++) {
                         if (!dataFilePathList.contains(i + ".html")) {
-                            int status = convertTaskDao.getTaskStatus(ea, path, i);
-                            log.info("convert status:{}",status);
-                            if (status == -1) {
-                                ConvertorMessage convertorMessage = ConvertorMessage.builder().npath(path).ea(ea).page(i).filePath(previewInfo.getOriginalFilePath()).build();
-                                convertTaskDao.addTask(ea, path, i);
-                                convertorQueueProvider.convertPdf(convertorMessage);
-
+                            {
+                                hasNotConvertPageList.add(i);
                             }
                         }
                     }
+                    String originalFilePath = previewInfo.getOriginalFilePath();
+                    List<Integer> needEnquePageList = convertTaskDao.batchAddTask(ea, path, hasNotConvertPageList);
+                    needEnquePageList.forEach(p -> {
+                        ConvertorMessage convertorMessage = ConvertorMessage.builder().npath(path).ea(ea).page(p).filePath(originalFilePath).build();
+                        convertTaskDao.addTask(ea, path, p);
+                        convertorQueueProvider.convertPdf(convertorMessage);
+                    });
+
                 }
             }
         } catch (Exception e) {
-        }
-        finally {
+        } finally {
             response.setStatus(200);
         }
     }
@@ -371,8 +374,8 @@ public class PreviewController {
                     return "";
                 } else {
                     List<String> dataFilePathList = previewInfo.getFilePathList();
-                    if(dataFilePathList==null)
-                        dataFilePathList= Lists.newArrayList();
+                    if (dataFilePathList == null)
+                        dataFilePathList = Lists.newArrayList();
                     return getQueryDocConvertStatus(dataFilePathList);
                 }
             }

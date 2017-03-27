@@ -340,7 +340,6 @@ public class PreviewController {
                     List<Integer> needEnquePageList = convertTaskDao.batchAddTask(ea, path, hasNotConvertPageList);
                     needEnquePageList.forEach(p -> {
                         ConvertorMessage convertorMessage = ConvertorMessage.builder().npath(path).ea(ea).page(p).filePath(originalFilePath).build();
-                        convertTaskDao.addTask(ea, path, p);
                         convertorQueueProvider.convertPdf(convertorMessage);
                     });
 

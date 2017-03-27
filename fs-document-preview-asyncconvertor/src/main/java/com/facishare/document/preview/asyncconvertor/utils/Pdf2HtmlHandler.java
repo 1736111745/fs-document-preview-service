@@ -73,15 +73,13 @@ public class Pdf2HtmlHandler {
         args.add("0");
         args.add("--bg-format");
         args.add("jpg");
-        args.add("--hdpi");
-        args.add("90");
-        args.add("--vdpi");
-        args.add("90");
         args.add("--no-drm");
         args.add("1");
         args.add("--process-outline");
         args.add("0");
         args.add("--optimize-text");
+        args.add("1");
+        args.add("--correct-text-visibility");
         args.add("1");
         args.add("--embed-javascript");//js文件单独引用
         args.add("0");

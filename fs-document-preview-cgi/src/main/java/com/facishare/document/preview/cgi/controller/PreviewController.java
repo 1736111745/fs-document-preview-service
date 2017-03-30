@@ -276,7 +276,7 @@ public class PreviewController {
                             String originalFilePath = previewInfo.getOriginalFilePath();
                             File originalFile = new File(originalFilePath);
                             if (!originalFile.exists()) {
-                                fileStorageProxy.DownloadAndSave(path, employeeInfo, "", originalFilePath);
+                                fileStorageProxy.DownloadAndSave(path, ea,employeeInfo.getEmployeeId(), "", originalFilePath);
                             }
                             ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(2).build();
                             ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);

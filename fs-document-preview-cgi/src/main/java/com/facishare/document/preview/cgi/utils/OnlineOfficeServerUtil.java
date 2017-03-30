@@ -36,7 +36,7 @@ public class OnlineOfficeServerUtil {
     public byte[] downloadPdfFile(String ea, int employeeId, String path, String sg) {
         String ext = FilenameUtils.getExtension(path).toLowerCase();
         String name = UUID.randomUUID() + "." + ext;
-        String postUrl = ext.contains("ppt") ? generateDownloadUrlForPPT(ea, employeeId, path, sg, name)
+        String postUrl = ext.contains("ppt") ? generateDownloadUrlForWordAndPdf(ea, employeeId, path, sg, name)
                 : generateDownloadUrlForWordAndPdf(ea, employeeId, path, sg, name);
         log.info("begin down load file from oos,url:{}", postUrl);
         return client.getBytes(postUrl);
@@ -45,7 +45,7 @@ public class OnlineOfficeServerUtil {
     private String generateDownloadUrlForWordAndPdf(String ea, int employeeId, String path, String sg, String name) {
         String downloadUrl = String.format(fscServerUrl, ea, String.valueOf(employeeId), path, sg, name);
         String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
-        String postUrl = oosServerUrl + "/wv/WordViewer/request.pdf?WOPIsrc=" + URLEncoder.encode(src) + "&access_token=1&access_token_ttl=0&type=printpdf";
+        String postUrl = oosServerUrl + "/wv/WordViewer/request.pdf?WOPIsrc=" + URLEncoder.encode(src) + "&type=downloadpdf";
         return postUrl;
     }
 

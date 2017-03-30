@@ -42,8 +42,18 @@ public class OnlineOfficeServerUtil {
         final Request request = new Request.Builder().url(downloadUrl).header("Connection", "close").build();
         Object object = client.syncExecute(request, new SyncCallback() {
             @Override
-            public Object response(Response response) throws Exception {
-                return response.body().bytes();
+            public Object response(Response response) {
+                try {
+                    return response.body().bytes();
+                }
+                catch (Exception e)
+                {
+                    log.warn("exception:",e);
+                    return  null;
+                }
+                finally {
+                    log.info("response.status:{}",response.code());
+                }
             }
         });
         return (byte[]) object;

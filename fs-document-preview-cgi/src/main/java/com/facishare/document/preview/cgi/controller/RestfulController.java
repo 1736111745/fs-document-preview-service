@@ -41,7 +41,7 @@ public class RestfulController {
         int pageCount = 0;
         try {
             PreviewInfo info = previewInfoDao.getInfoByPath(ea, filePath);
-            if (info == null) {
+            if (info != null) {
                 pageCount = info.getPageCount();
             } else {
                 String dirTempPath = new PathHelper().getConvertTempPath();

@@ -1,16 +1,16 @@
 package com.facishare.document.preview.cgi.utils;
 
+import com.fxiaoke.common.http.handler.SyncCallback;
 import com.fxiaoke.common.http.spring.OkHttpSupport;
 import com.github.autoconf.ConfigFactory;
-import com.github.autoconf.spring.reloadable.ReloadableProperty;
-import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.UUID;
 
@@ -36,10 +36,17 @@ public class OnlineOfficeServerUtil {
     public byte[] downloadPdfFile(String ea, int employeeId, String path, String sg) {
         String ext = FilenameUtils.getExtension(path).toLowerCase();
         String name = UUID.randomUUID() + "." + ext;
-        String postUrl = ext.contains("ppt") ? generateDownloadUrlForPPT(ea, employeeId, path, sg, name)
+        String downloadUrl = ext.contains("ppt") ? generateDownloadUrlForPPT(ea, employeeId, path, sg, name)
                 : generateDownloadUrlForWordAndPdf(ea, employeeId, path, sg, name);
-        log.info("begin down load file from oos,url:{}", postUrl);
-        return client.getBytes(postUrl);
+        log.info("begin down load file from oos,url:{}", downloadUrl);
+        final Request request = new Request.Builder().url(downloadUrl).header("Connection", "close").build();
+        Object object = client.syncExecute(request, new SyncCallback() {
+            @Override
+            public Object response(Response response) throws Exception {
+                return response.body().bytes();
+            }
+        });
+        return (byte[]) object;
     }
 
     private String generateDownloadUrlForWordAndPdf(String ea, int employeeId, String path, String sg, String name) {

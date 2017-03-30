@@ -11,12 +11,16 @@ import com.facishare.document.preview.common.utils.PathHelper;
 import com.facishare.document.preview.common.utils.SampleUUID;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.aspectj.weaver.Dump;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.File;
 
 @RestController
 @RequestMapping("/restful")
@@ -38,7 +42,7 @@ public class RestfulController {
     @RequestMapping(value = "/document/getPageCount", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String documentPageCount(String filePath, String ea, Integer employeeId) {
         String ret;
-        int pageCount = 0;
+        int pageCount;
         try {
             PreviewInfo info = previewInfoDao.getInfoByPath(ea, filePath);
             if (info != null) {
@@ -48,7 +52,12 @@ public class RestfulController {
                 String ext = FilenameUtils.getExtension(filePath);
                 String tempFilePath = FilenameUtils.concat(dirTempPath, SampleUUID.getUUID() + "." + ext);
                 fileStorageProxy.DownloadAndSave(filePath, ea, employeeId, "", tempFilePath);
-                pageCount = DocPageInfoHelper.getPageInfo(filePath).getPageCount();
+                pageCount = DocPageInfoHelper.getPageInfo(tempFilePath).getPageCount();
+                try {
+                    FileUtils.forceDeleteOnExit(new File(tempFilePath));
+                } finally {
+
+                }
             }
             ret = String.format("{\"pageCount\":%d}", pageCount);
         } catch (Exception e) {

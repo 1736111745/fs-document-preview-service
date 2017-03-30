@@ -5,6 +5,7 @@ var path = getQueryStringByName("path");
 var token = getQueryStringByName("token");
 var pageCount = 0;
 var sg="";//安全组
+var ext=""//扩展名
 function getPreviewInfo() {
     $('#divLoading').show();
     $.ajax({
@@ -18,6 +19,7 @@ function getPreviewInfo() {
                 pageCount = data.pageCount;
                 path = data.path;
                 sg = data.sg;
+                ext=data.ext;
                 doPreview();
             }
             else {
@@ -28,10 +30,10 @@ function getPreviewInfo() {
 }
 function doPreview() {
     var route = '';
-    if (path.toLowerCase().indexOf(".xls") > 0) {
+    if (ext.indexOf("xls") >= 0) {
         route = "handleExcel";
     }
-    else if (path.toLowerCase().indexOf(".pdf") > 0) {
+    else if (ext.indexOf("pdf") >= 0) {
         route = "handlePdf";
     }
     else {

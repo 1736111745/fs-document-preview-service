@@ -50,7 +50,7 @@ public class AuthHelper {
             return null;
     }
 
-    private static String getCookie(HttpServletRequest request) {
+    public static String getCookie(HttpServletRequest request) {
         Cookie cookie = WebUtil.getCookie(request, "FSAuthXC");
         if (cookie == null) cookie = WebUtil.getCookie(request, "FSAuthX");
         if (cookie != null) return cookie.getValue();

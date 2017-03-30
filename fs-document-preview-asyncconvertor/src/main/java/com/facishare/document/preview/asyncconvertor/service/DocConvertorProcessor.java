@@ -13,7 +13,6 @@ import com.fxiaoke.metrics.CounterService;
 import com.github.autoconf.ConfigFactory;
 import com.github.autoconf.api.IConfig;
 import com.google.common.base.Strings;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +20,6 @@ import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 /**
  * Created by liuq on 2017/3/9.
@@ -45,6 +41,7 @@ public class DocConvertorProcessor {
     private static final String KEY_GROUP = "GROUP_CONSUMER";
     private static final String KEY_TOPICS = "TOPICS";
     private static String configName = "";
+
 
     public void init() throws UnknownHostException {
         InetAddress ia = InetAddress.getLocalHost();
@@ -94,4 +91,6 @@ public class DocConvertorProcessor {
         stopWatch.stop();
         log.info("end do convert,params:{},cost:{}", JSON.toJSONString(convertorMessage), stopWatch.getTime());
     }
+
+
 }

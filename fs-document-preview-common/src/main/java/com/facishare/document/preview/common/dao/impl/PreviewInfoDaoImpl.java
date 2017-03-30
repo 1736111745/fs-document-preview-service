@@ -7,11 +7,9 @@ import com.facishare.document.preview.common.utils.DateUtil;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.github.mongo.support.DatastoreExt;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +17,8 @@ import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 文档预览dao
@@ -47,6 +43,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
 
     @Override
     public String getDataFilePath(String path, int page, String dataDir, int type, List<String> filePathList) throws IOException {
+        //todo:优先去filePathList找，找不到去磁盘找一次，如果找到了就填充filePathList，原因是很多时候异步超时后，转换线程退出了，但转换进程还在工作。
         String dataFilePath = "";
         DocType docType = DocTypeHelper.getDocType(path);
         String dataFileName = "";

@@ -26,6 +26,7 @@ import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +80,7 @@ public class PreviewController {
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String securityGroup = "";
         if (path.equals("") && token.equals("")) {
-            return getPreviewInfoResult(false, 0, null, "", "", "参数错误!");
+            return getPreviewInfoResult("参数错误!");
         }
         if (!token.equals("")) {
             log.info("getTokenInfo,ea:{},token:{},sourceUser:{}", employeeInfo.getEa(), token, employeeInfo.getSourceUser());
@@ -92,11 +93,11 @@ public class PreviewController {
             }
         }
         if (!isValidPath(path)) {
-            return getPreviewInfoResult(false, 0, null, "", "", "参数错误!");
+            return getPreviewInfoResult("参数错误!");
         }
         String extension = FilenameUtils.getExtension(path).toLowerCase();
         if (allowPreviewExtension.indexOf(extension) == -1) {
-            return getPreviewInfoResult(false, 0, null, "", "", "该文件不支持预览!");
+            return getPreviewInfoResult("该文件不支持预览!");
         }
         String defaultErrMsg = "该文件不可以预览!";
         String docType = DocTypeHelper.getDocType(path).getName();
@@ -105,12 +106,12 @@ public class PreviewController {
         if (previewInfoEx.isSuccess()) {
             PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
             if (previewInfo == null || previewInfo.getPageCount() == 0) {
-                return getPreviewInfoResult(false, 0, null, "", "", defaultErrMsg);
+                return getPreviewInfoResult( defaultErrMsg);
             } else
-                return getPreviewInfoResult(true, previewInfo.getPageCount(), previewInfo.getSheetNames(), path, securityGroup, "");
+                return getPreviewInfoResult(true, previewInfo.getPageCount(), previewInfo.getSheetNames(), path,previewInfo.getOriginalFilePath(), securityGroup);
         } else {
             String errMsg = Strings.isNullOrEmpty(previewInfoEx.getErrorMsg()) ? defaultErrMsg : previewInfoEx.getErrorMsg();
-            return getPreviewInfoResult(false, 0, null, "", "", errMsg);
+            return getPreviewInfoResult(errMsg);
         }
     }
 
@@ -342,7 +343,6 @@ public class PreviewController {
                         ConvertorMessage convertorMessage = ConvertorMessage.builder().npath(path).ea(ea).page(p).filePath(originalFilePath).build();
                         convertorQueueProvider.convertPdf(convertorMessage);
                     });
-
                 }
             }
         } catch (Exception e) {
@@ -389,19 +389,23 @@ public class PreviewController {
         return value;
     }
 
-    private String getPreviewInfoResult(boolean canPreview, int pageCount, List<String> sheetNames, String path, String securityGroup, String errorMsg) {
+    private String getPreviewInfoResult(boolean canPreview, int pageCount, List<String> sheetNames, String path,String filePath, String securityGroup) {
         Map<String, Object> map = new HashMap<>();
-        map.put("canPreview", canPreview);
-        if (canPreview) {
-            map.put("pageCount", pageCount);
-            map.put("path", path);
-            map.put("sg", securityGroup);
-            map.put("sheets", sheetNames);
-        } else
-            map.put("errorMsg", errorMsg);
+        map.put("canPreview", true);
+        map.put("pageCount", pageCount);
+        map.put("path", path);
+        map.put("sg", securityGroup);
+        map.put("ext", FilenameUtils.getExtension(filePath));
+        map.put("sheets", sheetNames);
         return JSONObject.toJSONString(map);
     }
 
+    private String getPreviewInfoResult(String errorMsg) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("canPreview", false);
+        map.put("errorMsg", errorMsg);
+        return JSONObject.toJSONString(map);
+    }
 
     private String getQueryDocConvertStatus(List<String> filePathList) {
         Map<String, Object> map = new HashMap<>();

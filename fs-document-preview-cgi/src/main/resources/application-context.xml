@@ -31,7 +31,7 @@
     <bean id="fileTokenDao" class="com.facishare.document.preview.common.dao.impl.FileTokenDaoImpl"/>
     <bean id="authFilter" class="com.facishare.document.preview.cgi.filter.AuthFilter"/>
     <bean id="authHelper" class="com.facishare.document.preview.cgi.utils.AuthHelper"/>
-
+    <bean id="httpClientSupport" class="com.fxiaoke.common.http.spring.HttpSupportFactoryBean"/>
     <bean id="convertorQueueProvider" class="com.facishare.document.preview.common.mq.ConvertorQueueProvider">
         <constructor-arg type="java.lang.String" value="${mq_config_name}"/>
     </bean>

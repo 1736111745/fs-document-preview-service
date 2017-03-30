@@ -51,7 +51,7 @@ public class OnlineOfficeServerUtil {
 
     private String generateDownloadUrlForPPT(String ea, int employeeId, String path, String sg, String name) {
         String downloadUrl = String.format(fscServerUrl, ea, String.valueOf(employeeId), path, sg, name);
-        String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl) + "&access_token=1&access_token_ttl=0";
+        String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
         String pid = "WOPIsrc=" + URLEncoder.encode(src);
         String postUrl = oosServerUrl + "/p/printhandler.ashx?Pid=" + URLEncoder.encode(pid);
         return postUrl;

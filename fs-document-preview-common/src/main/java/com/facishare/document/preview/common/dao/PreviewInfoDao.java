@@ -14,7 +14,7 @@ public interface PreviewInfoDao {
 
     void savePreviewInfo(String ea, String path, String dataFilePath);
 
-    String getDataFilePath(String path, int page, String dataDir, int type, List<String> filePathList) throws IOException;
+    String getDataFilePath(String path, int page, String dataDir,String filePath, int type, List<String> filePathList) throws IOException;
 
     String getBaseDir(String folderName);
 

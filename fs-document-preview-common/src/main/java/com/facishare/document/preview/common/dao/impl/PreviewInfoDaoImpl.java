@@ -42,10 +42,10 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     }
 
     @Override
-    public String getDataFilePath(String path, int page, String dataDir, int type, List<String> filePathList) throws IOException {
+    public String getDataFilePath(String path, int page, String dataDir,String filePath, int type, List<String> filePathList) throws IOException {
         //todo:优先去filePathList找，找不到去磁盘找一次，如果找到了就填充filePathList，原因是很多时候异步超时后，转换线程退出了，但转换进程还在工作。
         String dataFilePath = "";
-        DocType docType = DocTypeHelper.getDocType(path);
+        DocType docType = DocTypeHelper.getDocType(filePath);
         String dataFileName = "";
         int pageIndex = page + 1;
         if (filePathList != null && filePathList.size() > 0) {

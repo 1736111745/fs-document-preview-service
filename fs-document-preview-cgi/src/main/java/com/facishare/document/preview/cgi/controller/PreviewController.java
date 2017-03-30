@@ -139,7 +139,7 @@ public class PreviewController {
                             FileOutPutor.outPut(response, dataFilePath, true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
-                            DocType docType = DocTypeHelper.getDocType(path);
+                            DocType docType = DocTypeHelper.getDocType(originalFilePath);
                             if (docType == DocType.PDF && !Strings.isNullOrEmpty(version)) {
                                 Pdf2HtmlArg pdf2HtmlArg = Pdf2HtmlArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
                                 //log.info("begin do convert,arg:{}", pdf2HtmlArg);

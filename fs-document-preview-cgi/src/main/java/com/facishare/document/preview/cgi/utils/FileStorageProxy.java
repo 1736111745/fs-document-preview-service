@@ -29,11 +29,11 @@ public class FileStorageProxy {
     @Autowired
     GFileStorageService gFileStorageService;
 
-    public byte[] GetBytesByPath(String path, EmployeeInfo employeeInfo, String securityGroup) {
+    public byte[] GetBytesByPath(String path, String ea, int employeeId, String securityGroup) {
         try {
             if (path.startsWith("G_")) {
                 GFileDownload.Arg arg = new GFileDownload.Arg();
-                arg.downloadUser = employeeInfo.getSourceUser();
+                arg.downloadUser = "E." + employeeId;
                 arg.downloadSecurityGroup = securityGroup;
                 arg.gPath = path;
                 return gFileStorageService.downloadFile(arg).data;
@@ -42,7 +42,7 @@ public class FileStorageProxy {
                 arg.setaPath(path);
                 arg.setBusiness("Preview");
                 arg.setFileSecurityGroup(securityGroup);
-                User user=new User(employeeInfo.getEa(),employeeInfo.getEmployeeId());
+                User user = new User(ea, employeeId);
                 arg.setUser(user);
                 log.info("download a file,arg:{}", JSON.toJSONString(arg));
                 return aFileStorageService.downloadFile(arg).getData();
@@ -50,20 +50,20 @@ public class FileStorageProxy {
                 NDownloadFile.Arg arg = new NDownloadFile.Arg();
                 arg.setnPath(path);
                 arg.setDownloadSecurityGroup(securityGroup);
-                arg.setDownloadUser(employeeInfo.getSourceUser());
-                arg.setEa(employeeInfo.getEa());
-                return nFileStorageService.nDownloadFile(arg, employeeInfo.getEa()).getData();
+                arg.setDownloadUser("E." + employeeId);
+                arg.setEa(ea);
+                return nFileStorageService.nDownloadFile(arg, ea).getData();
             }
         } catch (Exception e) {
-            log.error("downloadFile:ea:{},sourceUser:{},path:{},securityGroup:{}", employeeInfo.getEa(), employeeInfo.getSourceUser(), path, securityGroup, e);
+            log.error("downloadFile:ea:{},sourceUser:{},path:{},securityGroup:{}", ea, "E." + employeeId, path, securityGroup, e);
             return null;
         }
     }
 
-    public void DownloadAndSave(String path, EmployeeInfo employeeInfo, String securityGroup, String originalFilePath) throws IOException {
+    public void DownloadAndSave(String path, String ea,int employeeId, String securityGroup, String originalFilePath) throws IOException {
         File originalFile = new File(originalFilePath);
         if (!originalFile.exists()) {
-            byte[] bytes = GetBytesByPath(path, employeeInfo, securityGroup);
+            byte[] bytes = GetBytesByPath(path, ea,employeeId, securityGroup);
             if (bytes != null && bytes.length > 0) {
                 FileUtils.writeByteArrayToFile(originalFile, bytes);
             }

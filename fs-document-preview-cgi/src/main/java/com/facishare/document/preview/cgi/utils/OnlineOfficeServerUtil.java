@@ -36,12 +36,8 @@ public class OnlineOfficeServerUtil {
     public byte[] downloadPdfFile(String ea, int employeeId, String path, String sg) {
         String ext = FilenameUtils.getExtension(path).toLowerCase();
         String name = UUID.randomUUID() + "." + ext;
-        String postUrl = "";
-        if (ext.contains("xls") || ext.contains("pdf")) {
-            postUrl = String.format(fscServerUrl, ea, String.valueOf(employeeId), path, sg, name);
-        } else
-            postUrl = ext.contains("ppt") ? generateDownloadUrlForPPT(ea, employeeId, path, sg, name)
-                    : generateDownloadUrlForWordAndPdf(ea, employeeId, path, sg, name);
+        String postUrl = ext.contains("ppt") ? generateDownloadUrlForPPT(ea, employeeId, path, sg, name)
+                : generateDownloadUrlForWordAndPdf(ea, employeeId, path, sg, name);
         log.info("begin down load file from oos,url:{}", postUrl);
         return client.getBytes(postUrl);
     }

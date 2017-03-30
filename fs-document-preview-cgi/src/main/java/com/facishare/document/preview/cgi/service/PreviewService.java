@@ -68,10 +68,16 @@ public class PreviewService {
                 String grayConfig = "office2pdf";
                 String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
                 boolean office2pdf = gray.isAllow(grayConfig, user);
-                byte[] bytes = !office2pdf ? fileStorageProxy.GetBytesByPath(path, employeeInfo, securityGroup)
-                        : onlineOfficeServerUtil.downloadPdfFile(ea, employeeId, path, securityGroup);
+                String extension = FilenameUtils.getExtension(path).toLowerCase();
+                byte[] bytes;
+                if (extension.contains("xls") || extension.contains("pdf")) {
+                    bytes = fileStorageProxy.GetBytesByPath(path, ea,employeeId, securityGroup);
+                } else {
+                    bytes = !office2pdf ? fileStorageProxy.GetBytesByPath(path, ea,employeeId, securityGroup)
+                            : onlineOfficeServerUtil.downloadPdfFile(ea, employeeId, path, securityGroup);
+                }
+
                 if (bytes != null && bytes.length > 0) {
-                    String extension = FilenameUtils.getExtension(path).toLowerCase();
                     extension = office2pdf ? (extension.contains("xls") ? extension : "pdf") : extension;
                     String dataDir = new PathHelper(ea).getDataDir();
                     String fileName = SampleUUID.getUUID() + "." + extension;

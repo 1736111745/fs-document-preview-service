@@ -377,7 +377,7 @@ public class PreviewController {
                     List<String> dataFilePathList = previewInfo.getFilePathList();
                     if (dataFilePathList == null)
                         dataFilePathList = Lists.newArrayList();
-                    dataFilePathList.stream().filter(f -> f.endsWith(".html")).collect(Collectors.toList());
+                    dataFilePathList=dataFilePathList.stream().filter(f -> f.endsWith(".html")).collect(Collectors.toList());
                     return getQueryDocConvertStatus(dataFilePathList);
                 }
             }

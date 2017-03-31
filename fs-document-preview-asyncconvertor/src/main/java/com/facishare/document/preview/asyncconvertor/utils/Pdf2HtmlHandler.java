@@ -82,7 +82,7 @@ public class Pdf2HtmlHandler {
         args.add("--optimize-text");
         args.add("1");
         args.add("--correct-text-visibility");
-        args.add("0");
+        args.add("1");
         args.add("--embed-javascript");//js文件单独引用
         args.add("0");
         args.add("--dest-dir");//输出目录

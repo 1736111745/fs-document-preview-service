@@ -38,9 +38,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -106,9 +108,9 @@ public class PreviewController {
         if (previewInfoEx.isSuccess()) {
             PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
             if (previewInfo == null || previewInfo.getPageCount() == 0) {
-                return getPreviewInfoResult( defaultErrMsg);
+                return getPreviewInfoResult(defaultErrMsg);
             } else
-                return getPreviewInfoResult(true, previewInfo.getPageCount(), previewInfo.getSheetNames(), path,previewInfo.getOriginalFilePath(), securityGroup);
+                return getPreviewInfoResult(true, previewInfo.getPageCount(), previewInfo.getSheetNames(), path, previewInfo.getOriginalFilePath(), securityGroup);
         } else {
             String errMsg = Strings.isNullOrEmpty(previewInfoEx.getErrorMsg()) ? defaultErrMsg : previewInfoEx.getErrorMsg();
             return getPreviewInfoResult(errMsg);
@@ -134,7 +136,7 @@ public class PreviewController {
                 if (previewInfo != null) {
                     if (pageIndex < previewInfo.getPageCount()) {
                         int type = Strings.isNullOrEmpty(version) ? 1 : 2;
-                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(),previewInfo.getOriginalFilePath(), type, previewInfo.getFilePathList());
+                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), previewInfo.getOriginalFilePath(), type, previewInfo.getFilePathList());
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
                             FileOutPutor.outPut(response, dataFilePath, true);
                         } else {
@@ -269,14 +271,14 @@ public class PreviewController {
                 PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
                 if (previewInfo != null) {
                     if (pageIndex < previewInfo.getPageCount()) {
-                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(),previewInfo.getOriginalFilePath(), 2, previewInfo.getFilePathList());
+                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), previewInfo.getOriginalFilePath(), 2, previewInfo.getFilePathList());
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
                             FileOutPutor.outPut(response, dataFilePath, width, true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
                             File originalFile = new File(originalFilePath);
                             if (!originalFile.exists()) {
-                                fileStorageProxy.DownloadAndSave(path, ea,employeeInfo.getEmployeeId(), "", originalFilePath);
+                                fileStorageProxy.DownloadAndSave(path, ea, employeeInfo.getEmployeeId(), "", originalFilePath);
                             }
                             ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(2).build();
                             ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
@@ -375,6 +377,7 @@ public class PreviewController {
                     List<String> dataFilePathList = previewInfo.getFilePathList();
                     if (dataFilePathList == null)
                         dataFilePathList = Lists.newArrayList();
+                    dataFilePathList.stream().filter(f -> f.endsWith(".html")).collect(Collectors.toList());
                     return getQueryDocConvertStatus(dataFilePathList);
                 }
             }
@@ -389,7 +392,7 @@ public class PreviewController {
         return value;
     }
 
-    private String getPreviewInfoResult(boolean canPreview, int pageCount, List<String> sheetNames, String path,String filePath, String securityGroup) {
+    private String getPreviewInfoResult(boolean canPreview, int pageCount, List<String> sheetNames, String path, String filePath, String securityGroup) {
         Map<String, Object> map = new HashMap<>();
         map.put("canPreview", true);
         map.put("pageCount", pageCount);

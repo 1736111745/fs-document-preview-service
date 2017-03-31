@@ -39,7 +39,7 @@ public class OnlineOfficeServerUtil {
         String downloadUrl = ext.contains("ppt") ? generateDownloadUrlForPPT(ea, employeeId, path, sg, name)
                 : generateDownloadUrlForWordAndPdf(ea, employeeId, path, sg, name);
         log.info("begin down load file from oos,url:{}", downloadUrl);
-        final Request request = new Request.Builder().url(downloadUrl).header("Connection", "close").build();
+        Request request = new Request.Builder().url(downloadUrl).header("Connection", "close").build();
         Object object = client.syncExecute(request, new SyncCallback() {
             @Override
             public Object response(Response response) {

@@ -2,53 +2,57 @@ package com.facishare.document.preview.asyncconvertor.utils;
 
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.collect.Lists;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.bouncycastle.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
+import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
  * Created by liuq on 2017/3/7.
  */
-@Slf4j
 @Component
 public class Pdf2HtmlHandler {
     @ReloadableProperty("pdf2HtmlTimeout")
     private int pdf2HtmlTimeout = 60;
 
+    private static final Logger logger = LoggerFactory.getLogger(Pdf2HtmlHandler.class);
     public String doConvert(int page, String filePath) {
         String dataFilePath = "";
         List<String> args = createProcessArgs(page, filePath);
         try {
-            Future<ProcessResult> future = new ProcessExecutor().command(args).readOutput(true).start().getFuture();
-            ProcessResult processResult = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
+
+            ProcessResult processResult=new ProcessExecutor()
+                    .command(args)
+                    .redirectOutput(Slf4jStream.of(logger).asInfo())
+                    .redirectError(Slf4jStream.of(logger).asInfo())
+                    .timeout(pdf2HtmlTimeout, TimeUnit.SECONDS)
+                    .exitValueAny()
+                    .readOutput(true)
+                    .execute();
             if (processResult.getExitValue() == 0) {
                 dataFilePath = handleResult(page, filePath);
             } else
-                log.error("output:{},exit code:{}", processResult.outputUTF8(), processResult.getExitValue());
+                logger.error("output:{},exit code:{}", processResult.outputUTF8(), processResult.getExitValue());
         } catch (IOException e) {
-            log.error("do convert happened IOException!", e);
+            logger.error("do convert happened IOException!", e);
         } catch (InterruptedException e) {
-            log.error("do convert happened InterruptedException!", e);
-        } catch (ExecutionException e) {
-            log.error("do convert happened ExecutionException!", e);
+            logger.error("do convert happened InterruptedException!", e);
         } catch (TimeoutException e) {
-            log.error("do convert happened TimeoutException!filePath:{},page:{}", filePath, page, e);
+            logger.error("do convert happened TimeoutException!filePath:{},page:{}", filePath, page, e);
         }
         return dataFilePath;
     }
@@ -88,14 +92,14 @@ public class Pdf2HtmlHandler {
         args.add("--dest-dir");//输出目录
         args.add(outPutDir);
         args.add(filePath);
-        log.info(StringUtils.join(args,"  "));
+        logger.info(StringUtils.join(args,"  "));
         return args;
     }
 
     private String handleResult(int page, String filePath) throws IOException {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        log.info("begin handle html!filePath:{},page:{}", filePath, page);
+        logger.info("begin handle html!filePath:{},page:{}", filePath, page);
         String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
         String pageBaseDir = baseDir + "/p" + page;
         String dataFileName = FilenameUtils.getBaseName(filePath) + ".html";
@@ -117,7 +121,7 @@ public class Pdf2HtmlHandler {
         });
         FileUtils.deleteDirectory(new File(pageBaseDir));
         stopWatch.stop();
-        log.info("end handle html!,filePath:{},page:{},cost:{}ms", filePath, page, stopWatch.getTime());
+        logger.info("end handle html!,filePath:{},page:{},cost:{}ms", filePath, page, stopWatch.getTime());
         return pagePath;
     }
 

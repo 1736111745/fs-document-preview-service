@@ -35,7 +35,7 @@ public class OnlineOfficeServerUtil {
 
     public byte[] downloadPdfFile(String ea, int employeeId, String path, String sg) {
         String ext = FilenameUtils.getExtension(path).toLowerCase();
-        String name = UUID.randomUUID() + "." + ext;
+        String name = "考勤记录表（3月1日 - 3月31日）" + "." + ext;
         String downloadUrl = ext.contains("ppt") ? generateDownloadUrlForPPT(ea, employeeId, path, sg, name)
                 : generateDownloadUrlForWordAndPdf(ea, employeeId, path, sg, name);
         log.info("begin down load file from oos,url:{}", downloadUrl);

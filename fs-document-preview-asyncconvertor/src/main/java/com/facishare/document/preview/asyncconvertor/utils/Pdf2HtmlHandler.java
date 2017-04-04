@@ -35,10 +35,9 @@ public class Pdf2HtmlHandler {
         String dataFilePath = "";
         List<String> args = createProcessArgs(page, filePath);
         try {
-            Future<ProcessResult> future  = new ProcessExecutor()
+            Future<ProcessResult> future = new ProcessExecutor()
                     .command(args)
                     .destroyOnExit()
-                    .redirectError(Slf4jStream.of(log).asInfo())
                     .timeout(pdf2HtmlTimeout, TimeUnit.SECONDS)
                     .exitValueAny()
                     .readOutput(true)

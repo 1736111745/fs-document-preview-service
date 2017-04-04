@@ -37,6 +37,7 @@ public class Pdf2HtmlHandler {
 
             ProcessResult processResult=new ProcessExecutor()
                     .command(args)
+                    .destroyOnExit()
                     .redirectOutput(Slf4jStream.of(logger).asInfo())
                     .redirectError(Slf4jStream.of(logger).asInfo())
                     .timeout(pdf2HtmlTimeout, TimeUnit.SECONDS)

@@ -8,6 +8,8 @@ import com.fxiaoke.common.http.spring.OkHttpSupport;
 import com.github.autoconf.ConfigFactory;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
 import okhttp3.Request;
@@ -21,7 +23,6 @@ import javax.annotation.Resource;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liuq on 2017/3/29.
@@ -33,6 +34,7 @@ public class OnlineOfficeServerUtil {
     private String fscServerUrl = "";
     @Resource(name = "httpClientSupport")
     private OkHttpSupport client;
+    private static final MediaType JSONType = MediaType.parse("application/json; charset=utf-8");
 
     @PostConstruct
     void init() {
@@ -46,49 +48,55 @@ public class OnlineOfficeServerUtil {
         Stopwatch stopwatch = Stopwatch.createStarted();
         String ext = FilenameUtils.getExtension(path).toLowerCase();
         String name = SampleUUID.getUUID() + "." + ext;
-        if (ext.contains("ppt")) {
-            return convertPPT2Pdf(ea, employeeId, path, sg, name);
-        } else {
-            String downloadUrl = ext.contains("ppt") ? generateDownloadUrlForPPT(ea, employeeId, path, sg, name)
-                    : generateDownloadUrlForWordAndPdf(ea, employeeId, path, sg, name);
-            log.info("begin download file from oos,url:{}", downloadUrl);
-            Request request = new Request.Builder().url(downloadUrl).header("Connection", "close").build();
-            Object object = client.syncExecute(request, new SyncCallback() {
-                @Override
-                public Object response(Response response) {
-                    try {
-                        return response.body().bytes();
-                    } catch (Exception e) {
-                        log.warn("exception:", e);
-                        return null;
-                    } finally {
-                        log.info("response.status:{}", response.code());
-                    }
-                }
-            });
-            stopwatch.stop();
-            log.info("download completed!cost:{}", stopwatch.elapsed(TimeUnit.MILLISECONDS));
-            return (byte[]) object;
-        }
+        return ext.contains("ppt") ? convertPPT2Pdf(ea, employeeId, path, sg, name) : convertDoc2Pdf(ea, employeeId, path, sg, name);
     }
 
-    private String generateDownloadUrlForWordAndPdf(String ea, int employeeId, String path, String sg, String name) {
+
+    //todo:doc转pdf是异步的，每次都要请求下看下content-type是否为pdf，如果是就说下载完毕
+
+    private byte[] convertDoc2Pdf(String ea, int employeeId, String path, String sg, String name) throws InterruptedException {
         String downloadUrl = String.format(fscServerUrl, ea, String.valueOf(employeeId), path, sg, name);
         String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
         String postUrl = oosServerUrl + "/wv/WordViewer/request.pdf?WOPIsrc=" + URLEncoder.encode(src) + "&type=accesspdf";
-        return postUrl;
+        byte[] bytes = null;
+        int tryCount = 0;
+        while (tryCount++ < 100) {
+            DocConvertInfo docConvertInfo = checkDocConvertPdf(postUrl);
+            if (docConvertInfo.finished) {
+                bytes = docConvertInfo.getBytes();
+                break;
+            } else
+                Thread.sleep(200);
+        }
+        return bytes;
     }
 
-    private String generateDownloadUrlForPPT(String ea, int employeeId, String path, String sg, String name) {
-        String downloadUrl = String.format(fscServerUrl, ea, String.valueOf(employeeId), path, sg, name);
-        String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
-        String pid = "WOPIsrc=" + URLEncoder.encode(src);
-        String postUrl = oosServerUrl + "/p/printhandler.ashx?Pid=" + URLEncoder.encode(pid);
-        checkPPTPrintPdf(ea, employeeId, path, sg, name);
-        return postUrl;
+
+    private DocConvertInfo checkDocConvertPdf(String postUrl) {
+        DocConvertInfo docConvertInfo = new DocConvertInfo();
+        Request request = new Request.Builder().url(postUrl).build();
+        client.syncExecute(request, new SyncCallback() {
+            @Override
+            public Object response(Response response) {
+                try {
+                    String contentType = response.header("Content-Type");
+                    byte[] bytes = response.body().bytes();
+                    if (contentType.contains("application/pdf")) {
+                        docConvertInfo.setFinished(true);
+                        docConvertInfo.setBytes(bytes);
+                    }
+                    return bytes;
+                } catch (Exception e) {
+                    log.warn("exception:", e);
+                    return null;
+                } finally {
+                    log.info("response.status:{}", response.code());
+                }
+            }
+        });
+        return docConvertInfo;
     }
 
-    public static final MediaType JSONType = MediaType.parse("application/json; charset=utf-8");
 
     private byte[] convertPPT2Pdf(String ea, int employeeId, String path, String sg, String name) throws InterruptedException {
         byte[] bytes = null;
@@ -99,29 +107,15 @@ public class OnlineOfficeServerUtil {
             JSONObject jsonObject = JSON.parseObject(json);
             if (jsonObject.get("Error") == null) {
                 printUrl = ((JSONObject) jsonObject.get("Result")).getString("PrintUrl");
-                log.info("print url:{}",printUrl);
+                log.info("print url:{}", printUrl);
                 break;
             } else
                 Thread.sleep(200);
         }
         if (!Strings.isNullOrEmpty(printUrl)) {
-            String url = oosServerUrl + "/p"+printUrl.substring(1);
-            log.info("post url:{}",url);
-            Request request = new Request.Builder().url(url).build();
-            Object object = client.syncExecute(request, new SyncCallback() {
-                @Override
-                public Object response(Response response) {
-                    try {
-                        return response.body().bytes();
-                    } catch (Exception e) {
-                        log.warn("exception:", e);
-                        return null;
-                    } finally {
-                        log.info("response.status:{}", response.code());
-                    }
-                }
-            });
-            bytes = (byte[]) object;
+            String url = oosServerUrl + "/p" + printUrl.substring(1);
+            log.info("post url:{}", url);
+            bytes = client.getBytes(url);
         }
         return bytes;
     }
@@ -154,5 +148,13 @@ public class OnlineOfficeServerUtil {
         String resultJson = object.toString();
         log.info("result:{}", resultJson);
         return object.toString();
+    }
+
+    @Getter
+    @Setter
+    private class DocConvertInfo {
+        //当response的返回头为application/pdf,证明转换完毕,finished为true，object为pdf的bytes
+        private boolean finished;
+        private byte[] bytes;
     }
 }

@@ -46,10 +46,9 @@ public class OnlineOfficeServerUtil {
         Stopwatch stopwatch = Stopwatch.createStarted();
         String ext = FilenameUtils.getExtension(path).toLowerCase();
         String name = SampleUUID.getUUID() + "." + ext;
-        if(ext.contains("ppt")) {
+        if (ext.contains("ppt")) {
             return convertPPT2Pdf(ea, employeeId, path, sg, name);
-        }
-        else {
+        } else {
             String downloadUrl = ext.contains("ppt") ? generateDownloadUrlForPPT(ea, employeeId, path, sg, name)
                     : generateDownloadUrlForWordAndPdf(ea, employeeId, path, sg, name);
             log.info("begin download file from oos,url:{}", downloadUrl);
@@ -93,7 +92,7 @@ public class OnlineOfficeServerUtil {
 
     private byte[] convertPPT2Pdf(String ea, int employeeId, String path, String sg, String name) throws InterruptedException {
         byte[] bytes = null;
-        int tryCount = 10;
+        int tryCount = 0;
         String downloadUrl = "";
         while (tryCount++ < 10) {
             String json = checkPPTPrintPdf(ea, employeeId, path, sg, name);
@@ -101,8 +100,7 @@ public class OnlineOfficeServerUtil {
             if (jsonObject.get("Error") == null) {
                 downloadUrl = ((JSONObject) jsonObject.get("Result")).getString("PrintUrl");
                 break;
-            }
-            else
+            } else
                 Thread.sleep(200);
         }
         if (!Strings.isNullOrEmpty(downloadUrl)) {

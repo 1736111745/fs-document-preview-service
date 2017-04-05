@@ -78,12 +78,13 @@ public class OnlineOfficeServerUtil {
         String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
         String pid = "WOPIsrc=" + URLEncoder.encode(src);
         String postUrl = oosServerUrl + "/p/printhandler.ashx?Pid=" + URLEncoder.encode(pid);
+        checkPPTPrintPdf(ea, employeeId, path, sg, name);
         return postUrl;
     }
 
     public static final MediaType JSONType = MediaType.parse("application/json; charset=utf-8");
 
-    private String checkPrint(String ea, int employeeId, String path, String sg, String name) {
+    private String checkPPTPrintPdf(String ea, int employeeId, String path, String sg, String name) {
         String downloadUrl = String.format(fscServerUrl, ea, String.valueOf(employeeId), path, sg, name);
         String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
         String pid = "WOPIsrc=" + URLEncoder.encode(src);

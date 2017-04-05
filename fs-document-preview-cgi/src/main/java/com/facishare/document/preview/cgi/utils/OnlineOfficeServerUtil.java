@@ -80,6 +80,7 @@ public class OnlineOfficeServerUtil {
             public Object response(Response response) {
                 try {
                     String contentType = response.header("Content-Type");
+                    log.info("contentType:{}",contentType);
                     byte[] bytes = response.body().bytes();
                     if (contentType.contains("application/pdf")) {
                         docConvertInfo.setFinished(true);

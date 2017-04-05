@@ -100,7 +100,7 @@ public class OnlineOfficeServerUtil {
             @Override
             public Object response(Response response) {
                 try {
-                    return response.body().toString();
+                    return response.body().string();
                 } catch (Exception e) {
                     log.warn("exception:", e);
                     return null;

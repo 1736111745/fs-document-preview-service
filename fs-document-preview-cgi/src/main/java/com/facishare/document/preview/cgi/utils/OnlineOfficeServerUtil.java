@@ -1,12 +1,15 @@
 package com.facishare.document.preview.cgi.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.facishare.document.preview.common.utils.SampleUUID;
 import com.fxiaoke.common.http.handler.SyncCallback;
 import com.fxiaoke.common.http.spring.OkHttpSupport;
 import com.github.autoconf.ConfigFactory;
 import com.google.common.base.Stopwatch;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.MediaType;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Component;
@@ -14,7 +17,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.net.URLEncoder;
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -71,9 +75,41 @@ public class OnlineOfficeServerUtil {
 
     private String generateDownloadUrlForPPT(String ea, int employeeId, String path, String sg, String name) {
         String downloadUrl = String.format(fscServerUrl, ea, String.valueOf(employeeId), path, sg, name);
-        String src = URLEncoder.encode(downloadUrl + "&access_token_ttl=0&z=1.0");
-        String pid = "WOPIsrc=" + src;
-        String postUrl = oosServerUrl + "/p/printhandler.ashx?PV=0&Pid=" + URLEncoder.encode(pid);
+        String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
+        String pid = "WOPIsrc=" + URLEncoder.encode(src);
+        String postUrl = oosServerUrl + "/p/printhandler.ashx?Pid=" + URLEncoder.encode(pid);
         return postUrl;
+    }
+
+    public static final MediaType JSONType = MediaType.parse("application/json; charset=utf-8");
+
+    private String checkPrint(String ea, int employeeId, String path, String sg, String name) {
+        String downloadUrl = String.format(fscServerUrl, ea, String.valueOf(employeeId), path, sg, name);
+        String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
+        String pid = "WOPIsrc=" + URLEncoder.encode(src);
+        Map<String, String> map = new HashMap<>();
+        map.put("presentationId", pid);
+        String postUrl = oosServerUrl + "/p/ppt/view.svc/jsonAnonymous/Print";
+        RequestBody body = RequestBody.create(JSONType, JSON.toJSONString(map));
+        Request request = new Request.Builder()
+                .url(postUrl)
+                .post(body)
+                .build();
+        Object object = client.syncExecute(request, new SyncCallback() {
+            @Override
+            public Object response(Response response) {
+                try {
+                    return response.body().toString();
+                } catch (Exception e) {
+                    log.warn("exception:", e);
+                    return null;
+                } finally {
+                    log.info("response.status:{}", response.code());
+                }
+            }
+        });
+        String resultJson = object.toString();
+        log.info("result:{}", resultJson);
+        return object.toString();
     }
 }

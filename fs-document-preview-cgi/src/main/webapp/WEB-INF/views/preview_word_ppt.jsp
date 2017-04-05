@@ -16,12 +16,41 @@
         window.contextPath = "<%=request.getContextPath()%>";
     </script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery.lazyload.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/jquery.lazy.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/util.js?v=<%=request.getAttribute("sv")%>>"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/word_ppt.js?v=<%=request.getAttribute("sv")%>"></script>
     <link href="<%=request.getContextPath()%>/static/css/main.css" rel="stylesheet">
+    <style type="text/css">
+        div.lazy {
+            background: #FFFFFF url("<%=request.getContextPath()%>/static/images/loading1.gif") no-repeat center;
+            height: 500px;
+        }
+
+        div.border {
+            text-align: center;
+            width: 1000px;
+            margin: 5px auto;
+            border: 1px solid rgb(27, 30, 33)
+        }
+
+        div.center {
+            text-align: center;
+            font-size: 24px;
+        }
+
+        /*div.fix {*/
+        /*position: fixed;*/
+        /*bottom: 10px;*/
+        /*right: 10px;*/
+        /*background-color: #202020;*/
+        /*color: white;*/
+        /*font-size: 32px;*/
+        /*width: 100px;*/
+        /*text-align: center;*/
+        /*}*/
+    </style>
 </head>
 <body>
-<div id="divPages"></div>
+<div id="main"></div>
 </body>
 </html>

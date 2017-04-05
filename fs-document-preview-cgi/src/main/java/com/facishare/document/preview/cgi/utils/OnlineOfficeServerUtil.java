@@ -46,7 +46,7 @@ public class OnlineOfficeServerUtil {
         Stopwatch stopwatch = Stopwatch.createStarted();
         String ext = FilenameUtils.getExtension(path).toLowerCase();
         String name = SampleUUID.getUUID() + "." + ext;
-        if (ext.contains("ppt")||ext.contains("doc")) {
+        if (ext.contains("ppt")) {
             return convertPPT2Pdf(ea, employeeId, path, sg, name);
         } else {
             String downloadUrl = ext.contains("ppt") ? generateDownloadUrlForPPT(ea, employeeId, path, sg, name)

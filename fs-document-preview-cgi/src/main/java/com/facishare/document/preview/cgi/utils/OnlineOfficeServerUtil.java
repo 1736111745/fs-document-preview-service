@@ -93,18 +93,19 @@ public class OnlineOfficeServerUtil {
     private byte[] convertPPT2Pdf(String ea, int employeeId, String path, String sg, String name) throws InterruptedException {
         byte[] bytes = null;
         int tryCount = 0;
-        String downloadUrl = "";
+        String printUrl = "";
         while (tryCount++ < 10) {
             String json = checkPPTPrintPdf(ea, employeeId, path, sg, name);
             JSONObject jsonObject = JSON.parseObject(json);
             if (jsonObject.get("Error") == null) {
-                downloadUrl = ((JSONObject) jsonObject.get("Result")).getString("PrintUrl");
+                printUrl = ((JSONObject) jsonObject.get("Result")).getString("PrintUrl");
+                log.info("print url:{}",printUrl);
                 break;
             } else
                 Thread.sleep(200);
         }
-        if (!Strings.isNullOrEmpty(downloadUrl)) {
-            String url = oosServerUrl + downloadUrl.substring(1);
+        if (!Strings.isNullOrEmpty(printUrl)) {
+            String url = oosServerUrl + "/p"+printUrl.substring(1);
             log.info("post url:{}",url);
             Request request = new Request.Builder().url(url).build();
             Object object = client.syncExecute(request, new SyncCallback() {

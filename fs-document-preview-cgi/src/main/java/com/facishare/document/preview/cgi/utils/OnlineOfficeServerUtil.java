@@ -42,7 +42,7 @@ public class OnlineOfficeServerUtil {
         });
     }
 
-    public byte[] downloadPdfFile(String ea, int employeeId, String path, String sg) {
+    public byte[] downloadPdfFile(String ea, int employeeId, String path, String sg) throws InterruptedException {
         Stopwatch stopwatch = Stopwatch.createStarted();
         String ext = FilenameUtils.getExtension(path).toLowerCase();
         String name = SampleUUID.getUUID() + "." + ext;
@@ -91,7 +91,7 @@ public class OnlineOfficeServerUtil {
 
     public static final MediaType JSONType = MediaType.parse("application/json; charset=utf-8");
 
-    private byte[] convertPPT2Pdf(String ea, int employeeId, String path, String sg, String name) {
+    private byte[] convertPPT2Pdf(String ea, int employeeId, String path, String sg, String name) throws InterruptedException {
         byte[] bytes = null;
         int tryCount = 10;
         String downloadUrl = "";
@@ -102,6 +102,8 @@ public class OnlineOfficeServerUtil {
                 downloadUrl = ((JSONObject) jsonObject.get("Result")).getString("PrintUrl");
                 break;
             }
+            else
+                Thread.sleep(200);
         }
         if (!Strings.isNullOrEmpty(downloadUrl)) {
             String url = oosServerUrl + downloadUrl.substring(1);

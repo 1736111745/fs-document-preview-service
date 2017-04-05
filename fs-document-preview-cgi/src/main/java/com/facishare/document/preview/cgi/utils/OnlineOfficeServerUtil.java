@@ -94,7 +94,7 @@ public class OnlineOfficeServerUtil {
         byte[] bytes = null;
         int tryCount = 0;
         String printUrl = "";
-        while (tryCount++ < 10) {
+        while (tryCount++ < 100) {
             String json = checkPPTPrintPdf(ea, employeeId, path, sg, name);
             JSONObject jsonObject = JSON.parseObject(json);
             if (jsonObject.get("Error") == null) {

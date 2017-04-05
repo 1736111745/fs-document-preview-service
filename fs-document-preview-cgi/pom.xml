@@ -6,6 +6,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+    <groupId>com.facishare</groupId>
     <artifactId>fs-document-preview-cgi</artifactId>
     <packaging>war</packaging>
     <name>fs-document-preview-cgi</name>

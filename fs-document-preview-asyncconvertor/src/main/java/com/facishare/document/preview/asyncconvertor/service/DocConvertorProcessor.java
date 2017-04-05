@@ -91,6 +91,4 @@ public class DocConvertorProcessor {
         stopWatch.stop();
         log.info("end do convert,params:{},cost:{}", JSON.toJSONString(convertorMessage), stopWatch.getTime());
     }
-
-
 }

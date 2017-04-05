@@ -105,6 +105,7 @@ public class OnlineOfficeServerUtil {
         }
         if (!Strings.isNullOrEmpty(downloadUrl)) {
             String url = oosServerUrl + downloadUrl.substring(1);
+            log.info("post url:{}",url);
             Request request = new Request.Builder().url(url).build();
             Object object = client.syncExecute(request, new SyncCallback() {
                 @Override

@@ -1,11 +1,13 @@
 package com.facishare.document.preview.cgi.utils;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.facishare.document.preview.common.utils.SampleUUID;
 import com.fxiaoke.common.http.handler.SyncCallback;
 import com.fxiaoke.common.http.spring.OkHttpSupport;
 import com.github.autoconf.ConfigFactory;
 import com.google.common.base.Stopwatch;
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
 import okhttp3.Request;
@@ -44,26 +46,31 @@ public class OnlineOfficeServerUtil {
         Stopwatch stopwatch = Stopwatch.createStarted();
         String ext = FilenameUtils.getExtension(path).toLowerCase();
         String name = SampleUUID.getUUID() + "." + ext;
-        String downloadUrl = ext.contains("ppt") ? generateDownloadUrlForPPT(ea, employeeId, path, sg, name)
-                : generateDownloadUrlForWordAndPdf(ea, employeeId, path, sg, name);
-        log.info("begin download file from oos,url:{}", downloadUrl);
-        Request request = new Request.Builder().url(downloadUrl).header("Connection", "close").build();
-        Object object = client.syncExecute(request, new SyncCallback() {
-            @Override
-            public Object response(Response response) {
-                try {
-                    return response.body().bytes();
-                } catch (Exception e) {
-                    log.warn("exception:", e);
-                    return null;
-                } finally {
-                    log.info("response.status:{}", response.code());
+        if(ext.contains("ppt")) {
+            return convertPPT2Pdf(ea, employeeId, path, sg, name);
+        }
+        else {
+            String downloadUrl = ext.contains("ppt") ? generateDownloadUrlForPPT(ea, employeeId, path, sg, name)
+                    : generateDownloadUrlForWordAndPdf(ea, employeeId, path, sg, name);
+            log.info("begin download file from oos,url:{}", downloadUrl);
+            Request request = new Request.Builder().url(downloadUrl).header("Connection", "close").build();
+            Object object = client.syncExecute(request, new SyncCallback() {
+                @Override
+                public Object response(Response response) {
+                    try {
+                        return response.body().bytes();
+                    } catch (Exception e) {
+                        log.warn("exception:", e);
+                        return null;
+                    } finally {
+                        log.info("response.status:{}", response.code());
+                    }
                 }
-            }
-        });
-        stopwatch.stop();
-        log.info("download completed!cost:{}", stopwatch.elapsed(TimeUnit.MILLISECONDS));
-        return (byte[]) object;
+            });
+            stopwatch.stop();
+            log.info("download completed!cost:{}", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+            return (byte[]) object;
+        }
     }
 
     private String generateDownloadUrlForWordAndPdf(String ea, int employeeId, String path, String sg, String name) {
@@ -83,6 +90,39 @@ public class OnlineOfficeServerUtil {
     }
 
     public static final MediaType JSONType = MediaType.parse("application/json; charset=utf-8");
+
+    private byte[] convertPPT2Pdf(String ea, int employeeId, String path, String sg, String name) {
+        byte[] bytes = null;
+        int tryCount = 10;
+        String downloadUrl = "";
+        while (tryCount++ < 10) {
+            String json = checkPPTPrintPdf(ea, employeeId, path, sg, name);
+            JSONObject jsonObject = JSON.parseObject(json);
+            if (jsonObject.get("Error") == null) {
+                downloadUrl = ((JSONObject) jsonObject.get("Result")).getString("PrintUrl");
+                break;
+            }
+        }
+        if (!Strings.isNullOrEmpty(downloadUrl)) {
+            String url = oosServerUrl + downloadUrl.substring(1);
+            Request request = new Request.Builder().url(url).build();
+            Object object = client.syncExecute(request, new SyncCallback() {
+                @Override
+                public Object response(Response response) {
+                    try {
+                        return response.body().bytes();
+                    } catch (Exception e) {
+                        log.warn("exception:", e);
+                        return null;
+                    } finally {
+                        log.info("response.status:{}", response.code());
+                    }
+                }
+            });
+            bytes = (byte[]) object;
+        }
+        return bytes;
+    }
 
     private String checkPPTPrintPdf(String ea, int employeeId, String path, String sg, String name) {
         String downloadUrl = String.format(fscServerUrl, ea, String.valueOf(employeeId), path, sg, name);

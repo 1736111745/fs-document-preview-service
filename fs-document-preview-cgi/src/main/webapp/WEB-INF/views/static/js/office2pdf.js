@@ -19,7 +19,8 @@ var checkOffice2Pdf = function () {
         async: true,
         url: url,
         timeout: 5000,
-        complete: function (data, status) {
+        complete: function (XMLHttpRequest, status) {
+            var data = XMLHttpRequest.responseJSON;
             if (data.finished) {
                 location.href = window.contextPath + '/preview/handlePdf?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg;
             }

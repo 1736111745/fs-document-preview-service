@@ -26,17 +26,22 @@
             background: #FFFFFF url("<%=request.getContextPath()%>/static/images/loading.gif") no-repeat center;
             height: 500px;
         }
-
         div.border {
             text-align: center;
             width: 1000px;
             margin: 5px auto;
             border: 1px solid rgb(27, 30, 33)
         }
+        #spanLoading {
+            display: block;
+            width: 100%;
+            text-align: center;
+            line-height: 550px;
+        }
     </style>
     <title>office2pdf</title>
 </head>
 <body>
-<div class="lazy border" id="loading"><span>文档转中...</span></div>
+<div class="lazy border" id="loading"><span id="spanLoading">文档转中...</span></div>
 </body>
 </html>

@@ -4,6 +4,7 @@ var path = getQueryStringByName("path");
 var type = path.indexOf(".doc") > -1 ? "checkWord2Pdf" : "checkPPT2Pdf"
 var tryCount = 0;
 var idChkOffice2Pdf;
+var finished=false;
 $(function () {
     checkPPT2PdfStatus();
 });
@@ -11,14 +12,13 @@ $(function () {
 function checkPPT2PdfStatus() {
     tryCount++;
     idChkOffice2Pdf = setInterval(function () {
-        if (checkOffice2Pdf() || tryCount > 10) {
+        checkOffice2Pdf();
+        if (finished || tryCount > 10) {
             clearInterval(idChkOffice2Pdf);
-            if (checkOffice2Pdf()) {
-                var url = window.contextPath + '/preview/handlePdf?path = ' + path + ' & pageCount = ' + pageCount + "&sg=" + sg;
-                location.href = url;
-            }
+            var url = window.contextPath + '/preview/handlePdf?path = ' + path + ' & pageCount = ' + pageCount + "&sg=" + sg;
+            location.href = url;
         }
-    }, 1000);
+    }, 2000);
 }
 
 function checkOffice2Pdf() {
@@ -29,7 +29,7 @@ function checkOffice2Pdf() {
         async: false,
         url: url,
         success: function (data) {
-            return data.finished;
+           finished=data.finished;
         }
     });
 }

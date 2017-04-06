@@ -18,7 +18,7 @@ function checkPPT2PdfStatus() {
                 location.href = url;
             }
         }
-    }, 200);
+    }, 1000);
 }
 
 function checkOffice2Pdf() {
@@ -26,7 +26,7 @@ function checkOffice2Pdf() {
     $.ajax({
         type: 'get',
         dataType: 'json',
-        async: true,
+        async: false,
         url: url,
         success: function (data) {
             return data.finished;

@@ -3,11 +3,12 @@ var pageCount = getQueryStringByName("pageCount");
 var path = getQueryStringByName("path");
 var type = path.indexOf(".doc") > -1 ? "checkWord2Pdf" : "checkPPT2Pdf"
 var tryCount = 0;
-var url = window.contextPath + '/preview/' + type + '?path=' + path + "&sg=" + sg
 $(function () {
+
     checkOffice2Pdf();
 });
 var checkOffice2Pdf = function () {
+    var url = window.contextPath + '/preview/' + type + '?path=' + path + "&sg=" + sg
     if(tryCount++>10) {
         return;
     }

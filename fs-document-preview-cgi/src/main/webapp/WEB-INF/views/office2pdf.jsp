@@ -23,7 +23,7 @@
     </script>
     <style type="text/css">
         div.lazy {
-            background: #FFFFFF url("<%=request.getContextPath()%>/static/images/loading1.gif") no-repeat center;
+            background: #FFFFFF url("<%=request.getContextPath()%>/static/images/loading.gif") no-repeat center;
             height: 500px;
         }
 

@@ -1,7 +1,6 @@
 var sg = getQueryStringByName("sg");
 var pageCount = getQueryStringByName("pageCount");
 var path = getQueryStringByName("path");
-var end = pageCount > 3 ? 3 : pageCount;
 $(function () {
     loadAllPages();
 });
@@ -24,6 +23,7 @@ function loadPageLoader() {
 }
 function loadData(i) {
     var src = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg;
-    var page = $("<div class='content'><embed class='lazy' src='" + src + "' width='100%' height='100%' type='image/svg+xml'/></div>");
-    $("#divPages").append(page);
+    var page = $("<div class='content'><embed  src='" + src + "' width='100%' height='100%' type='image/svg+xml'/></div>");
+    $("#divPage" + i).append(page);
+    $("#divPage" + i).removeClass("lazy");
 }

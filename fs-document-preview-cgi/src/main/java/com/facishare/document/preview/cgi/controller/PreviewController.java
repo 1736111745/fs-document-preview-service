@@ -110,7 +110,12 @@ public class PreviewController {
                 String grayConfig = "office2pdf";
                 String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
                 boolean office2pdf = gray.isAllow(grayConfig, user);
-                boolean needOfficePdf=office2pdf&&Strings.isNullOrEmpty(previewInfo.getPdfFilePath())&&!extension.equals("pdf");
+                boolean needOfficePdf=false;
+                if(office2pdf) {
+                    if (extension.contains("doc") || extension.contains("ppt")) {
+                        needOfficePdf = Strings.isNullOrEmpty(previewInfo.getPdfFilePath());
+                    }
+                }
                 return getPreviewInfoResult(previewInfo.getPageCount(), previewInfo.getSheetNames(), path, needOfficePdf, securityGroup);
             }
         } else {

@@ -11,7 +11,7 @@ $(function () {
 function checkPPT2PdfStatus() {
     tryCount++;
     idChkOffice2Pdf = setInterval(function () {
-        if (checkOffice2Pdf() || tryCount > 100) {
+        if (checkOffice2Pdf() || tryCount > 10) {
             clearInterval(idChkOffice2Pdf);
             if (checkOffice2Pdf()) {
                 var url = window.contextPath + '/preview/handlePdf?path = ' + path + ' & pageCount = ' + pageCount + "&sg=" + sg;

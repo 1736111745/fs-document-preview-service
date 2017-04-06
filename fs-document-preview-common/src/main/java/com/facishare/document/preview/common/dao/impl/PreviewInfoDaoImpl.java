@@ -133,7 +133,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("path").equal(path).criteria("ea").equal(ea);
         UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
-        update.add("pdfFilePath", pdfFilePath);
+        update.set("pdfFilePath", pdfFilePath);
         dpsDataStore.findAndModify(query, update);
     }
 }

@@ -27,7 +27,7 @@ function checkOffice2Pdf() {
         $.ajax({
             type: 'get',
             dataType: 'json',
-            async: false,
+            async: true,
             url: url,
             success: function (data) {
                 if (data.finished) {

@@ -143,7 +143,11 @@ public class PreviewController {
                 if (previewInfo != null) {
                     if (pageIndex < previewInfo.getPageCount()) {
                         int type = Strings.isNullOrEmpty(version) ? 1 : 2;
-                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), previewInfo.getOriginalFilePath(), type, previewInfo.getFilePathList());
+                        String filePath=previewInfo.getOriginalFilePath();
+                        if(type==2&&(path.contains("doc")||path.contains("ppt"))) {
+                            filePath = previewInfo.getPdfFilePath();
+                        }
+                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(),filePath , type, previewInfo.getFilePathList());
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
                             FileOutPutor.outPut(response, dataFilePath, true);
                         } else {

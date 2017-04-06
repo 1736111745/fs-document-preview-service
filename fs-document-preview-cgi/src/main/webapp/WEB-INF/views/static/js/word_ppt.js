@@ -28,7 +28,7 @@ function loadData(i) {
     $.ajax({
         type: 'get',
         timeout: 15000,
-        dataType: 'json',
+        dataType: 'xml',
         async: true,
         url: url,
         complete: function (request, status) {

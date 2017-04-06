@@ -33,25 +33,10 @@
             margin: 5px auto;
             border: 1px solid rgb(27, 30, 33)
         }
-
-        div.center {
-            text-align: center;
-            font-size: 24px;
-        }
-
-        /*div.fix {*/
-            /*position: fixed;*/
-            /*bottom: 10px;*/
-            /*right: 10px;*/
-            /*background-color: #202020;*/
-            /*color: white;*/
-            /*font-size: 32px;*/
-            /*width: 100px;*/
-            /*text-align: center;*/
-        /*}*/
     </style>
     <title>office2pdf</title>
 </head>
 <body>
+<div class="lazy border" id="loading">文档转中...</div>
 </body>
 </html>

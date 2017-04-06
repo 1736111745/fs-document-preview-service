@@ -345,9 +345,11 @@ public class PreviewController {
                         }
                     }
                     String originalFilePath = previewInfo.getOriginalFilePath();
+                    String pdfFilePath=previewInfo.getPdfFilePath();
+                    String finalFilePath=Strings.isNullOrEmpty(pdfFilePath)?pdfFilePath:originalFilePath;
                     List<Integer> needEnquePageList = convertTaskDao.batchAddTask(ea, path, hasNotConvertPageList);
                     needEnquePageList.forEach(p -> {
-                        ConvertorMessage convertorMessage = ConvertorMessage.builder().npath(path).ea(ea).page(p).filePath(originalFilePath).build();
+                        ConvertorMessage convertorMessage = ConvertorMessage.builder().npath(path).ea(ea).page(p).filePath(finalFilePath).build();
                         convertorQueueProvider.convertPdf(convertorMessage);
                     });
                 }

@@ -26,7 +26,6 @@ import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +37,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.facishare.document.preview.cgi.utils.UrlParametersHelper.isValidPath;
+import static com.facishare.document.preview.cgi.utils.UrlParametersHelper.safeGetRequestParameter;
 
 
 /**
@@ -77,8 +78,8 @@ public class PreviewController {
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getPreviewInfo(HttpServletRequest request) throws Exception {
-        String path = safteGetRequestParameter(request, "path");
-        String token = safteGetRequestParameter(request, "token");
+        String path = safeGetRequestParameter(request, "path");
+        String token = safeGetRequestParameter(request, "token");
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String securityGroup = "";
         if (path.equals("") && token.equals("")) {
@@ -110,7 +111,7 @@ public class PreviewController {
             if (previewInfo == null || previewInfo.getPageCount() == 0) {
                 return getPreviewInfoResult(defaultErrMsg);
             } else
-                return getPreviewInfoResult(true, previewInfo.getPageCount(), previewInfo.getSheetNames(), path, previewInfo.getOriginalFilePath(), securityGroup);
+                return getPreviewInfoResult(previewInfo.getPageCount(), previewInfo.getSheetNames(), path, previewInfo.getOriginalFilePath(), securityGroup);
         } else {
             String errMsg = Strings.isNullOrEmpty(previewInfoEx.getErrorMsg()) ? defaultErrMsg : previewInfoEx.getErrorMsg();
             return getPreviewInfoResult(errMsg);
@@ -119,10 +120,10 @@ public class PreviewController {
 
     @RequestMapping(value = "/preview/getFilePath")
     public void getFilePath(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String path = safteGetRequestParameter(request, "path");
-        String page = safteGetRequestParameter(request, "page");
-        String securityGroup = safteGetRequestParameter(request, "sg");
-        String version = safteGetRequestParameter(request, "ver");
+        String path = safeGetRequestParameter(request, "path");
+        String page = safeGetRequestParameter(request, "page");
+        String securityGroup = safeGetRequestParameter(request, "sg");
+        String version = safeGetRequestParameter(request, "ver");
         if (!isValidPath(path)) {
             response.setStatus(400);
             return;
@@ -141,19 +142,17 @@ public class PreviewController {
                             FileOutPutor.outPut(response, dataFilePath, true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
-                            DocType docType = DocTypeHelper.getDocType(originalFilePath);
+                            String pdfFilePath=previewInfo.getPdfFilePath();
+                            String finalFilePath=Strings.isNullOrEmpty(pdfFilePath)?originalFilePath:pdfFilePath;
+                            DocType docType = DocTypeHelper.getDocType(finalFilePath);
                             if (docType == DocType.PDF && !Strings.isNullOrEmpty(version)) {
-                                Pdf2HtmlArg pdf2HtmlArg = Pdf2HtmlArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
-                                //log.info("begin do convert,arg:{}", pdf2HtmlArg);
+                                Pdf2HtmlArg pdf2HtmlArg = Pdf2HtmlArg.builder().originalFilePath(finalFilePath).page(pageIndex).path(path).build();
                                 Pdf2HtmlResult pdf2HtmlResult = pdf2HtmlService.convertPdf2Html(pdf2HtmlArg);
                                 dataFilePath = pdf2HtmlResult.getDataFilePath();
-                                //log.info("end do convert,result:{}", pdf2HtmlResult);
                             } else {
-                                ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(1).build();
-                                //log.info("begin do convert,arg:{}", convertDocArg);
+                                ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(finalFilePath).page(pageIndex).path(path).type(1).build();
                                 ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
                                 dataFilePath = convertDocResult.getDataFilePath();
-                                //log.info("end do convert,result:{}", convertDocResult);
                             }
                             if (!Strings.isNullOrEmpty(dataFilePath)) {
                                 previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
@@ -184,7 +183,7 @@ public class PreviewController {
     @ResponseBody
     @RequestMapping(value = "/preview/getSheetNames", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getSheetNames(HttpServletRequest request) {
-        String path = safteGetRequestParameter(request, "path");
+        String path = safeGetRequestParameter(request, "path");
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String ea = employeeInfo.getEa();
         Map<String, Object> map = new HashMap<>();
@@ -208,7 +207,7 @@ public class PreviewController {
     @ResponseBody
     @RequestMapping(value = "/preview/getDirName", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getDirName(HttpServletRequest request) {
-        String path = safteGetRequestParameter(request, "path");
+        String path = safeGetRequestParameter(request, "path");
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String ea = employeeInfo.getEa();
         Map<String, Object> map = new HashMap<>();
@@ -256,13 +255,13 @@ public class PreviewController {
     @RequestMapping(value = "/preview/DocPageByPath", method = RequestMethod.GET)
     public void docPageByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String path = RequestParamsHelper.safteGetRequestParameter(request, "npath") == "" ? RequestParamsHelper.safteGetRequestParameter(request, "path") : RequestParamsHelper.safteGetRequestParameter(request, "npath");
-        int pageIndex = NumberUtils.toInt(safteGetRequestParameter(request, "pageIndex"), 0);
+        int pageIndex = NumberUtils.toInt(safeGetRequestParameter(request, "pageIndex"), 0);
         if (!isValidPath(path)) {
             response.setStatus(400);
             return;
         }
         try {
-            int width = NumberUtils.toInt(safteGetRequestParameter(request, "width"), 1024);
+            int width = NumberUtils.toInt(safeGetRequestParameter(request, "width"), 1024);
             width = width > 1920 ? 1920 : width;
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             String ea = employeeInfo.getEa();
@@ -313,8 +312,8 @@ public class PreviewController {
     @ResponseBody
     @RequestMapping(value = "/preview/checkDocConvertStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void checkDocConvertStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String path = safteGetRequestParameter(request, "path");
-        String securityGroup = safteGetRequestParameter(request, "sg");
+        String path = safeGetRequestParameter(request, "path");
+        String securityGroup = safeGetRequestParameter(request, "sg");
         if (!isValidPath(path)) {
             response.setStatus(400);
         }
@@ -358,8 +357,8 @@ public class PreviewController {
     @RequestMapping(value = "/preview/queryDocConvertStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String queryDocConvertStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        String path = safteGetRequestParameter(request, "path");
-        String securityGroup = safteGetRequestParameter(request, "sg");
+        String path = safeGetRequestParameter(request, "path");
+        String securityGroup = safeGetRequestParameter(request, "sg");
         if (!isValidPath(path)) {
             response.setStatus(400);
             return "";
@@ -387,13 +386,7 @@ public class PreviewController {
         }
     }
 
-
-    private String safteGetRequestParameter(HttpServletRequest request, String paramName) {
-        String value = request.getParameter(paramName) == null ? "" : request.getParameter(paramName).trim();
-        return value;
-    }
-
-    private String getPreviewInfoResult(boolean canPreview, int pageCount, List<String> sheetNames, String path, String filePath, String securityGroup) {
+    private String getPreviewInfoResult(int pageCount, List<String> sheetNames, String path, String filePath, String securityGroup) {
         Map<String, Object> map = new HashMap<>();
         map.put("canPreview", true);
         map.put("pageCount", pageCount);
@@ -424,16 +417,6 @@ public class PreviewController {
     }
 
 
-    private boolean isValidPath(String path) {
-        if (Strings.isNullOrEmpty(path))
-            return false;
-        if (path.startsWith("N_") || path.startsWith("TN_") || path.startsWith("TG_")
-                || path.startsWith("A_") || path.startsWith("TA_")
-                || path.startsWith("G_") || path.startsWith("F_") || path.startsWith("S_")) {
-            return true;
-        }
-        String[] pathSplit = path.split("_");
-        return pathSplit.length == 3;
-    }
+
 }
 

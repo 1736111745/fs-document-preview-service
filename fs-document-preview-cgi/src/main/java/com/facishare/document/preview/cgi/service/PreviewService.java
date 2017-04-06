@@ -43,8 +43,6 @@ public class PreviewService {
     PreviewInfoDao previewInfoDao;
     @Autowired
     DocConvertService docConvertService;
-    @Autowired
-    OnlineOfficeServerUtil onlineOfficeServerUtil;
     private FsGrayReleaseBiz gray = FsGrayRelease.getInstance("dps");
 
     /**
@@ -69,34 +67,26 @@ public class PreviewService {
                 String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
                 boolean office2pdf = gray.isAllow(grayConfig, user);
                 String extension = FilenameUtils.getExtension(path).toLowerCase();
-                byte[] bytes;
-                if (extension.contains("xls") || extension.contains("pdf")) {
-                    bytes = fileStorageProxy.GetBytesByPath(path, ea,employeeId, securityGroup);
-                } else {
-                    bytes = !office2pdf ? fileStorageProxy.GetBytesByPath(path, ea,employeeId, securityGroup)
-                            : onlineOfficeServerUtil.downloadPdfFile(ea, employeeId, path, securityGroup);
-                }
-
+                byte[] bytes = fileStorageProxy.GetBytesByPath(path, ea, employeeId, securityGroup);
                 if (bytes != null && bytes.length > 0) {
                     extension = office2pdf ? (extension.contains("xls") ? extension : "pdf") : extension;
                     String dataDir = new PathHelper(ea).getDataDir();
                     String fileName = SampleUUID.getUUID() + "." + extension;
                     String filePath = FilenameUtils.concat(dataDir, fileName);
-                    //下载下来保存便于文档转换方便 // TODO: 2016/11/10 当所有的页码都转码完毕后需要删除.
                     FileUtils.writeByteArrayToFile(new File(filePath), bytes);
                     //首先检测文档是否加密
                     boolean isEncrypt = OfficeFileEncryptChecker.check(filePath);
                     PageInfo pageInfo;
                     if (!isEncrypt) {
-                        if (extension.equals("docx") || extension.equals("doc") || extension.equals("ppt")) {
-                            pageInfo = getPageInfoWithYozo(filePath);
+                        if (extension.contains("ppt") || extension.contains("doc")) {
+                            pageInfo = office2pdf ? DocPageInfoHelper.getPageInfo(filePath) : getPageInfoWithYozo(filePath);
                         } else {
                             pageInfo = DocPageInfoHelper.getPageInfo(filePath);
                         }
                         if (pageInfo.isSuccess()) {
                             pageCount = pageInfo.getPageCount();
                             sheetNames = pageInfo.getSheetNames();
-                            previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, path, filePath, dataDir, bytes.length, pageCount, sheetNames);
+                            previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, path, filePath, "", dataDir, bytes.length, pageCount, sheetNames);
                             previewInfoEx.setSuccess(true);
                             previewInfoEx.setPreviewInfo(previewInfo);
                         } else {

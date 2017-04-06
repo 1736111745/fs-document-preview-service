@@ -4,7 +4,7 @@
 var page = getQueryStringByName("page");
 var pageCount = getQueryStringByName("pageCount");
 var path = getQueryStringByName("path");
-var sg=getQueryStringByName("sg");
+var sg = getQueryStringByName("sg");
 function loadSheetNames() {
     $.ajax({
         type: 'get',
@@ -23,13 +23,13 @@ function loadSheetNames() {
                         if (isActive) {
                             activeSheetIndex = i;
                         }
-                        sheetName=sheetName.replace("_$h0$","").replace("_$a0$","").replace("_$h1$","").replace("_$a1$","");
+                        sheetName = sheetName.replace("_$h0$", "").replace("_$a0$", "").replace("_$h1$", "").replace("_$a1$", "");
                         var li = "<li id='li" + i + "'><a href='#' onclick='loadSheet(" + i + ")' data-toggle='tab'>" + sheetName + "</a></li>";
                         $('#navSheet').append($(li));
                     }
                 }
                 var activeSheetName = sheets[activeSheetIndex];
-                activeSheetName=activeSheetName.replace("_$h0$","").replace("_$a0$","").replace("_$h1$","").replace("_$a1$","");
+                activeSheetName = activeSheetName.replace("_$h0$", "").replace("_$a0$", "").replace("_$h1$", "").replace("_$a1$", "");
                 $('#li' + activeSheetIndex).addClass("active");
                 $('#aTitle').html(activeSheetName);
                 loadSheet(activeSheetIndex);
@@ -60,20 +60,20 @@ function loadSheet(i) {
     });
 }
 
-function move(direction){
-    if(direction == 0){
+function move(direction) {
+    if (direction == 0) {
         for (var i = $(".excel-tab-title li").length - 1; i > -1; i--) {
-            if ($(".excel-tab-title li:eq("+i+")").css("display") == "none") {
-                $(".excel-tab-title li:eq("+i+")").css("display","block");
+            if ($(".excel-tab-title li:eq(" + i + ")").css("display") == "none") {
+                $(".excel-tab-title li:eq(" + i + ")").css("display", "block");
                 break;
             }
         }
     }
-    else{
-        if($(".excel-tab-title")[0].scrollHeight > 42 ){
+    else {
+        if ($(".excel-tab-title")[0].scrollHeight > 42) {
             for (var i = 0; i < $(".excel-tab-title li").length; i++) {
-                if ($(".excel-tab-title li:eq("+i+")").css("display") != "none") {
-                    $(".excel-tab-title li:eq("+i+")").css("display","none");
+                if ($(".excel-tab-title li:eq(" + i + ")").css("display") != "none") {
+                    $(".excel-tab-title li:eq(" + i + ")").css("display", "none");
                     break;
                 }
             }
@@ -82,17 +82,17 @@ function move(direction){
 }
 function loadNav() {
     $(".lnk-file-title").html($(".excel-tab-title .active>a").html());
-    $(".excel-tab-title li>a").click(function(){
-        $(".navbar-fixed-top").css("height","");
+    $(".excel-tab-title li>a").click(function () {
+        $(".navbar-fixed-top").css("height", "");
         $(".lnk-file-title").html($(this).html());
         $(".nav-collapse.collapse").height("0px");
         $(".btn.btn-navbar").addClass("collapsed");
         $(".nav-collapse.in.collapse").removeClass("in");
     })
-    $(".btn-navbar").click(function(e) {
+    $(".btn-navbar").click(function (e) {
         $(".navbar-fixed-top").height(document.documentElement.clientHeight);
-        if($(".nav-collapse").hasClass("in")){
-            $(".navbar-fixed-top").css("height","");
+        if ($(".nav-collapse").hasClass("in")) {
+            $(".navbar-fixed-top").css("height", "");
         }
     });
 

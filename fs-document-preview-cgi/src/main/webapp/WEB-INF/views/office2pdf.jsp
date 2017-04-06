@@ -14,18 +14,16 @@
     <meta Name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文档预览</title>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/jquery.lazy.min.js"></script>
     <script type="text/javascript"
             src="<%=request.getContextPath()%>/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
     <script type="text/javascript"
-            src="<%=request.getContextPath()%>/static/js/pdf2html.js?v=<%=request.getAttribute("sv")%>"></script>
-
+            src="<%=request.getContextPath()%>/static/js/office2pdf.js?v=<%=request.getAttribute("sv")%>"></script>
     <script>
         window.contextPath = "<%=request.getContextPath()%>";
     </script>
     <style type="text/css">
         div.lazy {
-            background: #FFFFFF url("<%=request.getContextPath()%>/static/images/loading.gif") no-repeat center;
+            background: #FFFFFF url("<%=request.getContextPath()%>/static/images/loading1.gif") no-repeat center;
             height: 500px;
         }
 
@@ -40,11 +38,20 @@
             text-align: center;
             font-size: 24px;
         }
+
+        /*div.fix {*/
+            /*position: fixed;*/
+            /*bottom: 10px;*/
+            /*right: 10px;*/
+            /*background-color: #202020;*/
+            /*color: white;*/
+            /*font-size: 32px;*/
+            /*width: 100px;*/
+            /*text-align: center;*/
+        /*}*/
     </style>
-    <title>pdf文档预览</title>
+    <title>office2pdf</title>
 </head>
 <body>
-<div id="main">
-</div>
 </body>
 </html>

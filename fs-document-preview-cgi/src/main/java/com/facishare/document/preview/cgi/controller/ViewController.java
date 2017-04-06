@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/")
 public class ViewController {
     private FsGrayReleaseBiz gray = FsGrayRelease.getInstance("dps");
+
     @RequestMapping(value = "/preview/bypath", method = RequestMethod.GET)
     public String previewByPath() {
         return "preview";
@@ -38,6 +39,11 @@ public class ViewController {
         String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
         boolean pd2html = gray.isAllow(grayConfig, user);
         return pd2html ? "pdf2html" : "preview_pdf";
+    }
+
+    @RequestMapping(value = "/preview/handleOffice2Pdf", method = RequestMethod.GET)
+    public String handleOffice2Pdf() {
+        return "office2pdf";
     }
 
     @RequestMapping(value = "/preview/handleWordAndPPT", method = RequestMethod.GET)

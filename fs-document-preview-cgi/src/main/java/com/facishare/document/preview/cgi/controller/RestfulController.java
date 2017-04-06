@@ -1,20 +1,14 @@
 package com.facishare.document.preview.cgi.controller;
 
-import com.facishare.document.preview.cgi.model.EmployeeInfo;
-import com.facishare.document.preview.cgi.model.PreviewInfoEx;
-import com.facishare.document.preview.cgi.service.PreviewService;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.PreviewInfo;
 import com.facishare.document.preview.common.utils.DocPageInfoHelper;
 import com.facishare.document.preview.common.utils.PathHelper;
 import com.facishare.document.preview.common.utils.SampleUUID;
-import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.aspectj.weaver.Dump;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

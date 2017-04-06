@@ -42,7 +42,8 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     }
 
     @Override
-    public String getDataFilePath(String path, int page, String dataDir,String filePath, int type, List<String> filePathList) throws IOException {
+    public String getDataFilePath(String path, int page, String dataDir, String filePath, int type,
+                                  List<String> filePathList) throws IOException {
         //todo:优先去filePathList找，找不到去磁盘找一次，如果找到了就填充filePathList，原因是很多时候异步超时后，转换线程退出了，但转换进程还在工作。
         String dataFilePath = "";
         DocType docType = DocTypeHelper.getDocType(filePath);
@@ -97,7 +98,8 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
 
     @Override
     @Synchronized
-    public PreviewInfo initPreviewInfo(String ea, int employeeId, String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames) {
+    public PreviewInfo initPreviewInfo(String ea, int employeeId, String path, String originalFilePath, String pdfFilePath,
+                                       String dataDir, long docSize, int pageCount, List<String> sheetNames) {
         PreviewInfo previewInfo = new PreviewInfo();
         previewInfo.setDocSize(docSize);
         previewInfo.setDirName(FilenameUtils.getBaseName(dataDir));
@@ -108,6 +110,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         previewInfo.setEmployeeId(employeeId);
         previewInfo.setDataDir(dataDir);
         previewInfo.setPath(path);
+        previewInfo.setPdfFilePath(pdfFilePath);
         previewInfo.setSheetNames(sheetNames);
         previewInfo.setPageCount(pageCount);
         previewInfo.setOriginalFilePath(originalFilePath);
@@ -123,5 +126,14 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("path").equal(path).criteria("ea").equal(ea);
         return query.get();
+    }
+
+    @Override
+    public void savePdfFile(String ea, String path, String pdfFilePath) {
+        Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+        query.criteria("path").equal(path).criteria("ea").equal(ea);
+        UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
+        update.add("pdfFilePath", pdfFilePath);
+        dpsDataStore.findAndModify(query, update);
     }
 }

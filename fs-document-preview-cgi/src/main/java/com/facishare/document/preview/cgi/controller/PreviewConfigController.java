@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static com.facishare.document.preview.cgi.utils.UrlParametersHelper.safeGetRequestParameter;
+
 /**
  * Created by liuq on 16/9/29.
  */
@@ -26,25 +28,26 @@ public class PreviewConfigController {
     private FsGrayReleaseBiz gray = FsGrayRelease.getInstance("dps");
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
+
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewConfig", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getPreviewWay(HttpServletRequest request) {
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        String client = safteGetRequestParameter(request, "client");
-        boolean isIOS=client.toLowerCase().equals("ios");
+        String client = safeGetRequestParameter(request, "client");
+        boolean isIOS = client.toLowerCase().equals("ios");
         String grayConfig = isIOS ? "newway_iOS" : "newway_android";
         PreviewWayEntity entity = new PreviewWayEntity();
         String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
         boolean newway = gray.isAllow(grayConfig, user);
-        String name=safteGetRequestParameter(request,"name");
-        boolean useNewWay=true;
-        if(!Strings.isNullOrEmpty(name)) {
+        String name = safeGetRequestParameter(request, "name");
+        boolean useNewWay = true;
+        if (!Strings.isNullOrEmpty(name)) {
             String extension = FilenameUtils.getExtension(name).toLowerCase();
             if (allowPreviewExtension.indexOf(extension) == -1) {
                 useNewWay = false;
             }
         }
-        if (newway&&useNewWay) {
+        if (newway && useNewWay) {
             entity.setWay(1);
             String byTokenUrl = "/dps/preview/bytoken?token={0}&name={1}";
             String byPathUrl = "/dps/preview/bypath?path={0}&name={1}";
@@ -52,12 +55,7 @@ public class PreviewConfigController {
             entity.setPreviewByTokenUrlFormat(byTokenUrl);
         } else
             entity.setWay(0);
-        //log.info("getPreviewConfig,client:{},employeeInfo:{},newway:{}", client, JSON.toJSON(employeeInfo),entity.getWay());
         String json = JSON.toJSONString(entity);
         return json;
-    }
-    private String safteGetRequestParameter(HttpServletRequest request, String paramName) {
-        String value = request.getParameter(paramName) == null ? "" : request.getParameter(paramName).trim();
-        return value;
     }
 }

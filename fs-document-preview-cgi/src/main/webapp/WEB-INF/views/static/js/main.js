@@ -4,8 +4,8 @@
 var path = getQueryStringByName("path");
 var token = getQueryStringByName("token");
 var pageCount = 0;
-var sg="";//安全组
-var ext=""//扩展名
+var sg = "";//安全组
+var ext = ""//扩展名
 function getPreviewInfo() {
     $('#divLoading').show();
     $.ajax({
@@ -19,11 +19,11 @@ function getPreviewInfo() {
                 pageCount = data.pageCount;
                 path = data.path;
                 sg = data.sg;
-                ext=data.ext;
+                ext = data.ext;
                 doPreview();
             }
             else {
-                document.write("<h3>"+data.errorMsg+"</h3>");
+                document.write("<h3>" + data.errorMsg + "</h3>");
             }
         }
     });
@@ -34,7 +34,10 @@ function doPreview() {
         route = "handleExcel";
     }
     else if (ext.indexOf("pdf") >= 0) {
-        route = "handlePdf";
+        if (path.endWith(".pdf"))
+            route = "handlePdf";
+        else
+            route = "handleOffice2Pdf"
     }
     else {
         route = "handleWordAndPPT";
@@ -42,6 +45,7 @@ function doPreview() {
     var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg;
     location.href = url;
 }
+
 //入口
 $(document).ready(function () {
     $('#divLoading').hide();

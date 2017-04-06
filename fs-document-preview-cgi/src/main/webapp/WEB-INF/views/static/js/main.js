@@ -5,7 +5,6 @@ var path = getQueryStringByName("path");
 var token = getQueryStringByName("token");
 var pageCount = 0;
 var sg = "";//安全组
-var ext = ""//扩展名
 var needOfficePdf = false;
 function getPreviewInfo() {
     $('#divLoading').show();
@@ -35,11 +34,11 @@ function doPreview() {
         route = "handleOffice2Pdf"
     }
     else {
-        if (ext.indexOf("xls") >= 0) {
+        if (path.indexOf("xls") >= 0) {
             route = "handleExcel";
         }
         else
-            route = ext.indexOf("pdf") ? "handlePdf" : "handleWordAndPPT";
+            route = path.indexOf("pdf") ? "handlePdf" : "handleWordAndPPT";
     }
     var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg;
     location.href = url;

@@ -22,22 +22,8 @@ function loadPageLoader() {
         }
     });
 }
-
 function loadData(i) {
-    var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg;
-    $.ajax({
-        type: 'get',
-        timeout: 15000,
-        dataType: 'xml',
-        async: true,
-        url: url,
-        complete: function (request, status) {
-            $('#divLoading').hide();
-            var svg = status == "success" ? $(request.responseText) : ""
-            var svgHtml = svg == "" ? "<div class='blank'>该页无法显示，请刷新页面再试！</div>" : svg[1].outerHTML;
-            var page = $(svgHtml);
-            $("#divPage" + i).append(page);
-            $("#divPage" + i).removeClass("lazy");
-        }
-    });
+    var src = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg;
+    var page = $("<div class='content'><embed class='lazy' src='" + src + "' width='100%' height='100%' type='image/svg+xml'/></div>");
+    $("#divPages").append(page);
 }

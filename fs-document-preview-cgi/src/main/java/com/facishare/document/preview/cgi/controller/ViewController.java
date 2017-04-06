@@ -29,7 +29,7 @@ public class ViewController {
 
     @RequestMapping(value = "/preview/handleExcel", method = RequestMethod.GET)
     public String handleExcel() {
-        return "preview_excel";
+        return "excel2html";
     }
 
     @RequestMapping(value = "/preview/handlePdf", method = RequestMethod.GET)
@@ -38,7 +38,7 @@ public class ViewController {
         String grayConfig = "pdf2html";
         String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
         boolean pd2html = gray.isAllow(grayConfig, user);
-        return pd2html ? "pdf2html" : "preview_pdf";
+        return pd2html ? "pdf2html" : "pdf2png";
     }
 
     @RequestMapping(value = "/preview/handleOffice2Pdf", method = RequestMethod.GET)
@@ -48,7 +48,7 @@ public class ViewController {
 
     @RequestMapping(value = "/preview/handleWordAndPPT", method = RequestMethod.GET)
     public String handleWordAndPPT() {
-        return "preview_word_ppt";
+        return "office2svg";
     }
 
 }

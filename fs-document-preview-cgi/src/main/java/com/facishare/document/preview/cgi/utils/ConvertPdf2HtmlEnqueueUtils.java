@@ -29,7 +29,6 @@ public class ConvertPdf2HtmlEnqueueUtils {
         List<String> dataFilePathList = previewInfo.getFilePathList();
         if (dataFilePathList == null)
             dataFilePathList = Lists.newArrayList();
-        //log.info("dataFilePathList:" + JSON.toJSONString(dataFilePathList));
         List<Integer> hasNotConvertPageList = Lists.newArrayList();
         for (int i = 1; i < pageCount + 1; i++) {
             if (!dataFilePathList.contains(i + ".html")) {

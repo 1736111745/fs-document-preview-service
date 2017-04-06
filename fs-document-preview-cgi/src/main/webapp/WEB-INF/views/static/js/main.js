@@ -41,7 +41,7 @@ function doPreview() {
             route = path.indexOf("pdf")>=0 ? "handlePdf" : "handleWordAndPPT";
     }
     console.log("route:"+route);
-    var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg;
+    var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg+"&rdm=1";
     location.href = url;
 }
 

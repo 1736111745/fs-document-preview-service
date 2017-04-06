@@ -148,15 +148,13 @@ public class PreviewController {
                             FileOutPutor.outPut(response, dataFilePath, true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
-                            String pdfFilePath=previewInfo.getPdfFilePath();
-                            String finalFilePath=Strings.isNullOrEmpty(pdfFilePath)?originalFilePath:pdfFilePath;
-                            DocType docType = DocTypeHelper.getDocType(finalFilePath);
+                            DocType docType = DocTypeHelper.getDocType(path);
                             if (docType == DocType.PDF && !Strings.isNullOrEmpty(version)) {
-                                Pdf2HtmlArg pdf2HtmlArg = Pdf2HtmlArg.builder().originalFilePath(finalFilePath).page(pageIndex).path(path).build();
+                                Pdf2HtmlArg pdf2HtmlArg = Pdf2HtmlArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
                                 Pdf2HtmlResult pdf2HtmlResult = pdf2HtmlService.convertPdf2Html(pdf2HtmlArg);
                                 dataFilePath = pdf2HtmlResult.getDataFilePath();
                             } else {
-                                ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(finalFilePath).page(pageIndex).path(path).type(1).build();
+                                ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(1).build();
                                 ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
                                 dataFilePath = convertDocResult.getDataFilePath();
                             }

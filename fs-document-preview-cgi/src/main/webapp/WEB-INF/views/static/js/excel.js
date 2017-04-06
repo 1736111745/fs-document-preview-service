@@ -46,7 +46,7 @@ function loadSheet(i) {
     $.ajax({
         type: 'get',
         timeout: 15000,
-        dataType: 'json',
+        dataType: 'html',
         async: true,
         url: window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg,
         beforeSend: function () {

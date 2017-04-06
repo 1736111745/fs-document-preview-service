@@ -42,7 +42,7 @@ public class OnlineOfficeServerUtil {
     }
 
     public WordConvertInfo checkWord2Pdf(String ea, int employeeId, String path, String sg, String name) {
-        log.info("begin check ppt to pdf!");
+        log.info("begin check word to pdf!");
         Stopwatch stopwatch=Stopwatch.createStarted();
         String downloadUrl = String.format(fscServerUrl, ea, String.valueOf(employeeId), path, sg, name);
         String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);

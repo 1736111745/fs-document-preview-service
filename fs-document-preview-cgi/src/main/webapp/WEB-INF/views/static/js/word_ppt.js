@@ -34,7 +34,7 @@ function loadData(i) {
         complete: function (request, status) {
             $('#divLoading').hide();
             var svg = status == "success" ? $(request.responseText) : ""
-            var svgHtml=svg[1].innerHTML;
+            var svgHtml=svg[1].outerHTML;
             var page = $("<div class='content'>" + svgHtml + "</div>");
             $("#divPage" + i).append(page);
             $("#divPage" + i).removeClass("lazy");

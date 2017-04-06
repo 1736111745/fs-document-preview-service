@@ -15,7 +15,7 @@ function checkPPT2PdfStatus() {
         checkOffice2Pdf();
         if (finished || tryCount > 10) {
             clearInterval(idChkOffice2Pdf);
-            var url = window.contextPath + '/preview/handlePdf?path = ' + path + ' & pageCount = ' + pageCount + "&sg=" + sg;
+            var url = window.contextPath + '/preview/handlePdf?path =' + path + ' &pageCount = ' + pageCount + "&sg=" + sg;
             location.href = url;
         }
     }, 2000);

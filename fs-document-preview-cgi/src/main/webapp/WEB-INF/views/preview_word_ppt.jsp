@@ -28,7 +28,7 @@
 
         div.border {
             text-align: center;
-            width: 1000px;
+            width: 100%;
             margin: 5px auto;
             border: 1px solid rgb(27, 30, 33)
         }

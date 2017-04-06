@@ -38,8 +38,9 @@ function doPreview() {
             route = "handleExcel";
         }
         else
-            route = path.indexOf("pdf") ? "handlePdf" : "handleWordAndPPT";
+            route = path.indexOf("pdf")>=0 ? "handlePdf" : "handleWordAndPPT";
     }
+    console.log("route:"+route);
     var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg;
     location.href = url;
 }

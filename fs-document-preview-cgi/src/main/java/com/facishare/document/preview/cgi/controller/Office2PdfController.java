@@ -53,14 +53,19 @@ public class Office2PdfController {
         int employeeId = employeeInfo.getEmployeeId();
         String ext = FilenameUtils.getExtension(path).toLowerCase();
         String name = SampleUUID.getUUID() + "." + ext;
-        String json = onlineOfficeServerUtil.checkPPT2Pdf(ea, employeeId, path, sg, name);
-        JSONObject jsonObject = JSONObject.parseObject(json);
+        PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
         boolean finished = false;
-        if (jsonObject.get("Error") == null) {
-            String printUrl = ((JSONObject) jsonObject.get("Result")).getString("PrintUrl");
-            byte[] bytes = onlineOfficeServerUtil.downloadPdfByPrintUrl(printUrl);
+        if (!Strings.isNullOrEmpty(previewInfo.getPdfFilePath())) {
             finished = true;
-            savePdfFile(ea, path, bytes);
+        } else {
+            String json = onlineOfficeServerUtil.checkPPT2Pdf(ea, employeeId, path, sg, name);
+            JSONObject jsonObject = JSONObject.parseObject(json);
+            if (jsonObject.get("Error") == null) {
+                String printUrl = ((JSONObject) jsonObject.get("Result")).getString("PrintUrl");
+                byte[] bytes = onlineOfficeServerUtil.downloadPdfByPrintUrl(printUrl);
+                finished = true;
+                savePdfFile(ea, path, bytes);
+            }
         }
         Map<String, Boolean> map = new HashMap<>();
         map.put("finished", finished);
@@ -77,10 +82,16 @@ public class Office2PdfController {
         int employeeId = employeeInfo.getEmployeeId();
         String ext = FilenameUtils.getExtension(path).toLowerCase();
         String name = SampleUUID.getUUID() + "." + ext;
-        OnlineOfficeServerUtil.WordConvertInfo wordConvertInfo = onlineOfficeServerUtil.checkWord2Pdf(ea, employeeId, path, sg, name);
-        boolean finished = wordConvertInfo.isFinished();
-        if (finished) {
-            savePdfFile(ea, path, wordConvertInfo.getBytes());
+        PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
+        boolean finished;
+        if (!Strings.isNullOrEmpty(previewInfo.getPdfFilePath())) {
+            finished = true;
+        } else {
+            OnlineOfficeServerUtil.WordConvertInfo wordConvertInfo = onlineOfficeServerUtil.checkWord2Pdf(ea, employeeId, path, sg, name);
+            finished = wordConvertInfo.isFinished();
+            if (finished) {
+                savePdfFile(ea, path, wordConvertInfo.getBytes());
+            }
         }
         Map<String, Boolean> map = new HashMap<>();
         map.put("finished", finished);
@@ -94,10 +105,8 @@ public class Office2PdfController {
         String filePath = FilenameUtils.concat(dataDir, fileName);
         FileUtils.writeByteArrayToFile(new File(filePath), bytes);
         previewInfoDao.savePdfFile(ea, path, filePath);
-        convertPdf2HtmlEnqueueUtils.enqueue(ea,path);
+        convertPdf2HtmlEnqueueUtils.enqueue(ea, path);
     }
-
-
 
 
 }

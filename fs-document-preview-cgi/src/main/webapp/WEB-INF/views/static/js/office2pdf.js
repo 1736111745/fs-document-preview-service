@@ -20,12 +20,14 @@ var checkOffice2Pdf = function () {
         url: url,
         timeout: 5000,
         complete: function (XMLHttpRequest, status) {
-            var data = XMLHttpRequest.responseJSON;
-            if (data.finished) {
-                location.href = window.contextPath + '/preview/handlePdf?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg;
-            }
-            else {
-                checkOffice2Pdf();
+            if (status == "success") {
+                var data = XMLHttpRequest.responseJSON;
+                if (data.finished) {
+                    location.href = window.contextPath + '/preview/handlePdf?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg;
+                }
+                else {
+                    checkOffice2Pdf();
+                }
             }
             if (status == 'timeout') {
                 console.log("time out!")

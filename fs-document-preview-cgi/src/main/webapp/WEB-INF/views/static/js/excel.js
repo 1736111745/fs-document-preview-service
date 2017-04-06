@@ -45,16 +45,16 @@ function loadSheetNames() {
 function loadSheet(i) {
     $.ajax({
         type: 'get',
-        timeout: 1800000,
+        timeout: 15000,
         dataType: 'json',
         async: true,
         url: window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg,
         beforeSend: function () {
             $('#divLoading').show();
         },
-        complete: function (request) {
+        complete: function (request, status) {
             $('#divLoading').hide();
-            var excelContent = $(request.responseText)
+            var excelContent = status == "success" ? $(request.responseText) : ""
             $('#content').html(excelContent);
         }
     });

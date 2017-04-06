@@ -37,17 +37,6 @@
             text-align: center;
             font-size: 24px;
         }
-
-        /*div.fix {*/
-        /*position: fixed;*/
-        /*bottom: 10px;*/
-        /*right: 10px;*/
-        /*background-color: #202020;*/
-        /*color: white;*/
-        /*font-size: 32px;*/
-        /*width: 100px;*/
-        /*text-align: center;*/
-        /*}*/
     </style>
 </head>
 <body>

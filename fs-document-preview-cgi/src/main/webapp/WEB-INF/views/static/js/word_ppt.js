@@ -22,9 +22,24 @@ function loadPageLoader() {
         }
     });
 }
+
 function loadData(i) {
-    var src = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg;
-    var page = $("<div class='content'><embed  src='" + src + "' width='100%' height='100%' type='image/svg+xml'/></div>");
-    $("#divPage" + i).append(page);
-    $("#divPage" + i).removeClass("lazy");
+    var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg;
+    $.ajax({
+        type: 'get',
+        timeout: 15000,
+        dataType: 'json',
+        async: true,
+        url: url,
+        beforeSend: function () {
+            $('#divLoading').show();
+        },
+        complete: function (request, status) {
+            $('#divLoading').hide();
+            var svg = status == "success" ? $(request.responseText) : ""
+            var page = $("<div class='content'>" + svg + "</div>");
+            $("#divPage" + i).append(page);
+            $("#divPage" + i).removeClass("lazy");
+        }
+    });
 }

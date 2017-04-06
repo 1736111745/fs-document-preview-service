@@ -31,9 +31,6 @@ function loadData(i) {
         dataType: 'json',
         async: true,
         url: url,
-        beforeSend: function () {
-            $('#divLoading').show();
-        },
         complete: function (request, status) {
             $('#divLoading').hide();
             var svg = status == "success" ? $(request.responseText) : ""

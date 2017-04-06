@@ -115,8 +115,8 @@ public class PreviewController {
                 String grayConfig = "office2pdf";
                 String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
                 boolean office2pdf = gray.isAllow(grayConfig, user);
-                String ext = office2pdf ? "pdf" : extension;
-                return getPreviewInfoResult(previewInfo.getPageCount(), previewInfo.getSheetNames(), path, ext, securityGroup);
+                boolean needOfficePdf=office2pdf&&Strings.isNullOrEmpty(previewInfo.getPdfFilePath();
+                return getPreviewInfoResult(previewInfo.getPageCount(), previewInfo.getSheetNames(), path, needOfficePdf, securityGroup);
             }
         } else {
             String errMsg = Strings.isNullOrEmpty(previewInfoEx.getErrorMsg()) ? defaultErrMsg : previewInfoEx.getErrorMsg();
@@ -394,13 +394,13 @@ public class PreviewController {
         }
     }
 
-    private String getPreviewInfoResult(int pageCount, List<String> sheetNames, String path, String ext, String securityGroup) {
+    private String getPreviewInfoResult(int pageCount, List<String> sheetNames, String path, boolean needOfficePdf, String securityGroup) {
         Map<String, Object> map = new HashMap<>();
         map.put("canPreview", true);
         map.put("pageCount", pageCount);
         map.put("path", path);
         map.put("sg", securityGroup);
-        map.put("ext", ext);
+        map.put("needOfficePdf", needOfficePdf);
         map.put("sheets", sheetNames);
         return JSONObject.toJSONString(map);
     }

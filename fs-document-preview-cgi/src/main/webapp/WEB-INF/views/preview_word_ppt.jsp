@@ -38,6 +38,13 @@
             text-align: center;
             font-size: 24px;
         }
+
+        div.blank
+        {
+            font-size: 24px;
+            height: 200px;
+            line-height: 200px;
+        }
     </style>
 </head>
 <body>

@@ -34,7 +34,7 @@ function loadData(i) {
         complete: function (request, status) {
             $('#divLoading').hide();
             var svg = status == "success" ? $(request.responseText) : ""
-            var svgHtml = svg == "" ? "<div class='blank'></div>" : svg[1].outerHTML;
+            var svgHtml = svg == "" ? "<div class='blank'>该页无法显示</div>" : svg[1].outerHTML;
             var page = $(svgHtml);
             $("#divPage" + i).append(page);
             $("#divPage" + i).removeClass("lazy");

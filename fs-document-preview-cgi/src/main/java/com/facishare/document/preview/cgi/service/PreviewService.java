@@ -69,7 +69,6 @@ public class PreviewService {
                 String extension = FilenameUtils.getExtension(path).toLowerCase();
                 byte[] bytes = fileStorageProxy.GetBytesByPath(path, ea, employeeId, securityGroup);
                 if (bytes != null && bytes.length > 0) {
-                    extension = office2pdf ? (extension.contains("xls") ? extension : "pdf") : extension;
                     String dataDir = new PathHelper(ea).getDataDir();
                     String fileName = SampleUUID.getUUID() + "." + extension;
                     String filePath = FilenameUtils.concat(dataDir, fileName);

@@ -1,7 +1,7 @@
 var sg = getQueryStringByName("sg");
 var pageCount = getQueryStringByName("pageCount");
 var path = getQueryStringByName("path");
-var type = path.indexOf(".doc") > -1 ? "checkWord2Pdf" : "checkPPT2Pdf;"
+var type = path.indexOf(".doc") > -1 ? "checkWord2Pdf" : "checkPPT2Pdf"
 var tryCount = 0;
 var idChkOffice2Pdf;
 $(function () {

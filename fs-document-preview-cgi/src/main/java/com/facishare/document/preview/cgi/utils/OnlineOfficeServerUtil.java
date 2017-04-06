@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.fxiaoke.common.http.handler.SyncCallback;
 import com.fxiaoke.common.http.spring.OkHttpSupport;
 import com.github.autoconf.ConfigFactory;
+import com.google.common.base.Stopwatch;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import javax.annotation.Resource;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liuq on 2017/3/29.
@@ -40,6 +42,8 @@ public class OnlineOfficeServerUtil {
     }
 
     public WordConvertInfo checkWord2Pdf(String ea, int employeeId, String path, String sg, String name) {
+        log.info("begin check ppt to pdf!");
+        Stopwatch stopwatch=Stopwatch.createStarted();
         String downloadUrl = String.format(fscServerUrl, ea, String.valueOf(employeeId), path, sg, name);
         String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
         String postUrl = oosServerUrl + "/wv/WordViewer/request.pdf?WOPIsrc=" + URLEncoder.encode(src) + "&type=accesspdf";
@@ -65,6 +69,7 @@ public class OnlineOfficeServerUtil {
                 }
             }
         });
+        log.info("end check word to pdf!cost:{}",stopwatch.elapsed(TimeUnit.MILLISECONDS)+"ms");
         return docConvertInfo;
     }
 
@@ -74,6 +79,8 @@ public class OnlineOfficeServerUtil {
         return client.getBytes(url);
     }
     public String checkPPT2Pdf(String ea, int employeeId, String path, String sg, String name) {
+        log.info("begin check ppt to pdf!");
+        Stopwatch stopwatch=Stopwatch.createStarted();
         String downloadUrl = String.format(fscServerUrl, ea, String.valueOf(employeeId), path, sg, name);
         String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
         String pid = "WOPIsrc=" + URLEncoder.encode(src);
@@ -98,8 +105,10 @@ public class OnlineOfficeServerUtil {
                 }
             }
         });
+        stopwatch.stop();
         String resultJson = object.toString();
         log.info("result:{}", resultJson);
+        log.info("end check ppt to pdf!cost:{}",stopwatch.elapsed(TimeUnit.MILLISECONDS)+"ms");
         return object.toString();
     }
 

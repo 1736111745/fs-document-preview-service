@@ -11,10 +11,7 @@ import com.facishare.document.preview.api.service.Pdf2HtmlService;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfoEx;
 import com.facishare.document.preview.cgi.service.PreviewService;
-import com.facishare.document.preview.cgi.utils.FileOutPutor;
-import com.facishare.document.preview.cgi.utils.FileStorageProxy;
-import com.facishare.document.preview.cgi.utils.RequestParamsHelper;
-import com.facishare.document.preview.cgi.utils.UrlParametersHelper;
+import com.facishare.document.preview.cgi.utils.*;
 import com.facishare.document.preview.common.dao.ConvertTaskDao;
 import com.facishare.document.preview.common.dao.FileTokenDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
@@ -60,19 +57,17 @@ public class PreviewController {
     @Autowired
     PreviewInfoDao previewInfoDao;
     @Autowired
-    ConvertTaskDao convertTaskDao;
-    @Autowired
     FileTokenDao fileTokenDao;
     @Autowired
     DocConvertService docConvertService;
     @Autowired
     Pdf2HtmlService pdf2HtmlService;
     @Autowired
-    private PreviewService previewService;
+    PreviewService previewService;
     @Autowired
-    private CounterService counterService;
+    CounterService counterService;
     @Autowired
-    private ConvertorQueueProvider convertorQueueProvider;
+    ConvertPdf2HtmlEnqueueUtils convertPdf2HtmlEnqueueUtils;
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
     private FsGrayReleaseBiz gray = FsGrayRelease.getInstance("dps");
@@ -331,27 +326,7 @@ public class PreviewController {
             if (previewInfoEx.isSuccess()) {
                 PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
                 if (previewInfo != null) {
-                    int pageCount = previewInfo.getPageCount();
-                    List<String> dataFilePathList = previewInfo.getFilePathList();
-                    if (dataFilePathList == null)
-                        dataFilePathList = Lists.newArrayList();
-                    log.info("dataFilePathList:" + JSON.toJSONString(dataFilePathList));
-                    List<Integer> hasNotConvertPageList = Lists.newArrayList();
-                    for (int i = 1; i < pageCount + 1; i++) {
-                        if (!dataFilePathList.contains(i + ".html")) {
-                            {
-                                hasNotConvertPageList.add(i);
-                            }
-                        }
-                    }
-                    String originalFilePath = previewInfo.getOriginalFilePath();
-                    String pdfFilePath=previewInfo.getPdfFilePath();
-                    String finalFilePath=!Strings.isNullOrEmpty(pdfFilePath)?pdfFilePath:originalFilePath;
-                    List<Integer> needEnquePageList = convertTaskDao.batchAddTask(ea, path, hasNotConvertPageList);
-                    needEnquePageList.forEach(p -> {
-                        ConvertorMessage convertorMessage = ConvertorMessage.builder().npath(path).ea(ea).page(p).filePath(finalFilePath).build();
-                        convertorQueueProvider.convertPdf(convertorMessage);
-                    });
+                    convertPdf2HtmlEnqueueUtils.enqueue(ea, path);
                 }
             }
         } catch (Exception e) {

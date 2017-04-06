@@ -8,8 +8,9 @@ $(function () {
     checkOffice2Pdf();
 });
 var checkOffice2Pdf = function () {
+    console.log("try count:" + tryCount);
     var url = window.contextPath + '/preview/' + type + '?path=' + path + "&sg=" + sg
-    if(tryCount++>10) {
+    if (tryCount++ > 10) {
         return;
     }
     $.ajax({
@@ -17,13 +18,16 @@ var checkOffice2Pdf = function () {
         dataType: 'json',
         async: true,
         url: url,
-        success: function (data) {
+        timeout: 5000,
+        complete: function (XMLHttpRequest, status) { //请求完成后最终执行参数
             if (data.finished) {
                 location.href = window.contextPath + '/preview/handlePdf?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg;
             }
-            else
-            {
+            else {
                 checkOffice2Pdf();
+            }
+            if (status == 'timeout') {
+                console.log("time out!")
             }
         }
     });

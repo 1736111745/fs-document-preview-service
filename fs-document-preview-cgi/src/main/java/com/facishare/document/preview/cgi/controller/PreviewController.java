@@ -14,6 +14,7 @@ import com.facishare.document.preview.cgi.service.PreviewService;
 import com.facishare.document.preview.cgi.utils.FileOutPutor;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.cgi.utils.RequestParamsHelper;
+import com.facishare.document.preview.cgi.utils.UrlParametersHelper;
 import com.facishare.document.preview.common.dao.ConvertTaskDao;
 import com.facishare.document.preview.common.dao.FileTokenDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
@@ -42,8 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.facishare.document.preview.cgi.utils.UrlParametersHelper.isValidPath;
-import static com.facishare.document.preview.cgi.utils.UrlParametersHelper.safeGetRequestParameter;
 
 
 /**
@@ -78,8 +77,8 @@ public class PreviewController {
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getPreviewInfo(HttpServletRequest request) throws Exception {
-        String path = safeGetRequestParameter(request, "path");
-        String token = safeGetRequestParameter(request, "token");
+        String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
+        String token = UrlParametersHelper.safeGetRequestParameter(request, "token");
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String securityGroup = "";
         if (path.equals("") && token.equals("")) {
@@ -95,7 +94,7 @@ public class PreviewController {
                 }
             }
         }
-        if (!isValidPath(path)) {
+        if (!UrlParametersHelper.isValidPath(path)) {
             return getPreviewInfoResult("参数错误!");
         }
         String extension = FilenameUtils.getExtension(path).toLowerCase();
@@ -120,11 +119,11 @@ public class PreviewController {
 
     @RequestMapping(value = "/preview/getFilePath")
     public void getFilePath(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String path = safeGetRequestParameter(request, "path");
-        String page = safeGetRequestParameter(request, "page");
-        String securityGroup = safeGetRequestParameter(request, "sg");
-        String version = safeGetRequestParameter(request, "ver");
-        if (!isValidPath(path)) {
+        String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
+        String page = UrlParametersHelper.safeGetRequestParameter(request, "page");
+        String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
+        String version = UrlParametersHelper.safeGetRequestParameter(request, "ver");
+        if (!UrlParametersHelper.isValidPath(path)) {
             response.setStatus(400);
             return;
         }
@@ -183,7 +182,7 @@ public class PreviewController {
     @ResponseBody
     @RequestMapping(value = "/preview/getSheetNames", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getSheetNames(HttpServletRequest request) {
-        String path = safeGetRequestParameter(request, "path");
+        String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String ea = employeeInfo.getEa();
         Map<String, Object> map = new HashMap<>();
@@ -207,7 +206,7 @@ public class PreviewController {
     @ResponseBody
     @RequestMapping(value = "/preview/getDirName", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getDirName(HttpServletRequest request) {
-        String path = safeGetRequestParameter(request, "path");
+        String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String ea = employeeInfo.getEa();
         Map<String, Object> map = new HashMap<>();
@@ -234,7 +233,7 @@ public class PreviewController {
         int pageCount = 0;
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String path = RequestParamsHelper.safteGetRequestParameter(request, "npath") == "" ? RequestParamsHelper.safteGetRequestParameter(request, "path") : RequestParamsHelper.safteGetRequestParameter(request, "path");
-        if (!isValidPath(path)) {
+        if (!UrlParametersHelper.isValidPath(path)) {
             return getDocPreviewInfoResult(path, pageCount);
         }
         String extension = FilenameUtils.getExtension(path).toLowerCase();
@@ -255,13 +254,13 @@ public class PreviewController {
     @RequestMapping(value = "/preview/DocPageByPath", method = RequestMethod.GET)
     public void docPageByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String path = RequestParamsHelper.safteGetRequestParameter(request, "npath") == "" ? RequestParamsHelper.safteGetRequestParameter(request, "path") : RequestParamsHelper.safteGetRequestParameter(request, "npath");
-        int pageIndex = NumberUtils.toInt(safeGetRequestParameter(request, "pageIndex"), 0);
-        if (!isValidPath(path)) {
+        int pageIndex = NumberUtils.toInt(UrlParametersHelper.safeGetRequestParameter(request, "pageIndex"), 0);
+        if (!UrlParametersHelper.isValidPath(path)) {
             response.setStatus(400);
             return;
         }
         try {
-            int width = NumberUtils.toInt(safeGetRequestParameter(request, "width"), 1024);
+            int width = NumberUtils.toInt(UrlParametersHelper.safeGetRequestParameter(request, "width"), 1024);
             width = width > 1920 ? 1920 : width;
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             String ea = employeeInfo.getEa();
@@ -312,9 +311,9 @@ public class PreviewController {
     @ResponseBody
     @RequestMapping(value = "/preview/checkDocConvertStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void checkDocConvertStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String path = safeGetRequestParameter(request, "path");
-        String securityGroup = safeGetRequestParameter(request, "sg");
-        if (!isValidPath(path)) {
+        String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
+        String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
+        if (!UrlParametersHelper.isValidPath(path)) {
             response.setStatus(400);
         }
         try {
@@ -357,9 +356,9 @@ public class PreviewController {
     @RequestMapping(value = "/preview/queryDocConvertStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String queryDocConvertStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        String path = safeGetRequestParameter(request, "path");
-        String securityGroup = safeGetRequestParameter(request, "sg");
-        if (!isValidPath(path)) {
+        String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
+        String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
+        if (!UrlParametersHelper.isValidPath(path)) {
             response.setStatus(400);
             return "";
         }

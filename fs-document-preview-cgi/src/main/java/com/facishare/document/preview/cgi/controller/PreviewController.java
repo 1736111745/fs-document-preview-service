@@ -23,6 +23,8 @@ import com.facishare.document.preview.common.mq.ConvertorQueueProvider;
 import com.facishare.document.preview.common.utils.DocPreviewInfoHelper;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.fxiaoke.metrics.CounterService;
+import com.fxiaoke.release.FsGrayRelease;
+import com.fxiaoke.release.FsGrayReleaseBiz;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -73,7 +75,7 @@ public class PreviewController {
     private ConvertorQueueProvider convertorQueueProvider;
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
-
+    private FsGrayReleaseBiz gray = FsGrayRelease.getInstance("dps");
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getPreviewInfo(HttpServletRequest request) throws Exception {
@@ -109,8 +111,13 @@ public class PreviewController {
             PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
             if (previewInfo == null || previewInfo.getPageCount() == 0) {
                 return getPreviewInfoResult(defaultErrMsg);
-            } else
-                return getPreviewInfoResult(previewInfo.getPageCount(), previewInfo.getSheetNames(), path, previewInfo.getOriginalFilePath(), securityGroup);
+            } else {
+                String grayConfig = "office2pdf";
+                String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
+                boolean office2pdf = gray.isAllow(grayConfig, user);
+                String ext = office2pdf ? "pdf" : extension;
+                return getPreviewInfoResult(previewInfo.getPageCount(), previewInfo.getSheetNames(), path, ext, securityGroup);
+            }
         } else {
             String errMsg = Strings.isNullOrEmpty(previewInfoEx.getErrorMsg()) ? defaultErrMsg : previewInfoEx.getErrorMsg();
             return getPreviewInfoResult(errMsg);
@@ -385,13 +392,13 @@ public class PreviewController {
         }
     }
 
-    private String getPreviewInfoResult(int pageCount, List<String> sheetNames, String path, String filePath, String securityGroup) {
+    private String getPreviewInfoResult(int pageCount, List<String> sheetNames, String path, String ext, String securityGroup) {
         Map<String, Object> map = new HashMap<>();
         map.put("canPreview", true);
         map.put("pageCount", pageCount);
         map.put("path", path);
         map.put("sg", securityGroup);
-        map.put("ext", FilenameUtils.getExtension(filePath));
+        map.put("ext", ext);
         map.put("sheets", sheetNames);
         return JSONObject.toJSONString(map);
     }

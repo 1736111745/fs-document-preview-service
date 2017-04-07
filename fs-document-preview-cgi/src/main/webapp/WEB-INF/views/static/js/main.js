@@ -30,18 +30,18 @@ function getPreviewInfo() {
 }
 function doPreview() {
     var route = '';
-    if (needOfficePdf) {
-        route = "handleOffice2Pdf"
+    if (needOfficePdf > 0) {
+        route = needOfficePdf == 1 ? "handleOffice2Pdf" : "handlePdf";
     }
     else {
         if (path.indexOf("xls") >= 0) {
             route = "handleExcel";
         }
         else
-            route = path.indexOf("pdf")>=0 ? "handlePdf" : "handleWordAndPPT";
+            route = path.indexOf("pdf") >= 0 ? "handlePdf" : "handleWordAndPPT";
     }
-    console.log("route:"+route);
-    var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg+"&rdm=1";
+    console.log("route:" + route);
+    var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg + "&rdm=1";
     location.href = url;
 }
 

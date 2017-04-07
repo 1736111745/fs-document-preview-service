@@ -110,13 +110,13 @@ public class PreviewController {
                 String grayConfig = "office2pdf";
                 String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
                 boolean office2pdf = gray.isAllow(grayConfig, user);
-                boolean needOfficePdf=false;
+                int office2PdfStatus=0;//0表示旧的预览，跳转到office2svg，1，表示还未完成转换，跳转到office2pdf  2，表示完成转换直接跳转到pdf2html页面
                 if(office2pdf) {
                     if (extension.contains("doc") || extension.contains("ppt")) {
-                        needOfficePdf = Strings.isNullOrEmpty(previewInfo.getPdfFilePath());
+                        office2PdfStatus = Strings.isNullOrEmpty(previewInfo.getPdfFilePath()) ? 1 : 2;
                     }
                 }
-                return getPreviewInfoResult(previewInfo.getPageCount(), previewInfo.getSheetNames(), path, needOfficePdf, securityGroup);
+                return getPreviewInfoResult(previewInfo.getPageCount(), previewInfo.getSheetNames(), path, office2PdfStatus, securityGroup);
             }
         } else {
             String errMsg = Strings.isNullOrEmpty(previewInfoEx.getErrorMsg()) ? defaultErrMsg : previewInfoEx.getErrorMsg();
@@ -376,13 +376,13 @@ public class PreviewController {
         }
     }
 
-    private String getPreviewInfoResult(int pageCount, List<String> sheetNames, String path, boolean needOfficePdf, String securityGroup) {
+    private String getPreviewInfoResult(int pageCount, List<String> sheetNames, String path, int office2PdfStatus, String securityGroup) {
         Map<String, Object> map = new HashMap<>();
         map.put("canPreview", true);
         map.put("pageCount", pageCount);
         map.put("path", path);
         map.put("sg", securityGroup);
-        map.put("needOfficePdf", needOfficePdf);
+        map.put("office2PdfStatus", office2PdfStatus);
         map.put("sheets", sheetNames);
         return JSONObject.toJSONString(map);
     }

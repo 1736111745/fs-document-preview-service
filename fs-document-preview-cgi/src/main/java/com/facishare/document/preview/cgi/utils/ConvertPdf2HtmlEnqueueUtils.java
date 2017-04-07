@@ -2,7 +2,7 @@ package com.facishare.document.preview.cgi.utils;
 
 import com.facishare.document.preview.common.dao.ConvertTaskDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
-import com.facishare.document.preview.common.model.ConvertorMessage;
+import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.facishare.document.preview.common.model.PreviewInfo;
 import com.facishare.document.preview.common.mq.ConvertorQueueProvider;
 import com.google.common.base.Strings;
@@ -42,8 +42,8 @@ public class ConvertPdf2HtmlEnqueueUtils {
         String finalFilePath = !Strings.isNullOrEmpty(pdfFilePath) ? pdfFilePath : originalFilePath;
         List<Integer> needEnqueuePageList = convertTaskDao.batchAddTask(ea, path, hasNotConvertPageList);
         needEnqueuePageList.forEach(p -> {
-            ConvertorMessage convertorMessage = ConvertorMessage.builder().npath(path).ea(ea).page(p).filePath(finalFilePath).build();
-            convertorQueueProvider.convertPdf(convertorMessage);
+            ConvertPdf2HtmlMessage convertorMessage = ConvertPdf2HtmlMessage.builder().npath(path).ea(ea).page(p).filePath(finalFilePath).build();
+            convertorQueueProvider.convertPdf2Html(convertorMessage);
         });
     }
 }

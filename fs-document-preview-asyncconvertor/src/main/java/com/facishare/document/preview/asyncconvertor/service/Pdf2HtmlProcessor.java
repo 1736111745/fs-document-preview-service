@@ -8,18 +8,13 @@ import com.facishare.common.rocketmq.AutoConfRocketMQProcessor;
 import com.facishare.document.preview.asyncconvertor.utils.Pdf2HtmlHandler;
 import com.facishare.document.preview.common.dao.ConvertTaskDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
-import com.facishare.document.preview.common.model.ConvertorMessage;
+import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.fxiaoke.metrics.CounterService;
-import com.github.autoconf.ConfigFactory;
-import com.github.autoconf.api.IConfig;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 /**
  * Created by liuq on 2017/3/9.
@@ -27,7 +22,7 @@ import java.net.UnknownHostException;
 
 @Slf4j
 @Component
-public class DocConvertorProcessor {
+public class Pdf2HtmlProcessor {
     @Autowired
     Pdf2HtmlHandler pdf2HtmlHandler;
     @Autowired
@@ -40,17 +35,13 @@ public class DocConvertorProcessor {
     private static final String KEY_NAME_SERVER = "NAMESERVER";
     private static final String KEY_GROUP = "GROUP_CONSUMER";
     private static final String KEY_TOPICS = "TOPICS";
-    private static String configName = "";
 
 
-    public void init() throws UnknownHostException {
-        InetAddress ia = InetAddress.getLocalHost();
-        String host = ia.getHostName();
-        log.info("host:{},begin consumer queue!", host);
-        ConfigFactory.getInstance().getConfig("fs-dps-config", config -> loadConfig(config, host));
-        autoConfRocketMQProcessor = new AutoConfRocketMQProcessor(configName, KEY_NAME_SERVER, KEY_GROUP, KEY_TOPICS, (MessageListenerConcurrently) (list, consumeConcurrentlyContext) -> {
+    public void init() {
+        log.info("begin consumer queue!");
+        autoConfRocketMQProcessor = new AutoConfRocketMQProcessor("fs-dps-mq-pdf2html", KEY_NAME_SERVER, KEY_GROUP, KEY_TOPICS, (MessageListenerConcurrently) (list, consumeConcurrentlyContext) -> {
             list.forEach((MessageExt messageExt) -> {
-                ConvertorMessage convertorMessage = ConvertorMessage.builder().build();
+                ConvertPdf2HtmlMessage convertorMessage = ConvertPdf2HtmlMessage.builder().build();
                 convertorMessage.fromProto(messageExt.getBody());
                 try {
                     doConvert(convertorMessage);
@@ -63,11 +54,7 @@ public class DocConvertorProcessor {
         autoConfRocketMQProcessor.init();
     }
 
-    public void loadConfig(IConfig config, String host) {
-        configName = config.get(host);
-    }
-
-    private void doConvert(ConvertorMessage convertorMessage) throws InterruptedException {
+    private void doConvert(ConvertPdf2HtmlMessage convertorMessage) throws InterruptedException {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         log.info("begin do convert,params:{}", JSON.toJSONString(convertorMessage));

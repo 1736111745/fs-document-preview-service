@@ -1,6 +1,8 @@
 package com.facishare.document.preview.common.mq;
 
-import com.facishare.document.preview.common.model.ConvertorMessage;
+import com.facishare.common.fsi.ProtoBase;
+import com.facishare.document.preview.common.model.ConvertOffice2PdfMessage;
+import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import lombok.extern.slf4j.Slf4j;
 import com.facishare.common.rocketmq.AutoConfRocketMQSender;
 import com.alibaba.rocketmq.common.message.Message;
@@ -18,14 +20,14 @@ public class ConvertorQueueProvider {
     private static final String KEY_GROUP = "GROUP_PROVIDER";
     private static final String KEY_TOPICS = "TOPICS";
 
-    public ConvertorQueueProvider(String configName) {
+    public ConvertorQueueProvider() {
         log.info("start init rocketmq!");
-        autoConfRocketMQSender = new AutoConfRocketMQSender(configName, KEY_NAME_SERVER, KEY_GROUP, KEY_TOPICS);
+        autoConfRocketMQSender = new AutoConfRocketMQSender("fs-dps-mq", KEY_NAME_SERVER, KEY_GROUP, KEY_TOPICS);
         autoConfRocketMQSender.init();
         log.info("finish init rocketmq!");
     }
 
-    private void enqueue(ConvertorMessage message, String tags) {
+    private <T extends ProtoBase> void enqueue(T message, String tags) {
         log.info("enqueue:{}", com.alibaba.fastjson.JSON.toJSON(message));
         Message messageExt = new Message();
         messageExt.setTags(tags);
@@ -34,8 +36,12 @@ public class ConvertorQueueProvider {
         log.info("enqueue completed!");
     }
 
-    public void convertPdf(ConvertorMessage message) {
+    public  void convertPdf2Html(ConvertPdf2HtmlMessage  message) {
         enqueue(message,"pdf2html");
+    }
+
+    public void convertOffice2Pdf(ConvertOffice2PdfMessage message) {
+        enqueue(message, "office2pdf");
     }
 
 }

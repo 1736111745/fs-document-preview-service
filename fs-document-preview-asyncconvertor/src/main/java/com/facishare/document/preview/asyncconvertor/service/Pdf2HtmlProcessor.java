@@ -6,7 +6,7 @@ import com.alibaba.rocketmq.client.consumer.listener.MessageListenerConcurrently
 import com.alibaba.rocketmq.common.message.MessageExt;
 import com.facishare.common.rocketmq.AutoConfRocketMQProcessor;
 import com.facishare.document.preview.asyncconvertor.utils.Pdf2HtmlHandler;
-import com.facishare.document.preview.common.dao.ConvertTaskDao;
+import com.facishare.document.preview.common.dao.ConvertPdf2HtmlTaskDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.fxiaoke.metrics.CounterService;
@@ -28,7 +28,7 @@ public class Pdf2HtmlProcessor {
     @Autowired
     PreviewInfoDao previewInfoDao;
     @Autowired
-    ConvertTaskDao convertTaskDao;
+    ConvertPdf2HtmlTaskDao convertTaskDao;
     @Autowired
     private CounterService counterService;
     private AutoConfRocketMQProcessor autoConfRocketMQProcessor;
@@ -63,16 +63,16 @@ public class Pdf2HtmlProcessor {
         int page = convertorMessage.getPage();
         int status = convertTaskDao.getTaskStatus(ea, path, page);
         if (status == 0) {
-            convertTaskDao.beginExcute(ea, path, page);
+            convertTaskDao.beginExecute(ea, path, page);
             String filePath = convertorMessage.getFilePath();
             String dataFilePath = pdf2HtmlHandler.doConvert(page, filePath);
             if (!Strings.isNullOrEmpty(dataFilePath)) {
                 counterService.inc("convert-pdf2html-ok");
                 previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
-                convertTaskDao.excuteSuccess(ea, path, page);
+                convertTaskDao.executeSuccess(ea, path, page);
             } else {
                 counterService.inc("convert-pdf2html-fail");
-                convertTaskDao.excuteFail(ea, path, page);
+                convertTaskDao.executeFail(ea, path, page);
             }
         }
         stopWatch.stop();

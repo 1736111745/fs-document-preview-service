@@ -19,7 +19,7 @@
         </aop:aspect>
     </aop:config>
     <bean id="previewInfoDao" class="com.facishare.document.preview.common.dao.impl.PreviewInfoDaoImpl"/>
-    <bean id="convertTaskDao" class="com.facishare.document.preview.common.dao.impl.ConvertTaskDaoImpl"/>
+    <bean id="convertTaskDao" class="com.facishare.document.preview.common.dao.impl.ConvertPdf2HtmlTaskDaoImpl"/>
     <import resource="classpath:spring/spring-cms.xml"/>
     <bean class="com.fxiaoke.metrics.MetricsConfiguration"/>
    <bean id="pdf2HtmlProcessor" class="com.facishare.document.preview.asyncconvertor.service.Pdf2HtmlProcessor" init-method="init"/>

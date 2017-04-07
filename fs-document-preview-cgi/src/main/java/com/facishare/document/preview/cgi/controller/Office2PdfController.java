@@ -3,7 +3,7 @@ package com.facishare.document.preview.cgi.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
-import com.facishare.document.preview.cgi.utils.ConvertPdf2HtmlEnqueueUtils;
+import com.facishare.document.preview.cgi.utils.ConvertPdf2HtmlEnqueueUtil;
 import com.facishare.document.preview.cgi.utils.OnlineOfficeServerUtil;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.PreviewInfo;
@@ -38,7 +38,7 @@ public class Office2PdfController {
     @Autowired
     PreviewInfoDao previewInfoDao;
     @Autowired
-    ConvertPdf2HtmlEnqueueUtils convertPdf2HtmlEnqueueUtils;
+    ConvertPdf2HtmlEnqueueUtil convertPdf2HtmlEnqueueUtils;
 
     @ResponseBody
     @RequestMapping(value = "/preview/checkPPT2Pdf", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")

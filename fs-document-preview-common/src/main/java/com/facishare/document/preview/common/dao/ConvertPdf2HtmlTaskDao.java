@@ -5,17 +5,15 @@ import java.util.List;
 /**
  * Created by liuq on 2017/3/19.
  */
-public interface ConvertTaskDao {
-
-    void addTask(String ea, String path, int page);
+public interface ConvertPdf2HtmlTaskDao {
 
     int getTaskStatus(String ea,String path,int page);
 
-    void beginExcute(String ea,String path,int page);
+    void beginExecute(String ea, String path, int page);
 
-    void excuteFail(String ea,String path,int page);
+    void executeFail(String ea, String path, int page);
 
-    void excuteSuccess(String ea,String path,int page);
+    void executeSuccess(String ea, String path, int page);
 
     List<Integer> batchAddTask(String ea,String path,List<Integer> pageList);
 

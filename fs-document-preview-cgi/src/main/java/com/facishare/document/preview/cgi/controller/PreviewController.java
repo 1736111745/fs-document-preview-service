@@ -12,11 +12,9 @@ import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfoEx;
 import com.facishare.document.preview.cgi.service.PreviewService;
 import com.facishare.document.preview.cgi.utils.*;
-import com.facishare.document.preview.common.dao.ConvertTaskDao;
 import com.facishare.document.preview.common.dao.FileTokenDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.*;
-import com.facishare.document.preview.common.mq.ConvertorQueueProvider;
 import com.facishare.document.preview.common.utils.DocPreviewInfoHelper;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.fxiaoke.metrics.CounterService;
@@ -67,7 +65,7 @@ public class PreviewController {
     @Autowired
     CounterService counterService;
     @Autowired
-    ConvertPdf2HtmlEnqueueUtils convertPdf2HtmlEnqueueUtils;
+    ConvertPdf2HtmlEnqueueUtil convertPdf2HtmlEnqueueUtils;
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
     private FsGrayReleaseBiz gray = FsGrayRelease.getInstance("dps");
@@ -375,6 +373,67 @@ public class PreviewController {
             return "";
         }
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/preview/checkOffice2PdfStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public void checkOffice2PdfStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
+        String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
+        if (!UrlParametersHelper.isValidPath(path)) {
+            response.setStatus(400);
+        }
+        try {
+            EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+            String ea = employeeInfo.getEa();
+            PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
+            log.info("previewInfoEx:" + JSON.toJSONString(previewInfoEx));
+            if (previewInfoEx.isSuccess()) {
+                PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
+                if (previewInfo != null) {
+                    convertPdf2HtmlEnqueueUtils.enqueue(ea, path);
+                }
+            }
+        } catch (Exception e) {
+        } finally {
+            response.setStatus(200);
+        }
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "/preview/queryOffice2PdfStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String queryOffice2PdfStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
+        String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
+        if (!UrlParametersHelper.isValidPath(path)) {
+            response.setStatus(400);
+            return "";
+        }
+        try {
+            EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+            PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
+            if (!previewInfoEx.isSuccess()) {
+                return "";
+            } else {
+                PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
+                if (previewInfo == null) {
+                    return "";
+                } else {
+                    List<String> dataFilePathList = previewInfo.getFilePathList();
+                    if (dataFilePathList == null)
+                        dataFilePathList = Lists.newArrayList();
+                    else
+                        dataFilePathList = dataFilePathList.stream().filter(f -> f.endsWith(".html")).collect(Collectors.toList());
+                    return getQueryDocConvertStatus(dataFilePathList);
+                }
+            }
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+
 
     private String getPreviewInfoResult(int pageCount, List<String> sheetNames, String path, int office2PdfStatus, String securityGroup) {
         Map<String, Object> map = new HashMap<>();

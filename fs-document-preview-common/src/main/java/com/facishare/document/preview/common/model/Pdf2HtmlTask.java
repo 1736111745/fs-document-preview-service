@@ -12,12 +12,12 @@ import java.util.Date;
 /**
  * Created by liuq on 2017/3/19.
  */
-@Entity(value = "ConvertTask", noClassnameStored = true)
+@Entity(value = "Pdf2HtmlTask", noClassnameStored = true)
 @Indexes({@Index(fields = {@Field("ea"), @Field("path"), @Field("page")})})
 @Getter
 @Setter
 @ToString
-public class ConvertTask {
+public class Pdf2HtmlTask {
     private String ea;
     private String path;
     private Integer page;
@@ -25,16 +25,5 @@ public class ConvertTask {
     private Date createTime;
     private Date lastModifyTime;
     private int status;
-
-//    @Override
-//    public boolean equals(Object obj) {
-//        ConvertTask convertTask = (ConvertTask) obj;
-//        return path.hashCode() == convertTask.hashCode() && ea.hashCode() == convertTask.ea.hashCode() && page.hashCode() == convertTask.page.hashCode();
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return ea.hashCode() * path.hashCode() * page.hashCode();
-//    }
 }
 

@@ -1,6 +1,6 @@
 package com.facishare.document.preview.cgi.utils;
 
-import com.facishare.document.preview.common.dao.ConvertTaskDao;
+import com.facishare.document.preview.common.dao.ConvertPdf2HtmlTaskDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.facishare.document.preview.common.model.PreviewInfo;
@@ -16,11 +16,11 @@ import java.util.List;
  * Created by liuq on 2017/4/6.
  */
 @Component
-public class ConvertPdf2HtmlEnqueueUtils {
+public class ConvertPdf2HtmlEnqueueUtil {
     @Autowired
     PreviewInfoDao previewInfoDao;
     @Autowired
-    ConvertTaskDao convertTaskDao;
+    ConvertPdf2HtmlTaskDao convertTaskDao;
     @Autowired
     ConvertorQueueProvider convertorQueueProvider;
     public  void enqueue(String ea,String path) {

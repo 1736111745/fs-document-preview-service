@@ -5,7 +5,7 @@ var path = getQueryStringByName("path");
 var token = getQueryStringByName("token");
 var pageCount = 0;
 var sg = "";//安全组
-var needOfficePdf = false;
+var office2PdfStatus = 0;
 function getPreviewInfo() {
     $('#divLoading').show();
     $.ajax({
@@ -19,7 +19,7 @@ function getPreviewInfo() {
                 pageCount = data.pageCount;
                 path = data.path;
                 sg = data.sg;
-                needOfficePdf = data.needOfficePdf;
+                office2PdfStatus = data.office2PdfStatus;
                 doPreview();
             }
             else {
@@ -30,8 +30,8 @@ function getPreviewInfo() {
 }
 function doPreview() {
     var route = '';
-    if (needOfficePdf > 0) {
-        route = needOfficePdf == 1 ? "handleOffice2Pdf" : "handlePdf";
+    if (office2PdfStatus > 0) {
+        route = office2PdfStatus == 1 ? "handleOffice2Pdf" : "handlePdf";
     }
     else {
         if (path.indexOf("xls") >= 0) {

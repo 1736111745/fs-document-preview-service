@@ -8,7 +8,7 @@ var timeout = 100000;
 $(function () {
     loadViewPort();
     checkConvertTimeout();
-    checkDocConvertStatus();
+    checkPdf2HtmlStatus();
     loadAllPages();
     checkConvertStatus();
     checkPageLoaded();
@@ -86,14 +86,14 @@ var idChkConvertStatus;
 //定时监测转换状态，当全部转换完毕停止检测
 function checkConvertStatus() {
     idChkConvertStatus = setInterval(function () {
-        if (queryDocStatus()) {
+        if (queryPdf2HtmlStatus()) {
             clearInterval(idChkConvertStatus);
         }
     }, 500);
 }
 
-function checkDocConvertStatus() {
-    var url = window.contextPath + '/preview/checkDocConvertStatus?path=' + path + "&sg=" + sg
+function checkPdf2HtmlStatus() {
+    var url = window.contextPath + '/preview/checkPdf2HtmlStatus?path=' + path + "&sg=" + sg
     $.ajax({
         type: 'get',
         dataType: 'json',
@@ -105,9 +105,9 @@ function checkDocConvertStatus() {
     });
 }
 
-function queryDocStatus() {
+function queryPdf2HtmlStatus() {
     var flag = false;//是否转换完毕
-    var url = window.contextPath + '/preview/queryDocConvertStatus?path=' + path + "&sg=" + sg
+    var url = window.contextPath + '/preview/queryPdf2HtmlStatus?path=' + path + "&sg=" + sg
     $.ajax({
         type: 'get',
         dataType: 'json',

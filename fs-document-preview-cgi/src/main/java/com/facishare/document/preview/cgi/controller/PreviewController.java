@@ -318,8 +318,8 @@ public class PreviewController {
 
 
     @ResponseBody
-    @RequestMapping(value = "/preview/checkDocConvertStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public void checkDocConvertStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @RequestMapping(value = "/preview/checkPdf2HtmlStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public void checkPdf2HtmlStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
         String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
         if (!UrlParametersHelper.isValidPath(path)) {
@@ -344,8 +344,8 @@ public class PreviewController {
 
 
     @ResponseBody
-    @RequestMapping(value = "/preview/queryDocConvertStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String queryDocConvertStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @RequestMapping(value = "/preview/queryPdf2HtmlStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String queryPdf2HtmlStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
         String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");

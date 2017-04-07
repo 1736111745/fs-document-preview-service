@@ -46,7 +46,7 @@ public class OnlineOfficeServerUtil {
         Stopwatch stopwatch=Stopwatch.createStarted();
         String downloadUrl = String.format(fscServerUrl, ea, String.valueOf(employeeId), path, sg, name);
         String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
-        String url = oosServerUrl + "/wv/WordViewer/request.pdf?WOPIsrc=" + URLEncoder.encode(src) + "access_token_ttl=0&z=1%2E0&type=downloadpdf";
+        String url = oosServerUrl + "/wv/WordViewer/request.pdf?WOPIsrc=" + URLEncoder.encode(src) + "&access_token_ttl=0&z=1%2E0&type=downloadpdf";
         WordConvertInfo docConvertInfo = new WordConvertInfo();
         Request request = new Request.Builder().url(url).build();
         client.syncExecute(request, new SyncCallback() {

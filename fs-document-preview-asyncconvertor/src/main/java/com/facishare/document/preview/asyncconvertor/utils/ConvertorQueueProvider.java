@@ -1,4 +1,4 @@
-package com.facishare.document.preview.common.mq;
+package com.facishare.document.preview.asyncconvertor.utils;
 
 import com.alibaba.rocketmq.common.message.Message;
 import com.facishare.common.fsi.ProtoBase;
@@ -18,14 +18,8 @@ public class ConvertorQueueProvider {
     private static final String KEY_GROUP = "GROUP_PROVIDER";
     private static final String KEY_TOPICS = "TOPICS";
 
-    private static class SingletonHolder {
-        private static final ConvertorQueueProvider instance = new ConvertorQueueProvider();
-    }
-    public static ConvertorQueueProvider getInstance() {
-        return SingletonHolder.instance;
-    }
 
-    private ConvertorQueueProvider() {
+    public void init() {
         log.info("start init rocketmq!");
         autoConfRocketMQSender = new AutoConfRocketMQSender("fs-dps-mq", KEY_NAME_SERVER, KEY_GROUP, KEY_TOPICS);
         autoConfRocketMQSender.init();

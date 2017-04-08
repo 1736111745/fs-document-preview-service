@@ -28,5 +28,5 @@
     <bean id="pdf2HtmlProcessor" class="com.facishare.document.preview.asyncconvertor.service.Pdf2HtmlProcessor"
           init-method="init" scope="singleton"/>
     <bean id="httpClientSupport" class="com.fxiaoke.common.http.spring.HttpSupportFactoryBean"/>
-    <bean id="convertPdf2HtmlEnqueueUtil" class="com.facishare.document.preview.common.utils.ConvertPdf2HtmlEnqueueUtil"/>
+    <bean id="convertorQueueProvider" class="com.facishare.document.preview.asyncconvertor.utils.ConvertorQueueProvider" init-method="init"/>
 </beans>

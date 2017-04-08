@@ -14,8 +14,6 @@ import com.facishare.document.preview.cgi.utils.*;
 import com.facishare.document.preview.common.dao.FileTokenDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.*;
-import com.facishare.document.preview.common.utils.ConvertOffice2PdfEnqueueUtil;
-import com.facishare.document.preview.common.utils.ConvertPdf2HtmlEnqueueUtil;
 import com.facishare.document.preview.common.utils.DocPreviewInfoHelper;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.fxiaoke.metrics.CounterService;

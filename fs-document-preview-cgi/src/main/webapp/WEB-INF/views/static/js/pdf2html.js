@@ -94,15 +94,7 @@ function checkConvertStatus() {
 
 function checkPdf2HtmlStatus() {
     var url = window.contextPath + '/preview/checkPdf2HtmlStatus?path=' + path + "&sg=" + sg
-    $.ajax({
-        type: 'get',
-        dataType: 'json',
-        async: true,
-        url: url,
-        success: function (data) {
-            filePathList = data.list;
-        }
-    });
+    $.get(url);
 }
 
 function queryPdf2HtmlStatus() {

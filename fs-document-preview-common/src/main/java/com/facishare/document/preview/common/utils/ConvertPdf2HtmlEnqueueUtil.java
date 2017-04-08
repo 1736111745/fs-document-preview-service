@@ -1,4 +1,4 @@
-package com.facishare.document.preview.cgi.utils;
+package com.facishare.document.preview.common.utils;
 
 import com.facishare.document.preview.common.dao.ConvertPdf2HtmlTaskDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
@@ -20,11 +20,13 @@ public class ConvertPdf2HtmlEnqueueUtil {
     @Autowired
     PreviewInfoDao previewInfoDao;
     @Autowired
-    ConvertPdf2HtmlTaskDao convertTaskDao;
+    ConvertPdf2HtmlTaskDao convertPdf2HtmlTaskDao;
     @Autowired
     ConvertorQueueProvider convertorQueueProvider;
-    public  void enqueue(String ea,String path) {
+
+    public void enqueue(String ea, String path) {
         PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
+        if(previewInfo==null) return;
         int pageCount = previewInfo.getPageCount();
         List<String> dataFilePathList = previewInfo.getFilePathList();
         if (dataFilePathList == null)
@@ -40,7 +42,7 @@ public class ConvertPdf2HtmlEnqueueUtil {
         String originalFilePath = previewInfo.getOriginalFilePath();
         String pdfFilePath = previewInfo.getPdfFilePath();
         String finalFilePath = !Strings.isNullOrEmpty(pdfFilePath) ? pdfFilePath : originalFilePath;
-        List<Integer> needEnqueuePageList = convertTaskDao.batchAddTask(ea, path, hasNotConvertPageList);
+        List<Integer> needEnqueuePageList = convertPdf2HtmlTaskDao.batchAddTask(ea, path, hasNotConvertPageList);
         needEnqueuePageList.forEach(p -> {
             ConvertPdf2HtmlMessage convertorMessage = ConvertPdf2HtmlMessage.builder().npath(path).ea(ea).page(p).filePath(finalFilePath).build();
             convertorQueueProvider.convertPdf2Html(convertorMessage);

@@ -42,6 +42,6 @@
     <title>office2pdf</title>
 </head>
 <body>
-<div class="lazy border" id="loading"><span id="spanLoading">文档转中...</span></div>
+<div class="lazy border" id="loading"><span id="spanLoading">文档转换中...</span></div>
 </body>
 </html>

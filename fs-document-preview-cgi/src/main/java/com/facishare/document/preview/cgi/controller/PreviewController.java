@@ -1,6 +1,5 @@
 package com.facishare.document.preview.cgi.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.facishare.document.preview.api.model.arg.ConvertDocArg;
 import com.facishare.document.preview.api.model.arg.Pdf2HtmlArg;
@@ -15,6 +14,8 @@ import com.facishare.document.preview.cgi.utils.*;
 import com.facishare.document.preview.common.dao.FileTokenDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.*;
+import com.facishare.document.preview.common.utils.ConvertOffice2PdfEnqueueUtil;
+import com.facishare.document.preview.common.utils.ConvertPdf2HtmlEnqueueUtil;
 import com.facishare.document.preview.common.utils.DocPreviewInfoHelper;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.fxiaoke.metrics.CounterService;
@@ -41,7 +42,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
-
 /**
  * Created by liuq on 16/8/5.
  */
@@ -66,9 +66,12 @@ public class PreviewController {
     CounterService counterService;
     @Autowired
     ConvertPdf2HtmlEnqueueUtil convertPdf2HtmlEnqueueUtils;
+    @Autowired
+    ConvertOffice2PdfEnqueueUtil convertOffice2PdfEnqueueUtil;
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
     private FsGrayReleaseBiz gray = FsGrayRelease.getInstance("dps");
+
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getPreviewInfo(HttpServletRequest request) throws Exception {
@@ -108,8 +111,8 @@ public class PreviewController {
                 String grayConfig = "office2pdf";
                 String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
                 boolean office2pdf = gray.isAllow(grayConfig, user);
-                int office2PdfStatus=0;//0表示旧的预览，跳转到office2svg，1，表示还未完成转换，跳转到office2pdf  2，表示完成转换直接跳转到pdf2html页面
-                if(office2pdf) {
+                int office2PdfStatus = 0;//0表示旧的预览，跳转到office2svg，1，表示还未完成转换，跳转到office2pdf  2，表示完成转换直接跳转到pdf2html页面
+                if (office2pdf) {
                     if (extension.contains("doc") || extension.contains("ppt")) {
                         office2PdfStatus = Strings.isNullOrEmpty(previewInfo.getPdfFilePath()) ? 1 : 2;
                     }
@@ -141,11 +144,11 @@ public class PreviewController {
                 if (previewInfo != null) {
                     if (pageIndex < previewInfo.getPageCount()) {
                         int type = Strings.isNullOrEmpty(version) ? 1 : 2;
-                        String filePath=previewInfo.getOriginalFilePath();
-                        if(type==2&&(path.contains("doc")||path.contains("ppt"))) {
+                        String filePath = previewInfo.getOriginalFilePath();
+                        if (type == 2 && (path.contains("doc") || path.contains("ppt"))) {
                             filePath = previewInfo.getPdfFilePath();
                         }
-                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(),filePath , type, previewInfo.getFilePathList());
+                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), filePath, type, previewInfo.getFilePathList());
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
                             FileOutPutor.outPut(response, dataFilePath, true);
                         } else {
@@ -319,22 +322,15 @@ public class PreviewController {
     @RequestMapping(value = "/preview/checkPdf2HtmlStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void checkPdf2HtmlStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
-        String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
         if (!UrlParametersHelper.isValidPath(path)) {
             response.setStatus(400);
         }
         try {
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             String ea = employeeInfo.getEa();
-            PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
-            log.info("previewInfoEx:" + JSON.toJSONString(previewInfoEx));
-            if (previewInfoEx.isSuccess()) {
-                PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
-                if (previewInfo != null) {
-                    convertPdf2HtmlEnqueueUtils.enqueue(ea, path);
-                }
-            }
+            convertPdf2HtmlEnqueueUtils.enqueue(ea, path);
         } catch (Exception e) {
+            log.warn("checkPdf2HtmlStatus happened exception", e);
         } finally {
             response.setStatus(200);
         }
@@ -366,7 +362,9 @@ public class PreviewController {
                         dataFilePathList = Lists.newArrayList();
                     else
                         dataFilePathList = dataFilePathList.stream().filter(f -> f.endsWith(".html")).collect(Collectors.toList());
-                    return getQueryDocConvertStatus(dataFilePathList);
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("list", dataFilePathList);
+                    return JSONObject.toJSONString(map);
                 }
             }
         } catch (Exception e) {
@@ -385,14 +383,8 @@ public class PreviewController {
         try {
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             String ea = employeeInfo.getEa();
-            PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
-            log.info("previewInfoEx:" + JSON.toJSONString(previewInfoEx));
-            if (previewInfoEx.isSuccess()) {
-                PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
-                if (previewInfo != null) {
-                    convertPdf2HtmlEnqueueUtils.enqueue(ea, path);
-                }
-            }
+            int employeeId = employeeInfo.getEmployeeId();
+            convertOffice2PdfEnqueueUtil.enqueue(ea, employeeId, path, securityGroup);
         } catch (Exception e) {
         } finally {
             response.setStatus(200);
@@ -403,36 +395,23 @@ public class PreviewController {
     @ResponseBody
     @RequestMapping(value = "/preview/queryOffice2PdfStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String queryOffice2PdfStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
         String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
-        String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
         if (!UrlParametersHelper.isValidPath(path)) {
             response.setStatus(400);
             return "";
         }
         try {
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-            PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
-            if (!previewInfoEx.isSuccess()) {
-                return "";
-            } else {
-                PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
-                if (previewInfo == null) {
-                    return "";
-                } else {
-                    List<String> dataFilePathList = previewInfo.getFilePathList();
-                    if (dataFilePathList == null)
-                        dataFilePathList = Lists.newArrayList();
-                    else
-                        dataFilePathList = dataFilePathList.stream().filter(f -> f.endsWith(".html")).collect(Collectors.toList());
-                    return getQueryDocConvertStatus(dataFilePathList);
-                }
-            }
+            String ea = employeeInfo.getEa();
+            PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
+            Map<String, Object> map = new HashMap<>();
+            map.put("finished", Strings.isNullOrEmpty(previewInfo.getPdfFilePath()));
+            return JSONObject.toJSONString(map);
+
         } catch (Exception e) {
             return "";
         }
     }
-
 
 
     private String getPreviewInfoResult(int pageCount, List<String> sheetNames, String path, int office2PdfStatus, String securityGroup) {
@@ -453,18 +432,11 @@ public class PreviewController {
         return JSONObject.toJSONString(map);
     }
 
-    private String getQueryDocConvertStatus(List<String> filePathList) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("list", filePathList);
-        return JSONObject.toJSONString(map);
-    }
-
     private String getDocPreviewInfoResult(String path, int pageCount) throws Exception {
         PreviewJsonInfo docPreviewInfo = DocPreviewInfoHelper.getPreviewInfo(path);
         docPreviewInfo.setPageCount(pageCount);
         return JSONObject.toJSONString(docPreviewInfo);
     }
-
 
 
 }

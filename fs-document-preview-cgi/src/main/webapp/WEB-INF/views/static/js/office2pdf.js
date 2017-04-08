@@ -3,10 +3,11 @@ var pageCount = getQueryStringByName("pageCount");
 var path = getQueryStringByName("path");
 var type = path.indexOf(".doc") > -1 ? "checkWord2Pdf" : "checkPPT2Pdf"
 var tryCount = 0;
-var finished = false
+
 $(function () {
     loadViewPort();
-    checkOffice2Pdf();
+    checkOffice2PdfStatus();
+    checkConvertStatus
 });
 function loadViewPort() {
     var docWidth = $(window).width();
@@ -14,31 +15,39 @@ function loadViewPort() {
     var viewport = document.querySelector("meta[name=viewport]");
     viewport.setAttribute('content', 'initial-scale=' + scale + ', width=device-width');
 }
-var checkOffice2Pdf = function () {
-    console.log("try count:" + tryCount);
-    var url = window.contextPath + '/preview/' + type + '?path=' + path + "&sg=" + sg
-    if (tryCount++ > 10) {
-        return;
-    }
+
+function checkOffice2PdfStatus() {
+    var url = window.contextPath + '/preview/checkOffice2PdfStatus?path=' + path + "&sg=" + sg
+    $.get(url);
+}
+
+function queryOffice2PdfStatus() {
+    var flag = false;//是否转换完毕
+    var url = window.contextPath + '/preview/queryOffice2PdfStatus?path=' + path + "&sg=" + sg
     $.ajax({
         type: 'get',
         dataType: 'json',
-        async: true,
+        async: false,
         url: url,
-        timeout: 10000,
-        complete: function (XMLHttpRequest, status) {
-            if (status == "success") {
-                var data = XMLHttpRequest.responseJSON;
-                if (data.finished) {
-                    finished = true;
-                    location.href = window.contextPath + '/preview/handlePdf?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg;
-                }
-            }
-            if (status == 'timeout') {
-                console.log("time out!")
-            }
-            if (!finished)
-                checkOffice2Pdf();
+        success: function (data) {
+            flag = data.finished;
         }
     });
+    return flag;
+}
+
+var idChkConvertStatus;
+//定时监测转换状态，当全部转换完毕停止检测
+function checkConvertStatus() {
+    idChkConvertStatus = setInterval(function () {
+        tryCount++;
+        if (tryCount++ > 40) {
+            clearInterval(idChkConvertStatus);
+            $('#spanLoading').html("转换超时，请稍后再试～")
+        }
+        if (queryOffice2PdfStatus()) {
+            clearInterval(idChkConvertStatus);
+            location.href = window.contextPath + '/preview/handlePdf?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg;
+        }
+    }, 500);
 }

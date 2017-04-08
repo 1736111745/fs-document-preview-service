@@ -5,7 +5,6 @@ import com.facishare.document.preview.api.service.DocConvertService;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfoEx;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
-import com.facishare.document.preview.cgi.utils.OnlineOfficeServerUtil;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.PageInfo;
 import com.facishare.document.preview.common.model.PreviewInfo;
@@ -13,22 +12,15 @@ import com.facishare.document.preview.common.utils.DocPageInfoHelper;
 import com.facishare.document.preview.common.utils.OfficeFileEncryptChecker;
 import com.facishare.document.preview.common.utils.PathHelper;
 import com.facishare.document.preview.common.utils.SampleUUID;
-import com.fxiaoke.common.http.handler.SyncCallback;
-import com.fxiaoke.common.http.spring.OkHttpSupport;
 import com.fxiaoke.release.FsGrayRelease;
 import com.fxiaoke.release.FsGrayReleaseBiz;
-import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 /**

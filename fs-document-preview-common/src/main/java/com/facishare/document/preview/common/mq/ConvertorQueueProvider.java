@@ -1,18 +1,16 @@
 package com.facishare.document.preview.common.mq;
 
+import com.alibaba.rocketmq.common.message.Message;
 import com.facishare.common.fsi.ProtoBase;
+import com.facishare.common.rocketmq.AutoConfRocketMQSender;
 import com.facishare.document.preview.common.model.ConvertOffice2PdfMessage;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import lombok.extern.slf4j.Slf4j;
-import com.facishare.common.rocketmq.AutoConfRocketMQSender;
-import com.alibaba.rocketmq.common.message.Message;
-import org.springframework.stereotype.Component;
 
 /**
  * Created by liuq on 2017/3/9.
  */
 @Slf4j
-@Component
 public class ConvertorQueueProvider {
 
     private AutoConfRocketMQSender autoConfRocketMQSender;
@@ -20,7 +18,14 @@ public class ConvertorQueueProvider {
     private static final String KEY_GROUP = "GROUP_PROVIDER";
     private static final String KEY_TOPICS = "TOPICS";
 
-    public ConvertorQueueProvider() {
+    private static class SingletonHolder {
+        private static final ConvertorQueueProvider instance = new ConvertorQueueProvider();
+    }
+    public static ConvertorQueueProvider getInstance() {
+        return SingletonHolder.instance;
+    }
+
+    private ConvertorQueueProvider() {
         log.info("start init rocketmq!");
         autoConfRocketMQSender = new AutoConfRocketMQSender("fs-dps-mq", KEY_NAME_SERVER, KEY_GROUP, KEY_TOPICS);
         autoConfRocketMQSender.init();
@@ -36,8 +41,8 @@ public class ConvertorQueueProvider {
         log.info("enqueue completed!");
     }
 
-    public  void convertPdf2Html(ConvertPdf2HtmlMessage  message) {
-        enqueue(message,"pdf2html");
+    public void convertPdf2Html(ConvertPdf2HtmlMessage message) {
+        enqueue(message, "pdf2html");
     }
 
     public void convertOffice2Pdf(ConvertOffice2PdfMessage message) {

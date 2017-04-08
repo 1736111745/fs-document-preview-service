@@ -72,7 +72,7 @@ public class Office2PdfProcessor {
             convertTaskDao.beginExecute(ea, path);
             String ext = FilenameUtils.getExtension(path);
             String dataFilePath = ext.contains("doc") ? onlineOfficeServerUtil.ConvertWord2Pdf(ea, employeeId, path, sg)
-                    : onlineOfficeServerUtil.checkPPT2Pdf(ea, employeeId, path, sg);
+                    : onlineOfficeServerUtil.ConvertPPT2Pdf(ea, employeeId, path, sg);
             String indexName = ext.contains("doc") ? "convert-word2pdf" : "convert-ppt2pdf";
             if (!Strings.isNullOrEmpty(dataFilePath)) {
                 counterService.inc(indexName + "--ok");

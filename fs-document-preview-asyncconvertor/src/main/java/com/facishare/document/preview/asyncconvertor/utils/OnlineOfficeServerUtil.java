@@ -138,7 +138,7 @@ public class OnlineOfficeServerUtil {
         return client.getBytes(url);
     }
 
-    public String checkPPT2Pdf(String ea, int employeeId, String path, String sg) {
+    private  String checkPPT2Pdf(String ea, int employeeId, String path, String sg) {
         log.info("begin check ppt to pdf!");
         Stopwatch stopwatch = Stopwatch.createStarted();
         String ext=FilenameUtils.getExtension(path);

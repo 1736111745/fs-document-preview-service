@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.PreviewInfo;
+import com.facishare.document.preview.common.utils.ConvertPdf2HtmlEnqueueUtil;
 import com.facishare.document.preview.common.utils.SampleUUID;
 import com.fxiaoke.common.http.handler.SyncCallback;
 import com.fxiaoke.common.http.spring.OkHttpSupport;

@@ -1,15 +1,17 @@
-package com.facishare.document.preview.asyncconvertor.utils;
+package com.facishare.document.preview.common.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.facishare.document.preview.common.dao.ConvertPdf2HtmlTaskDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.facishare.document.preview.common.model.PreviewInfo;
+import com.facishare.document.preview.common.mq.ConvertorQueueProvider;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import sun.rmi.runtime.Log;
 
 import java.util.List;
 
@@ -23,8 +25,7 @@ public class ConvertPdf2HtmlEnqueueUtil {
     PreviewInfoDao previewInfoDao;
     @Autowired
     ConvertPdf2HtmlTaskDao convertPdf2HtmlTaskDao;
-    @Autowired
-    ConvertorQueueProvider convertorQueueProvider;
+
     public void enqueue(String ea, String path) {
         log.info("begin enqueue,ea:{},path:{}",ea,path);
         PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
@@ -41,7 +42,6 @@ public class ConvertPdf2HtmlEnqueueUtil {
                 }
             }
         }
-        log.info("hasNotConvertPageList:{}", JSON.toJSON(hasNotConvertPageList));
         List<Integer> needEnqueuePageList = convertPdf2HtmlTaskDao.batchAddTask(ea, path, hasNotConvertPageList);
         log.info("needEnqueuePageList:{}", JSON.toJSON(needEnqueuePageList));
         String originalFilePath = previewInfo.getOriginalFilePath();
@@ -49,7 +49,7 @@ public class ConvertPdf2HtmlEnqueueUtil {
         String finalFilePath = !Strings.isNullOrEmpty(pdfFilePath) ? pdfFilePath : originalFilePath;
         needEnqueuePageList.forEach(p -> {
             ConvertPdf2HtmlMessage convertorMessage = ConvertPdf2HtmlMessage.builder().npath(path).ea(ea).page(p).filePath(finalFilePath).build();
-            convertorQueueProvider.convertPdf2Html(convertorMessage);
+            ConvertorQueueProvider.getInstance().convertPdf2Html(convertorMessage);
         });
     }
 }

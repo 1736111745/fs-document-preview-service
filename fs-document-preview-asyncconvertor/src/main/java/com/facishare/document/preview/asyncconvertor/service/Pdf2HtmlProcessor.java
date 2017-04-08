@@ -37,7 +37,7 @@ public class Pdf2HtmlProcessor {
     private static final String KEY_TOPICS = "TOPICS";
 
     public void init() {
-        log.info("begin consumer pdf2html queue!");
+        log.info("begin consumer queue!");
         autoConfRocketMQProcessor = new AutoConfRocketMQProcessor("fs-dps-mq-pdf2html", KEY_NAME_SERVER, KEY_GROUP, KEY_TOPICS, (MessageListenerConcurrently) (list, consumeConcurrentlyContext) -> {
             list.forEach((MessageExt messageExt) -> {
                 ConvertPdf2HtmlMessage convertorMessage = ConvertPdf2HtmlMessage.builder().build();
@@ -56,7 +56,7 @@ public class Pdf2HtmlProcessor {
     private void doConvert(ConvertPdf2HtmlMessage convertorMessage) throws InterruptedException {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        log.info("begin do convert pdf2html,params:{}", JSON.toJSONString(convertorMessage));
+        log.info("begin do convert,params:{}", JSON.toJSONString(convertorMessage));
         String ea = convertorMessage.getEa();
         String path = convertorMessage.getNpath();
         int page = convertorMessage.getPage();

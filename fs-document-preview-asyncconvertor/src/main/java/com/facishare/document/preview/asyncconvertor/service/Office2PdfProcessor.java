@@ -27,19 +27,18 @@ import java.io.IOException;
 @Slf4j
 @Component
 public class Office2PdfProcessor {
-
-    private AutoConfRocketMQProcessor autoConfRocketMQProcessor;
-    private static final String KEY_NAME_SERVER = "NAMESERVER";
-    private static final String KEY_GROUP = "GROUP_CONSUMER";
-    private static final String KEY_TOPICS = "TOPICS";
-
+    @Autowired
+    PreviewInfoDao previewInfoDao;
     @Autowired
     ConvertOffice2PdfTaskDao convertTaskDao;
     @Autowired
     private CounterService counterService;
     @Autowired
     OnlineOfficeServerUtil onlineOfficeServerUtil;
-
+    private AutoConfRocketMQProcessor autoConfRocketMQProcessor;
+    private static final String KEY_NAME_SERVER = "NAMESERVER";
+    private static final String KEY_GROUP = "GROUP_CONSUMER";
+    private static final String KEY_TOPICS = "TOPICS";
 
     //todo:office2pdf转换器，cgi的js轮询
 
@@ -63,7 +62,7 @@ public class Office2PdfProcessor {
     private void doConvert(ConvertOffice2PdfMessage convertorMessage) throws InterruptedException, IOException {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        log.info("begin do convert office2 pdf,params:{}", JSON.toJSONString(convertorMessage));
+        log.info("begin do convert,params:{}", JSON.toJSONString(convertorMessage));
         String ea = convertorMessage.getEa();
         String path = convertorMessage.getPath();
         int employeeId = convertorMessage.getEmployeeId();
@@ -77,6 +76,7 @@ public class Office2PdfProcessor {
             String indexName = ext.contains("doc") ? "convert-word2pdf" : "convert-ppt2pdf";
             if (!Strings.isNullOrEmpty(dataFilePath)) {
                 counterService.inc(indexName + "--ok");
+                previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
                 convertTaskDao.executeSuccess(ea, path);
             } else {
                 counterService.inc(indexName + "--fail");

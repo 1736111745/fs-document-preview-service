@@ -405,7 +405,7 @@ public class PreviewController {
             String ea = employeeInfo.getEa();
             PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
             Map<String, Object> map = new HashMap<>();
-            map.put("finished", Strings.isNullOrEmpty(previewInfo.getPdfFilePath()));
+            map.put("finished", !Strings.isNullOrEmpty(previewInfo.getPdfFilePath()));
             return JSONObject.toJSONString(map);
 
         } catch (Exception e) {

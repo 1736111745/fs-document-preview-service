@@ -21,6 +21,7 @@ public class ConvertorQueueProvider {
     private static class SingletonHolder {
         private static final ConvertorQueueProvider instance = new ConvertorQueueProvider();
     }
+
     public static ConvertorQueueProvider getInstance() {
         return SingletonHolder.instance;
     }
@@ -32,21 +33,21 @@ public class ConvertorQueueProvider {
         log.info("finish init rocketmq!");
     }
 
-    private <T extends ProtoBase> void enqueue(T message,String topic) {
-        log.info("enqueue:{}",com.alibaba.fastjson.JSON.toJSON(message));
+    private <T extends ProtoBase> void enqueue(T message, String tags) {
+        log.info("enqueue:{}", com.alibaba.fastjson.JSON.toJSON(message));
         Message messageExt = new Message();
-        messageExt.setTopic(topic);
+        messageExt.setTags(tags);
         messageExt.setBody(message.toProto());
         autoConfRocketMQSender.send(messageExt);
         log.info("enqueue completed!");
     }
 
     public void convertPdf2Html(ConvertPdf2HtmlMessage message) {
-        enqueue(message,"pdf2html");
+        enqueue(message, "pdf2html");
     }
 
     public void convertOffice2Pdf(ConvertOffice2PdfMessage message) {
-        enqueue(message,"office2pdf");
+        enqueue(message, "office2pdf");
     }
 
 }

@@ -42,7 +42,7 @@ public class ConvertPdf2HtmlEnqueueUtil {
                 }
             }
         }
-
+        log.info("hasNotConvertPageList:{}", JSON.toJSON(hasNotConvertPageList));
         List<Integer> needEnqueuePageList = convertPdf2HtmlTaskDao.batchAddTask(ea, path, hasNotConvertPageList);
         log.info("needEnqueuePageList:{}", JSON.toJSON(needEnqueuePageList));
         String originalFilePath = previewInfo.getOriginalFilePath();

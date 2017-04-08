@@ -1,5 +1,6 @@
 package com.facishare.document.preview.common.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.facishare.document.preview.common.dao.ConvertPdf2HtmlTaskDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
@@ -41,10 +42,12 @@ public class ConvertPdf2HtmlEnqueueUtil {
                 }
             }
         }
+
+        List<Integer> needEnqueuePageList = convertPdf2HtmlTaskDao.batchAddTask(ea, path, hasNotConvertPageList);
+        log.info("needEnqueuePageList:{}", JSON.toJSON(needEnqueuePageList));
         String originalFilePath = previewInfo.getOriginalFilePath();
         String pdfFilePath = previewInfo.getPdfFilePath();
         String finalFilePath = !Strings.isNullOrEmpty(pdfFilePath) ? pdfFilePath : originalFilePath;
-        List<Integer> needEnqueuePageList = convertPdf2HtmlTaskDao.batchAddTask(ea, path, hasNotConvertPageList);
         needEnqueuePageList.forEach(p -> {
             ConvertPdf2HtmlMessage convertorMessage = ConvertPdf2HtmlMessage.builder().npath(path).ea(ea).page(p).filePath(finalFilePath).build();
             ConvertorQueueProvider.getInstance().convertPdf2Html(convertorMessage);

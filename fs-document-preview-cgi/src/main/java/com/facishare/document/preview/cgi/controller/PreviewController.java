@@ -400,16 +400,17 @@ public class PreviewController {
             response.setStatus(400);
             return "";
         }
+        Map<String, Object> map = new HashMap<>();
         try {
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             String ea = employeeInfo.getEa();
             PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
-            Map<String, Object> map = new HashMap<>();
             map.put("finished", !Strings.isNullOrEmpty(previewInfo.getPdfFilePath()));
             return JSONObject.toJSONString(map);
 
         } catch (Exception e) {
-            return "";
+            map.put("finished", false);
+            return JSONObject.toJSONString(map);
         }
     }
 

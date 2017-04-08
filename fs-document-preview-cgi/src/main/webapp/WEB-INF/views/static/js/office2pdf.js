@@ -7,7 +7,7 @@ var tryCount = 0;
 $(function () {
     loadViewPort();
     checkOffice2PdfStatus();
-    checkConvertStatus
+    checkConvertStatus();
 });
 function loadViewPort() {
     var docWidth = $(window).width();

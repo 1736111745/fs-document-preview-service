@@ -7,14 +7,17 @@ import com.facishare.document.preview.common.model.PreviewInfo;
 import com.facishare.document.preview.common.mq.ConvertorQueueProvider;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import sun.rmi.runtime.Log;
 
 import java.util.List;
 
 /**
  * Created by liuq on 2017/4/6.
  */
+@Slf4j
 @Component
 public class ConvertPdf2HtmlEnqueueUtil {
     @Autowired
@@ -23,6 +26,7 @@ public class ConvertPdf2HtmlEnqueueUtil {
     ConvertPdf2HtmlTaskDao convertPdf2HtmlTaskDao;
 
     public void enqueue(String ea, String path) {
+        log.info("begin enqueue,ea:{},path:{}",ea,path);
         PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
         if(previewInfo==null) return;
         int pageCount = previewInfo.getPageCount();

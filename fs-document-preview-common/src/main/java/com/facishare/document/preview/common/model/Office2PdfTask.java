@@ -11,7 +11,7 @@ import java.util.Date;
 /**
  * Created by liuq on 2017/4/8.
  */
-@Entity(value = "Pdf2HtmlTask", noClassnameStored = true)
+@Entity(value = "Office2PdfTask", noClassnameStored = true)
 @Indexes({@Index(fields = {@Field("ea"), @Field("path")})})
 @Getter
 @Setter

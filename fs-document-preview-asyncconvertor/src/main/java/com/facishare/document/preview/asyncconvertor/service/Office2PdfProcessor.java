@@ -27,16 +27,19 @@ import java.io.IOException;
 @Slf4j
 @Component
 public class Office2PdfProcessor {
+
+    private AutoConfRocketMQProcessor autoConfRocketMQProcessor;
+    private static final String KEY_NAME_SERVER = "NAMESERVER";
+    private static final String KEY_GROUP = "GROUP_CONSUMER";
+    private static final String KEY_TOPICS = "TOPICS";
+
     @Autowired
     ConvertOffice2PdfTaskDao convertTaskDao;
     @Autowired
     private CounterService counterService;
     @Autowired
     OnlineOfficeServerUtil onlineOfficeServerUtil;
-    private AutoConfRocketMQProcessor autoConfRocketMQProcessor;
-    private static final String KEY_NAME_SERVER = "NAMESERVER";
-    private static final String KEY_GROUP = "GROUP_CONSUMER";
-    private static final String KEY_TOPICS = "TOPICS";
+
 
     //todo:office2pdf转换器，cgi的js轮询
 

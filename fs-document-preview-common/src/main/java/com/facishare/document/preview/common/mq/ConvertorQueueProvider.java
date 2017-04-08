@@ -33,7 +33,7 @@ public class ConvertorQueueProvider {
     }
 
     private <T extends ProtoBase> void enqueue(T message, String tags) {
-        log.info("enqueue:{}", com.alibaba.fastjson.JSON.toJSON(message));
+        log.info("tags:{},enqueue:{}", tags,com.alibaba.fastjson.JSON.toJSON(message));
         Message messageExt = new Message();
         messageExt.setTags(tags);
         messageExt.setBody(message.toProto());

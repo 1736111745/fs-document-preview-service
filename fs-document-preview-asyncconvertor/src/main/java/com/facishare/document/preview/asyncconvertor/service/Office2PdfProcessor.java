@@ -43,7 +43,7 @@ public class Office2PdfProcessor {
     //todo:office2pdf转换器，cgi的js轮询
 
     public void init() {
-        log.info("begin consumer queue!");
+        log.info("begin consumer office2pdf queue!");
         autoConfRocketMQProcessor = new AutoConfRocketMQProcessor("fs-dps-mq-office2pdf", KEY_NAME_SERVER, KEY_GROUP, KEY_TOPICS, (MessageListenerConcurrently) (list, consumeConcurrentlyContext) -> {
             list.forEach((MessageExt messageExt) -> {
                 ConvertOffice2PdfMessage convertorMessage = ConvertOffice2PdfMessage.builder().build();

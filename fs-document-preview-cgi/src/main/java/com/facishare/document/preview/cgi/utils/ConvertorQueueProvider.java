@@ -29,7 +29,7 @@ public class ConvertorQueueProvider {
     private <T extends ProtoBase> void enqueue(T message, String tags) {
         log.info("tags:{},enqueue:{}", tags,com.alibaba.fastjson.JSON.toJSON(message));
         Message messageExt = new Message();
-        messageExt.setTags(tags);
+        //messageExt.setTags(tags);
         messageExt.setBody(message.toProto());
         autoConfRocketMQSender.send(messageExt);
         log.info("enqueue completed!");

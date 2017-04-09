@@ -10,6 +10,7 @@ import com.facishare.document.preview.common.dao.ConvertPdf2HtmlTaskDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.fxiaoke.metrics.CounterService;
+import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
@@ -35,12 +36,9 @@ public class Pdf2HtmlProcessor {
     private static final String KEY_NAME_SERVER = "NAMESERVER";
     private static final String KEY_GROUP = "GROUP_CONSUMER";
     private static final String KEY_TOPICS = "TOPICS";
-    private  String  configName="";
+    @ReloadableProperty("pdf2html_mq_config_name")
+    private String  configName = "fs-dps-mq-pdf2html";
 
-    public  void setConfigName(String configName)
-    {
-        this.configName=configName;
-    }
     public void init() {
         log.info("begin consumer pdf2html queue!");
         autoConfRocketMQProcessor = new AutoConfRocketMQProcessor(configName, KEY_NAME_SERVER, KEY_GROUP, KEY_TOPICS, (MessageListenerConcurrently) (list, consumeConcurrentlyContext) -> {

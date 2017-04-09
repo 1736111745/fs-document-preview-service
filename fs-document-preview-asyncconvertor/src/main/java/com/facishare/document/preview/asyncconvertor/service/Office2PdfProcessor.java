@@ -11,6 +11,7 @@ import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.ConvertOffice2PdfMessage;
 import com.facishare.document.preview.common.utils.SampleUUID;
 import com.fxiaoke.metrics.CounterService;
+import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -40,12 +41,8 @@ public class Office2PdfProcessor {
     private static final String KEY_GROUP = "GROUP_CONSUMER";
     private static final String KEY_TOPICS = "TOPICS";
 
-    private  String  configName="";
-
-    public  void setConfigName(String configName)
-    {
-        this.configName=configName;
-    }
+    @ReloadableProperty("office2pdf_mq_config_name")
+    private String  configName = "fs-dps-mq-office2pdf";
 
     public void init() {
         log.info("begin consumer office2pdf queue!");

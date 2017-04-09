@@ -32,7 +32,7 @@ public class ConvertorQueueProvider {
         Message messageExt = new Message();
         messageExt.setBody(message.toProto());
         autoConfRocketMQSender.send(messageExt);
-        log.info("enqueue completed!");
+        log.info("enqueue completed!message topic:{}",messageExt.getTopic());
     }
 
     public void setConfigName(String configName) {

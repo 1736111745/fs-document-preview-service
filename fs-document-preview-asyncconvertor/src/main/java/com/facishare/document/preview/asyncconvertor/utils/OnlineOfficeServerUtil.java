@@ -101,8 +101,8 @@ public class OnlineOfficeServerUtil {
     private WordConvertInfo checkWord2Pdf(String ea, int employeeId, String path, String sg) {
         log.info("begin check word to pdf!");
         Stopwatch stopwatch = Stopwatch.createStarted();
-        String ext=FilenameUtils.getExtension(path);
-        String name=SampleUUID.getUUID()+"."+ext;
+        String ext = FilenameUtils.getExtension(path);
+        String name = SampleUUID.getUUID() + "." + ext;
         String downloadUrl = String.format(fscServerUrl, ea, String.valueOf(employeeId), path, sg, name);
         String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
         String url = oosServerUrl + "/wv/WordViewer/request.pdf?WOPIsrc=" + URLEncoder.encode(src) + "&access_token_ttl=0&z=1%2E0&type=downloadpdf";
@@ -138,11 +138,11 @@ public class OnlineOfficeServerUtil {
         return client.getBytes(url);
     }
 
-    private  String checkPPT2Pdf(String ea, int employeeId, String path, String sg) {
+    private String checkPPT2Pdf(String ea, int employeeId, String path, String sg) {
         log.info("begin check ppt to pdf!");
         Stopwatch stopwatch = Stopwatch.createStarted();
-        String ext=FilenameUtils.getExtension(path);
-        String name=SampleUUID.getUUID()+"."+ext;
+        String ext = FilenameUtils.getExtension(path);
+        String name = SampleUUID.getUUID() + "." + ext;
         String downloadUrl = String.format(fscServerUrl, ea, String.valueOf(employeeId), path, sg, name);
         String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
         String pid = "WOPIsrc=" + URLEncoder.encode(src);
@@ -189,7 +189,6 @@ public class OnlineOfficeServerUtil {
         String filePath = FilenameUtils.concat(dataDir, fileName);
         FileUtils.writeByteArrayToFile(new File(filePath), bytes);
         previewInfoDao.savePdfFile(ea, path, filePath);
-        convertPdf2HtmlEnqueueUtil.enqueue(ea, path);
         return filePath;
     }
 

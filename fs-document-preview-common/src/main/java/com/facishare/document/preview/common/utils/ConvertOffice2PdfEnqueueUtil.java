@@ -31,7 +31,7 @@ public class ConvertOffice2PdfEnqueueUtil {
             ConvertOffice2PdfMessage convertOffice2PdfMessage = ConvertOffice2PdfMessage.builder().ea(ea).employeeId(employeeId).path(path).sg(sg).build();
             int status = convertOffice2PdfTaskDao.getTaskStatus(ea, path);
             if (status == -1) {
-                convertOffice2Pdf.enqueue(convertOffice2PdfMessage);
+                convertOffice2Pdf.convertOffice2Pdf(convertOffice2PdfMessage);
                 convertOffice2PdfTaskDao.addTask(ea, path);
             }
         }

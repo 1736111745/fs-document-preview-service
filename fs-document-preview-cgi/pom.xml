@@ -342,7 +342,7 @@
                 <configuration>
                     <server>tomcat-development-server</server>
                     <uriEncoding>UTF-8</uriEncoding>
-                    <port>9121</port>
+                    <port>9122</port>
                     <path>/dps</path>
                 </configuration>
             </plugin>

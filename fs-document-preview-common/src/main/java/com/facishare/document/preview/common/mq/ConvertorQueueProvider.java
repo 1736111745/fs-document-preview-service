@@ -27,12 +27,20 @@ public class ConvertorQueueProvider {
         log.info("finish init rocketmq!");
     }
 
-    public  <T extends ProtoBase> void enqueue(T message) {
+    public void convertPdf2Html(ConvertPdf2HtmlMessage message) {
         log.info("enqueue:{}", com.alibaba.fastjson.JSON.toJSON(message));
         Message messageExt = new Message();
         messageExt.setBody(message.toProto());
         autoConfRocketMQSender.send(messageExt);
-        log.info("enqueue completed!message topic:{}",messageExt.getTopic());
+        log.info("enqueue completed!message topic:{}", messageExt.getTopic());
+    }
+
+    public void convertOffice2Pdf(ConvertOffice2PdfMessage message) {
+        log.info("enqueue:{}", com.alibaba.fastjson.JSON.toJSON(message));
+        Message messageExt = new Message();
+        messageExt.setBody(message.toProto());
+        autoConfRocketMQSender.send(messageExt);
+        log.info("enqueue completed!message topic:{}", messageExt.getTopic());
     }
 
     public void setConfigName(String configName) {

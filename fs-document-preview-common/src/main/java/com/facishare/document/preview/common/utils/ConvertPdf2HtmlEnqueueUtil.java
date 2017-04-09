@@ -52,7 +52,7 @@ public class ConvertPdf2HtmlEnqueueUtil {
         String finalFilePath = !Strings.isNullOrEmpty(pdfFilePath) ? pdfFilePath : originalFilePath;
         needEnqueuePageList.forEach(p -> {
             ConvertPdf2HtmlMessage convertorMessage = ConvertPdf2HtmlMessage.builder().npath(path).ea(ea).page(p).filePath(finalFilePath).build();
-            convertPdf2Html.enqueue(convertorMessage);
+            convertPdf2Html.convertPdf2Html(convertorMessage);
         });
     }
 }

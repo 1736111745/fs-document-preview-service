@@ -49,5 +49,5 @@ function checkConvertStatus() {
             clearInterval(idChkConvertStatus);
             location.href = window.contextPath + '/preview/handlePdf?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg;
         }
-    }, 500);
+    }, 1000);
 }

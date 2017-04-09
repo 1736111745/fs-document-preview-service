@@ -13,6 +13,4 @@
     <bean id="monitorAsyncTaskExecutor" class="com.github.trace.executor.MonitorAsyncTaskExecutor" c:executor-ref="myExecutor"/>
     <task:annotation-driven executor="monitorAsyncTaskExecutor"/>
     <task:executor id="myExecutor" pool-size="5-100" queue-capacity="20" rejection-policy="CALLER_RUNS"/>
-    <!--<task:annotation-driven executor="monitorAsyncTaskExecutor" scheduler="myScheduler"/>-->
-    <!--<task:scheduler id="myScheduler" pool-size="5"/>-->
 </beans>

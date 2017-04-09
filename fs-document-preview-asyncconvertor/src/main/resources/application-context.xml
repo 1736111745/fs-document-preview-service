@@ -22,6 +22,7 @@
     <bean id="convertPdf2HtmlTaskDao" class="com.facishare.document.preview.common.dao.impl.ConvertPdf2HtmlTaskDaoImpl"/>
     <bean id="convertOffice2PdfTaskDao" class="com.facishare.document.preview.common.dao.impl.ConvertOffice2PdfTaskDaoImpl"/>
     <import resource="classpath:spring/spring-cms.xml"/>
+    <import resource="classpath:spring/fs-dps-mq.xml"/>
     <bean class="com.fxiaoke.metrics.MetricsConfiguration"/>
     <bean id="pdf2HtmlProcessor" class="com.facishare.document.preview.asyncconvertor.service.Pdf2HtmlProcessor"
           init-method="init"/>

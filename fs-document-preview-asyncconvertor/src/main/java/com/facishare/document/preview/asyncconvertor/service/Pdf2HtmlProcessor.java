@@ -35,10 +35,15 @@ public class Pdf2HtmlProcessor {
     private static final String KEY_NAME_SERVER = "NAMESERVER";
     private static final String KEY_GROUP = "GROUP_CONSUMER";
     private static final String KEY_TOPICS = "TOPICS";
+    private  String  configName="";
 
+    public  void setConfigName(String configName)
+    {
+        this.configName=configName;
+    }
     public void init() {
-        log.info("begin consumer queue!");
-        autoConfRocketMQProcessor = new AutoConfRocketMQProcessor("fs-dps-mq-pdf2html", KEY_NAME_SERVER, KEY_GROUP, KEY_TOPICS, (MessageListenerConcurrently) (list, consumeConcurrentlyContext) -> {
+        log.info("begin consumer pdf2html queue!");
+        autoConfRocketMQProcessor = new AutoConfRocketMQProcessor(configName, KEY_NAME_SERVER, KEY_GROUP, KEY_TOPICS, (MessageListenerConcurrently) (list, consumeConcurrentlyContext) -> {
             list.forEach((MessageExt messageExt) -> {
                 ConvertPdf2HtmlMessage convertorMessage = ConvertPdf2HtmlMessage.builder().build();
                 convertorMessage.fromProto(messageExt.getBody());

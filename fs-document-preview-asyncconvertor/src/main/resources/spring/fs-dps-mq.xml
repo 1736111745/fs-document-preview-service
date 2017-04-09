@@ -1,0 +1,8 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="pdf2HtmlProvider" class="com.facishare.document.preview.common.mq.ConvertorQueueProvider" init-method="init" p:configName="${pdf2html_mq_config_name}"/>
+    <bean id="office2pdfProvider" class="com.facishare.document.preview.common.mq.ConvertorQueueProvider" init-method="init" p:configName="${office2pdf_mq_config_name}"/>
+    <bean id="office2PdfProcessor" class="com.facishare.document.preview.asyncconvertor.service.Office2PdfProcessor" init-method="init" p:configName="${office2pdf_mq_config_name}"/>
+    <bean id="pdf2HtmlProcessor" class="com.facishare.document.preview.asyncconvertor.service.Pdf2HtmlProcessor" init-method="init" p:configName="${pdf2html_mq_config_name}"/>
+</beans>

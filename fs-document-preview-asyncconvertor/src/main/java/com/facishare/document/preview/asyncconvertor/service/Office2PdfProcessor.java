@@ -40,11 +40,16 @@ public class Office2PdfProcessor {
     private static final String KEY_GROUP = "GROUP_CONSUMER";
     private static final String KEY_TOPICS = "TOPICS";
 
-    //todo:office2pdf转换器，cgi的js轮询
+    private  String  configName="";
+
+    public  void setConfigName(String configName)
+    {
+        this.configName=configName;
+    }
 
     public void init() {
         log.info("begin consumer office2pdf queue!");
-        autoConfRocketMQProcessor = new AutoConfRocketMQProcessor("fs-dps-mq-office2pdf", KEY_NAME_SERVER, KEY_GROUP, KEY_TOPICS, (MessageListenerConcurrently) (list, consumeConcurrentlyContext) -> {
+        autoConfRocketMQProcessor = new AutoConfRocketMQProcessor(configName, KEY_NAME_SERVER, KEY_GROUP, KEY_TOPICS, (MessageListenerConcurrently) (list, consumeConcurrentlyContext) -> {
             list.forEach((MessageExt messageExt) -> {
                 ConvertOffice2PdfMessage convertorMessage = ConvertOffice2PdfMessage.builder().build();
                 convertorMessage.fromProto(messageExt.getBody());

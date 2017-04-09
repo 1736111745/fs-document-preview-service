@@ -9,6 +9,8 @@ import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
+
 /**
  * Created by liuq on 2017/4/8.
  */
@@ -18,6 +20,8 @@ public class ConvertOffice2PdfEnqueueUtil {
     PreviewInfoDao previewInfoDao;
     @Autowired
     ConvertOffice2PdfTaskDao convertOffice2PdfTaskDao;
+    @Resource(name = "office2pdfProvider")
+    ConvertorQueueProvider convertOffice2Pdf;
 
     public void enqueue(String ea, int employeeId, String path, String sg) {
         PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
@@ -25,9 +29,9 @@ public class ConvertOffice2PdfEnqueueUtil {
         String pdfFile = previewInfo.getPdfFilePath();
         if (Strings.isNullOrEmpty(pdfFile)) {
             ConvertOffice2PdfMessage convertOffice2PdfMessage = ConvertOffice2PdfMessage.builder().ea(ea).employeeId(employeeId).path(path).sg(sg).build();
-            int status=convertOffice2PdfTaskDao.getTaskStatus(ea,path);
-            if(status==-1) {
-                ConvertorQueueProvider.getInstance().convertOffice2Pdf(convertOffice2PdfMessage);
+            int status = convertOffice2PdfTaskDao.getTaskStatus(ea, path);
+            if (status == -1) {
+                convertOffice2Pdf.enqueue(convertOffice2PdfMessage);
                 convertOffice2PdfTaskDao.addTask(ea, path);
             }
         }

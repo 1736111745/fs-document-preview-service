@@ -70,7 +70,7 @@ public class PreviewService {
                     PageInfo pageInfo;
                     if (!isEncrypt) {
                         if (extension.contains("ppt") || extension.contains("doc")) {
-                            pageInfo = office2pdf ? DocPageInfoHelper.getPageInfo(filePath) : getPageInfoWithYozo(filePath);
+                            pageInfo =  getPageInfoWithYozo(filePath);
                         } else {
                             pageInfo = DocPageInfoHelper.getPageInfo(filePath);
                         }

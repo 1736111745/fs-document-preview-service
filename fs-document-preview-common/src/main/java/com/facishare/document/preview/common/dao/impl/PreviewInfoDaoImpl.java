@@ -92,7 +92,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("dirName").equal(dirName);
         PreviewInfo previewInfo = query.get();
-        return previewInfo.getDataDir();
+        return previewInfo==null?"":previewInfo.getDataDir();
     }
 
 

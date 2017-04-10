@@ -41,6 +41,7 @@ var idChkConvertStatus;
 function checkConvertStatus() {
     idChkConvertStatus = setInterval(function () {
         tryCount++;
+        console.log("tryCount:"+tryCount+",time:"+new date());
         if (tryCount++ > 40) {
             clearInterval(idChkConvertStatus);
             $('#spanLoading').html("转换超时，请稍后再试～")

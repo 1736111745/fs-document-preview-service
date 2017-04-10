@@ -56,7 +56,7 @@ function checkPageLoaded() {
             clearInterval(idChkPageLoaded);
             clearInterval(idChkConvertTimeout);
         }
-    }, 200);
+    }, 100);
 }
 
 function loadData(i) {

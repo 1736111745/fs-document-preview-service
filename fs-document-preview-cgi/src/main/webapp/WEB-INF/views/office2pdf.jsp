@@ -22,26 +22,24 @@
         window.contextPath = "<%=request.getContextPath()%>";
     </script>
     <style type="text/css">
-        div.lazy {
-            background: #FFFFFF url("<%=request.getContextPath()%>/static/images/loading.gif") no-repeat center;
-            height: 500px;
-        }
-        div.border {
+        #loading {
             text-align: center;
             width: 1000px;
-            margin: 5px auto;
-            border: 1px solid rgb(27, 30, 33)
+            background: url("<%=request.getContextPath()%>/static/images/loading.gif") no-repeat center;
+            height: 500px;
         }
+
         #spanLoading {
             display: block;
             width: 100%;
             text-align: center;
             line-height: 550px;
+            font-size: 24px;
         }
     </style>
     <title>office2pdf</title>
 </head>
 <body>
-<div class="lazy border" id="loading"><span id="spanLoading">文档转换中...</span></div>
+<div id="loading"><span id="spanLoading">文档转换中...</span></div>
 </body>
 </html>

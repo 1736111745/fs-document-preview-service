@@ -40,11 +40,11 @@ var idChkConvertStatus;
 //定时监测转换状态，当全部转换完毕停止检测
 function checkConvertStatus() {
     idChkConvertStatus = setInterval(function () {
-        tryCount++;
+        tryCount=tryCount+1;
         console.log("tryCount:"+tryCount+",time:"+new Date());
         if (tryCount++ > 60) {
             clearInterval(idChkConvertStatus);
-            $(".lazy").css("background-url", "");
+            $("#loading").css("background-image","url('')");
             $('#spanLoading').html("转换超时，请稍后再试～")
         }
         if (queryOffice2PdfStatus()) {

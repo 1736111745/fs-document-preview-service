@@ -65,7 +65,7 @@ public class OnlineOfficeServerUtil {
         }
         String filePath = "";
         int tryCount = 0;
-        while (tryCount++ < 10) {
+        while (tryCount++ < 50) {
             String json = checkPPT2Pdf(ea, employeeId, path, sg);
             JSONObject jsonObject = JSONObject.parseObject(json);
             if (jsonObject.get("Error") == null) {
@@ -74,7 +74,7 @@ public class OnlineOfficeServerUtil {
                 filePath = savePdfFile(ea, path, bytes);
                 break;
             } else
-                Thread.sleep(100);
+                Thread.sleep(1000);
         }
         return filePath;
     }
@@ -86,14 +86,14 @@ public class OnlineOfficeServerUtil {
         }
         String filePath = "";
         int tryCount = 0;
-        while (tryCount++ < 10) {
+        while (tryCount++ < 50) {
             WordConvertInfo wordConvertInfo = checkWord2Pdf(ea, employeeId, path, sg);
             boolean finished = wordConvertInfo.isFinished();
             if (finished) {
                 filePath = savePdfFile(ea, path, wordConvertInfo.getBytes());
                 break;
             } else
-                Thread.sleep(100);
+                Thread.sleep(1000);
         }
         return filePath;
     }

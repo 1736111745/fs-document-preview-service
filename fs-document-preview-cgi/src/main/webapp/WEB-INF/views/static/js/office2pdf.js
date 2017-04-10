@@ -30,7 +30,7 @@ function queryOffice2PdfStatus() {
         url: url,
         success: function (data) {
             flag = data.finished;
-            pdfPageCount=data.pdfPageCount;
+            pdfPageCount=data.pageCount;
         }
     });
     return flag;

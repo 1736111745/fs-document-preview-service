@@ -78,7 +78,6 @@ public class Office2PdfProcessor {
             String indexName = ext.contains("doc") ? "convert-word2pdf" : "convert-ppt2pdf";
             if (!Strings.isNullOrEmpty(dataFilePath)) {
                 counterService.inc(indexName + "--ok");
-                previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
                 convertTaskDao.executeSuccess(ea, path);
             } else {
                 counterService.inc(indexName + "--fail");

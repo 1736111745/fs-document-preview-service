@@ -35,7 +35,7 @@
             width: 100%;
             text-align: center;
             line-height: 550px;
-            font-size:364px;
+            font-size:36px;
         }
     </style>
     <title>office2pdf</title>

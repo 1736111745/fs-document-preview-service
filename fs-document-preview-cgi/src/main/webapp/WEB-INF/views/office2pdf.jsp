@@ -34,7 +34,7 @@
             display: block;
             width: 100%;
             text-align: center;
-            line-height: 550px;
+            line-height: 600px;
             font-size:24px;
         }
     </style>

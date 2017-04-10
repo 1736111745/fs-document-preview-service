@@ -94,14 +94,14 @@ public class Pdf2HtmlHandler {
         args.add("--dest-dir");//输出目录
         args.add(outPutDir);
         args.add(filePath);
-        log.info(StringUtils.join(args, "  "));
+        //log.info(StringUtils.join(args, "  "));
         return args;
     }
 
     private String handleResult(int page, String filePath) throws IOException {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        log.info("begin handle html!filePath:{},page:{}", filePath, page);
+        //log.info("begin handle html!filePath:{},page:{}", filePath, page);
         String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
         String pageBaseDir = baseDir + "/p" + page;
         String dataFileName = FilenameUtils.getBaseName(filePath) + ".html";
@@ -123,7 +123,7 @@ public class Pdf2HtmlHandler {
         });
         FileUtils.deleteDirectory(new File(pageBaseDir));
         stopWatch.stop();
-        log.info("end handle html!,filePath:{},page:{},cost:{}ms", filePath, page, stopWatch.getTime());
+        // log.info("end handle html!,filePath:{},page:{},cost:{}ms", filePath, page, stopWatch.getTime());
         return pagePath;
     }
 

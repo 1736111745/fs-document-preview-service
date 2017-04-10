@@ -44,6 +44,7 @@ function checkConvertStatus() {
         console.log("tryCount:"+tryCount+",time:"+new Date());
         if (tryCount++ > 100) {
             clearInterval(idChkConvertStatus);
+            $(".lazy").css("background-url", "");
             $('#spanLoading').html("转换超时，请稍后再试～")
         }
         if (queryOffice2PdfStatus()) {

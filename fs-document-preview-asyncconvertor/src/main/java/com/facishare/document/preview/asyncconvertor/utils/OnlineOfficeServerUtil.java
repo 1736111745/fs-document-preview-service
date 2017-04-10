@@ -64,9 +64,13 @@ public class OnlineOfficeServerUtil {
             return previewInfo.getPdfFilePath();
         }
         String filePath = "";
+        String ext = FilenameUtils.getExtension(path);
+        String name = SampleUUID.getUUID() + "." + ext;
+        sg = Strings.isNullOrEmpty(sg) ? "x" : sg;
+        String downloadUrl = String.format(fscServerUrl, path, ea, String.valueOf(employeeId), sg, name);
         int tryCount = 0;
-        while (tryCount++ < 50) {
-            String json = checkPPT2Pdf(ea, employeeId, path, sg);
+        while (tryCount++ < 10) {
+            String json = checkPPT2Pdf(downloadUrl);
             JSONObject jsonObject = JSONObject.parseObject(json);
             if (jsonObject.get("Error") == null) {
                 String printUrl = ((JSONObject) jsonObject.get("Result")).getString("PrintUrl");
@@ -86,8 +90,12 @@ public class OnlineOfficeServerUtil {
         }
         String filePath = "";
         int tryCount = 0;
-        while (tryCount++ < 50) {
-            WordConvertInfo wordConvertInfo = checkWord2Pdf(ea, employeeId, path, sg);
+        String ext = FilenameUtils.getExtension(path);
+        String name = SampleUUID.getUUID() + "." + ext;
+        sg = Strings.isNullOrEmpty(sg) ? "x" : sg;
+        String downloadUrl = String.format(fscServerUrl, path, ea, String.valueOf(employeeId), sg, name);
+        while (tryCount++ < 10) {
+            WordConvertInfo wordConvertInfo = checkWord2Pdf(downloadUrl);
             boolean finished = wordConvertInfo.isFinished();
             if (finished) {
                 filePath = savePdfFile(ea, path, wordConvertInfo.getBytes());
@@ -99,13 +107,9 @@ public class OnlineOfficeServerUtil {
     }
 
 
-    private WordConvertInfo checkWord2Pdf(String ea, int employeeId, String path, String sg) {
+    private WordConvertInfo checkWord2Pdf(String downloadUrl) {
         log.info("begin check word to pdf!");
         Stopwatch stopwatch = Stopwatch.createStarted();
-        String ext = FilenameUtils.getExtension(path);
-        String name = SampleUUID.getUUID() + "." + ext;
-        //{path}/{ea}/{employee_id}/{sg}/{name}
-        String downloadUrl = String.format(fscServerUrl, path,ea, String.valueOf(employeeId), sg, name);
         log.info("downLoadUrl:{}", downloadUrl);
         String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
         String url = oosServerUrl + "/wv/WordViewer/request.pdf?WOPIsrc=" + URLEncoder.encode(src) + "&access_token_ttl=0&z=1%2E0&type=downloadpdf";
@@ -141,13 +145,9 @@ public class OnlineOfficeServerUtil {
         return client.getBytes(url);
     }
 
-    private String checkPPT2Pdf(String ea, int employeeId, String path, String sg) {
+    private String checkPPT2Pdf(String downloadUrl) {
         log.info("begin check ppt to pdf!");
         Stopwatch stopwatch = Stopwatch.createStarted();
-        String ext = FilenameUtils.getExtension(path);
-        String name = SampleUUID.getUUID() + "." + ext;
-        //{path}/{ea}/{employee_id}/{sg}/{name}
-        String downloadUrl = String.format(fscServerUrl, path,ea, String.valueOf(employeeId), sg, name);
         log.info("downLoadUrl:{}", downloadUrl);
         String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
         String pid = "WOPIsrc=" + URLEncoder.encode(src);

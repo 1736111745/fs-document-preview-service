@@ -42,7 +42,7 @@ function checkConvertStatus() {
     idChkConvertStatus = setInterval(function () {
         tryCount++;
         console.log("tryCount:"+tryCount+",time:"+new Date());
-        if (tryCount++ > 40) {
+        if (tryCount++ > 100) {
             clearInterval(idChkConvertStatus);
             $('#spanLoading').html("转换超时，请稍后再试～")
         }

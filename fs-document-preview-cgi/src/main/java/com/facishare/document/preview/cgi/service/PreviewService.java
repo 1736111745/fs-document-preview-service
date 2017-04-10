@@ -55,9 +55,6 @@ public class PreviewService {
             int pageCount;
             List<String> sheetNames;
             if (previewInfo == null) {
-                String grayConfig = "office2pdf";
-                String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
-                boolean office2pdf = gray.isAllow(grayConfig, user);
                 String extension = FilenameUtils.getExtension(path).toLowerCase();
                 byte[] bytes = fileStorageProxy.GetBytesByPath(path, ea, employeeId, securityGroup);
                 if (bytes != null && bytes.length > 0) {
@@ -70,7 +67,7 @@ public class PreviewService {
                     PageInfo pageInfo;
                     if (!isEncrypt) {
                         if (extension.contains("ppt") || extension.contains("doc")) {
-                            pageInfo =  getPageInfoWithYozo(filePath);
+                            pageInfo = getPageInfoWithYozo(filePath);
                         } else {
                             pageInfo = DocPageInfoHelper.getPageInfo(filePath);
                         }

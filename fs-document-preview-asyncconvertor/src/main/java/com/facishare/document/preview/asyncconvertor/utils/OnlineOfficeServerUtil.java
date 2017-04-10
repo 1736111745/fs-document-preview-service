@@ -189,6 +189,7 @@ public class OnlineOfficeServerUtil {
         String filePath = FilenameUtils.concat(dataDir, fileName);
         FileUtils.writeByteArrayToFile(new File(filePath), bytes);
         previewInfoDao.savePdfFile(ea, path, filePath);
+        convertPdf2HtmlEnqueueUtil.enqueue(ea, path);
         return filePath;
     }
 

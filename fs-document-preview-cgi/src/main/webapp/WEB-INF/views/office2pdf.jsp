@@ -27,6 +27,7 @@
             width: 1000px;
             background: url("<%=request.getContextPath()%>/static/images/loading.gif") no-repeat center;
             height: 500px;
+            margin: 20px auto;
         }
 
         #spanLoading {
@@ -34,7 +35,7 @@
             width: 100%;
             text-align: center;
             line-height: 550px;
-            font-size: 24px;
+            font-size:364px;
         }
     </style>
     <title>office2pdf</title>

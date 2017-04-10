@@ -104,7 +104,8 @@ public class OnlineOfficeServerUtil {
         Stopwatch stopwatch = Stopwatch.createStarted();
         String ext = FilenameUtils.getExtension(path);
         String name = SampleUUID.getUUID() + "." + ext;
-        String downloadUrl = String.format(fscServerUrl, ea, String.valueOf(employeeId), path, sg, name);
+        //{path}/{ea}/{employee_id}/{sg}/{name}
+        String downloadUrl = String.format(fscServerUrl, path,ea, String.valueOf(employeeId), sg, name);
         log.info("downLoadUrl:{}", downloadUrl);
         String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
         String url = oosServerUrl + "/wv/WordViewer/request.pdf?WOPIsrc=" + URLEncoder.encode(src) + "&access_token_ttl=0&z=1%2E0&type=downloadpdf";
@@ -145,7 +146,8 @@ public class OnlineOfficeServerUtil {
         Stopwatch stopwatch = Stopwatch.createStarted();
         String ext = FilenameUtils.getExtension(path);
         String name = SampleUUID.getUUID() + "." + ext;
-        String downloadUrl = String.format(fscServerUrl, ea, String.valueOf(employeeId), path, sg, name);
+        //{path}/{ea}/{employee_id}/{sg}/{name}
+        String downloadUrl = String.format(fscServerUrl, path,ea, String.valueOf(employeeId), sg, name);
         log.info("downLoadUrl:{}", downloadUrl);
         String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
         String pid = "WOPIsrc=" + URLEncoder.encode(src);

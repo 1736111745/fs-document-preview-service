@@ -78,6 +78,6 @@ public class Pdf2HtmlProcessor {
             }
         }
         stopWatch.stop();
-        log.info("end do convert,params:{},cost:{}", JSON.toJSONString(convertorMessage), stopWatch.getTime());
+        log.info("end do convert,params:{},cost:{}ms", JSON.toJSONString(convertorMessage), stopWatch.getTime());
     }
 }

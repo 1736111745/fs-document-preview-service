@@ -1,7 +1,6 @@
 package com.facishare.document.preview.common.dao;
 
 
-
 import com.facishare.document.preview.common.model.PreviewInfo;
 
 import java.io.IOException;
@@ -14,14 +13,14 @@ public interface PreviewInfoDao {
 
     void savePreviewInfo(String ea, String path, String dataFilePath);
 
-    String getDataFilePath(String path, int page, String dataDir,String filePath, int type, List<String> filePathList) throws IOException;
+    String getDataFilePath(String path, int page, String dataDir, String filePath, int type, List<String> filePathList) throws IOException;
 
     String getBaseDir(String folderName);
 
-    PreviewInfo initPreviewInfo(String ea, int employeeId, String path, String originalFilePath, String pdfFilePath,String dataDir, long docSize, int pageCount, List<String> sheetNames);
+    PreviewInfo initPreviewInfo(String ea, int employeeId, String path, String originalFilePath, String pdfFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames);
 
     PreviewInfo getInfoByPath(String ea, String path);
 
-    void savePdfFile(String ea,String path,String pdfFilePath);
+    void savePdfFile(String ea, String path, String pdfFilePath, int pdfPageCount);
 
 }

@@ -61,7 +61,7 @@ public class Office2PdfProcessor {
         autoConfRocketMQProcessor.init();
     }
 
-    private void doConvert(ConvertOffice2PdfMessage convertorMessage) throws InterruptedException, IOException {
+    private void doConvert(ConvertOffice2PdfMessage convertorMessage) throws Exception {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         log.info("begin do convert,params:{}", JSON.toJSONString(convertorMessage));

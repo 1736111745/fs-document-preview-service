@@ -1,9 +1,8 @@
 var sg = getQueryStringByName("sg");
-var pageCount = getQueryStringByName("pageCount");
 var path = getQueryStringByName("path");
 var type = path.indexOf(".doc") > -1 ? "checkWord2Pdf" : "checkPPT2Pdf"
 var tryCount = 0;
-
+var pdfPageCount = 0;
 $(function () {
     loadViewPort();
     checkOffice2PdfStatus();
@@ -31,6 +30,7 @@ function queryOffice2PdfStatus() {
         url: url,
         success: function (data) {
             flag = data.finished;
+            pdfPageCount=data.pdfPageCount;
         }
     });
     return flag;
@@ -47,7 +47,7 @@ function checkConvertStatus() {
         }
         if (queryOffice2PdfStatus()) {
             clearInterval(idChkConvertStatus);
-            location.href = window.contextPath + '/preview/handlePdf?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg;
+            location.href = window.contextPath + '/preview/handlePdf?path=' + path + '&pageCount=' + pdfPageCount + "&sg=" + sg;
         }
     }, 1000);
 }

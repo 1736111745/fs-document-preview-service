@@ -406,6 +406,7 @@ public class PreviewController {
             String ea = employeeInfo.getEa();
             PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
             map.put("finished", !Strings.isNullOrEmpty(previewInfo.getPdfFilePath()));
+            map.put("pageCount",previewInfo.getPdfPageCount());
 
 
         } catch (Exception e) {

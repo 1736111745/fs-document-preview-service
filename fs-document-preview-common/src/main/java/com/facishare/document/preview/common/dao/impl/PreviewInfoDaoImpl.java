@@ -129,11 +129,12 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     }
 
     @Override
-    public void savePdfFile(String ea, String path, String pdfFilePath) {
+    public void savePdfFile(String ea, String path, String pdfFilePath, int pdfPageCount) {
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("path").equal(path).criteria("ea").equal(ea);
         UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
         update.set("pdfFilePath", pdfFilePath);
+        update.set("pdfPageCount", pdfPageCount);
         dpsDataStore.findAndModify(query, update);
     }
 }

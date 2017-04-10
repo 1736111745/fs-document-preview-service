@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.PreviewInfo;
 import com.facishare.document.preview.common.utils.ConvertPdf2HtmlEnqueueUtil;
+import com.facishare.document.preview.common.utils.DocPageInfoHelper;
 import com.facishare.document.preview.common.utils.SampleUUID;
 import com.fxiaoke.common.http.handler.SyncCallback;
 import com.fxiaoke.common.http.spring.OkHttpSupport;
@@ -57,7 +58,7 @@ public class OnlineOfficeServerUtil {
         });
     }
 
-    public String ConvertPPT2Pdf(String ea, int employeeId, String path, String sg) throws IOException, InterruptedException {
+    public String ConvertPPT2Pdf(String ea, int employeeId, String path, String sg) throws Exception {
         PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
         if (!Strings.isNullOrEmpty(previewInfo.getPdfFilePath())) {
             return previewInfo.getPdfFilePath();
@@ -78,7 +79,7 @@ public class OnlineOfficeServerUtil {
         return filePath;
     }
 
-    public String ConvertWord2Pdf(String ea, int employeeId, String path, String sg) throws IOException, InterruptedException {
+    public String ConvertWord2Pdf(String ea, int employeeId, String path, String sg) throws Exception {
         PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
         if (!Strings.isNullOrEmpty(previewInfo.getPdfFilePath())) {
             return previewInfo.getPdfFilePath();
@@ -104,7 +105,7 @@ public class OnlineOfficeServerUtil {
         String ext = FilenameUtils.getExtension(path);
         String name = SampleUUID.getUUID() + "." + ext;
         String downloadUrl = String.format(fscServerUrl, ea, String.valueOf(employeeId), path, sg, name);
-        log.info("downLoadUrl:{}",downloadUrl);
+        log.info("downLoadUrl:{}", downloadUrl);
         String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
         String url = oosServerUrl + "/wv/WordViewer/request.pdf?WOPIsrc=" + URLEncoder.encode(src) + "&access_token_ttl=0&z=1%2E0&type=downloadpdf";
         WordConvertInfo docConvertInfo = new WordConvertInfo();
@@ -145,7 +146,7 @@ public class OnlineOfficeServerUtil {
         String ext = FilenameUtils.getExtension(path);
         String name = SampleUUID.getUUID() + "." + ext;
         String downloadUrl = String.format(fscServerUrl, ea, String.valueOf(employeeId), path, sg, name);
-        log.info("downLoadUrl:{}",downloadUrl);
+        log.info("downLoadUrl:{}", downloadUrl);
         String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
         String pid = "WOPIsrc=" + URLEncoder.encode(src);
         Map<String, String> map = new HashMap<>();
@@ -184,13 +185,14 @@ public class OnlineOfficeServerUtil {
         private byte[] bytes;
     }
 
-    private String savePdfFile(String ea, String path, byte[] bytes) throws IOException {
+    private String savePdfFile(String ea, String path, byte[] bytes) throws Exception {
         PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
         String dataDir = previewInfo.getDataDir();
         String fileName = SampleUUID.getUUID() + ".pdf";
         String filePath = FilenameUtils.concat(dataDir, fileName);
         FileUtils.writeByteArrayToFile(new File(filePath), bytes);
-        previewInfoDao.savePdfFile(ea, path, filePath);
+        int pageCount = DocPageInfoHelper.getPageInfo(filePath).getPageCount();
+        previewInfoDao.savePdfFile(ea, path, filePath, pageCount);
         convertPdf2HtmlEnqueueUtil.enqueue(ea, path);
         return filePath;
     }

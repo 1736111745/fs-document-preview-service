@@ -154,6 +154,7 @@ public class OnlineOfficeServerUtil {
         Map<String, String> map = new HashMap<>();
         map.put("presentationId", pid);
         String postUrl = oosServerUrl + "/p/ppt/view.svc/jsonAnonymous/Print";
+        log.info("postUrl:{}", postUrl);
         RequestBody body = RequestBody.create(JSONType, JSON.toJSONString(map));
         Request request = new Request.Builder()
                 .url(postUrl)

@@ -29,8 +29,6 @@ import java.io.IOException;
 @Component
 public class Office2PdfProcessor {
     @Autowired
-    PreviewInfoDao previewInfoDao;
-    @Autowired
     ConvertOffice2PdfTaskDao convertTaskDao;
     @Autowired
     private CounterService counterService;

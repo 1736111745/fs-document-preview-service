@@ -113,6 +113,7 @@ public class OnlineOfficeServerUtil {
         log.info("downLoadUrl:{}", downloadUrl);
         String src = oosServerUrl + "/oh/wopi/files/@/wFileId?wFileId=" + URLEncoder.encode(downloadUrl);
         String url = oosServerUrl + "/wv/WordViewer/request.pdf?WOPIsrc=" + URLEncoder.encode(src) + "&access_token_ttl=0&z=1%2E0&type=downloadpdf";
+        log.info("postUrl:{}",url);
         WordConvertInfo docConvertInfo = new WordConvertInfo();
         Request request = new Request.Builder().url(url).build();
         client.syncExecute(request, new SyncCallback() {

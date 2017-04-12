@@ -34,11 +34,11 @@ function doPreview() {
         route = office2PdfStatus == 1 ? "handleOffice2Pdf" : "handlePdf";
     }
     else {
-        if (path.indexOf("xls") >= 0) {
+        if (path.toLowerCase().indexOf("xls") >= 0) {
             route = "handleExcel";
         }
         else
-            route = path.indexOf("pdf") >= 0 ? "handlePdf" : "handleWordAndPPT";
+            route = path.toLowerCase().indexOf("pdf") >= 0 ? "handlePdf" : "handleWordAndPPT";
     }
     console.log("route:" + route);
     var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg + "&rdm=1";

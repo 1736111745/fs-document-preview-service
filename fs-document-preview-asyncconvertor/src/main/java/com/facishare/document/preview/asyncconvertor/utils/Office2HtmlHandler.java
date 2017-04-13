@@ -8,6 +8,7 @@ import com.facishare.document.preview.common.utils.SampleUUID;
 import com.fxiaoke.common.http.handler.SyncCallback;
 import com.fxiaoke.common.http.spring.OkHttpSupport;
 import com.github.autoconf.ConfigFactory;
+import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
@@ -22,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by liuq on 2017/4/13.
@@ -36,19 +38,15 @@ public class Office2HtmlHandler {
     PreviewInfoDao previewInfoDao;
     @Autowired
     ConvertPdf2HtmlEnqueueUtil convertPdf2HtmlEnqueueUtil;
-    private Map<String,String> mimeMap=new HashMap<>();
     @PostConstruct
     void init() {
         ConfigFactory.getConfig("fs-dps-config", config -> {
             oosServerUrl = config.get("oosServerUrl");
         });
-        mimeMap.put("ppt", "application/vnd.ms-powerpoint");
-        mimeMap.put("pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation");
-        mimeMap.put("doc", "application/msword");
-        mimeMap.put("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
     }
 
     public String ConvertOffice2Pdf(String ea, String path) throws Exception {
+
         PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
         if (!Strings.isNullOrEmpty(previewInfo.getPdfFilePath())) {
             return previewInfo.getPdfFilePath();
@@ -62,6 +60,7 @@ public class Office2HtmlHandler {
         String postUrl = oosServerUrl + "?ext=" + ext;
         log.info("post url:{}", postUrl);
         Request request = new Request.Builder().url(postUrl).post(requestBody).build();
+        Stopwatch stopwatch=Stopwatch.createStarted();
         client.syncExecute(request, new SyncCallback() {
             @Override
             public Object response(Response response) {
@@ -81,6 +80,8 @@ public class Office2HtmlHandler {
                 }
             }
         });
+        stopwatch.stop();
+        log.info("convert2pdf file length:{}, cost:{}ms",previewInfo.getDocSize(),stopwatch.elapsed(TimeUnit.MILLISECONDS));
         return filePath;
     }
 

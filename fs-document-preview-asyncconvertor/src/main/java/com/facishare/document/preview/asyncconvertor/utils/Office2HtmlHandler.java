@@ -38,6 +38,7 @@ public class Office2HtmlHandler {
     PreviewInfoDao previewInfoDao;
     @Autowired
     ConvertPdf2HtmlEnqueueUtil convertPdf2HtmlEnqueueUtil;
+
     @PostConstruct
     void init() {
         ConfigFactory.getConfig("fs-dps-config", config -> {
@@ -56,32 +57,30 @@ public class Office2HtmlHandler {
         String dataDir = previewInfo.getDataDir();
         String fileName = SampleUUID.getUUID() + ".pdf";
         String filePath = FilenameUtils.concat(dataDir, fileName);
-        RequestBody requestBody=createRequestBody(originalFilePath);
+        RequestBody requestBody = createRequestBody(originalFilePath);
         String postUrl = oosServerUrl + "?ext=" + ext;
-        log.info("post url:{}", postUrl);
+        log.info("ea:{},path:{},post url:{}", ea, path, postUrl);
         Request request = new Request.Builder().url(postUrl).post(requestBody).build();
-        Stopwatch stopwatch=Stopwatch.createStarted();
-        client.syncExecute(request, new SyncCallback() {
-            @Override
-            public Object response(Response response) {
-                try {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        try {
+            client.syncExecute(request, new SyncCallback() {
+                @Override
+                public Object response(Response response) throws Exception {
                     String contentType = response.header("Content-Type");
                     log.info("contentType:{}", contentType);
+                    log.info("response.status:{}", response.code());
                     byte[] bytes = response.body().bytes();
                     if (contentType.contains("application/pdf")) {
                         savePdfFile(ea, path, bytes, filePath);
                     }
                     return bytes;
-                } catch (Exception e) {
-                    log.warn("exception:", e);
-                    return null;
-                } finally {
-                    log.info("response.status:{}", response.code());
                 }
-            }
-        });
+            });
+        } catch (Exception ex) {
+            log.error("convert2pdf  path:{},happened exception!", path, ex);
+        }
         stopwatch.stop();
-        log.info("convert2pdf file length:{}, cost:{}ms",previewInfo.getDocSize(),stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        log.info("convert2pdf file length:{}, cost:{}ms", previewInfo.getDocSize(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
         return filePath;
     }
 
@@ -93,7 +92,7 @@ public class Office2HtmlHandler {
     }
 
 
-    private  static  RequestBody createRequestBody(String filePath) {
+    private static RequestBody createRequestBody(String filePath) {
         String fileName = SampleUUID.getUUID();
         RequestBody fileBody = RequestBody.create(MediaType.parse("application/office"), new File(filePath));
         RequestBody requestBody = new MultipartBody.Builder()
@@ -104,9 +103,9 @@ public class Office2HtmlHandler {
     }
 
     public static void main(String[] args) throws IOException {
-        String originalFilePath="/Users/liuq/Downloads/documents/docfiles/无法显示图片文件 (1).doc";
+        String originalFilePath = "/Users/liuq/Downloads/documents/docfiles/无法显示图片文件 (1).doc";
         OkHttpClient okHttpClient = new OkHttpClient();
-        RequestBody requestBody=createRequestBody(originalFilePath);
+        RequestBody requestBody = createRequestBody(originalFilePath);
         //2.3 获取请求体
         String postUrl = "http://office2pdf.nsvc.foneshare.cn/Api/ConvertOffice2Pdf?ext=doc";
         log.info("post url:{}", postUrl);

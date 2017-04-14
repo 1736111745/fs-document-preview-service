@@ -2,7 +2,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p"
        xsi:schemaLocation="http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/beans
@@ -28,6 +28,6 @@
           init-method="init"/>
     <bean id="office2PdfProcessor" class="com.facishare.document.preview.asyncconvertor.service.Office2PdfProcessor"
           init-method="init"/>
-    <bean id="httpClientSupport" class="com.fxiaoke.common.http.spring.HttpSupportFactoryBean"/>
+    <bean id="httpClientSupport" class="com.fxiaoke.common.http.spring.HttpSupportFactoryBean" p:configName="fs-dps-config"/>
     <bean id="convertPdf2HtmlEnqueueUtil" class="com.facishare.document.preview.common.utils.ConvertPdf2HtmlEnqueueUtil"/>
 </beans>

@@ -17,6 +17,8 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
 /**
  * Created by liuq on 2017/3/9.
  */
@@ -56,7 +58,7 @@ public class Pdf2HtmlProcessor {
         autoConfRocketMQProcessor.init();
     }
 
-    private void doConvert(ConvertPdf2HtmlMessage convertorMessage) throws InterruptedException {
+    private void doConvert(ConvertPdf2HtmlMessage convertorMessage) throws InterruptedException, IOException {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         log.info("begin do convert,params:{}", JSON.toJSONString(convertorMessage));

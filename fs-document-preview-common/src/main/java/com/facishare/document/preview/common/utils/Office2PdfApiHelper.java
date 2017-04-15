@@ -9,6 +9,7 @@ import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Component;
@@ -51,8 +52,7 @@ public class Office2PdfApiHelper {
 
     public byte[] getPdfPageBuffer(String filePath, int page) {
         byte[] pdfContents = null;
-        RestResponse restResponse = callApi("GetPdfPageBuffer", filePath, "page=" + page);
-        byte[] bytes = restResponse.getBytes();
+        RestResponse restResponse = callApi("GetPdfBytes", filePath, "page=" + page);
         if (restResponse.getContentType().contains("application/pdf")) {
             pdfContents = restResponse.getBytes();
         }
@@ -64,7 +64,7 @@ public class Office2PdfApiHelper {
         Stopwatch stopwatch = Stopwatch.createStarted();
         RestResponse restResponse = new RestResponse();
         RequestBody requestBody = createRequestBody(filePath);
-        String postUrl = oosServerUrl + "Api/" + method;
+        String postUrl = oosServerUrl + "/Api/" + method;
         if (!Strings.isNullOrEmpty(params)) {
             postUrl = postUrl + "?" + params;
         }
@@ -91,7 +91,7 @@ public class Office2PdfApiHelper {
     }
 
     private RequestBody createRequestBody(String filePath) {
-        String fileName = SampleUUID.getUUID();
+        String fileName = SampleUUID.getUUID() + "." + FilenameUtils.getExtension(filePath);
         RequestBody fileBody = RequestBody.create(MediaType.parse("application/office"), new File(filePath));
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)

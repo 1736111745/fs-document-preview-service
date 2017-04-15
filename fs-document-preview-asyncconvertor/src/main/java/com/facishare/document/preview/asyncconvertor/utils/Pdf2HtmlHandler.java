@@ -36,12 +36,12 @@ public class Pdf2HtmlHandler {
     Office2PdfApiHelper office2PdfApiHelper;
 
     public String doConvert(int page, String filePath) throws IOException {
-        int pageIndex=page-1;
-        byte[] pdfFileBytes = office2PdfApiHelper.getPdfBytes(filePath,pageIndex);
-        if(pdfFileBytes==null) return null;
-        String pdfPageFilePath=FilenameUtils.concat(filePath,"."+page+".pdf");
-        log.info("pdfPageFilePath:{}",pdfPageFilePath);
-        FileUtils.writeByteArrayToFile(new File(pdfPageFilePath),pdfFileBytes);
+        int pageIndex = page - 1;
+        byte[] pdfFileBytes = office2PdfApiHelper.getPdfBytes(filePath, pageIndex);
+        if (pdfFileBytes == null) return null;
+        String pdfPageFilePath = filePath + "." + page + ".pdf";
+        log.info("pdfPageFilePath:{}", pdfPageFilePath);
+        FileUtils.writeByteArrayToFile(new File(pdfPageFilePath), pdfFileBytes);
         String dataFilePath = "";
         List<String> args = createProcessArgs(1, pdfPageFilePath);
         try {

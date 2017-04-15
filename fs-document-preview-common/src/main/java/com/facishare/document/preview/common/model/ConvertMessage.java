@@ -10,7 +10,7 @@ import lombok.Data;
  */
 @Data
 @Builder
-public class ConvertPdf2HtmlMessage extends ProtoBase {
+public class ConvertMessage extends ProtoBase {
     @Tag(1)
     private String ea;
     @Tag(2)

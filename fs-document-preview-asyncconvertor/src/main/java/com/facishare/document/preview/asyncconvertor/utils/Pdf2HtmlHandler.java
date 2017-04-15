@@ -28,20 +28,13 @@ import java.util.concurrent.TimeoutException;
 public class Pdf2HtmlHandler {
     @ReloadableProperty("pdf2HtmlTimeout")
     private int pdf2HtmlTimeout = 60;
-    @Autowired
-    Office2PdfApiHelper office2PdfApiHelper;
 
     public String doConvert(int page, String filePath) throws IOException {
         int pageIndex = page - 1;
-        byte[] pdfFileBytes = office2PdfApiHelper.getPdfBytes(filePath, pageIndex);
-        if (pdfFileBytes == null) return null;
-        String pdfPageFilePath = filePath + "." + page + ".pdf";
-        log.info("pdfPageFilePath:{}", pdfPageFilePath);
-        FileUtils.writeByteArrayToFile(new File(pdfPageFilePath), pdfFileBytes);
         String dataFilePath = "";
         String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
         String outPutDir = FilenameUtils.concat(basedDir, "p" + page);
-        List<String> args = createProcessArgs(pdfPageFilePath, outPutDir);
+        List<String> args = createProcessArgs(filePath, outPutDir);
         try {
             Future<ProcessResult> future = new ProcessExecutor()
                     .command(args)
@@ -52,7 +45,7 @@ public class Pdf2HtmlHandler {
                     .start().getFuture();
             ProcessResult processResult = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
             if (processResult.getExitValue() == 0) {
-                dataFilePath = handleResult(page, pdfPageFilePath, outPutDir);
+                dataFilePath = handleResult(page, filePath, outPutDir);
             } else
                 log.error("output:{},exit code:{}", processResult.outputUTF8(), processResult.getExitValue());
         } catch (IOException e) {

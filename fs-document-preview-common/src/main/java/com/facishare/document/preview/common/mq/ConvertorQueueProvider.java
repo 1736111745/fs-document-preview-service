@@ -1,10 +1,8 @@
 package com.facishare.document.preview.common.mq;
 
 import com.alibaba.rocketmq.common.message.Message;
-import com.facishare.common.fsi.ProtoBase;
 import com.facishare.common.rocketmq.AutoConfRocketMQSender;
-import com.facishare.document.preview.common.model.ConvertOffice2PdfMessage;
-import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
+import com.facishare.document.preview.common.model.ConvertMessage;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -27,7 +25,7 @@ public class ConvertorQueueProvider {
         log.info("finish init rocketmq!");
     }
 
-    public void convertPdf2Html(ConvertPdf2HtmlMessage message) {
+    public void enqueue(ConvertMessage message) {
         log.info("enqueue:{}", com.alibaba.fastjson.JSON.toJSON(message));
         Message messageExt = new Message();
         messageExt.setBody(message.toProto());

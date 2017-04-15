@@ -16,8 +16,6 @@ import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.*;
 import com.facishare.document.preview.common.utils.*;
 import com.fxiaoke.metrics.CounterService;
-import com.fxiaoke.release.FsGrayRelease;
-import com.fxiaoke.release.FsGrayReleaseBiz;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -62,7 +60,7 @@ public class PreviewController {
     @Autowired
     CounterService counterService;
     @Autowired
-    ConvertPdf2HtmlEnqueueUtil convertPdf2HtmlEnqueueUtils;
+    ConvertOffice2PdfEnqueueUtil convertOffice2PdfEnqueueUtil;
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
 
@@ -223,7 +221,7 @@ public class PreviewController {
     public String docPreviewByPath(HttpServletRequest request) throws Exception {
         int pageCount = 0;
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        String path = RequestParamsHelper.safteGetRequestParameter(request, "npath") == "" ? RequestParamsHelper.safteGetRequestParameter(request, "path") : RequestParamsHelper.safteGetRequestParameter(request, "path");
+        String path = RequestParamsHelper.safeGetRequestParameter(request, "npath") == "" ? RequestParamsHelper.safeGetRequestParameter(request, "path") : RequestParamsHelper.safeGetRequestParameter(request, "path");
         if (!UrlParametersHelper.isValidPath(path)) {
             return getDocPreviewInfoResult(path, pageCount);
         }
@@ -244,7 +242,7 @@ public class PreviewController {
     @ResponseBody
     @RequestMapping(value = "/preview/DocPageByPath", method = RequestMethod.GET)
     public void docPageByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String path = RequestParamsHelper.safteGetRequestParameter(request, "npath") == "" ? RequestParamsHelper.safteGetRequestParameter(request, "path") : RequestParamsHelper.safteGetRequestParameter(request, "npath");
+        String path = RequestParamsHelper.safeGetRequestParameter(request, "npath") == "" ? RequestParamsHelper.safeGetRequestParameter(request, "path") : RequestParamsHelper.safeGetRequestParameter(request, "npath");
         int pageIndex = NumberUtils.toInt(UrlParametersHelper.safeGetRequestParameter(request, "pageIndex"), 0);
         if (!UrlParametersHelper.isValidPath(path)) {
             response.setStatus(400);
@@ -309,7 +307,7 @@ public class PreviewController {
         try {
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             String ea = employeeInfo.getEa();
-            convertPdf2HtmlEnqueueUtils.enqueue(ea, path);
+            convertOffice2PdfEnqueueUtil.enqueue(ea, path);
         } catch (Exception e) {
             log.warn("checkPdf2HtmlStatus happened exception", e);
         } finally {

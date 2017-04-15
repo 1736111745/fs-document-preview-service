@@ -7,8 +7,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class RequestParamsHelper {
 
-    public static String safteGetRequestParameter(HttpServletRequest request, String paramName) {
+    public static String safeGetRequestParameter(HttpServletRequest request, String paramName) {
         String value = request.getParameter(paramName) == null ? "" : request.getParameter(paramName).trim();
         return value;
     }
+
 }

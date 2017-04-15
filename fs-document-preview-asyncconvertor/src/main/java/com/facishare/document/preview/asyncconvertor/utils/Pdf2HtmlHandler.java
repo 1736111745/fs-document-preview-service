@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -15,8 +14,6 @@ import org.zeroturnaround.exec.ProcessResult;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -43,8 +40,8 @@ public class Pdf2HtmlHandler {
         FileUtils.writeByteArrayToFile(new File(pdfPageFilePath), pdfFileBytes);
         String dataFilePath = "";
         String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
-        String outPutDir = FilenameUtils.concat(basedDir, "p"+page);
-        List<String> args = createProcessArgs(1, pdfPageFilePath,outPutDir);
+        String outPutDir = FilenameUtils.concat(basedDir, "p" + page);
+        List<String> args = createProcessArgs(pdfPageFilePath, outPutDir);
         try {
             Future<ProcessResult> future = new ProcessExecutor()
                     .command(args)
@@ -55,7 +52,7 @@ public class Pdf2HtmlHandler {
                     .start().getFuture();
             ProcessResult processResult = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
             if (processResult.getExitValue() == 0) {
-                dataFilePath = handleResult(page, pdfPageFilePath,outPutDir);
+                dataFilePath = handleResult(page, pdfPageFilePath, outPutDir);
             } else
                 log.error("output:{},exit code:{}", processResult.outputUTF8(), processResult.getExitValue());
         } catch (IOException e) {
@@ -71,13 +68,13 @@ public class Pdf2HtmlHandler {
     }
 
 
-    private static List<String> createProcessArgs(int page, String filePath,String outPutDir) {
+    private static List<String> createProcessArgs(String filePath, String outPutDir) {
         List<String> args = Lists.newArrayList();
         args.add("pdf2htmlEX");//命令行开始
         args.add("-f");
-        args.add(String.valueOf(page));
+        args.add("1");
         args.add("-l");
-        args.add(String.valueOf(page));
+        args.add("1");
         args.add("--fit-width");//缩放
         args.add("1000");
         args.add("--embed-outline");//链接文件单独输出
@@ -106,19 +103,27 @@ public class Pdf2HtmlHandler {
     }
 
 
-    private String handleResult(int page, String filePath,String outPutDir) throws IOException {
+    private String handleResult(int page, String filePath, String outPutDir) throws IOException {
         String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
-        String pageBaseDir = outPutDir;
         String dataFileName = FilenameUtils.getBaseName(filePath) + ".html";
-        String dataFilePath = FilenameUtils.concat(pageBaseDir, dataFileName);
+        String dataFilePath = FilenameUtils.concat(outPutDir, dataFileName);
         String pageName = page + ".html";
         String pagePath = FilenameUtils.concat(baseDir, pageName);
         File dataFile = new File(dataFilePath);
         File pageFile = new File(pagePath);
         String dirName = FilenameUtils.getBaseName(baseDir);
         handleHtml(dataFile, pageFile, page, dirName);
-        String cssFileName= FilenameUtils.getBaseName(filePath) + ".css";
-        String bgFileName=FilenameUtils.getName(filePath)+".jpg";
+        String cssFileName = FilenameUtils.getBaseName(filePath) + ".css";
+        String cssFileFilePath = FilenameUtils.concat(outPutDir, cssFileName);
+        String newCssFilePath = FilenameUtils.concat(baseDir, page + ".css");
+        File cssFile = new File(cssFileFilePath);
+        cssFile.renameTo(new File(newCssFilePath));
+        //处理背景图片
+        String bgFileName = FilenameUtils.getBaseName(filePath) + ".jpg";
+        String bgFileFilePath = FilenameUtils.concat(outPutDir, bgFileName);
+        String newBgFilePath = FilenameUtils.concat(baseDir, "bg" + page + ".jpg");
+        File bgFile = new File(bgFileFilePath);
+        bgFile.renameTo(new File(newBgFilePath));
         //FileUtils.deleteDirectory(new File(pageBaseDir));
         return pagePath;
     }
@@ -142,7 +147,10 @@ public class Pdf2HtmlHandler {
                 "</div>", "");
         html = html.replace("<div class=\"loading-indicator\">", "");
         html = html.replace("<img alt=\"\" src=\"pdf2htmlEX-64x64.png\"/>", "");
-        html = html.replace("src=\"", "src=\"./" + dirName + "/");
+        //html = html.replace("src=\"", "src=\"./" + dirName + "/");
+        String cssFileName = FilenameUtils.getBaseName(dataFile.getName()) + ".css";
+        html = html.replace(cssFileName, "./" + dirName + "/" + page + ".css");
+        html = html.replace("bg1.jpg", "./" + dirName + "/" + page + ".jpg");
         html = html.replace("\n", "");
         FileUtils.writeByteArrayToFile(pageFile, html.getBytes());
     }

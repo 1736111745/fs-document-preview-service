@@ -65,7 +65,7 @@ public class Office2PdfProcessor {
         stopWatch.start();
         log.info("begin do convert,params:{}", JSON.toJSONString(office2PdfMessage));
         String ea = office2PdfMessage.getEa();
-        String path = office2PdfMessage.getFilePath();
+        String path = office2PdfMessage.getNpath();
         String filePath = office2PdfMessage.getFilePath();
         int page = office2PdfMessage.getPage();
         int status = office2PdfTaskDao.getTaskStatus(ea, path, page);

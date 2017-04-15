@@ -27,7 +27,6 @@ public class Office2PdfTaskDaoImpl implements Office2PdfTaskDao {
         Query<Office2PdfTask> query = dpsDataStore.createQuery(Office2PdfTask.class);
         query.criteria("ea").equal(ea).criteria("path").equal(path).criteria("page").equal(page);
         Office2PdfTask convertTask = query.get();
-        log.info(query.toString());
         if (convertTask != null) {
             status = convertTask.getStatus();
         }

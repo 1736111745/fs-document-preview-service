@@ -129,7 +129,7 @@ public class PreviewController {
                 if (previewInfo != null) {
                     if (pageIndex < previewInfo.getPageCount()) {
                         String filePath = previewInfo.getOriginalFilePath();
-                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), filePath, 2, previewInfo.getFilePathList());
+                        String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), filePath, 1, previewInfo.getFilePathList());
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
                             FileOutPutor.outPut(response, dataFilePath, true);
                         } else {

@@ -128,7 +128,7 @@ public class Pdf2HtmlHandler {
             String newFilePath = FilenameUtils.concat(baseDir, fileName);
             file.renameTo(new File(newFilePath));
         });
-        FileUtils.deleteDirectory(new File(pageBaseDir));
+        //FileUtils.deleteDirectory(new File(pageBaseDir));
         return pagePath;
     }
 

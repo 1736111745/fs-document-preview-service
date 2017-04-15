@@ -36,7 +36,8 @@ public class Pdf2HtmlHandler {
     Office2PdfApiHelper office2PdfApiHelper;
 
     public String doConvert(int page, String filePath) {
-        byte[] pdfFileBytes = office2PdfApiHelper.getPdfPageBuffer(filePath, page + 1);
+        int pageIndex=page-1;
+        byte[] pdfFileBytes = office2PdfApiHelper.getPdfBytes(filePath,pageIndex);
         if(pdfFileBytes==null) return null;
         String pdfPageFilePath=FilenameUtils.concat(filePath,page+".pdf");
         String dataFilePath = "";

@@ -50,7 +50,7 @@ public class Office2PdfApiHelper {
         return pageCount;
     }
 
-    public byte[] getPdfPageBuffer(String filePath, int page) {
+    public byte[] getPdfBytes(String filePath, int page) {
         byte[] pdfContents = null;
         RestResponse restResponse = callApi("GetPdfBytes", filePath, "page=" + page);
         if (restResponse.getContentType().contains("application/pdf")) {

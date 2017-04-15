@@ -34,9 +34,7 @@ public class Office2PdfApiHelper {
 
     @PostConstruct
     void init() {
-        ConfigFactory.getConfig("fs-dps-config", config -> {
-            oosServerUrl = config.get("oosServerUrl");
-        });
+        ConfigFactory.getConfig("fs-dps-config", config -> oosServerUrl = config.get("oosServerUrl"));
     }
 
     public int getPageCount(String filePath) throws IOException {
@@ -86,7 +84,7 @@ public class Office2PdfApiHelper {
             log.error("call method:{},path:{},happened exception!",method, filePath, ex);
         }
         stopwatch.stop();
-        log.info("call api:{},cost:{}", postUrl, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        log.info("call api:{},cost:{}ms", postUrl, stopwatch.elapsed(TimeUnit.MILLISECONDS));
         return restResponse;
     }
 

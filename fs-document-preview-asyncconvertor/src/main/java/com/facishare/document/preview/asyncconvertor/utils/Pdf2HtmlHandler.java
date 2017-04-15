@@ -30,7 +30,6 @@ public class Pdf2HtmlHandler {
     private int pdf2HtmlTimeout = 60;
 
     public String doConvert(int page, String filePath) throws IOException {
-        int pageIndex = page - 1;
         String dataFilePath = "";
         String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
         String outPutDir = FilenameUtils.concat(basedDir, "p" + page);
@@ -56,6 +55,9 @@ public class Pdf2HtmlHandler {
             log.error("do convert happened ExecutionException!", e);
         } catch (TimeoutException e) {
             log.error("do convert happened TimeoutException!filePath:{},page:{}", filePath, page, e);
+        }
+        finally {
+            FileUtils.deleteQuietly(new File(filePath));
         }
         return dataFilePath;
     }

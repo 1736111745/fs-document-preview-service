@@ -23,10 +23,8 @@
     <bean id="convertOffice2PdfTaskDao" class="com.facishare.document.preview.common.dao.impl.ConvertOffice2PdfTaskDaoImpl"/>
     <import resource="classpath:spring/spring-cms.xml"/>
     <bean class="com.fxiaoke.metrics.MetricsConfiguration"/>
-    <bean id="pdf2HtmlProvider" class="com.facishare.document.preview.common.mq.ConvertorQueueProvider" init-method="init" p:configName="${pdf2html_mq_config_name}"/>
     <bean id="pdf2HtmlProcessor" class="com.facishare.document.preview.asyncconvertor.service.Pdf2HtmlProcessor"
           init-method="init"/>
     <bean id="httpClientSupport" class="com.fxiaoke.common.http.spring.HttpSupportFactoryBean" p:configName="fs-dps-config"/>
     <bean id="office2PdfApiHelper" class="com.facishare.document.preview.common.utils.Office2PdfApiHelper"/>
-    <bean id="convertPdf2HtmlEnqueueUtil" class="com.facishare.document.preview.common.utils.ConvertPdf2HtmlEnqueueUtil"/>
 </beans>

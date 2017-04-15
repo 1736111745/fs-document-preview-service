@@ -5,13 +5,12 @@ import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import com.alibaba.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import com.alibaba.rocketmq.common.message.MessageExt;
 import com.facishare.common.rocketmq.AutoConfRocketMQProcessor;
-import com.facishare.document.preview.asyncconvertor.utils.Office2HtmlHandler;
+import com.facishare.document.preview.asyncconvertor.utils.Office2PdfHandler;
 import com.facishare.document.preview.common.dao.ConvertOffice2PdfTaskDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.ConvertOffice2PdfMessage;
 import com.fxiaoke.metrics.CounterService;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
-import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -34,7 +33,7 @@ public class Office2PdfProcessor {
     @Autowired
     private CounterService counterService;
     @Autowired
-    Office2HtmlHandler office2HtmlHandler;
+    Office2PdfHandler office2HtmlHandler;
     private AutoConfRocketMQProcessor autoConfRocketMQProcessor;
     private static final String KEY_NAME_SERVER = "NAMESERVER";
     private static final String KEY_GROUP = "GROUP_CONSUMER";

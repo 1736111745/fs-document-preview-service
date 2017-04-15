@@ -10,7 +10,7 @@
     <description>SpringApplicationContext</description>
     <context:annotation-config/>
     <context:component-scan base-package="com.facishare.document.preview.cgi"/>
-    <mvc:annotation-driven />
+    <mvc:annotation-driven/>
     <aop:aspectj-autoproxy/>
     <mvc:resources mapping="/static/**" location="WEB-INF/views/static/" cache-period="31556926"/>
     <aop:aspectj-autoproxy/>
@@ -29,12 +29,17 @@
 
     <bean id="fileProxy" class="com.facishare.document.preview.cgi.utils.FileStorageProxy"/>
     <bean id="previewInfoDao" class="com.facishare.document.preview.common.dao.impl.PreviewInfoDaoImpl"/>
-    <bean id="convertPdf2HtmlTaskDao" class="com.facishare.document.preview.common.dao.impl.ConvertPdf2HtmlTaskDaoImpl"/>
-    <bean id="convertOffice2PdfTaskDao" class="com.facishare.document.preview.common.dao.impl.ConvertOffice2PdfTaskDaoImpl"/>
+    <bean id="convertPdf2HtmlTaskDao"
+          class="com.facishare.document.preview.common.dao.impl.ConvertPdf2HtmlTaskDaoImpl"/>
+    <bean id="convertOffice2PdfTaskDao"
+          class="com.facishare.document.preview.common.dao.impl.ConvertOffice2PdfTaskDaoImpl"/>
     <bean id="fileTokenDao" class="com.facishare.document.preview.common.dao.impl.FileTokenDaoImpl"/>
     <bean id="authFilter" class="com.facishare.document.preview.cgi.filter.AuthFilter"/>
     <bean id="authHelper" class="com.facishare.document.preview.cgi.utils.AuthHelper"/>
     <bean id="httpClientSupport" class="com.fxiaoke.common.http.spring.HttpSupportFactoryBean"/>
-    <bean id="convertPdf2HtmlEnqueueUtil" class="com.facishare.document.preview.common.utils.ConvertPdf2HtmlEnqueueUtil"/>
-    <bean id="convertOffice2PdfEnqueueUtil" class="com.facishare.document.preview.common.utils.ConvertOffice2PdfEnqueueUtil"/>
-    </beans>
+    <bean id="office2PdfApiHelper" class="com.facishare.document.preview.common.utils.Office2PdfApiHelper"/>
+    <bean id="convertPdf2HtmlEnqueueUtil"
+          class="com.facishare.document.preview.common.utils.ConvertPdf2HtmlEnqueueUtil"/>
+    <bean id="convertOffice2PdfEnqueueUtil"
+          class="com.facishare.document.preview.common.utils.ConvertOffice2PdfEnqueueUtil"/>
+</beans>

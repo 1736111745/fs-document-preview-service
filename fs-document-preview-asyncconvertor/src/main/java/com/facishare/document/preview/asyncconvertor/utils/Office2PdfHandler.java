@@ -21,8 +21,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -30,7 +28,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 @Slf4j
-public class Office2HtmlHandler {
+public class Office2PdfHandler {
     private String oosServerUrl = "";
     @Resource(name = "httpClientSupport")
     private OkHttpSupport client;
@@ -73,6 +71,9 @@ public class Office2HtmlHandler {
                     if (contentType.contains("application/pdf")) {
                         savePdfFile(ea, path, bytes, filePath);
                     }
+                    else {
+                        log.error("convert2pdf path:{} fail,errorMessage!", path, response.body().string());
+                    }
                     return bytes;
                 }
             });
@@ -101,29 +102,22 @@ public class Office2HtmlHandler {
                 .build();
         return requestBody;
     }
+    private static String[] getFiles(String folder) throws IOException
+    {
+        File _folder = new File(folder);
+        String[] filesInFolder;
 
+        if(_folder.isDirectory())
+        {
+            filesInFolder = _folder.list();
+            return filesInFolder;
+        }
+        else
+        {
+            throw new IOException("Path is not a directory");
+        }
+    }
     public static void main(String[] args) throws IOException {
-        String originalFilePath = "/Users/liuq/Downloads/documents/docfiles/无法显示图片文件 (1).doc";
-        OkHttpClient okHttpClient = new OkHttpClient();
-        RequestBody requestBody = createRequestBody(originalFilePath);
-        //2.3 获取请求体
-        String postUrl = "http://office2pdf.nsvc.foneshare.cn/Api/ConvertOffice2Pdf?ext=doc";
-        log.info("post url:{}", postUrl);
-        Request request = new Request.Builder().url(postUrl)
-                .post(requestBody)
-                .build();
 
-        //step 4： 建立联系 创建Call对象
-        okHttpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                // TODO: 17-1-4  请求失败
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-
-            }
-        });
     }
 }

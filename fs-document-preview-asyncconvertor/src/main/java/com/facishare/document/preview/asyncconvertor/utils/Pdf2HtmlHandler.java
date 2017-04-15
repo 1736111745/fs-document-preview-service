@@ -1,5 +1,6 @@
 package com.facishare.document.preview.asyncconvertor.utils;
 
+import com.facishare.document.preview.common.utils.Office2PdfApiHelper;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +8,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
@@ -30,10 +32,15 @@ import java.util.concurrent.TimeoutException;
 public class Pdf2HtmlHandler {
     @ReloadableProperty("pdf2HtmlTimeout")
     private int pdf2HtmlTimeout = 60;
+    @Autowired
+    Office2PdfApiHelper office2PdfApiHelper;
 
     public String doConvert(int page, String filePath) {
+        byte[] pdfFileBytes = office2PdfApiHelper.getPdfPageBuffer(filePath, page + 1);
+        if(pdfFileBytes==null) return null;
+        String pdfPageFilePath=FilenameUtils.concat(filePath,page+".pdf");
         String dataFilePath = "";
-        List<String> args = createProcessArgs(page, filePath);
+        List<String> args = createProcessArgs(1, pdfPageFilePath);
         try {
             Future<ProcessResult> future = new ProcessExecutor()
                     .command(args)
@@ -97,6 +104,7 @@ public class Pdf2HtmlHandler {
         //log.info(StringUtils.join(args, "  "));
         return args;
     }
+
 
     private String handleResult(int page, String filePath) throws IOException {
         StopWatch stopWatch = new StopWatch();

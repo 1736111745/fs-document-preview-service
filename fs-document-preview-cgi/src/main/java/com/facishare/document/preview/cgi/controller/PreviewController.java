@@ -14,10 +14,7 @@ import com.facishare.document.preview.cgi.utils.*;
 import com.facishare.document.preview.common.dao.FileTokenDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.*;
-import com.facishare.document.preview.common.utils.ConvertOffice2PdfEnqueueUtil;
-import com.facishare.document.preview.common.utils.ConvertPdf2HtmlEnqueueUtil;
-import com.facishare.document.preview.common.utils.DocPreviewInfoHelper;
-import com.facishare.document.preview.common.utils.DocTypeHelper;
+import com.facishare.document.preview.common.utils.*;
 import com.fxiaoke.metrics.CounterService;
 import com.fxiaoke.release.FsGrayRelease;
 import com.fxiaoke.release.FsGrayReleaseBiz;
@@ -108,16 +105,7 @@ public class PreviewController {
             if (previewInfo == null || previewInfo.getPageCount() == 0) {
                 return getPreviewInfoResult(defaultErrMsg);
             } else {
-                String grayConfig = "office2pdf";
-                String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
-                boolean office2pdf = gray.isAllow(grayConfig, user);
-                int office2PdfStatus = 0;//0表示旧的预览，跳转到office2svg，1，表示还未完成转换，跳转到office2pdf  2，表示完成转换直接跳转到pdf2html页面
-                if (office2pdf) {
-                    if (extension.contains("doc") || extension.contains("ppt")) {
-                        office2PdfStatus = Strings.isNullOrEmpty(previewInfo.getPdfFilePath()) ? 1 : 2;
-                    }
-                }
-                return getPreviewInfoResult(previewInfo.getPageCount(), previewInfo.getSheetNames(), path, office2PdfStatus, securityGroup);
+                return getPreviewInfoResult(previewInfo.getPageCount(), previewInfo.getSheetNames(), path, securityGroup);
             }
         } else {
             String errMsg = Strings.isNullOrEmpty(previewInfoEx.getErrorMsg()) ? defaultErrMsg : previewInfoEx.getErrorMsg();
@@ -406,7 +394,7 @@ public class PreviewController {
             String ea = employeeInfo.getEa();
             PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
             map.put("finished", !Strings.isNullOrEmpty(previewInfo.getPdfFilePath()));
-            map.put("pageCount",previewInfo.getPdfPageCount());
+            map.put("pageCount", previewInfo.getPdfPageCount());
 
 
         } catch (Exception e) {
@@ -416,13 +404,12 @@ public class PreviewController {
     }
 
 
-    private String getPreviewInfoResult(int pageCount, List<String> sheetNames, String path, int office2PdfStatus, String securityGroup) {
+    private String getPreviewInfoResult(int pageCount, List<String> sheetNames, String path, String securityGroup) {
         Map<String, Object> map = new HashMap<>();
         map.put("canPreview", true);
         map.put("pageCount", pageCount);
         map.put("path", path);
         map.put("sg", securityGroup);
-        map.put("office2PdfStatus", office2PdfStatus);
         map.put("sheets", sheetNames);
         return JSONObject.toJSONString(map);
     }

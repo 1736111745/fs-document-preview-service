@@ -8,10 +8,7 @@ import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.PageInfo;
 import com.facishare.document.preview.common.model.PreviewInfo;
-import com.facishare.document.preview.common.utils.DocPageInfoHelper;
-import com.facishare.document.preview.common.utils.OfficeFileEncryptChecker;
-import com.facishare.document.preview.common.utils.PathHelper;
-import com.facishare.document.preview.common.utils.SampleUUID;
+import com.facishare.document.preview.common.utils.*;
 import com.fxiaoke.release.FsGrayRelease;
 import com.fxiaoke.release.FsGrayReleaseBiz;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -34,8 +32,7 @@ public class PreviewService {
     @Autowired
     PreviewInfoDao previewInfoDao;
     @Autowired
-    DocConvertService docConvertService;
-    private FsGrayReleaseBiz gray = FsGrayRelease.getInstance("dps");
+    Office2PdfApiHelper office2PdfApiHelper;
 
     /**
      * 手机预览
@@ -66,8 +63,8 @@ public class PreviewService {
                     boolean isEncrypt = OfficeFileEncryptChecker.check(filePath);
                     PageInfo pageInfo;
                     if (!isEncrypt) {
-                        if (extension.contains("ppt") || extension.contains("doc")) {
-                            pageInfo = getPageInfoWithYozo(filePath);
+                        if (extension.contains("ppt") || extension.contains("doc") || extension.contains("pdf")) {
+                            pageInfo = getPageInfoWithOos(filePath);
                         } else {
                             pageInfo = DocPageInfoHelper.getPageInfo(filePath);
                         }
@@ -100,9 +97,8 @@ public class PreviewService {
         return previewInfoEx;
     }
 
-    private PageInfo getPageInfoWithYozo(String filePath) throws Exception {
-        GetPageCountArg arg = GetPageCountArg.builder().filePath(filePath).build();
-        int pageCount = docConvertService.getPageCount(arg).getPageCount();
+    private PageInfo getPageInfoWithOos(String filePath) throws IOException {
+        int pageCount = office2PdfApiHelper.getPageCount(filePath);
         PageInfo pageInfo = new PageInfo();
         pageInfo.setErrorMsg("");
         pageInfo.setPageCount(pageCount);

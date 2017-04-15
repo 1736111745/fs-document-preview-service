@@ -19,7 +19,6 @@ function getPreviewInfo() {
                 pageCount = data.pageCount;
                 path = data.path;
                 sg = data.sg;
-                office2PdfStatus = data.office2PdfStatus;
                 doPreview();
             }
             else {
@@ -30,16 +29,11 @@ function getPreviewInfo() {
 }
 function doPreview() {
     var route = '';
-    if (office2PdfStatus > 0) {
-        route = office2PdfStatus == 1 ? "handleOffice2Pdf" : "handlePdf";
+    if (path.toLowerCase().indexOf("xls") >= 0) {
+        route = "handleExcel";
     }
-    else {
-        if (path.toLowerCase().indexOf("xls") >= 0) {
-            route = "handleExcel";
-        }
-        else
-            route = path.toLowerCase().indexOf("pdf") >= 0 ? "handlePdf" : "handleWordAndPPT";
-    }
+    else
+        route = "handPdf";
     console.log("route:" + route);
     var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg + "&rdm=1";
     location.href = url;

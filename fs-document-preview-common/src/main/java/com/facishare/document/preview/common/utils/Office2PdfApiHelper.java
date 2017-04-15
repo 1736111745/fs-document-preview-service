@@ -83,7 +83,7 @@ public class Office2PdfApiHelper {
                 }
             });
         } catch (Exception ex) {
-            log.error("get page count, path:{},happened exception!", filePath, ex);
+            log.error("call method:{},path:{},happened exception!",method, filePath, ex);
         }
         stopwatch.stop();
         log.info("call api:{},cost:{}", postUrl, stopwatch.elapsed(TimeUnit.MILLISECONDS));

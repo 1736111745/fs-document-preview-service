@@ -20,6 +20,7 @@ import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +54,6 @@ public class PreviewController {
     FileTokenDao fileTokenDao;
     @Autowired
     DocConvertService docConvertService;
-    @Autowired
-    Pdf2HtmlService pdf2HtmlService;
     @Autowired
     PreviewService previewService;
     @Autowired
@@ -132,16 +131,9 @@ public class PreviewController {
                             FileOutPutor.outPut(response, dataFilePath, true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
-                            DocType docType = DocTypeHelper.getDocType(path);
-                            if (docType == DocType.PDF && !Strings.isNullOrEmpty(version)) {
-                                Pdf2HtmlArg pdf2HtmlArg = Pdf2HtmlArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).build();
-                                Pdf2HtmlResult pdf2HtmlResult = pdf2HtmlService.convertPdf2Html(pdf2HtmlArg);
-                                dataFilePath = pdf2HtmlResult.getDataFilePath();
-                            } else {
-                                ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(1).build();
-                                ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
-                                dataFilePath = convertDocResult.getDataFilePath();
-                            }
+                            ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(1).build();
+                            ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
+                            dataFilePath = convertDocResult.getDataFilePath();
                             if (!Strings.isNullOrEmpty(dataFilePath)) {
                                 previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
                                 FileOutPutor.outPut(response, dataFilePath, true);
@@ -341,6 +333,10 @@ public class PreviewController {
                         dataFilePathList = Lists.newArrayList();
                     else
                         dataFilePathList = dataFilePathList.stream().filter(f -> f.endsWith(".html")).collect(Collectors.toList());
+                    if(dataFilePathList.size()==previewInfo.getPageCount())
+                    {
+                        FileUtils.deleteQuietly(new File(previewInfo.getOriginalFilePath()));
+                    }
                     Map<String, Object> map = new HashMap<>();
                     map.put("list", dataFilePathList);
                     return JSONObject.toJSONString(map);

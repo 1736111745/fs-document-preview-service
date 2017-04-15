@@ -1,13 +1,11 @@
 package com.facishare.document.preview.asyncconvertor.utils;
 
-import com.facishare.document.preview.common.utils.Office2PdfApiHelper;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;

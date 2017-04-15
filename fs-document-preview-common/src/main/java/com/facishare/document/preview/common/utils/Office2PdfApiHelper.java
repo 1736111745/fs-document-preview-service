@@ -17,8 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static com.facishare.document.preview.common.model.FileTokenFields.filePath;
-
 /**
  * Created by liuq on 2017/4/14.
  */
@@ -28,19 +26,16 @@ public class Office2PdfApiHelper {
 
     @ReloadableProperty("oosServerUrl")
     private String oosServerUrl = "";
-    private static OkHttpClient client = null;
+    private static OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .build();
 
     @PostConstruct
     void init() {
         ConfigFactory.getConfig("fs-dps-config", config -> oosServerUrl = config.get("oosServerUrl"));
     }
 
-    static {
-        client = new OkHttpClient.Builder()
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .build();
-    }
 
     public int getPageCount(String filePath) throws IOException {
         int pageCount = 0;
@@ -74,9 +69,8 @@ public class Office2PdfApiHelper {
         }
         Request request = new Request.Builder().url(postUrl).post(requestBody).build();
         try {
-            Call call = client.newCall(request);
-            Response response = call.execute();
-            if(response.code()==200) {
+            Response response = client.newCall(request).execute();
+            if (response.code() == 200) {
                 String contentType = response.header("Content-Type");
                 log.info("contentType:{}", contentType);
                 log.info("response.status:{}", response.code());

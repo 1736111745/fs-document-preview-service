@@ -55,7 +55,7 @@ public class Pdf2HtmlHandler {
                     .start().getFuture();
             ProcessResult processResult = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
             if (processResult.getExitValue() == 0) {
-                dataFilePath = handleResult(page, filePath,outPutDir);
+                dataFilePath = handleResult(page, pdfPageFilePath,outPutDir);
             } else
                 log.error("output:{},exit code:{}", processResult.outputUTF8(), processResult.getExitValue());
         } catch (IOException e) {

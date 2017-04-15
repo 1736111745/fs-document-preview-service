@@ -26,8 +26,6 @@
     <bean class="com.fxiaoke.metrics.MetricsConfiguration"/>
     <bean id="pdf2HtmlProcessor" class="com.facishare.document.preview.asyncconvertor.service.Pdf2HtmlProcessor"
           init-method="init"/>
-    <bean id="office2PdfProcessor" class="com.facishare.document.preview.asyncconvertor.service.Office2PdfProcessor"
-          init-method="init"/>
     <bean id="httpClientSupport" class="com.fxiaoke.common.http.spring.HttpSupportFactoryBean" p:configName="fs-dps-config"/>
     <bean id="office2PdfApiHelper" class="com.facishare.document.preview.common.utils.Office2PdfApiHelper"/>
     <bean id="convertPdf2HtmlEnqueueUtil" class="com.facishare.document.preview.common.utils.ConvertPdf2HtmlEnqueueUtil"/>

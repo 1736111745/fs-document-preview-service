@@ -40,6 +40,4 @@
     <bean id="office2PdfApiHelper" class="com.facishare.document.preview.common.utils.Office2PdfApiHelper"/>
     <bean id="convertPdf2HtmlEnqueueUtil"
           class="com.facishare.document.preview.common.utils.ConvertPdf2HtmlEnqueueUtil"/>
-    <bean id="convertOffice2PdfEnqueueUtil"
-          class="com.facishare.document.preview.common.utils.ConvertOffice2PdfEnqueueUtil"/>
 </beans>

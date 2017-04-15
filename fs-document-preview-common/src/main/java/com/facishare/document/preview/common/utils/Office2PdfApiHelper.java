@@ -1,12 +1,10 @@
 package com.facishare.document.preview.common.utils;
 
 import com.facishare.document.preview.common.model.RestResponse;
-import com.fxiaoke.common.http.handler.SyncCallback;
 import com.github.autoconf.ConfigFactory;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
-import jdk.internal.org.objectweb.asm.tree.TryCatchBlockNode;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.apache.commons.io.FilenameUtils;

@@ -11,6 +11,7 @@ import com.facishare.document.preview.common.model.ConvertMessage;
 import com.facishare.document.preview.common.mq.ConvertorQueueProvider;
 import com.fxiaoke.metrics.CounterService;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -74,16 +75,19 @@ public class Office2PdfProcessor {
             office2PdfTaskDao.beginExecute(ea, path, page);
             String ext = FilenameUtils.getExtension(path);
             String dataFilePath = office2PdfHandler.ConvertOffice2Pdf(filePath, page);
-            File dataFile = new File(dataFilePath);
-            String indexName = ext.contains("doc") ? "convert-word2pdf" : "convert-ppt2pdf";
-            if (dataFile.exists()) {
-                counterService.inc(indexName + "--ok");
-                ConvertMessage pdf2HtmlMessage=ConvertMessage.builder().ea(ea).filePath(dataFilePath).npath(path).page(page).build();
-                pdf2HtmlProvider.enqueue(pdf2HtmlMessage);
-                office2PdfTaskDao.executeSuccess(ea, path, page);
-            } else {
-                counterService.inc(indexName + "--fail");
-                office2PdfTaskDao.executeFail(ea, path, page);
+            if(Strings.isNullOrEmpty(dataFilePath)) return;
+            else {
+                File dataFile = new File(dataFilePath);
+                String indexName = ext.contains("doc") ? "convert-word2pdf" : "convert-ppt2pdf";
+                if (dataFile.exists()) {
+                    counterService.inc(indexName + "--ok");
+                    ConvertMessage pdf2HtmlMessage = ConvertMessage.builder().ea(ea).filePath(dataFilePath).npath(path).page(page).build();
+                    pdf2HtmlProvider.enqueue(pdf2HtmlMessage);
+                    office2PdfTaskDao.executeSuccess(ea, path, page);
+                } else {
+                    counterService.inc(indexName + "--fail");
+                    office2PdfTaskDao.executeFail(ea, path, page);
+                }
             }
         }
         stopWatch.stop();

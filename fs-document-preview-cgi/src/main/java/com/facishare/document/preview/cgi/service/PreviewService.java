@@ -71,7 +71,7 @@ public class PreviewService {
                         if (pageInfo.isSuccess()) {
                             pageCount = pageInfo.getPageCount();
                             sheetNames = pageInfo.getSheetNames();
-                            previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, path, filePath, "", dataDir, bytes.length, pageCount, sheetNames);
+                            previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, path, filePath, dataDir, bytes.length, pageCount, sheetNames);
                             previewInfoEx.setSuccess(true);
                             previewInfoEx.setPreviewInfo(previewInfo);
                         } else {

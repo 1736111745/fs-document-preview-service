@@ -63,11 +63,8 @@ public class PreviewController {
     CounterService counterService;
     @Autowired
     ConvertPdf2HtmlEnqueueUtil convertPdf2HtmlEnqueueUtils;
-    @Autowired
-    ConvertOffice2PdfEnqueueUtil convertOffice2PdfEnqueueUtil;
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
-    private FsGrayReleaseBiz gray = FsGrayRelease.getInstance("dps");
 
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -133,9 +130,6 @@ public class PreviewController {
                     if (pageIndex < previewInfo.getPageCount()) {
                         int type = Strings.isNullOrEmpty(version) ? 1 : 2;
                         String filePath = previewInfo.getOriginalFilePath();
-                        if (type == 2 && (path.contains("doc") || path.contains("ppt"))) {
-                            filePath = previewInfo.getPdfFilePath();
-                        }
                         String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), filePath, type, previewInfo.getFilePathList());
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
                             FileOutPutor.outPut(response, dataFilePath, true);
@@ -358,49 +352,6 @@ public class PreviewController {
         } catch (Exception e) {
             return "";
         }
-    }
-
-    @ResponseBody
-    @RequestMapping(value = "/preview/checkOffice2PdfStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public void checkOffice2PdfStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
-        String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
-        if (!UrlParametersHelper.isValidPath(path)) {
-            response.setStatus(400);
-        }
-        try {
-            EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-            String ea = employeeInfo.getEa();
-            int employeeId = employeeInfo.getEmployeeId();
-            convertOffice2PdfEnqueueUtil.enqueue(ea, employeeId, path, securityGroup);
-        } catch (Exception e) {
-        } finally {
-            response.setStatus(200);
-        }
-    }
-
-
-    @ResponseBody
-    @RequestMapping(value = "/preview/queryOffice2PdfStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String queryOffice2PdfStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
-        if (!UrlParametersHelper.isValidPath(path)) {
-            response.setStatus(400);
-            return "";
-        }
-        Map<String, Object> map = new HashMap<>();
-        try {
-            EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-            String ea = employeeInfo.getEa();
-            PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
-            map.put("finished", !Strings.isNullOrEmpty(previewInfo.getPdfFilePath()));
-            map.put("pageCount", previewInfo.getPdfPageCount());
-
-
-        } catch (Exception e) {
-            map.put("finished", false);
-        }
-        return JSONObject.toJSONString(map);
     }
 
 

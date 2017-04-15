@@ -48,10 +48,8 @@ public class ConvertPdf2HtmlEnqueueUtil {
         List<Integer> needEnqueuePageList = convertPdf2HtmlTaskDao.batchAddTask(ea, path, hasNotConvertPageList);
         log.info("needEnqueuePageList:{}", JSON.toJSON(needEnqueuePageList));
         String originalFilePath = previewInfo.getOriginalFilePath();
-        String pdfFilePath = previewInfo.getPdfFilePath();
-        String finalFilePath = !Strings.isNullOrEmpty(pdfFilePath) ? pdfFilePath : originalFilePath;
         needEnqueuePageList.forEach(p -> {
-            ConvertPdf2HtmlMessage convertorMessage = ConvertPdf2HtmlMessage.builder().npath(path).ea(ea).page(p).filePath(finalFilePath).build();
+            ConvertPdf2HtmlMessage convertorMessage = ConvertPdf2HtmlMessage.builder().npath(path).ea(ea).page(p).filePath(originalFilePath).build();
             convertPdf2Html.convertPdf2Html(convertorMessage);
         });
     }

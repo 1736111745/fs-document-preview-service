@@ -17,10 +17,7 @@ public interface PreviewInfoDao {
 
     String getBaseDir(String folderName);
 
-    PreviewInfo initPreviewInfo(String ea, int employeeId, String path, String originalFilePath, String pdfFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames);
+    PreviewInfo initPreviewInfo(String ea, int employeeId, String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames);
 
     PreviewInfo getInfoByPath(String ea, String path);
-
-    void savePdfFile(String ea, String path, String pdfFilePath, int pdfPageCount);
-
 }

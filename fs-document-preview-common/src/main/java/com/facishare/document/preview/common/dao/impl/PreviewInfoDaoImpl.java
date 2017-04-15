@@ -53,9 +53,9 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
             switch (docType) {
                 case PDF: {
                     if (type == 1) {
-                        dataFileName = filePathList.stream().filter(x -> (x.equals(pageIndex + ".jpg") || x.equals(pageIndex + ".png"))).findFirst().orElse("");
-                    } else {
                         dataFileName = filePathList.stream().filter(x -> (x.equals(pageIndex + ".html"))).findFirst().orElse("");
+                    } else if (type == 2) {
+                        dataFileName = filePathList.stream().filter(x -> (x.equals(pageIndex + ".jpg") || x.equals(pageIndex + ".png"))).findFirst().orElse("");
                     }
                     break;
                 }
@@ -65,7 +65,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
                 }
                 case Word: {
                     if (type == 1) {
-                        dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".svg")).findFirst().orElse("");
+                        dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".html")).findFirst().orElse("");
                     } else {
                         dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".jpg") || (x.equals(pageIndex + ".png"))).findFirst().orElse("");
                     }
@@ -73,7 +73,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
                 }
                 case PPT: {
                     if (type == 1) {
-                        dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".svg")).findFirst().orElse("");
+                        dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".html")).findFirst().orElse("");
                     } else {
                         dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".jpg") || (x.equals(pageIndex + ".png"))).findFirst().orElse("");
                     }
@@ -92,7 +92,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("dirName").equal(dirName);
         PreviewInfo previewInfo = query.get();
-        return previewInfo==null?"":previewInfo.getDataDir();
+        return previewInfo == null ? "" : previewInfo.getDataDir();
     }
 
 
@@ -125,4 +125,5 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         query.criteria("path").equal(path).criteria("ea").equal(ea);
         return query.get();
     }
+
 }

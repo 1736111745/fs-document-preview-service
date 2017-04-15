@@ -78,8 +78,8 @@ public class Office2PdfApiHelper {
                 restResponse.setBytes(bytes);
                 restResponse.setContentType(contentType);
             }
-        } catch (IOException e) {
-            log.error("call method:{},path:{},happened exception!", method, filePath, ex);
+        } catch (Exception e) {
+            log.error("call method:{},path:{},happened exception!", method, filePath, e);
         }
         stopwatch.stop();
         log.info("call api:{},cost:{}ms", postUrl, stopwatch.elapsed(TimeUnit.MILLISECONDS));

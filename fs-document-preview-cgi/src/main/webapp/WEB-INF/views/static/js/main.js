@@ -33,7 +33,7 @@ function doPreview() {
         route = "handleExcel";
     }
     else
-        route = "handPdf";
+        route = "handlePdf";
     console.log("route:" + route);
     var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg + "&rdm=1";
     location.href = url;

@@ -69,6 +69,7 @@ public class Office2PdfProcessor {
         String filePath = office2PdfMessage.getFilePath();
         int page = office2PdfMessage.getPage();
         int status = office2PdfTaskDao.getTaskStatus(ea, path, page);
+        log.info("status:{}",status);
         if (status == 0) {
             office2PdfTaskDao.beginExecute(ea, path, page);
             String ext = FilenameUtils.getExtension(path);

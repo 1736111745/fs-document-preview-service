@@ -149,7 +149,7 @@ public class Pdf2HtmlHandler {
         //html = html.replace("src=\"", "src=\"./" + dirName + "/");
         String cssFileName = FilenameUtils.getBaseName(dataFile.getName()) + ".css";
         html = html.replace(cssFileName, "./" + dirName + "/" + page + ".css");
-        html = html.replace("bg1.jpg", "./" + dirName + "/" + page + ".jpg");
+        html = html.replace("bg1.jpg", "./" + dirName + "/bg" + page + ".jpg");
         html = html.replace("\n", "");
         FileUtils.writeByteArrayToFile(pageFile, html.getBytes());
     }

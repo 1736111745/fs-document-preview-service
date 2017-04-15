@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import static com.facishare.document.preview.common.model.FileTokenFields.filePath;
+
 /**
  * Created by liuq on 2017/4/14.
  */
@@ -46,7 +48,7 @@ public class Office2PdfApiHelper {
         byte[] bytes = restResponse.getBytes();
         if (bytes != null) {
             String pageCountStr = IOUtils.toString(bytes, "UTF-8");
-            log.info("pageCountStr:{}",pageCountStr);
+            log.info("pageCountStr:{}", pageCountStr);
             pageCount = NumberUtils.toInt(pageCountStr, 0);
         }
         return pageCount;
@@ -72,23 +74,17 @@ public class Office2PdfApiHelper {
         }
         Request request = new Request.Builder().url(postUrl).post(requestBody).build();
         try {
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    String contentType = response.header("Content-Type");
-                    log.info("contentType:{}", contentType);
-                    log.info("response.status:{}", response.code());
-                    byte[] bytes = response.body().bytes();
-                    restResponse.setBytes(bytes);
-                    restResponse.setContentType(contentType);
-                }
-            });
-        } catch (Exception ex) {
+            Call call = client.newCall(request);
+            Response response = call.execute();
+            if(response.code()==200) {
+                String contentType = response.header("Content-Type");
+                log.info("contentType:{}", contentType);
+                log.info("response.status:{}", response.code());
+                byte[] bytes = response.body().bytes();
+                restResponse.setBytes(bytes);
+                restResponse.setContentType(contentType);
+            }
+        } catch (IOException e) {
             log.error("call method:{},path:{},happened exception!", method, filePath, ex);
         }
         stopwatch.stop();

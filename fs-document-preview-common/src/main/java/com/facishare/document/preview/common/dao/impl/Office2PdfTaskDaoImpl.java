@@ -4,6 +4,7 @@ import com.facishare.document.preview.common.dao.Office2PdfTaskDao;
 import com.facishare.document.preview.common.model.Office2PdfTask;
 import com.github.mongo.support.DatastoreExt;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import java.util.List;
 /**
  * Created by liuq on 2017/3/19.
  */
+@Slf4j
 public class Office2PdfTaskDaoImpl implements Office2PdfTaskDao {
 
     @Autowired
@@ -25,6 +27,7 @@ public class Office2PdfTaskDaoImpl implements Office2PdfTaskDao {
         Query<Office2PdfTask> query = dpsDataStore.createQuery(Office2PdfTask.class);
         query.criteria("ea").equal(ea).criteria("path").equal(path).criteria("page").equal(page);
         Office2PdfTask convertTask = query.get();
+        log.info(query.toString());
         if (convertTask != null) {
             status = convertTask.getStatus();
         }

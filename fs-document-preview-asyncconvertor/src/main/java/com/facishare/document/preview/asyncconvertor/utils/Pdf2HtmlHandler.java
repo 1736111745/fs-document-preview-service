@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
-import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +42,9 @@ public class Pdf2HtmlHandler {
         log.info("pdfPageFilePath:{}", pdfPageFilePath);
         FileUtils.writeByteArrayToFile(new File(pdfPageFilePath), pdfFileBytes);
         String dataFilePath = "";
-        List<String> args = createProcessArgs(1, pdfPageFilePath);
+        String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
+        String outPutDir = FilenameUtils.concat(basedDir, "p"+page);
+        List<String> args = createProcessArgs(1, pdfPageFilePath,outPutDir);
         try {
             Future<ProcessResult> future = new ProcessExecutor()
                     .command(args)
@@ -54,7 +55,7 @@ public class Pdf2HtmlHandler {
                     .start().getFuture();
             ProcessResult processResult = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
             if (processResult.getExitValue() == 0) {
-                dataFilePath = handleResult(page, filePath);
+                dataFilePath = handleResult(page, filePath,outPutDir);
             } else
                 log.error("output:{},exit code:{}", processResult.outputUTF8(), processResult.getExitValue());
         } catch (IOException e) {
@@ -70,9 +71,7 @@ public class Pdf2HtmlHandler {
     }
 
 
-    private static List<String> createProcessArgs(int page, String filePath) {
-        String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
-        String outPutDir = FilenameUtils.concat(basedDir, "p" + page);
+    private static List<String> createProcessArgs(int page, String filePath,String outPutDir) {
         List<String> args = Lists.newArrayList();
         args.add("pdf2htmlEX");//命令行开始
         args.add("-f");
@@ -109,12 +108,9 @@ public class Pdf2HtmlHandler {
     }
 
 
-    private String handleResult(int page, String filePath) throws IOException {
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        //log.info("begin handle html!filePath:{},page:{}", filePath, page);
+    private String handleResult(int page, String filePath,String outPutDir) throws IOException {
         String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
-        String pageBaseDir = baseDir + "/p" + page;
+        String pageBaseDir = outPutDir;
         String dataFileName = FilenameUtils.getBaseName(filePath) + ".html";
         String dataFilePath = FilenameUtils.concat(pageBaseDir, dataFileName);
         String pageName = page + ".html";
@@ -133,8 +129,6 @@ public class Pdf2HtmlHandler {
             file.renameTo(new File(newFilePath));
         });
         FileUtils.deleteDirectory(new File(pageBaseDir));
-        stopWatch.stop();
-        // log.info("end handle html!,filePath:{},page:{},cost:{}ms", filePath, page, stopWatch.getTime());
         return pagePath;
     }
 

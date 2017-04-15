@@ -84,8 +84,6 @@ public class Pdf2HtmlHandler {
         args.add("0");
         args.add("--embed-css");
         args.add("0");
-        args.add("--css-filename");
-        args.add("css" + page + ".css");
         args.add("--embed-image");
         args.add("0");
         args.add("--bg-format");

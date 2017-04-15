@@ -46,6 +46,7 @@ public class Office2PdfApiHelper {
         byte[] bytes = restResponse.getBytes();
         if (bytes != null) {
             String pageCountStr = IOUtils.toString(bytes, "UTF-8");
+            log.info("pageCountStr:{}",pageCountStr);
             pageCount = NumberUtils.toInt(pageCountStr, 0);
         }
         return pageCount;

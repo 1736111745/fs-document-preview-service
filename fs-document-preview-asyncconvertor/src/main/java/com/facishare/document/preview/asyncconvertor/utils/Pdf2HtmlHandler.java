@@ -113,8 +113,9 @@ public class Pdf2HtmlHandler {
         File pageFile = new File(pagePath);
         String dirName = FilenameUtils.getBaseName(baseDir);
         String cssFileName = type == 1 ? FilenameUtils.getBaseName(filePath) + ".css" : "css" + page + ".css";
+        String newCssFileName=page+".css";
         String cssFileFilePath = FilenameUtils.concat(outPutDir, cssFileName);
-        String newCssFilePath = FilenameUtils.concat(baseDir, page + ".css");
+        String newCssFilePath = FilenameUtils.concat(baseDir, newCssFileName);
         File cssFile = new File(cssFileFilePath);
         cssFile.renameTo(new File(newCssFilePath));
         //处理背景图片
@@ -123,7 +124,7 @@ public class Pdf2HtmlHandler {
         String newBgFilePath = FilenameUtils.concat(baseDir, bgName);
         File bgFile = new File(bgFileFilePath);
         bgFile.renameTo(new File(newBgFilePath));
-        handleHtml(dataFile, pageFile, page, dirName, cssFileName,bgName );
+        handleHtml(dataFile, pageFile, page, dirName,newCssFileName ,bgName );
         FileUtils.deleteDirectory(new File(outPutDir));
         return pagePath;
     }

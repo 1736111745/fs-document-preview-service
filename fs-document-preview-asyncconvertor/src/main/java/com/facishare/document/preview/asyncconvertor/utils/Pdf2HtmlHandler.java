@@ -133,12 +133,12 @@ public class Pdf2HtmlHandler {
             String newBgFilePath = FilenameUtils.concat(baseDir, newBgName);
             bgFile.renameTo(new File(newBgFilePath));
         }
-        handleHtml(dataFile, pageFile, page, dirName,cssFileName, newCssFileName, bgName, newBgName);
+        handleHtml(dataFile, pageFile, dirName,cssFileName, newCssFileName, bgName, newBgName);
         FileUtils.deleteDirectory(new File(outPutDir));
         return pagePath;
     }
 
-    private void handleHtml(File dataFile, File pageFile, int page, String dirName,String cssName, String newCssName, String bgName, String newBgName) throws IOException {
+    private void handleHtml(File dataFile, File pageFile, String dirName, String cssName, String newCssName, String bgName, String newBgName) throws IOException {
         String html = FileUtils.readFileToString(dataFile);
         html = html.replace("base.min.css", "../static/css/base.min.css");
         html = html.replace("<link rel=\"stylesheet\" href=\"fancy.min.css\"/>", "");

@@ -47,12 +47,12 @@ public class Office2PdfHandler {
                 executorService.submit(() -> {
                     byte[] bytes = office2PdfApiHelper.getPdfBytes(filePath, page);
                     if (bytes != null) {
-                        int pageIndex=page+1;
+                        int pageIndex = page + 1;
                         String pdfPageFilePath = filePath + "." + pageIndex + ".pdf";
                         log.info("pdfPageFilePath:{}", pdfPageFilePath);
                         try {
                             FileUtils.writeByteArrayToFile(new File(pdfPageFilePath), bytes);
-                           enqueue(ea,path,pdfPageFilePath,pageIndex,1);
+                            enqueue(ea, path, pdfPageFilePath, pageIndex, 1);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -61,7 +61,7 @@ public class Office2PdfHandler {
             }
         } else if (ext.contains("doc")) {
             byte[] bytes = office2PdfApiHelper.getPdfBytes(filePath);
-            String pdfPageFilePath = filePath + "." + ".pdf";
+            String pdfPageFilePath = filePath + ".pdf";
             FileUtils.writeByteArrayToFile(new File(pdfPageFilePath), bytes);
             enqueueMultiPagePdf(ea, path, pdfPageFilePath, pageCount);
         }

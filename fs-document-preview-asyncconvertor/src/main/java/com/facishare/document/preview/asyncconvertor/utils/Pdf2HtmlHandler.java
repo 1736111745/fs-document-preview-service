@@ -111,21 +111,21 @@ public class Pdf2HtmlHandler {
         String dataFilePath = FilenameUtils.concat(outPutDir, dataFileName);
         String pageName = page + ".html";
         String pagePath = FilenameUtils.concat(baseDir, pageName);
-        File dataFile = new File(dataFilePath);
-        File pageFile = new File(pagePath);
-        String dirName = FilenameUtils.getBaseName(baseDir);
-        String cssFileName = FilenameUtils.getBaseName(filePath) + ".css";
-        String cssFileFilePath = FilenameUtils.concat(outPutDir, cssFileName);
-        String newCssFilePath = FilenameUtils.concat(baseDir, page + ".css");
-        File cssFile = new File(cssFileFilePath);
-        cssFile.renameTo(new File(newCssFilePath));
-        //处理背景图片
-        String bgFileFilePath = FilenameUtils.concat(outPutDir, "bg1.jpg");
-        String newBgFilePath = FilenameUtils.concat(baseDir, "bg" + page + ".jpg");
-        File bgFile = new File(bgFileFilePath);
-        bgFile.renameTo(new File(newBgFilePath));
-        handleHtml(dataFile, pageFile, page, dirName);
-        FileUtils.deleteDirectory(new File(outPutDir));
+//        File dataFile = new File(dataFilePath);
+//        File pageFile = new File(pagePath);
+//        String dirName = FilenameUtils.getBaseName(baseDir);
+//        String cssFileName = FilenameUtils.getBaseName(filePath) + ".css";
+//        String cssFileFilePath = FilenameUtils.concat(outPutDir, cssFileName);
+//        String newCssFilePath = FilenameUtils.concat(baseDir, page + ".css");
+//        File cssFile = new File(cssFileFilePath);
+//        cssFile.renameTo(new File(newCssFilePath));
+//        //处理背景图片
+//        String bgFileFilePath = FilenameUtils.concat(outPutDir, "bg1.jpg");
+//        String newBgFilePath = FilenameUtils.concat(baseDir, "bg" + page + ".jpg");
+//        File bgFile = new File(bgFileFilePath);
+//        bgFile.renameTo(new File(newBgFilePath));
+//        handleHtml(dataFile, pageFile, page, dirName);
+//        FileUtils.deleteDirectory(new File(outPutDir));
         return pagePath;
     }
 

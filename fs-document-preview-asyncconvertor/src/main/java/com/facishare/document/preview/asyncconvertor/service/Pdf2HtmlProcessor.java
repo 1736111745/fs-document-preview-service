@@ -58,6 +58,7 @@ public class Pdf2HtmlProcessor {
 
     private void doConvert(ConvertPdf2HtmlMessage convertorMessage) throws InterruptedException, IOException {
         StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
         log.info("begin do convert,params:{}", JSON.toJSONString(convertorMessage));
         String ea = convertorMessage.getEa();
         String path = convertorMessage.getNpath();

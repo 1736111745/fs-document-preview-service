@@ -13,6 +13,8 @@ import org.zeroturnaround.exec.ProcessResult;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -119,11 +121,10 @@ public class Pdf2HtmlHandler {
         File cssFile = new File(cssFileFilePath);
         cssFile.renameTo(new File(newCssFilePath));
         //处理背景图片
-        String bgName = type == 1 ? "bg1.jpg" : "bg" + page + ".jpg";
+        File bgFile=Files.list(Paths.get(outPutDir)).filter(f->f.startsWith("bg")).findFirst().get().toFile();
+        String bgName =bgFile.getName();
         String newBgName="bg" + page + ".jpg";
-        String bgFileFilePath = FilenameUtils.concat(outPutDir, bgName);
         String newBgFilePath = FilenameUtils.concat(baseDir, newBgName);
-        File bgFile = new File(bgFileFilePath);
         bgFile.renameTo(new File(newBgFilePath));
         handleHtml(dataFile, pageFile, page, dirName,newCssFileName ,bgName,newBgName );
         FileUtils.deleteDirectory(new File(outPutDir));

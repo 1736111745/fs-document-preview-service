@@ -63,9 +63,7 @@ public class Pdf2HtmlHandler {
         } catch (TimeoutException e) {
             log.error("do convert happened TimeoutException!filePath:{},page:{}", filePath, page, e);
         } finally {
-            if (type == 1) {
-                FileUtils.deleteQuietly(new File(filePath));
-            }
+
         }
         return dataFilePath;
     }

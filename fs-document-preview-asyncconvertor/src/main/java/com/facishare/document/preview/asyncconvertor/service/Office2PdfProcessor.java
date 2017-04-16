@@ -8,18 +8,11 @@ import com.facishare.common.rocketmq.AutoConfRocketMQProcessor;
 import com.facishare.document.preview.asyncconvertor.utils.Office2PdfHandler;
 import com.facishare.document.preview.common.dao.Office2PdfTaskDao;
 import com.facishare.document.preview.common.model.ConvertMessageBase;
-import com.facishare.document.preview.common.mq.ConvertorQueueProvider;
-import com.fxiaoke.metrics.CounterService;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
-import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.io.File;
 
 /**
  * Created by liuq on 2017/3/9.
@@ -30,6 +23,8 @@ import java.io.File;
 public class Office2PdfProcessor {
     @Autowired
     Office2PdfHandler office2PdfHandler;
+    @Autowired
+    Office2PdfTaskDao office2PdfTaskDao;
     private AutoConfRocketMQProcessor autoConfRocketMQProcessor;
     private static final String KEY_NAME_SERVER = "NAMESERVER";
     private static final String KEY_GROUP = "GROUP_CONSUMER";
@@ -62,6 +57,11 @@ public class Office2PdfProcessor {
         String ea = office2PdfMessage.getEa();
         String path = office2PdfMessage.getNpath();
         String filePath = office2PdfMessage.getFilePath();
-        office2PdfHandler.convertOffice2Pdf(ea, path, filePath);
+       int status= office2PdfTaskDao.getTaskStatus(ea,path);
+       if(status==0) {
+           office2PdfHandler.convertOffice2Pdf(ea, path, filePath);
+           office2PdfTaskDao.beginExecute(ea, path);
+           office2PdfHandler.convertOffice2Pdf(ea, path, filePath);
+       }
     }
 }

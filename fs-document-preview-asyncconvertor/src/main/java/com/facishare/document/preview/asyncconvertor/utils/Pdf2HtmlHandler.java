@@ -47,7 +47,7 @@ public class Pdf2HtmlHandler {
                     .start().getFuture();
             ProcessResult processResult = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
             if (processResult.getExitValue() == 0) {
-                dataFilePath = handleResult(page, filePath, outPutDir);
+                dataFilePath = handleResult(page, filePath, outPutDir,type);
             } else
                 log.error("output:{},exit code:{}", processResult.outputUTF8(), processResult.getExitValue());
         } catch (IOException e) {
@@ -58,8 +58,6 @@ public class Pdf2HtmlHandler {
             log.error("do convert happened ExecutionException!", e);
         } catch (TimeoutException e) {
             log.error("do convert happened TimeoutException!filePath:{},page:{}", filePath, page, e);
-        } finally {
-            FileUtils.deleteQuietly(new File(filePath));
         }
         return dataFilePath;
     }
@@ -73,7 +71,7 @@ public class Pdf2HtmlHandler {
         args.add(String.valueOf(page));
         args.add("-l");
         args.add(String.valueOf(page));
-        args.add("--fit-width");//缩放
+        args.add("--fit-width");//缩放px
         args.add("1000");
         args.add("--embed-outline");//链接文件单独输出
         args.add("0");
@@ -105,27 +103,27 @@ public class Pdf2HtmlHandler {
     }
 
 
-    private String handleResult(int page, String filePath, String outPutDir) throws IOException {
+    private String handleResult(int page, String filePath, String outPutDir, int type) throws IOException {
         String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
         String dataFileName = FilenameUtils.getBaseName(filePath) + ".html";
         String dataFilePath = FilenameUtils.concat(outPutDir, dataFileName);
         String pageName = page + ".html";
         String pagePath = FilenameUtils.concat(baseDir, pageName);
-//        File dataFile = new File(dataFilePath);
-//        File pageFile = new File(pagePath);
-//        String dirName = FilenameUtils.getBaseName(baseDir);
-//        String cssFileName = FilenameUtils.getBaseName(filePath) + ".css";
-//        String cssFileFilePath = FilenameUtils.concat(outPutDir, cssFileName);
-//        String newCssFilePath = FilenameUtils.concat(baseDir, page + ".css");
-//        File cssFile = new File(cssFileFilePath);
-//        cssFile.renameTo(new File(newCssFilePath));
-//        //处理背景图片
-//        String bgFileFilePath = FilenameUtils.concat(outPutDir, "bg1.jpg");
-//        String newBgFilePath = FilenameUtils.concat(baseDir, "bg" + page + ".jpg");
-//        File bgFile = new File(bgFileFilePath);
-//        bgFile.renameTo(new File(newBgFilePath));
-//        handleHtml(dataFile, pageFile, page, dirName);
-//        FileUtils.deleteDirectory(new File(outPutDir));
+        File dataFile = new File(dataFilePath);
+        File pageFile = new File(pagePath);
+        String dirName = FilenameUtils.getBaseName(baseDir);
+        String cssFileName = type == 1 ? FilenameUtils.getBaseName(filePath) + ".css" : "css" + page + ".css";
+        String cssFileFilePath = FilenameUtils.concat(outPutDir, cssFileName);
+        String newCssFilePath = FilenameUtils.concat(baseDir, page + ".css");
+        File cssFile = new File(cssFileFilePath);
+        cssFile.renameTo(new File(newCssFilePath));
+        //处理背景图片
+        String bgFileFilePath = FilenameUtils.concat(outPutDir, "bg1.jpg");
+        String newBgFilePath = FilenameUtils.concat(baseDir, "bg" + page + ".jpg");
+        File bgFile = new File(bgFileFilePath);
+        bgFile.renameTo(new File(newBgFilePath));
+        handleHtml(dataFile, pageFile, page, dirName);
+        FileUtils.deleteDirectory(new File(outPutDir));
         return pagePath;
     }
 

@@ -125,17 +125,17 @@ public class Pdf2HtmlHandler {
         String newBgFilePath = FilenameUtils.concat(baseDir, newBgName);
         File bgFile = new File(bgFileFilePath);
         bgFile.renameTo(new File(newBgFilePath));
-        handleHtml(dataFile, pageFile, page, dirName,cssFileName,newCssFileName ,bgName,newBgName );
+        handleHtml(dataFile, pageFile, page, dirName,cssFileName ,bgName,newBgName );
         FileUtils.deleteDirectory(new File(outPutDir));
         return pagePath;
     }
 
-    private void handleHtml(File dataFile, File pageFile, int page, String dirName, String cssName,String newCssName, String bgName,String newBgName) throws IOException {
+    private void handleHtml(File dataFile, File pageFile, int page, String dirName, String newCssName, String bgName,String newBgName) throws IOException {
         String html = FileUtils.readFileToString(dataFile);
         html = html.replace("base.min.css", "../static/css/base.min.css");
         html = html.replace("<link rel=\"stylesheet\" href=\"fancy.min.css\"/>", "");
         String cssLink = "css" + page + ".css";
-        html = html.replace(cssLink, "./" + dirName + "/" + cssLink);
+        html = html.replace(cssLink, "./" + dirName + "/" + newCssName);
         html = html.replace("<script src=\"compatibility.min.js\"></script>", "");
         html = html.replace("<script src=\"pdf2htmlEX.min.js\"></script>", "");
         html = html.replace("<script>\n" +
@@ -149,8 +149,6 @@ public class Pdf2HtmlHandler {
                 "</div>", "");
         html = html.replace("<div class=\"loading-indicator\">", "");
         html = html.replace("<img alt=\"\" src=\"pdf2htmlEX-64x64.png\"/>", "");
-        //html = html.replace("src=\"", "src=\"./" + dirName + "/");
-        html = html.replace(cssName, "./" + dirName + "/" + newCssName);
         html = html.replace(bgName, "./" + dirName + "/" + newBgName);
         html = html.replace("\n", "");
         FileUtils.writeByteArrayToFile(pageFile, html.getBytes());

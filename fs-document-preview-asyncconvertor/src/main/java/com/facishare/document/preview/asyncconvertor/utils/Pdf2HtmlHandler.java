@@ -1,5 +1,6 @@
 package com.facishare.document.preview.asyncconvertor.utils;
 
+import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -27,11 +28,15 @@ public class Pdf2HtmlHandler {
     @ReloadableProperty("pdf2HtmlTimeout")
     private int pdf2HtmlTimeout = 60;
 
-    public String doConvert(int page, String filePath) throws IOException {
+
+    public String doConvert(ConvertPdf2HtmlMessage message) throws IOException {
         String dataFilePath = "";
+        String filePath = message.getFilePath();
+        int page = message.getPage();
+        int type = message.getType();
         String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
         String outPutDir = FilenameUtils.concat(basedDir, "p" + page);
-        List<String> args = createProcessArgs(filePath, outPutDir);
+        List<String> args = createProcessArgs(filePath, outPutDir, page, type);
         try {
             Future<ProcessResult> future = new ProcessExecutor()
                     .command(args)
@@ -53,27 +58,31 @@ public class Pdf2HtmlHandler {
             log.error("do convert happened ExecutionException!", e);
         } catch (TimeoutException e) {
             log.error("do convert happened TimeoutException!filePath:{},page:{}", filePath, page, e);
-        }
-        finally {
+        } finally {
             FileUtils.deleteQuietly(new File(filePath));
         }
         return dataFilePath;
     }
 
-
-    private static List<String> createProcessArgs(String filePath, String outPutDir) {
+    private static List<String> createProcessArgs(String filePath, String outPutDir, int page, int type) {
+        if (type == 1)
+            page = 1;
         List<String> args = Lists.newArrayList();
         args.add("pdf2htmlEX");//命令行开始
         args.add("-f");
-        args.add("1");
+        args.add(String.valueOf(page));
         args.add("-l");
-        args.add("1");
+        args.add(String.valueOf(page));
         args.add("--fit-width");//缩放
         args.add("1000");
         args.add("--embed-outline");//链接文件单独输出
         args.add("0");
         args.add("--embed-css");
         args.add("0");
+        if (type == 2) {
+            args.add("--css-filename");
+            args.add("css" + page + ".css");
+        }
         args.add("--embed-image");
         args.add("0");
         args.add("--bg-format");

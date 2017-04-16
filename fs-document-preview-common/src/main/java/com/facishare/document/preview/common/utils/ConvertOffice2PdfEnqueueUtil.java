@@ -1,18 +1,15 @@
 package com.facishare.document.preview.common.utils;
 
-import com.alibaba.fastjson.JSON;
 import com.facishare.document.preview.common.dao.Office2PdfTaskDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
-import com.facishare.document.preview.common.model.ConvertMessage;
+import com.facishare.document.preview.common.model.ConvertMessageBase;
 import com.facishare.document.preview.common.model.PreviewInfo;
 import com.facishare.document.preview.common.mq.ConvertorQueueProvider;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * Created by liuq on 2017/4/6.
@@ -29,27 +26,17 @@ public class ConvertOffice2PdfEnqueueUtil {
     ConvertorQueueProvider office2pdf;
 
     public void enqueue(String ea, String path) {
-        log.info("begin enqueue,ea:{},path:{}",ea,path);
+        log.info("begin enqueue,ea:{},path:{}", ea, path);
         PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
-        if(previewInfo==null) return;
-        int pageCount = previewInfo.getPageCount();
-        List<String> dataFilePathList = previewInfo.getFilePathList();
-        if (dataFilePathList == null)
-            dataFilePathList = Lists.newArrayList();
-        List<Integer> hasNotConvertPageList = Lists.newArrayList();
-        for (int i = 1; i < pageCount + 1; i++) {
-            if (!dataFilePathList.contains(i + ".html")) {
-                {
-                    hasNotConvertPageList.add(i);
-                }
-            }
-        }
-        List<Integer> needEnqueuePageList = office2PdfTaskDao.batchAddTask(ea, path, hasNotConvertPageList);
-        log.info("needEnqueuePageList:{}", JSON.toJSON(needEnqueuePageList));
-        String originalFilePath = previewInfo.getOriginalFilePath();
-        needEnqueuePageList.forEach(p -> {
-            ConvertMessage convertorMessage = ConvertMessage.builder().npath(path).ea(ea).page(p).filePath(originalFilePath).build();
+        if (previewInfo == null) return;
+        int status = office2PdfTaskDao.getTaskStatus(ea, path);
+        if (status == -1) {
+            office2PdfTaskDao.addTask(ea, path);
+            ConvertMessageBase convertorMessage = new ConvertMessageBase();
+            convertorMessage.setEa(ea);
+            convertorMessage.setFilePath(previewInfo.getOriginalFilePath());
+            convertorMessage.setNpath(path);
             office2pdf.enqueue(convertorMessage);
-        });
+        }
     }
 }

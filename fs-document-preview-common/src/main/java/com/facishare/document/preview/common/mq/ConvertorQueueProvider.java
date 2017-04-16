@@ -2,7 +2,7 @@ package com.facishare.document.preview.common.mq;
 
 import com.alibaba.rocketmq.common.message.Message;
 import com.facishare.common.rocketmq.AutoConfRocketMQSender;
-import com.facishare.document.preview.common.model.ConvertMessage;
+import com.facishare.document.preview.common.model.ConvertMessageBase;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -25,7 +25,7 @@ public class ConvertorQueueProvider {
         log.info("finish init rocketmq!");
     }
 
-    public void enqueue(ConvertMessage message) {
+    public void enqueue(ConvertMessageBase message) {
         log.info("enqueue:{}", com.alibaba.fastjson.JSON.toJSON(message));
         Message messageExt = new Message();
         messageExt.setBody(message.toProto());

@@ -7,7 +7,7 @@ import com.alibaba.rocketmq.common.message.MessageExt;
 import com.facishare.common.rocketmq.AutoConfRocketMQProcessor;
 import com.facishare.document.preview.asyncconvertor.utils.Office2PdfHandler;
 import com.facishare.document.preview.common.dao.Office2PdfTaskDao;
-import com.facishare.document.preview.common.model.ConvertMessage;
+import com.facishare.document.preview.common.model.ConvertMessageBase;
 import com.facishare.document.preview.common.mq.ConvertorQueueProvider;
 import com.fxiaoke.metrics.CounterService;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
@@ -34,8 +34,6 @@ public class Office2PdfProcessor {
     Office2PdfHandler office2PdfHandler;
     @Autowired
     Office2PdfTaskDao office2PdfTaskDao;
-    @Resource(name = "pdf2HtmlProvider")
-    ConvertorQueueProvider pdf2HtmlProvider;
     private AutoConfRocketMQProcessor autoConfRocketMQProcessor;
     private static final String KEY_NAME_SERVER = "NAMESERVER";
     private static final String KEY_GROUP = "GROUP_CONSUMER";
@@ -48,7 +46,7 @@ public class Office2PdfProcessor {
         log.info("begin consumer office2pdf queue!");
         autoConfRocketMQProcessor = new AutoConfRocketMQProcessor(configName, KEY_NAME_SERVER, KEY_GROUP, KEY_TOPICS, (MessageListenerConcurrently) (list, consumeConcurrentlyContext) -> {
             list.forEach((MessageExt messageExt) -> {
-                ConvertMessage convertorMessage = ConvertMessage.builder().build();
+                ConvertMessageBase convertorMessage = new ConvertMessageBase();
                 convertorMessage.fromProto(messageExt.getBody());
                 try {
                     office2Pdf(convertorMessage);
@@ -61,36 +59,13 @@ public class Office2PdfProcessor {
         autoConfRocketMQProcessor.init();
     }
 
-    private void office2Pdf(ConvertMessage office2PdfMessage) throws Exception {
+    private void office2Pdf(ConvertMessageBase office2PdfMessage) throws Exception {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         log.info("begin do convert,params:{}", JSON.toJSONString(office2PdfMessage));
         String ea = office2PdfMessage.getEa();
         String path = office2PdfMessage.getNpath();
         String filePath = office2PdfMessage.getFilePath();
-        int page = office2PdfMessage.getPage();
-        int status = office2PdfTaskDao.getTaskStatus(ea, path, page);
-        log.info("status:{}",status);
-        if (status == 0) {
-            office2PdfTaskDao.beginExecute(ea, path, page);
-            String ext = FilenameUtils.getExtension(path);
-            String dataFilePath = office2PdfHandler.ConvertOffice2Pdf(filePath, page);
-            if(Strings.isNullOrEmpty(dataFilePath)) return;
-            else {
-                File dataFile = new File(dataFilePath);
-                String indexName = ext.contains("doc") ? "convert-word2pdf" : "convert-ppt2pdf";
-                if (dataFile.exists()) {
-                    counterService.inc(indexName + "--ok");
-                    ConvertMessage pdf2HtmlMessage = ConvertMessage.builder().ea(ea).filePath(dataFilePath).npath(path).page(page).build();
-                    pdf2HtmlProvider.enqueue(pdf2HtmlMessage);
-                    office2PdfTaskDao.executeSuccess(ea, path, page);
-                } else {
-                    counterService.inc(indexName + "--fail");
-                    office2PdfTaskDao.executeFail(ea, path, page);
-                }
-            }
-        }
-        stopWatch.stop();
-        log.info("end do convert,params:{},cost:{}", JSON.toJSONString(office2PdfMessage), stopWatch.getTime());
+        office2PdfHandler.convertOffice2Pdf(ea, path, filePath);
     }
 }

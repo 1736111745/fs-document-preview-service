@@ -7,14 +7,14 @@ import java.util.List;
  */
 public interface Office2PdfTaskDao {
 
-    int getTaskStatus(String ea,String path,int page);
+    int getTaskStatus(String ea,String path);
 
-    void beginExecute(String ea, String path, int page);
+    void beginExecute(String ea, String path);
 
-    void executeFail(String ea, String path, int page);
+    void executeFail(String ea, String path);
 
-    void executeSuccess(String ea, String path, int page);
+    void executeSuccess(String ea, String path);
 
-    List<Integer> batchAddTask(String ea,String path,List<Integer> pageList);
+    void   addTask(String ea,String path);
 
 }

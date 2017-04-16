@@ -58,6 +58,17 @@ public class Office2PdfApiHelper {
         return pdfContents;
     }
 
+    public byte[] getPdfBytes(String filePath)
+    {
+        String ext=FilenameUtils.getExtension(filePath);
+        byte[] pdfContents = null;
+        RestResponse restResponse = callApi("ConvertOffice2Pdf", filePath, "ext=" + ext);
+        if (restResponse.getBytes() != null && restResponse.getContentType().contains("application/pdf")) {
+            pdfContents = restResponse.getBytes();
+        }
+        return pdfContents;
+    }
+
 
     private RestResponse callApi(String method, String filePath, String params) {
         Stopwatch stopwatch = Stopwatch.createStarted();

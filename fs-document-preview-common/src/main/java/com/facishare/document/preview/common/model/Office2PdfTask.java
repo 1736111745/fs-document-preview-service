@@ -12,14 +12,13 @@ import java.util.Date;
  * Created by liuq on 2017/3/19.
  */
 @Entity(value = "Office2PdfTask", noClassnameStored = true)
-@Indexes({@Index(fields = {@Field("ea"), @Field("path"), @Field("page")})})
+@Indexes({@Index(fields = {@Field("ea"), @Field("path")})})
 @Getter
 @Setter
 @ToString
 public class Office2PdfTask {
     private String ea;
     private String path;
-    private Integer page;
     @Indexed(value = IndexDirection.ASC, name = "createTime", expireAfterSeconds = 120)
     private Date createTime;
     private Date lastModifyTime;

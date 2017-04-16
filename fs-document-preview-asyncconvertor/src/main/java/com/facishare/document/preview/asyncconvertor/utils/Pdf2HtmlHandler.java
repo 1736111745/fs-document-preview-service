@@ -125,7 +125,7 @@ public class Pdf2HtmlHandler {
         String newBgFilePath = FilenameUtils.concat(baseDir, newBgName);
         File bgFile = new File(bgFileFilePath);
         bgFile.renameTo(new File(newBgFilePath));
-        handleHtml(dataFile, pageFile, page, dirName,cssFileName ,bgName,newBgName );
+        handleHtml(dataFile, pageFile, page, dirName,newCssFileName ,bgName,newBgName );
         FileUtils.deleteDirectory(new File(outPutDir));
         return pagePath;
     }

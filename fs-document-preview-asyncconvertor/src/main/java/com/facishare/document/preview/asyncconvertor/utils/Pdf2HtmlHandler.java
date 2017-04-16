@@ -157,7 +157,7 @@ public class Pdf2HtmlHandler {
                 "</div>", "");
         html = html.replace("<div class=\"loading-indicator\">", "");
         html = html.replace("<img alt=\"\" src=\"pdf2htmlEX-64x64.png\"/>", "");
-        if (Strings.isNullOrEmpty(bgName)) {
+        if (!Strings.isNullOrEmpty(bgName)) {
             html = html.replace(bgName, "./" + dirName + "/" + newBgName);
         }
         html = html.replace("\n", "");

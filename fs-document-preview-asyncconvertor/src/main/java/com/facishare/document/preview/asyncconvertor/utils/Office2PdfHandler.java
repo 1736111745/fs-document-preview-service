@@ -5,6 +5,7 @@ import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.facishare.document.preview.common.model.PreviewInfo;
 import com.facishare.document.preview.common.mq.ConvertorQueueProvider;
 import com.facishare.document.preview.common.utils.Office2PdfApiHelper;
+import com.fxiaoke.metrics.CounterService;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -31,8 +32,10 @@ public class Office2PdfHandler {
     ConvertorQueueProvider pdf2HtmlProvider;
     @Autowired
     PreviewInfoDao previewInfoDao;
+    @Autowired
+    private CounterService counterService;
     private final ThreadFactory factory =
-            new ThreadFactoryBuilder().setDaemon(true).setNameFormat("convertHelper-%d").build();
+            new ThreadFactoryBuilder().setDaemon(true).setNameFormat("office-to-pdf-%d").build();
     private final ExecutorService executorService = Executors.newCachedThreadPool(factory);
 
     public void convertOffice2Pdf(String ea, String path, String filePath) throws Exception {
@@ -47,6 +50,7 @@ public class Office2PdfHandler {
                 executorService.submit(() -> {
                     byte[] bytes = office2PdfApiHelper.getPdfBytes(filePath, page);
                     if (bytes != null) {
+                        counterService.inc("ppt2pdf-success!");
                         int pageIndex = page + 1;
                         String pdfPageFilePath = filePath + "." + pageIndex + ".pdf";
                         log.info("pdfPageFilePath:{}", pdfPageFilePath);
@@ -54,16 +58,28 @@ public class Office2PdfHandler {
                             FileUtils.writeByteArrayToFile(new File(pdfPageFilePath), bytes);
                             enqueue(ea, path, pdfPageFilePath, pageIndex, 1);
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            log.warn("save office2pdf fail,path:{},page:{}", path, pageIndex, e);
                         }
-                    }
+                    } else
+                        counterService.inc("ppt2pdf-fail!");
                 });
             }
         } else if (ext.contains("doc")) {
-            byte[] bytes = office2PdfApiHelper.getPdfBytes(filePath);
-            String pdfPageFilePath = filePath + ".pdf";
-            FileUtils.writeByteArrayToFile(new File(pdfPageFilePath), bytes);
-            enqueueMultiPagePdf(ea, path, pdfPageFilePath, pageCount);
+            executorService.submit(() -> {
+                byte[] bytes = office2PdfApiHelper.getPdfBytes(filePath);
+                if (bytes != null) {
+                    counterService.inc("word2pdf-success!");
+                    String pdfPageFilePath = filePath + ".pdf";
+                    try {
+                        FileUtils.writeByteArrayToFile(new File(pdfPageFilePath), bytes);
+                        enqueueMultiPagePdf(ea, path, pdfPageFilePath, pageCount);
+                    } catch (IOException e) {
+                        log.warn("save office2pdf fail,path:{}", path, e);
+                    }
+                } else {
+                    counterService.inc("word2pdf-fail!");
+                }
+            });
         }
     }
 

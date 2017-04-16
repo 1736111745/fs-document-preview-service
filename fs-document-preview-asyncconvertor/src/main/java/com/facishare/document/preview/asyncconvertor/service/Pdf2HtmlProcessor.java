@@ -43,7 +43,7 @@ public class Pdf2HtmlProcessor {
         log.info("begin consumer pdf2html queue!");
         autoConfRocketMQProcessor = new AutoConfRocketMQProcessor(configName, KEY_NAME_SERVER, KEY_GROUP, KEY_TOPICS, (MessageListenerConcurrently) (list, consumeConcurrentlyContext) -> {
             list.forEach((MessageExt messageExt) -> {
-                ConvertPdf2HtmlMessage  message = new ConvertPdf2HtmlMessage();
+                ConvertPdf2HtmlMessage message = new ConvertPdf2HtmlMessage();
                 message.fromProto(messageExt.getBody());
                 try {
                     doConvert(message);
@@ -72,5 +72,4 @@ public class Pdf2HtmlProcessor {
         stopWatch.stop();
         log.info("end do convert,params:{},cost:{}ms", JSON.toJSONString(convertorMessage), stopWatch.getTime());
     }
-
 }

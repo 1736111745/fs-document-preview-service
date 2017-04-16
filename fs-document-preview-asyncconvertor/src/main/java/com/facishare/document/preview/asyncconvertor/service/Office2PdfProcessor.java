@@ -29,11 +29,7 @@ import java.io.File;
 @Component
 public class Office2PdfProcessor {
     @Autowired
-    private CounterService counterService;
-    @Autowired
     Office2PdfHandler office2PdfHandler;
-    @Autowired
-    Office2PdfTaskDao office2PdfTaskDao;
     private AutoConfRocketMQProcessor autoConfRocketMQProcessor;
     private static final String KEY_NAME_SERVER = "NAMESERVER";
     private static final String KEY_GROUP = "GROUP_CONSUMER";

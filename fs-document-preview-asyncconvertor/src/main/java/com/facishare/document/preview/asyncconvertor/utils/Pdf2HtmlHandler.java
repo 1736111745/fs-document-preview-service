@@ -2,6 +2,7 @@ package com.facishare.document.preview.asyncconvertor.utils;
 
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -14,6 +15,7 @@ import org.zeroturnaround.exec.ProcessResult;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -115,23 +117,28 @@ public class Pdf2HtmlHandler {
         File pageFile = new File(pagePath);
         String dirName = FilenameUtils.getBaseName(baseDir);
         String cssFileName = type == 1 ? FilenameUtils.getBaseName(filePath) + ".css" : "css" + page + ".css";
-        String newCssFileName=page+".css";
+        String newCssFileName = page + ".css";
         String cssFileFilePath = FilenameUtils.concat(outPutDir, cssFileName);
         String newCssFilePath = FilenameUtils.concat(baseDir, newCssFileName);
         File cssFile = new File(cssFileFilePath);
         cssFile.renameTo(new File(newCssFilePath));
         //处理背景图片
-        File bgFile=Files.list(Paths.get(outPutDir)).filter(f->f.toFile().getName().startsWith("bg")).findFirst().get().toFile();
-        String bgName =bgFile.getName();
-        String newBgName="bg" + page + ".jpg";
-        String newBgFilePath = FilenameUtils.concat(baseDir, newBgName);
-        bgFile.renameTo(new File(newBgFilePath));
-        handleHtml(dataFile, pageFile, page, dirName,newCssFileName ,bgName,newBgName );
+        Path bgPath = Files.list(Paths.get(outPutDir)).filter(f -> f.toFile().getName().startsWith("bg")).findFirst().orElse(null);
+        String bgName = "";
+        String newBgName = "";
+        if (bgPath != null) {
+            File bgFile = bgPath.toFile();
+            bgName = bgFile.getName();
+            newBgName = "bg" + page + ".jpg";
+            String newBgFilePath = FilenameUtils.concat(baseDir, newBgName);
+            bgFile.renameTo(new File(newBgFilePath));
+        }
+        handleHtml(dataFile, pageFile, page, dirName, newCssFileName, bgName, newBgName);
         FileUtils.deleteDirectory(new File(outPutDir));
         return pagePath;
     }
 
-    private void handleHtml(File dataFile, File pageFile, int page, String dirName, String newCssName, String bgName,String newBgName) throws IOException {
+    private void handleHtml(File dataFile, File pageFile, int page, String dirName, String newCssName, String bgName, String newBgName) throws IOException {
         String html = FileUtils.readFileToString(dataFile);
         html = html.replace("base.min.css", "../static/css/base.min.css");
         html = html.replace("<link rel=\"stylesheet\" href=\"fancy.min.css\"/>", "");
@@ -150,7 +157,9 @@ public class Pdf2HtmlHandler {
                 "</div>", "");
         html = html.replace("<div class=\"loading-indicator\">", "");
         html = html.replace("<img alt=\"\" src=\"pdf2htmlEX-64x64.png\"/>", "");
-        html = html.replace(bgName, "./" + dirName + "/" + newBgName);
+        if (Strings.isNullOrEmpty(bgName)) {
+            html = html.replace(bgName, "./" + dirName + "/" + newBgName);
+        }
         html = html.replace("\n", "");
         FileUtils.writeByteArrayToFile(pageFile, html.getBytes());
     }

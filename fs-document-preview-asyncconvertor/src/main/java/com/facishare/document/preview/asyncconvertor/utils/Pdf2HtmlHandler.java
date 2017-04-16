@@ -113,37 +113,36 @@ public class Pdf2HtmlHandler {
         String dataFilePath = FilenameUtils.concat(outPutDir, dataFileName);
         String pageName = page + ".html";
         String pagePath = FilenameUtils.concat(baseDir, pageName);
-//        File dataFile = new File(dataFilePath);
-//        File pageFile = new File(pagePath);
-//        String dirName = FilenameUtils.getBaseName(baseDir);
-//        String cssFileName = type == 1 ? FilenameUtils.getBaseName(filePath) + ".css" : "css" + page + ".css";
-//        String newCssFileName = page + ".css";
-//        String cssFileFilePath = FilenameUtils.concat(outPutDir, cssFileName);
-//        String newCssFilePath = FilenameUtils.concat(baseDir, newCssFileName);
-//        File cssFile = new File(cssFileFilePath);
-//        cssFile.renameTo(new File(newCssFilePath));
-//        //处理背景图片
-//        Path bgPath = Files.list(Paths.get(outPutDir)).filter(f -> f.toFile().getName().startsWith("bg")).findFirst().orElse(null);
-//        String bgName = "";
-//        String newBgName = "";
-//        if (bgPath != null) {
-//            File bgFile = bgPath.toFile();
-//            bgName = bgFile.getName();
-//            newBgName = "bg" + page + ".jpg";
-//            String newBgFilePath = FilenameUtils.concat(baseDir, newBgName);
-//            bgFile.renameTo(new File(newBgFilePath));
-//        }
-//        handleHtml(dataFile, pageFile, page, dirName, newCssFileName, bgName, newBgName);
-//        FileUtils.deleteDirectory(new File(outPutDir));
+        File dataFile = new File(dataFilePath);
+        File pageFile = new File(pagePath);
+        String dirName = FilenameUtils.getBaseName(baseDir);
+        String cssFileName = type == 1 ? FilenameUtils.getBaseName(filePath) + ".css" : "css" + page + ".css";
+        String newCssFileName = page + ".css";
+        String cssFileFilePath = FilenameUtils.concat(outPutDir, cssFileName);
+        String newCssFilePath = FilenameUtils.concat(baseDir, newCssFileName);
+        File cssFile = new File(cssFileFilePath);
+        cssFile.renameTo(new File(newCssFilePath));
+        //处理背景图片
+        Path bgPath = Files.list(Paths.get(outPutDir)).filter(f -> f.toFile().getName().startsWith("bg")).findFirst().orElse(null);
+        String bgName = "";
+        String newBgName = "";
+        if (bgPath != null) {
+            File bgFile = bgPath.toFile();
+            bgName = bgFile.getName();
+            newBgName = "bg" + page + ".jpg";
+            String newBgFilePath = FilenameUtils.concat(baseDir, newBgName);
+            bgFile.renameTo(new File(newBgFilePath));
+        }
+        handleHtml(dataFile, pageFile, page, dirName,cssFileName, newCssFileName, bgName, newBgName);
+        FileUtils.deleteDirectory(new File(outPutDir));
         return pagePath;
     }
 
-    private void handleHtml(File dataFile, File pageFile, int page, String dirName, String newCssName, String bgName, String newBgName) throws IOException {
+    private void handleHtml(File dataFile, File pageFile, int page, String dirName,String cssName, String newCssName, String bgName, String newBgName) throws IOException {
         String html = FileUtils.readFileToString(dataFile);
         html = html.replace("base.min.css", "../static/css/base.min.css");
         html = html.replace("<link rel=\"stylesheet\" href=\"fancy.min.css\"/>", "");
-        String cssLink = "css" + page + ".css";
-        html = html.replace(cssLink, "./" + dirName + "/" + newCssName);
+        html = html.replace(cssName, "./" + dirName + "/" + newCssName);
         html = html.replace("<script src=\"compatibility.min.js\"></script>", "");
         html = html.replace("<script src=\"pdf2htmlEX.min.js\"></script>", "");
         html = html.replace("<script>\n" +

@@ -121,7 +121,7 @@ public class Pdf2HtmlHandler {
         File cssFile = new File(cssFileFilePath);
         cssFile.renameTo(new File(newCssFilePath));
         //处理背景图片
-        File bgFile=Files.list(Paths.get(outPutDir)).filter(f->f.startsWith("bg")).findFirst().get().toFile();
+        File bgFile=Files.list(Paths.get(outPutDir)).filter(f->f.toFile().getName().startsWith("bg")).findFirst().get().toFile();
         String bgName =bgFile.getName();
         String newBgName="bg" + page + ".jpg";
         String newBgFilePath = FilenameUtils.concat(baseDir, newBgName);

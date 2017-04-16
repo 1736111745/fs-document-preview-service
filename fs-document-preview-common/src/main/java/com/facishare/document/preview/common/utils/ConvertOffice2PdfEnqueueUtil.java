@@ -23,7 +23,7 @@ public class ConvertOffice2PdfEnqueueUtil {
     @Autowired
     Office2PdfTaskDao office2PdfTaskDao;
     @Resource(name = "office2pdfProvider")
-    ConvertorQueueProvider office2pdf;
+    ConvertorQueueProvider convertorQueueProvider;
 
     public void enqueue(String ea, String path) {
         log.info("begin enqueue,ea:{},path:{}", ea, path);
@@ -36,7 +36,7 @@ public class ConvertOffice2PdfEnqueueUtil {
             convertorMessage.setEa(ea);
             convertorMessage.setFilePath(previewInfo.getOriginalFilePath());
             convertorMessage.setNpath(path);
-            office2pdf.enqueue(convertorMessage);
+            convertorQueueProvider.office2pdf(convertorMessage);
         }
     }
 }

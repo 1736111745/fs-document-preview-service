@@ -79,7 +79,8 @@ public class Office2PdfHandler {
         message.setFilePath(filePath);
         message.setEa(ea);
         message.setPage(page);
-        pdf2HtmlProvider.enqueue(message);
+        message.setType(type);
+        pdf2HtmlProvider.pdf2html(message);
     }
 
 }

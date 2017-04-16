@@ -47,7 +47,7 @@ public class Pdf2HtmlHandler {
                     .start().getFuture();
             ProcessResult processResult = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
             if (processResult.getExitValue() == 0) {
-                dataFilePath = handleResult(page, filePath, outPutDir,type);
+                dataFilePath = handleResult(page, filePath, outPutDir, type);
             } else
                 log.error("output:{},exit code:{}", processResult.outputUTF8(), processResult.getExitValue());
         } catch (IOException e) {
@@ -118,16 +118,17 @@ public class Pdf2HtmlHandler {
         File cssFile = new File(cssFileFilePath);
         cssFile.renameTo(new File(newCssFilePath));
         //处理背景图片
-        String bgFileFilePath = FilenameUtils.concat(outPutDir, "bg1.jpg");
-        String newBgFilePath = FilenameUtils.concat(baseDir, "bg" + page + ".jpg");
+        String bgName = type == 1 ? "bg1.jpg" : "bg" + page + ".jpg";
+        String bgFileFilePath = FilenameUtils.concat(outPutDir, bgName);
+        String newBgFilePath = FilenameUtils.concat(baseDir, bgName);
         File bgFile = new File(bgFileFilePath);
         bgFile.renameTo(new File(newBgFilePath));
-        handleHtml(dataFile, pageFile, page, dirName);
+        handleHtml(dataFile, pageFile, page, dirName, cssFileName,bgName );
         FileUtils.deleteDirectory(new File(outPutDir));
         return pagePath;
     }
 
-    private void handleHtml(File dataFile, File pageFile, int page, String dirName) throws IOException {
+    private void handleHtml(File dataFile, File pageFile, int page, String dirName, String cssName, String bgName) throws IOException {
         String html = FileUtils.readFileToString(dataFile);
         html = html.replace("base.min.css", "../static/css/base.min.css");
         html = html.replace("<link rel=\"stylesheet\" href=\"fancy.min.css\"/>", "");
@@ -148,8 +149,8 @@ public class Pdf2HtmlHandler {
         html = html.replace("<img alt=\"\" src=\"pdf2htmlEX-64x64.png\"/>", "");
         //html = html.replace("src=\"", "src=\"./" + dirName + "/");
         String cssFileName = FilenameUtils.getBaseName(dataFile.getName()) + ".css";
-        html = html.replace(cssFileName, "./" + dirName + "/" + page + ".css");
-        html = html.replace("bg1.jpg", "./" + dirName + "/bg" + page + ".jpg");
+        html = html.replace(cssFileName, "./" + dirName + "/" + cssName);
+        html = html.replace("bg1.jpg", "./" + dirName + "/" + bgName);
         html = html.replace("\n", "");
         FileUtils.writeByteArrayToFile(pageFile, html.getBytes());
     }

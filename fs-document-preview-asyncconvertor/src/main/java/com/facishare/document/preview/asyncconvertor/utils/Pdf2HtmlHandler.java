@@ -120,16 +120,17 @@ public class Pdf2HtmlHandler {
         cssFile.renameTo(new File(newCssFilePath));
         //处理背景图片
         String bgName = type == 1 ? "bg1.jpg" : "bg" + page + ".jpg";
+        String newBgName="bg" + page + ".jpg";
         String bgFileFilePath = FilenameUtils.concat(outPutDir, bgName);
-        String newBgFilePath = FilenameUtils.concat(baseDir, bgName);
+        String newBgFilePath = FilenameUtils.concat(baseDir, newBgName);
         File bgFile = new File(bgFileFilePath);
         bgFile.renameTo(new File(newBgFilePath));
-        handleHtml(dataFile, pageFile, page, dirName,newCssFileName ,bgName );
+        handleHtml(dataFile, pageFile, page, dirName,cssFileName,newCssFileName ,bgName,newBgName );
         FileUtils.deleteDirectory(new File(outPutDir));
         return pagePath;
     }
 
-    private void handleHtml(File dataFile, File pageFile, int page, String dirName, String cssName, String bgName) throws IOException {
+    private void handleHtml(File dataFile, File pageFile, int page, String dirName, String cssName,String newCssName, String bgName,String newBgName) throws IOException {
         String html = FileUtils.readFileToString(dataFile);
         html = html.replace("base.min.css", "../static/css/base.min.css");
         html = html.replace("<link rel=\"stylesheet\" href=\"fancy.min.css\"/>", "");
@@ -149,9 +150,8 @@ public class Pdf2HtmlHandler {
         html = html.replace("<div class=\"loading-indicator\">", "");
         html = html.replace("<img alt=\"\" src=\"pdf2htmlEX-64x64.png\"/>", "");
         //html = html.replace("src=\"", "src=\"./" + dirName + "/");
-        String cssFileName = FilenameUtils.getBaseName(dataFile.getName()) + ".css";
-        html = html.replace(cssFileName, "./" + dirName + "/" + cssName);
-        html = html.replace("bg1.jpg", "./" + dirName + "/" + bgName);
+        html = html.replace(cssName, "./" + dirName + "/" + newCssName);
+        html = html.replace(bgName, "./" + dirName + "/" + newBgName);
         html = html.replace("\n", "");
         FileUtils.writeByteArrayToFile(pageFile, html.getBytes());
     }

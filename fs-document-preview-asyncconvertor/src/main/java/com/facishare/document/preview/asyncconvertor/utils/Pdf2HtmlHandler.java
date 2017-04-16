@@ -113,28 +113,28 @@ public class Pdf2HtmlHandler {
         String dataFilePath = FilenameUtils.concat(outPutDir, dataFileName);
         String pageName = page + ".html";
         String pagePath = FilenameUtils.concat(baseDir, pageName);
-        File dataFile = new File(dataFilePath);
-        File pageFile = new File(pagePath);
-        String dirName = FilenameUtils.getBaseName(baseDir);
-        String cssFileName = type == 1 ? FilenameUtils.getBaseName(filePath) + ".css" : "css" + page + ".css";
-        String newCssFileName = page + ".css";
-        String cssFileFilePath = FilenameUtils.concat(outPutDir, cssFileName);
-        String newCssFilePath = FilenameUtils.concat(baseDir, newCssFileName);
-        File cssFile = new File(cssFileFilePath);
-        cssFile.renameTo(new File(newCssFilePath));
-        //处理背景图片
-        Path bgPath = Files.list(Paths.get(outPutDir)).filter(f -> f.toFile().getName().startsWith("bg")).findFirst().orElse(null);
-        String bgName = "";
-        String newBgName = "";
-        if (bgPath != null) {
-            File bgFile = bgPath.toFile();
-            bgName = bgFile.getName();
-            newBgName = "bg" + page + ".jpg";
-            String newBgFilePath = FilenameUtils.concat(baseDir, newBgName);
-            bgFile.renameTo(new File(newBgFilePath));
-        }
-        handleHtml(dataFile, pageFile, page, dirName, newCssFileName, bgName, newBgName);
-        FileUtils.deleteDirectory(new File(outPutDir));
+//        File dataFile = new File(dataFilePath);
+//        File pageFile = new File(pagePath);
+//        String dirName = FilenameUtils.getBaseName(baseDir);
+//        String cssFileName = type == 1 ? FilenameUtils.getBaseName(filePath) + ".css" : "css" + page + ".css";
+//        String newCssFileName = page + ".css";
+//        String cssFileFilePath = FilenameUtils.concat(outPutDir, cssFileName);
+//        String newCssFilePath = FilenameUtils.concat(baseDir, newCssFileName);
+//        File cssFile = new File(cssFileFilePath);
+//        cssFile.renameTo(new File(newCssFilePath));
+//        //处理背景图片
+//        Path bgPath = Files.list(Paths.get(outPutDir)).filter(f -> f.toFile().getName().startsWith("bg")).findFirst().orElse(null);
+//        String bgName = "";
+//        String newBgName = "";
+//        if (bgPath != null) {
+//            File bgFile = bgPath.toFile();
+//            bgName = bgFile.getName();
+//            newBgName = "bg" + page + ".jpg";
+//            String newBgFilePath = FilenameUtils.concat(baseDir, newBgName);
+//            bgFile.renameTo(new File(newBgFilePath));
+//        }
+//        handleHtml(dataFile, pageFile, page, dirName, newCssFileName, bgName, newBgName);
+//        FileUtils.deleteDirectory(new File(outPutDir));
         return pagePath;
     }
 

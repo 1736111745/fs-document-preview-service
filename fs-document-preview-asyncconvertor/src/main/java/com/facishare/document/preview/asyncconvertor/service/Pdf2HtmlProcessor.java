@@ -7,7 +7,6 @@ import com.alibaba.rocketmq.common.message.MessageExt;
 import com.facishare.common.rocketmq.AutoConfRocketMQProcessor;
 import com.facishare.document.preview.asyncconvertor.utils.Pdf2HtmlHandler;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
-import com.facishare.document.preview.common.model.ConvertMessageBase;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.fxiaoke.metrics.CounterService;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;

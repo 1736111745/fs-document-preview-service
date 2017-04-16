@@ -62,6 +62,10 @@ public class Pdf2HtmlHandler {
             log.error("do convert happened ExecutionException!", e);
         } catch (TimeoutException e) {
             log.error("do convert happened TimeoutException!filePath:{},page:{}", filePath, page, e);
+        } finally {
+            if (type == 1) {
+                FileUtils.deleteQuietly(new File(filePath));
+            }
         }
         return dataFilePath;
     }
@@ -133,7 +137,7 @@ public class Pdf2HtmlHandler {
             String newBgFilePath = FilenameUtils.concat(baseDir, newBgName);
             bgFile.renameTo(new File(newBgFilePath));
         }
-        handleHtml(dataFile, pageFile, dirName,cssFileName, newCssFileName, bgName, newBgName);
+        handleHtml(dataFile, pageFile, dirName, cssFileName, newCssFileName, bgName, newBgName);
         FileUtils.deleteDirectory(new File(outPutDir));
         return pagePath;
     }

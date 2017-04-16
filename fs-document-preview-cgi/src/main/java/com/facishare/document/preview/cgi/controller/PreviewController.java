@@ -337,10 +337,17 @@ public class PreviewController {
                         dataFilePathList = dataFilePathList.stream().filter(f -> f.endsWith(".html")).
                                 sorted(Comparator.comparingInt(o -> NumberUtils.toInt(FilenameUtils.getBaseName(o)))).
                                 collect(Collectors.toList());
-//                    //转换完毕后清理原始文件
-//                    if (dataFilePathList.size() == previewInfo.getPageCount()) {
-//                        FileUtils.deleteQuietly(new File(previewInfo.getOriginalFilePath()));
-//                    }
+                    //转换完毕后清理原始文件
+                    if (dataFilePathList.size() == previewInfo.getPageCount()) {
+                        Files.list(Paths.get(previewInfo.getDataDir())).filter(p ->
+                        {
+                            String fileName = p.toFile().getName();
+                            String ext = FilenameUtils.getExtension(fileName).toLowerCase();
+                            return ext.contains("ppt") || ext.contains("doc") || ext.contains("pdf");
+                        }).forEach(p1 -> {
+                            FileUtils.deleteQuietly(p1.toFile());
+                        });
+                    }
                     Map<String, Object> map = new HashMap<>();
                     map.put("list", dataFilePathList);
                     return JSONObject.toJSONString(map);

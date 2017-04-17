@@ -55,14 +55,14 @@ public class Office2PdfHandler {
                 }
             }
         }
-        log.info("hasNotConvertPageList:{}",hasNotConvertPageList);
+        log.info("hasNotConvertPageList:{}", hasNotConvertPageList);
         if (ext.equals("pdf")) {
             enqueueMultiPagePdf(ea, path, filePath, hasNotConvertPageList);
         } else if (ext.contains("ppt")) {
-            for (int i = 0; i <= hasNotConvertPageList.size(); i++) {
+            for (int i = 0; i < hasNotConvertPageList.size(); i++) {
                 final int page = hasNotConvertPageList.get(i);
                 executorService.submit(() -> {
-                    byte[] bytes = office2PdfApiHelper.getPdfBytes(path,filePath, page);
+                    byte[] bytes = office2PdfApiHelper.getPdfBytes(path, filePath, page);
                     if (bytes != null) {
                         counterService.inc("ppt2pdf-success!");
                         int pageIndex = page + 1;
@@ -80,7 +80,7 @@ public class Office2PdfHandler {
             }
         } else if (ext.contains("doc")) {
             executorService.submit(() -> {
-                byte[] bytes = office2PdfApiHelper.getPdfBytes(path,filePath);
+                byte[] bytes = office2PdfApiHelper.getPdfBytes(path, filePath);
                 if (bytes != null) {
                     counterService.inc("word2pdf-success!");
                     String pdfPageFilePath = filePath + ".pdf";
@@ -98,7 +98,7 @@ public class Office2PdfHandler {
     }
 
     private void enqueueMultiPagePdf(String ea, String path, String filePath, List<Integer> hasNotConvertPageList) {
-        for (int i = 0; i <= hasNotConvertPageList.size(); i++) {
+        for (int i = 0; i < hasNotConvertPageList.size(); i++) {
             int page = hasNotConvertPageList.get(i);
             enqueue(ea, path, filePath, page, 2);
         }

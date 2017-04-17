@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Created by liuq on 2017/4/6.
@@ -29,6 +30,8 @@ public class ConvertOffice2PdfEnqueueUtil {
         log.info("begin enqueue,ea:{},path:{}", ea, path);
         PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
         if (previewInfo == null) return;
+        List<String> dataFilePathList = previewInfo.getFilePathList();
+        if (dataFilePathList.size() == previewInfo.getPageCount()) return;
         int status = office2PdfTaskDao.getTaskStatus(ea, path);
         if (status == -1) {
             office2PdfTaskDao.addTask(ea, path);

@@ -90,7 +90,7 @@ public class Office2PdfApiHelper {
                 restResponse.setContentType(contentType);
             }
         } catch (Exception e) {
-            log.error("call method:{},path:{},happened exception!", method, filePath, e);
+            log.error("call method:{},path:{},params:{},happened exception!", method, path,params, e);
         }
         stopwatch.stop();
         log.info("call api:{},cost:{}ms", postUrl, stopwatch.elapsed(TimeUnit.MILLISECONDS));

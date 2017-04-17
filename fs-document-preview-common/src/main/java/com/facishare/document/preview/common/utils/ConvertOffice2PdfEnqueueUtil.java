@@ -27,13 +27,13 @@ public class ConvertOffice2PdfEnqueueUtil {
     ConvertorQueueProvider convertorQueueProvider;
 
     public void enqueue(String ea, String path) {
-        log.info("begin enqueue,ea:{},path:{}", ea, path);
         PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
         if (previewInfo == null) return;
         List<String> dataFilePathList = previewInfo.getFilePathList();
         if (dataFilePathList.size() == previewInfo.getPageCount()) return;
         int status = office2PdfTaskDao.getTaskStatus(ea, path);
         if (status == -1) {
+            log.info("begin enqueue,ea:{},path:{}", ea, path);
             office2PdfTaskDao.addTask(ea, path);
             ConvertMessageBase convertorMessage = new ConvertMessageBase();
             convertorMessage.setEa(ea);

@@ -5,6 +5,7 @@ import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.ConvertMessageBase;
 import com.facishare.document.preview.common.model.PreviewInfo;
 import com.facishare.document.preview.common.mq.ConvertorQueueProvider;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,7 @@ public class ConvertOffice2PdfEnqueueUtil {
         PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
         if (previewInfo == null) return;
         List<String> dataFilePathList = previewInfo.getFilePathList();
-        if (dataFilePathList.size() == previewInfo.getPageCount()) return;
+        if (dataFilePathList!=null&&dataFilePathList.size() == previewInfo.getPageCount()) return;
         int status = office2PdfTaskDao.getTaskStatus(ea, path);
         if (status == -1) {
             log.info("begin enqueue,ea:{},path:{}", ea, path);

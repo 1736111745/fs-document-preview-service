@@ -64,7 +64,7 @@ public class PreviewService {
                     PageInfo pageInfo;
                     if (!isEncrypt) {
                         if (extension.contains("ppt") || extension.contains("doc") || extension.contains("pdf")) {
-                            pageInfo = getPageInfoWithOos(filePath);
+                            pageInfo = getPageInfoWithOos(path,filePath);
                         } else {
                             pageInfo = DocPageInfoHelper.getPageInfo(filePath);
                         }
@@ -97,8 +97,8 @@ public class PreviewService {
         return previewInfoEx;
     }
 
-    private PageInfo getPageInfoWithOos(String filePath) throws IOException {
-        int pageCount = office2PdfApiHelper.getPageCount(filePath);
+    private PageInfo getPageInfoWithOos(String path,String filePath) throws IOException {
+        int pageCount = office2PdfApiHelper.getPageCount(path,filePath);
         PageInfo pageInfo = new PageInfo();
         pageInfo.setErrorMsg("");
         pageInfo.setPageCount(pageCount);

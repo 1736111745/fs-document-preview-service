@@ -62,7 +62,7 @@ public class Office2PdfHandler {
             for (int i = 0; i <= hasNotConvertPageList.size(); i++) {
                 final int page = hasNotConvertPageList.get(i);
                 executorService.submit(() -> {
-                    byte[] bytes = office2PdfApiHelper.getPdfBytes(filePath, page);
+                    byte[] bytes = office2PdfApiHelper.getPdfBytes(path,filePath, page);
                     if (bytes != null) {
                         counterService.inc("ppt2pdf-success!");
                         int pageIndex = page + 1;
@@ -80,7 +80,7 @@ public class Office2PdfHandler {
             }
         } else if (ext.contains("doc")) {
             executorService.submit(() -> {
-                byte[] bytes = office2PdfApiHelper.getPdfBytes(filePath);
+                byte[] bytes = office2PdfApiHelper.getPdfBytes(path,filePath);
                 if (bytes != null) {
                     counterService.inc("word2pdf-success!");
                     String pdfPageFilePath = filePath + ".pdf";

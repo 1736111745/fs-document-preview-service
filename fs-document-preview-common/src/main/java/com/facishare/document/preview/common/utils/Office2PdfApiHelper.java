@@ -37,9 +37,9 @@ public class Office2PdfApiHelper {
     }
 
 
-    public int getPageCount(String filePath) throws IOException {
+    public int getPageCount(String path,String filePath) throws IOException {
         int pageCount = 0;
-        RestResponse restResponse = callApi("GetPageCount", filePath, null);
+        RestResponse restResponse = callApi("GetPageCount",path, filePath, null);
         byte[] bytes = restResponse.getBytes();
         if (bytes != null) {
             String pageCountStr = IOUtils.toString(bytes, "UTF-8");
@@ -49,20 +49,20 @@ public class Office2PdfApiHelper {
         return pageCount;
     }
 
-    public byte[] getPdfBytes(String filePath, int page) {
+    public byte[] getPdfBytes(String path,String filePath, int page) {
         byte[] pdfContents = null;
-        RestResponse restResponse = callApi("GetPdfBytes", filePath, "page=" + page);
+        RestResponse restResponse = callApi("GetPdfBytes", path,filePath, "page=" + page);
         if (restResponse.getBytes() != null && restResponse.getContentType().contains("application/pdf")) {
             pdfContents = restResponse.getBytes();
         }
         return pdfContents;
     }
 
-    public byte[] getPdfBytes(String filePath)
+    public byte[] getPdfBytes(String path,String filePath)
     {
         String ext=FilenameUtils.getExtension(filePath);
         byte[] pdfContents = null;
-        RestResponse restResponse = callApi("ConvertOffice2Pdf", filePath, "ext=" + ext);
+        RestResponse restResponse = callApi("ConvertOffice2Pdf",  path,filePath, "ext=" + ext);
         if (restResponse.getBytes() != null && restResponse.getContentType().contains("application/pdf")) {
             pdfContents = restResponse.getBytes();
         }
@@ -70,10 +70,10 @@ public class Office2PdfApiHelper {
     }
 
 
-    private RestResponse callApi(String method, String filePath, String params) {
+    private RestResponse callApi(String method, String path,String filePath, String params) {
         Stopwatch stopwatch = Stopwatch.createStarted();
         RestResponse restResponse = new RestResponse();
-        RequestBody requestBody = createRequestBody(filePath);
+        RequestBody requestBody = createRequestBody(path,filePath);
         String postUrl = oosServerUrl + "/Api/" + method;
         if (!Strings.isNullOrEmpty(params)) {
             postUrl = postUrl + "?" + params;
@@ -97,12 +97,11 @@ public class Office2PdfApiHelper {
         return restResponse;
     }
 
-    private RequestBody createRequestBody(String filePath) {
-        String fileName = SampleUUID.getUUID() + "." + FilenameUtils.getExtension(filePath);
+    private RequestBody createRequestBody(String path,String filePath) {
         RequestBody fileBody = RequestBody.create(MediaType.parse("application/office"), new File(filePath));
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("file", fileName, fileBody)
+                .addFormDataPart("file", path, fileBody)
                 .build();
         return requestBody;
     }

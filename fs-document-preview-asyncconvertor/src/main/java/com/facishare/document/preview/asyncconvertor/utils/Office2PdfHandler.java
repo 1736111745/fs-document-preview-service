@@ -55,6 +55,7 @@ public class Office2PdfHandler {
                 }
             }
         }
+        log.info("hasNotConvertPageList:{}",hasNotConvertPageList);
         if (ext.equals("pdf")) {
             enqueueMultiPagePdf(ea, path, filePath, hasNotConvertPageList);
         } else if (ext.contains("ppt")) {

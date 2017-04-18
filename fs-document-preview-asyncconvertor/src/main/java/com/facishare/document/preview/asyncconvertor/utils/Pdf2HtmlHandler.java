@@ -42,14 +42,13 @@ public class Pdf2HtmlHandler {
         String outPutDir = FilenameUtils.concat(basedDir, "p" + page);
         List<String> args = createProcessArgs(filePath, outPutDir, page, type);
         try {
-            Future<ProcessResult> future = new ProcessExecutor()
+            ProcessResult processResult = new ProcessExecutor()
                     .command(args)
                     .destroyOnExit()
                     .timeout(pdf2HtmlTimeout, TimeUnit.SECONDS)
                     .exitValueAny()
                     .readOutput(true)
-                    .start().getFuture();
-            ProcessResult processResult = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
+                    .execute();
             if (processResult.getExitValue() == 0) {
                 dataFilePath = handleResult(page, filePath, outPutDir, type);
             } else
@@ -58,8 +57,6 @@ public class Pdf2HtmlHandler {
             log.error("do convert happened IOException!", e);
         } catch (InterruptedException e) {
             log.error("do convert happened InterruptedException!", e);
-        } catch (ExecutionException e) {
-            log.error("do convert happened ExecutionException!", e);
         } catch (TimeoutException e) {
             log.error("do convert happened TimeoutException!filePath:{},page:{}", filePath, page, e);
         } finally {

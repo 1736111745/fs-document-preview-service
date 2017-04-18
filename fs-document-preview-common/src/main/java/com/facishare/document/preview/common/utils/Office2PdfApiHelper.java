@@ -27,8 +27,8 @@ public class Office2PdfApiHelper {
     @ReloadableProperty("oosServerUrl")
     private String oosServerUrl = "";
     private static OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
             .build();
 
     @PostConstruct

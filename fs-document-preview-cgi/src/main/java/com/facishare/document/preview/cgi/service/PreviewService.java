@@ -1,7 +1,5 @@
 package com.facishare.document.preview.cgi.service;
 
-import com.facishare.document.preview.api.model.arg.GetPageCountArg;
-import com.facishare.document.preview.api.service.DocConvertService;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfoEx;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
@@ -9,8 +7,7 @@ import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.PageInfo;
 import com.facishare.document.preview.common.model.PreviewInfo;
 import com.facishare.document.preview.common.utils.*;
-import com.fxiaoke.release.FsGrayRelease;
-import com.fxiaoke.release.FsGrayReleaseBiz;
+import com.facishare.document.preview.common.utils.aspose.PageInfoHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -38,67 +35,58 @@ public class PreviewService {
      * 手机预览
      *
      * @param employeeInfo
-     * @param path
+     * @param npath
      * @param securityGroup
      * @return
      * @throws Exception
      */
-    public PreviewInfoEx getPreviewInfo(EmployeeInfo employeeInfo, String path, String securityGroup) throws Exception {
+    public PreviewInfoEx getPreviewInfo(EmployeeInfo employeeInfo, String npath, String securityGroup) throws Exception {
         String ea = employeeInfo.getEa();
         int employeeId = employeeInfo.getEmployeeId();
         PreviewInfoEx previewInfoEx = new PreviewInfoEx();
         try {
-            PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
+            PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, npath);
             int pageCount;
             List<String> sheetNames;
             if (previewInfo == null) {
-                String extension = FilenameUtils.getExtension(path).toLowerCase();
-                byte[] bytes = fileStorageProxy.GetBytesByPath(path, ea, employeeId, securityGroup);
+                String extension = FilenameUtils.getExtension(npath).toLowerCase();
+                byte[] bytes = fileStorageProxy.GetBytesByPath(npath, ea, employeeId, securityGroup);
                 if (bytes != null && bytes.length > 0) {
                     String dataDir = new PathHelper(ea).getDataDir();
                     String fileName = SampleUUID.getUUID() + "." + extension;
                     String filePath = FilenameUtils.concat(dataDir, fileName);
                     FileUtils.writeByteArrayToFile(new File(filePath), bytes);
                     //首先检测文档是否加密
-                    boolean isEncrypt = OfficeFileEncryptChecker.check(filePath);
-                    PageInfo pageInfo;
-                    if (!isEncrypt) {
-                        if (extension.contains("ppt") || extension.contains("doc") || extension.contains("pdf")) {
-                            pageInfo = getPageInfoWithOos(path,filePath);
-                        } else {
-                            pageInfo = DocPageInfoHelper.getPageInfo(filePath);
-                        }
-                        if (pageInfo.isSuccess()) {
-                            pageCount = pageInfo.getPageCount();
-                            sheetNames = pageInfo.getSheetNames();
-                            previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, path, filePath, dataDir, bytes.length, pageCount, sheetNames);
-                            previewInfoEx.setSuccess(true);
-                            previewInfoEx.setPreviewInfo(previewInfo);
-                        } else {
-                            previewInfoEx.setSuccess(false);
-                            previewInfoEx.setPreviewInfo(null);
-                            previewInfoEx.setErrorMsg(pageInfo.getErrorMsg());
-                        }
+                    PageInfo pageInfo = PageInfoHelper.getPageInfo(npath, filePath);
+                    if (pageInfo.isSuccess()) {
+                        pageCount = pageInfo.getPageCount();
+                        sheetNames = pageInfo.getSheetNames();
+                        previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, npath, filePath, dataDir, bytes.length, pageCount, sheetNames);
+                        previewInfoEx.setSuccess(true);
+                        previewInfoEx.setPreviewInfo(previewInfo);
                     } else {
                         previewInfoEx.setSuccess(false);
                         previewInfoEx.setPreviewInfo(null);
-                        previewInfoEx.setErrorMsg("该文档是为加密文档，暂不支持预览！");
+                        previewInfoEx.setErrorMsg(pageInfo.getErrorMsg());
                     }
                 } else {
-                    log.warn("path:{} can't been download!", path);
+                    previewInfoEx.setSuccess(false);
+                    previewInfoEx.setPreviewInfo(null);
+                    previewInfoEx.setErrorMsg("该文档无法预览!");
+                    log.warn("npath:{} can't been download!", npath);
                 }
             } else {
                 previewInfoEx.setSuccess(true);
                 previewInfoEx.setPreviewInfo(previewInfo);
             }
         } catch (Exception e) {
-            log.error("getPreviewInfo happened exception!,path:{}", path, e);
+            log.error("getPreviewInfo happened exception!,npath:{}", npath, e);
         }
         return previewInfoEx;
     }
 
-    private PageInfo getPageInfoWithOos(String path,String filePath) throws IOException {
-        int pageCount = office2PdfApiHelper.getPageCount(path,filePath);
+    private PageInfo getPageInfoWithOos(String path, String filePath) throws IOException {
+        int pageCount = office2PdfApiHelper.getPageCount(path, filePath);
         PageInfo pageInfo = new PageInfo();
         pageInfo.setErrorMsg("");
         pageInfo.setPageCount(pageCount);

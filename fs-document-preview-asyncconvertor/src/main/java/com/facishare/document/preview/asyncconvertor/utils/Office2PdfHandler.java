@@ -64,10 +64,9 @@ public class Office2PdfHandler {
         } else if (ext.contains("ppt")) {
             for (int i = 0; i < hasNotConvertPageList.size(); i++) {
                 final int page = hasNotConvertPageList.get(i);
-                int pageIndex = page - 1;
                 executorService.submit(() -> {
-                    byte[] bytes = office2PdfApiHelper.getPdfBytes(path, filePath, pageIndex);
-                    if (bytes != null) {
+                    try {
+                        byte[] bytes = office2PdfHelper.convertPpt2Pdf(filePath, page);
                         counterService.inc("ppt2pdf-success!");
                         String pdfPageFilePath = filePath + "." + page + ".pdf";
                         log.info("pdfPageFilePath:{}", pdfPageFilePath);
@@ -75,31 +74,31 @@ public class Office2PdfHandler {
                             FileUtils.writeByteArrayToFile(new File(pdfPageFilePath), bytes);
                             enqueue(ea, path, pdfPageFilePath, page, 1);
                         } catch (IOException e) {
-                            log.warn("save office2pdf fail,path:{},page:{}", path, page, e);
+                            counterService.inc("ppt2pdf-fail!");
+                            log.warn("save ppt to pdf  fail,path:{},page:{}", path, page, e);
                         }
-                    } else
+                    } catch (Exception e) {
                         counterService.inc("ppt2pdf-fail!");
+                        log.error("convert ppt to pdf error!", e);
+                    }
                 });
             }
         } else if (ext.contains("doc")) {
             executorService.submit(() -> {
-                byte[] bytes =null;
                 try {
-                    bytes = office2PdfHelper.convertWord2Pdf(filePath);
-                } catch (Exception e) {
-                    log.error("convert word to pdf error!",e);
-                }
-                if (bytes != null) {
+                    byte[] bytes = office2PdfHelper.convertWord2Pdf(filePath);
                     counterService.inc("word2pdf-success!");
                     String pdfPageFilePath = filePath + ".pdf";
                     try {
                         FileUtils.writeByteArrayToFile(new File(pdfPageFilePath), bytes);
                         enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList);
                     } catch (IOException e) {
-                        log.warn("save office2pdf fail,path:{}", path, e);
+                        counterService.inc("word2pdf-fail!");
+                        log.error("save office2pdf fail,path:{}", path, e);
                     }
-                } else {
+                } catch (Exception e) {
                     counterService.inc("word2pdf-fail!");
+                    log.error("convert word to pdf error!", e);
                 }
             });
         }

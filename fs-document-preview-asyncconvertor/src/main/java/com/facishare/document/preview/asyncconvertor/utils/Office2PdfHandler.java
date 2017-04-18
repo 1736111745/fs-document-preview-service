@@ -5,7 +5,6 @@ import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.facishare.document.preview.common.model.PreviewInfo;
 import com.facishare.document.preview.common.mq.ConvertorQueueProvider;
 import com.facishare.document.preview.common.utils.Office2PdfApiHelper;
-import com.facishare.document.preview.common.utils.aspose.Office2PdfHelper;
 import com.fxiaoke.metrics.CounterService;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -31,8 +30,6 @@ import java.util.concurrent.ThreadFactory;
 public class Office2PdfHandler {
     @Autowired
     Office2PdfApiHelper office2PdfApiHelper;
-    @Autowired
-    Office2PdfHelper office2PdfHelper;
     @Resource(name = "pdf2HtmlProvider")
     ConvertorQueueProvider pdf2HtmlProvider;
     @Autowired
@@ -62,27 +59,30 @@ public class Office2PdfHandler {
         if (ext.equals("pdf")) {
             enqueueMultiPagePdf(ea, path, filePath, hasNotConvertPageList);
         } else if (ext.contains("ppt")) {
-            executorService.submit(() -> {
-                try {
-                    byte[] bytes = office2PdfHelper.convertPpt2Pdf(filePath);
-                    counterService.inc("ppt2pdf-success!");
-                    String pdfPageFilePath = filePath + ".pdf";
-                    try {
-                        FileUtils.writeByteArrayToFile(new File(pdfPageFilePath), bytes);
-                        enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList);
-                    } catch (IOException e) {
+            for (int i = 0; i < hasNotConvertPageList.size(); i++) {
+                final int page = hasNotConvertPageList.get(i);
+                executorService.submit(() -> {
+                    byte[] bytes = office2PdfApiHelper.getPdfBytes(path, filePath, page);
+                    if (bytes != null) {
+                        counterService.inc("ppt2pdf-success!");
+                        int pageIndex = page + 1;
+                        String pdfPageFilePath = filePath + "." + pageIndex + ".pdf";
+                        log.info("pdfPageFilePath:{}", pdfPageFilePath);
+                        try {
+                            FileUtils.writeByteArrayToFile(new File(pdfPageFilePath), bytes);
+                            enqueue(ea, path, pdfPageFilePath, pageIndex, 1);
+                        } catch (IOException e) {
+                            counterService.inc("ppt2pdf-fail!");
+                            log.warn("save office2pdf fail,path:{},page:{}", path, pageIndex, e);
+                        }
+                    } else
                         counterService.inc("ppt2pdf-fail!");
-                        log.error("save office2pdf fail,path:{}", path, e);
-                    }
-                } catch (Exception e) {
-                    counterService.inc("ppt2pdf-fail!");
-                    log.error("convert ppt to pdf error!", e);
-                }
-            });
+                });
+            }
         } else if (ext.contains("doc")) {
             executorService.submit(() -> {
-                try {
-                    byte[] bytes = office2PdfHelper.convertWord2Pdf(filePath);
+                byte[] bytes = office2PdfApiHelper.getPdfBytes(path, filePath);
+                if (bytes != null) {
                     counterService.inc("word2pdf-success!");
                     String pdfPageFilePath = filePath + ".pdf";
                     try {
@@ -90,11 +90,10 @@ public class Office2PdfHandler {
                         enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList);
                     } catch (IOException e) {
                         counterService.inc("word2pdf-fail!");
-                        log.error("save office2pdf fail,path:{}", path, e);
+                        log.warn("save doc 2 pdf  fail,path:{}", path, e);
                     }
-                } catch (Exception e) {
+                } else {
                     counterService.inc("word2pdf-fail!");
-                    log.error("convert word to pdf error!", e);
                 }
             });
         }

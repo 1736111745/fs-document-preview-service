@@ -26,8 +26,9 @@
           init-method="init"/>
     <bean id="pdf2HtmlProcessor" class="com.facishare.document.preview.asyncconvertor.service.Pdf2HtmlProcessor"
           init-method="init"/>
-    <bean id="pdf2HtmlProvider" class="com.facishare.document.preview.common.mq.ConvertorQueueProvider" init-method="init" p:configName="${pdf2html_mq_config_name}"/>
-    <bean id="httpClientSupport" class="com.fxiaoke.common.http.spring.HttpSupportFactoryBean" p:configName="fs-dps-config"/>
+    <bean id="pdf2HtmlProvider" class="com.facishare.document.preview.common.mq.ConvertorQueueProvider"
+          init-method="init" p:configName="${pdf2html_mq_config_name}"/>
+    <bean id="httpClientSupport" class="com.fxiaoke.common.http.spring.HttpSupportFactoryBean"
+          p:configName="fs-dps-config"/>
     <bean id="office2PdfApiHelper" class="com.facishare.document.preview.common.utils.Office2PdfApiHelper"/>
-    <bean id="office2PdfHelper" class="com.facishare.document.preview.common.utils.aspose.Office2PdfHelper"/>
 </beans>

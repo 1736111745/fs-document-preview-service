@@ -30,6 +30,8 @@ public class PreviewService {
     PreviewInfoDao previewInfoDao;
     @Autowired
     Office2PdfApiHelper office2PdfApiHelper;
+    @Autowired
+    PageInfoHelper pageInfoHelper;
 
     /**
      * 手机预览
@@ -57,7 +59,7 @@ public class PreviewService {
                     String filePath = FilenameUtils.concat(dataDir, fileName);
                     FileUtils.writeByteArrayToFile(new File(filePath), bytes);
                     //首先检测文档是否加密
-                    PageInfo pageInfo = PageInfoHelper.getPageInfo(npath, filePath);
+                    PageInfo pageInfo = pageInfoHelper.getPageInfo(npath, filePath);
                     if (pageInfo.isSuccess()) {
                         pageCount = pageInfo.getPageCount();
                         sheetNames = pageInfo.getSheetNames();

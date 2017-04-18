@@ -1,7 +1,5 @@
 package com.facishare.document.preview.common.utils.aspose;
 
-import com.aspose.pdf.Operator;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 

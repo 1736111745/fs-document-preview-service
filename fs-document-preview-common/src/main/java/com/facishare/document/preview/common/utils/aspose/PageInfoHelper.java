@@ -25,10 +25,7 @@ public class PageInfoHelper {
     private final static String errorMsg = "该文档是为加密文档或者已经损坏，暂不支持预览!";
 
     public PageInfoHelper() {
-        LicenceHelper.setExcelLicence();
-        LicenceHelper.setPptLicence();
-        LicenceHelper.setWordLicence();
-        LicenceHelper.setPdfLicence();
+        LicenceHelper.setAllLicence();
     }
     public  PageInfo getPageInfo(String npath, String filePath) {
         StopWatch stopWatch = new StopWatch();

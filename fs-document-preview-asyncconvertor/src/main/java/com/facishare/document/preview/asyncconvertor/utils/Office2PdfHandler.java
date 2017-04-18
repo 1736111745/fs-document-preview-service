@@ -5,6 +5,7 @@ import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.facishare.document.preview.common.model.PreviewInfo;
 import com.facishare.document.preview.common.mq.ConvertorQueueProvider;
 import com.facishare.document.preview.common.utils.Office2PdfApiHelper;
+import com.facishare.document.preview.common.utils.aspose.Office2PdfHelper;
 import com.fxiaoke.metrics.CounterService;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -30,6 +31,8 @@ import java.util.concurrent.ThreadFactory;
 public class Office2PdfHandler {
     @Autowired
     Office2PdfApiHelper office2PdfApiHelper;
+    @Autowired
+    Office2PdfHelper office2PdfHelper;
     @Resource(name = "pdf2HtmlProvider")
     ConvertorQueueProvider pdf2HtmlProvider;
     @Autowired
@@ -80,7 +83,12 @@ public class Office2PdfHandler {
             }
         } else if (ext.contains("doc")) {
             executorService.submit(() -> {
-                byte[] bytes = office2PdfApiHelper.getPdfBytes(path, filePath);
+                byte[] bytes =null;
+                try {
+                    bytes = office2PdfHelper.convertWord2Pdf(filePath);
+                } catch (Exception e) {
+                    log.error("convert word to pdf error!",e);
+                }
                 if (bytes != null) {
                     counterService.inc("word2pdf-success!");
                     String pdfPageFilePath = filePath + ".pdf";

@@ -54,4 +54,11 @@ public class LicenceHelper {
         }
     }
 
+    public static void setAllLicence() {
+        setPdfLicence();
+        setWordLicence();
+        setExcelLicence();
+        setPptLicence();
+    }
+
 }

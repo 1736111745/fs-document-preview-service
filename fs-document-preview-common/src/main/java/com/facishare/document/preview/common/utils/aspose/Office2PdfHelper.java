@@ -1,7 +1,8 @@
 package com.facishare.document.preview.common.utils.aspose;
 
 
-import com.aspose.words.*;
+import com.aspose.pdf.SaveFormat;
+import com.aspose.words.PdfSaveOptions;
 import com.google.common.base.Stopwatch;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -53,7 +54,7 @@ public class Office2PdfHelper {
         log.info("begin convert ppt to pdf!");
         com.aspose.slides.Presentation presentation = new com.aspose.slides.Presentation(filePath);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        presentation.save(outputStream, new int[]{pageIndex}, SaveFormat.PDF);
+        presentation.save(outputStream, new int[]{pageIndex}, SaveFormat.Pdf);
         stopwatch.stop();
         log.info("end convert word to pdf,file size:{},cost:{}s", FileUtils.sizeOf(new File(filePath)),stopwatch.elapsed(TimeUnit.SECONDS));
         return outputStream.toByteArray();

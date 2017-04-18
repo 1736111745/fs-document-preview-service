@@ -54,22 +54,28 @@ public class PreviewService {
                 String extension = FilenameUtils.getExtension(npath).toLowerCase();
                 byte[] bytes = fileStorageProxy.GetBytesByPath(npath, ea, employeeId, securityGroup);
                 if (bytes != null && bytes.length > 0) {
-                    String dataDir = new PathHelper(ea).getDataDir();
-                    String fileName = SampleUUID.getUUID() + "." + extension;
-                    String filePath = FilenameUtils.concat(dataDir, fileName);
-                    FileUtils.writeByteArrayToFile(new File(filePath), bytes);
-                    //首先检测文档是否加密
-                    PageInfo pageInfo = pageInfoHelper.getPageInfo(npath, filePath);
-                    if (pageInfo.isSuccess()) {
-                        pageCount = pageInfo.getPageCount();
-                        sheetNames = pageInfo.getSheetNames();
-                        previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, npath, filePath, dataDir, bytes.length, pageCount, sheetNames);
-                        previewInfoEx.setSuccess(true);
-                        previewInfoEx.setPreviewInfo(previewInfo);
-                    } else {
+                    if (bytes.length > 1024 * 1024 * 30) {
                         previewInfoEx.setSuccess(false);
                         previewInfoEx.setPreviewInfo(null);
-                        previewInfoEx.setErrorMsg(pageInfo.getErrorMsg());
+                        previewInfoEx.setErrorMsg("当前文件大于30M，不支持手机预览！");
+                    } else {
+                        String dataDir = new PathHelper(ea).getDataDir();
+                        String fileName = SampleUUID.getUUID() + "." + extension;
+                        String filePath = FilenameUtils.concat(dataDir, fileName);
+                        FileUtils.writeByteArrayToFile(new File(filePath), bytes);
+                        //首先检测文档是否加密
+                        PageInfo pageInfo = pageInfoHelper.getPageInfo(npath, filePath);
+                        if (pageInfo.isSuccess()) {
+                            pageCount = pageInfo.getPageCount();
+                            sheetNames = pageInfo.getSheetNames();
+                            previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, npath, filePath, dataDir, bytes.length, pageCount, sheetNames);
+                            previewInfoEx.setSuccess(true);
+                            previewInfoEx.setPreviewInfo(previewInfo);
+                        } else {
+                            previewInfoEx.setSuccess(false);
+                            previewInfoEx.setPreviewInfo(null);
+                            previewInfoEx.setErrorMsg(pageInfo.getErrorMsg());
+                        }
                     }
                 } else {
                     previewInfoEx.setSuccess(false);

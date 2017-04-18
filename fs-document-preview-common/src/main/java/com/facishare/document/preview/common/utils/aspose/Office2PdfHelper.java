@@ -37,26 +37,24 @@ public class Office2PdfHelper {
         PdfSaveOptions pdfSaveOptions = new PdfSaveOptions();
         document.save(outputStream, pdfSaveOptions);
         stopwatch.stop();
-        log.info("end convert word to pdf,file size:{},cost:{}ms", FileUtils.sizeOf(new File(filePath)),stopwatch.elapsed(TimeUnit.SECONDS));
+        log.info("end convert word to pdf,file size:{},cost:{}ms", FileUtils.sizeOf(new File(filePath)), stopwatch.elapsed(TimeUnit.SECONDS));
         return outputStream.toByteArray();
     }
 
     /**
      * 转换ppt中的某一页为pdf
-     *
-     * @param pageIndex 页码 从1开始
      * @param filePath  文件路径
      * @return pdf的二进制
      * @throws Exception
      */
-    public byte[] convertPpt2Pdf(String filePath,int pageIndex) throws Exception {
+    public byte[] convertPpt2Pdf(String filePath) throws Exception {
         Stopwatch stopwatch = Stopwatch.createStarted();
         log.info("begin convert ppt to pdf!");
         com.aspose.slides.Presentation presentation = new com.aspose.slides.Presentation(filePath);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        presentation.save(outputStream, new int[]{pageIndex}, SaveFormat.Pdf);
+        presentation.save(outputStream, SaveFormat.Pdf);
         stopwatch.stop();
-        log.info("end convert word to pdf,file size:{},cost:{}s", FileUtils.sizeOf(new File(filePath)),stopwatch.elapsed(TimeUnit.SECONDS));
+        log.info("end convert word to pdf,file size:{},cost:{}s", FileUtils.sizeOf(new File(filePath)), stopwatch.elapsed(TimeUnit.SECONDS));
         return outputStream.toByteArray();
     }
 

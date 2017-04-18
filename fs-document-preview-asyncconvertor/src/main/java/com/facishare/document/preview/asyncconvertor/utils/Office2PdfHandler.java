@@ -62,27 +62,23 @@ public class Office2PdfHandler {
         if (ext.equals("pdf")) {
             enqueueMultiPagePdf(ea, path, filePath, hasNotConvertPageList);
         } else if (ext.contains("ppt")) {
-            for (int i = 0; i < hasNotConvertPageList.size(); i++) {
-                final int page = hasNotConvertPageList.get(i);
-                executorService.submit(() -> {
+            executorService.submit(() -> {
+                try {
+                    byte[] bytes = office2PdfHelper.convertPpt2Pdf(filePath);
+                    counterService.inc("ppt2pdf-success!");
+                    String pdfPageFilePath = filePath + ".pdf";
                     try {
-                        byte[] bytes = office2PdfHelper.convertPpt2Pdf(filePath, page);
-                        counterService.inc("ppt2pdf-success!");
-                        String pdfPageFilePath = filePath + "." + page + ".pdf";
-                        log.info("pdfPageFilePath:{}", pdfPageFilePath);
-                        try {
-                            FileUtils.writeByteArrayToFile(new File(pdfPageFilePath), bytes);
-                            enqueue(ea, path, pdfPageFilePath, page, 1);
-                        } catch (IOException e) {
-                            counterService.inc("ppt2pdf-fail!");
-                            log.warn("save ppt to pdf  fail,path:{},page:{}", path, page, e);
-                        }
-                    } catch (Exception e) {
+                        FileUtils.writeByteArrayToFile(new File(pdfPageFilePath), bytes);
+                        enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList);
+                    } catch (IOException e) {
                         counterService.inc("ppt2pdf-fail!");
-                        log.error("convert ppt to pdf error!", e);
+                        log.error("save office2pdf fail,path:{}", path, e);
                     }
-                });
-            }
+                } catch (Exception e) {
+                    counterService.inc("ppt2pdf-fail!");
+                    log.error("convert ppt to pdf error!", e);
+                }
+            });
         } else if (ext.contains("doc")) {
             executorService.submit(() -> {
                 try {

@@ -22,6 +22,7 @@ public class HandlerHtml {
         Element head = document.head();
         Element body = document.body();
         String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
+        String dirName=FilenameUtils.getName(baseDir);
         String imageDirName = page + "_files";
         String imageDir = FilenameUtils.concat(baseDir, imageDirName);
         Elements images = body.getElementsByTag("img");
@@ -34,7 +35,7 @@ public class HandlerHtml {
                 String newImageName = page + "_img_" + i + "." + ext;
                 String newImageFilPath = FilenameUtils.concat(baseDir, newImageName);
                 FileUtils.moveFile(new File(imageFilePath), new File(newImageFilPath));
-                image.attr("src", newImageName);
+                image.attr("src", "./" + dirName + "/" + newImageName);
             }
         }
         FileUtils.deleteQuietly(new File(imageDir));

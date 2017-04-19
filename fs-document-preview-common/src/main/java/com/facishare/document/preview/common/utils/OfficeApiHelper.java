@@ -43,9 +43,8 @@ public class OfficeApiHelper {
 
     public PageInfo getPageInfo(String path, String filePath) throws IOException {
         PageInfo pageInfo;
-        HashMap<String, String> paramsMap = new HashMap<>();
-        paramsMap.put("filePath", filePath);
-        String json = callApi("GetPageInfo", paramsMap);
+        String params="filepath="+filePath;
+        String json = callApi("GetPageInfo", params);
         if (!Strings.isNullOrEmpty(json)) {
             pageInfo = JSON.parseObject(json, PageInfo.class);
         } else {
@@ -58,10 +57,8 @@ public class OfficeApiHelper {
     }
 
     public boolean convertOffice2Pdf(String path, String filePath, int page) {
-        HashMap<String, String> paramsMap = new HashMap<>();
-        paramsMap.put("filePath", filePath);
-        paramsMap.put("page", String.valueOf(page));
-        String json = callApi("ConvertOnePageOffice2Pdf", paramsMap);
+        String params="filepath="+filePath+"page="+page;
+        String json = callApi("ConvertOnePageOffice2Pdf", params);
         if (!Strings.isNullOrEmpty(json)) {
             ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);
             return convertResult.isSuccess();
@@ -72,9 +69,8 @@ public class OfficeApiHelper {
     }
 
     public boolean convertOffice2Pdf(String path, String filePath) {
-        HashMap<String, String> paramsMap = new HashMap<>();
-        paramsMap.put("filePath", filePath);
-        String json = callApi("ConvertOffice2Pdf", paramsMap);
+        String params="filepath="+filePath;
+        String json = callApi("ConvertOffice2Pdf", params);
         if (!Strings.isNullOrEmpty(json)) {
             ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);
             return convertResult.isSuccess();
@@ -85,16 +81,15 @@ public class OfficeApiHelper {
     }
 
 
-    private String callApi(String method, HashMap<String, String> paramsMap) {
+    private String callApi(String method, String params) {
         String json = "";
         Stopwatch stopwatch = Stopwatch.createStarted();
-        FormBody.Builder builder = new FormBody.Builder();
-        for (String key : paramsMap.keySet()) {
-            builder.add(key, paramsMap.get(key));
-        }
-        RequestBody requestBody = builder.build();
         String postUrl = oosServerUrl + "/Api/Office/" + method;
-        Request request = new Request.Builder().url(postUrl).post(requestBody).build();
+        if(!Strings.isNullOrEmpty(params))
+        {
+            postUrl=postUrl+"?"+params;
+        }
+        Request request = new Request.Builder().url(postUrl).get().build();
         try {
             Response response = client.newCall(request).execute();
             log.info("response.status:{}", response.code());
@@ -103,7 +98,7 @@ public class OfficeApiHelper {
                 log.info("response.json:{}", json);
             }
         } catch (Exception e) {
-            log.error("call method:{},path:{},happened exception!", method, JSON.toJSON(paramsMap), e);
+            log.error("call method:{},path:{},happened exception!", method, params, e);
         }
         stopwatch.stop();
         log.info("call api:{},cost:{}ms", postUrl, stopwatch.elapsed(TimeUnit.MILLISECONDS));

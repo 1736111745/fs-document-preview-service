@@ -6,9 +6,9 @@ body, html {
 }
 
 #content {
-    width: 100%;
+    overflow:auto;
     margin-top: 50px;
-    margin-bottom: 100px;
+    margin-bottom: 50px;
 }
 
 .fixed_div {

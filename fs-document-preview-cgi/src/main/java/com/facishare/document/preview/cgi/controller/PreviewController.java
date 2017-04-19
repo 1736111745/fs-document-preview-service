@@ -135,9 +135,11 @@ public class PreviewController {
                             FileOutPutor.outPut(response, dataFilePath, true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
-                            boolean flag=officeApiHelper.convertExcel2Html(path,originalFilePath,pageIndex);
+                            boolean flag = officeApiHelper.convertExcel2Html(path, originalFilePath, pageIndex);
                             if (flag) {
-                                previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, page+".html");
+                                dataFilePath = FilenameUtils.getFullPathNoEndSeparator(originalFilePath) + "/" + page + ".html";
+                                log.info("dataFilePath:{}",dataFilePath);
+                                previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
                                 FileOutPutor.outPut(response, dataFilePath, true);
                             } else {
                                 log.warn("can't resolve path:{},page:{}", path, page);

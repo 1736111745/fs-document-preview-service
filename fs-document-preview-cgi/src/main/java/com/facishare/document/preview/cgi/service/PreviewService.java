@@ -6,8 +6,9 @@ import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.PageInfo;
 import com.facishare.document.preview.common.model.PreviewInfo;
-import com.facishare.document.preview.common.utils.*;
-import com.facishare.document.preview.common.utils.aspose.PageInfoHelper;
+import com.facishare.document.preview.common.utils.OfficeApiHelper;
+import com.facishare.document.preview.common.utils.PathHelper;
+import com.facishare.document.preview.common.utils.SampleUUID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -29,9 +29,7 @@ public class PreviewService {
     @Autowired
     PreviewInfoDao previewInfoDao;
     @Autowired
-    Office2PdfApiHelper office2PdfApiHelper;
-    @Autowired
-    PageInfoHelper pageInfoHelper;
+    OfficeApiHelper officeApiHelper;
 
     /**
      * 手机预览
@@ -64,7 +62,7 @@ public class PreviewService {
                         String filePath = FilenameUtils.concat(dataDir, fileName);
                         FileUtils.writeByteArrayToFile(new File(filePath), bytes);
                         //首先检测文档是否加密
-                        PageInfo pageInfo = pageInfoHelper.getPageInfo(npath, filePath);
+                        PageInfo pageInfo = officeApiHelper.getPageInfo(npath, filePath);
                         if (pageInfo.isSuccess()) {
                             pageCount = pageInfo.getPageCount();
                             sheetNames = pageInfo.getSheetNames();
@@ -91,14 +89,5 @@ public class PreviewService {
             log.error("getPreviewInfo happened exception!,npath:{}", npath, e);
         }
         return previewInfoEx;
-    }
-
-    private PageInfo getPageInfoWithOos(String path, String filePath) throws IOException {
-        int pageCount = office2PdfApiHelper.getPageCount(path, filePath);
-        PageInfo pageInfo = new PageInfo();
-        pageInfo.setErrorMsg("");
-        pageInfo.setPageCount(pageCount);
-        pageInfo.setSuccess(pageCount > 0);
-        return pageInfo;
     }
 }

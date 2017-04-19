@@ -4,7 +4,7 @@ import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.facishare.document.preview.common.model.PreviewInfo;
 import com.facishare.document.preview.common.mq.ConvertorQueueProvider;
-import com.facishare.document.preview.common.utils.Office2PdfApiHelper;
+import com.facishare.document.preview.common.utils.OfficeApiHelper;
 import com.fxiaoke.metrics.CounterService;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -29,7 +29,7 @@ import java.util.concurrent.ThreadFactory;
 @Slf4j
 public class Office2PdfHandler {
     @Autowired
-    Office2PdfApiHelper office2PdfApiHelper;
+    OfficeApiHelper officeApiHelper;
     @Resource(name = "pdf2HtmlProvider")
     ConvertorQueueProvider pdf2HtmlProvider;
     @Autowired
@@ -61,37 +61,23 @@ public class Office2PdfHandler {
         } else if (ext.contains("ppt")) {
             for (int i = 0; i < hasNotConvertPageList.size(); i++) {
                 final int page = hasNotConvertPageList.get(i);
-                int pageIndex = page - 1;
                 executorService.submit(() -> {
-                    byte[] bytes = office2PdfApiHelper.getPdfBytes(path, filePath, pageIndex);
-                    if (bytes != null) {
+                    boolean flag = officeApiHelper.convertOffice2Pdf(path, filePath, page);
+                    if (flag) {
                         counterService.inc("ppt2pdf-success!");
                         String pdfPageFilePath = filePath + "." + page + ".pdf";
-                        log.info("pdfPageFilePath:{}", pdfPageFilePath);
-                        try {
-                            FileUtils.writeByteArrayToFile(new File(pdfPageFilePath), bytes);
-                            enqueue(ea, path, pdfPageFilePath, page, 1);
-                        } catch (IOException e) {
-                            counterService.inc("ppt2pdf-fail!");
-                            log.warn("save ppt to pdf fail,path:{},page:{}", path, page, e);
-                        }
+                        enqueue(ea, path, pdfPageFilePath, page, 1);
                     } else
                         counterService.inc("ppt2pdf-fail!");
                 });
             }
         } else if (ext.contains("doc")) {
             executorService.submit(() -> {
-                byte[] bytes = office2PdfApiHelper.getPdfBytes(path, filePath);
-                if (bytes != null) {
+                boolean flag = officeApiHelper.convertOffice2Pdf(path, filePath);
+                if (flag) {
                     counterService.inc("word2pdf-success!");
                     String pdfPageFilePath = filePath + ".pdf";
-                    try {
-                        FileUtils.writeByteArrayToFile(new File(pdfPageFilePath), bytes);
-                        enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList);
-                    } catch (IOException e) {
-                        counterService.inc("word2pdf-fail!");
-                        log.warn("save doc to pdf  fail,path:{}", path, e);
-                    }
+                    enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList);
                 } else {
                     counterService.inc("word2pdf-fail!");
                 }

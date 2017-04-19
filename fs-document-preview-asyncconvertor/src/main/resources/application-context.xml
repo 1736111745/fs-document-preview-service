@@ -30,5 +30,5 @@
           init-method="init" p:configName="${pdf2html_mq_config_name}"/>
     <bean id="httpClientSupport" class="com.fxiaoke.common.http.spring.HttpSupportFactoryBean"
           p:configName="fs-dps-config"/>
-    <bean id="office2PdfApiHelper" class="com.facishare.document.preview.common.utils.Office2PdfApiHelper"/>
+    <bean id="office2PdfApiHelper" class="com.facishare.document.preview.common.utils.OfficeApiHelper"/>
 </beans>

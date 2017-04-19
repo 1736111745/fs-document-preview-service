@@ -33,7 +33,7 @@
     <bean id="authFilter" class="com.facishare.document.preview.cgi.filter.AuthFilter"/>
     <bean id="authHelper" class="com.facishare.document.preview.cgi.utils.AuthHelper"/>
     <bean id="httpClientSupport" class="com.fxiaoke.common.http.spring.HttpSupportFactoryBean"/>
-    <bean id="office2PdfApiHelper" class="com.facishare.document.preview.common.utils.Office2PdfApiHelper"/>
+    <bean id="office2PdfApiHelper" class="com.facishare.document.preview.common.utils.OfficeApiHelper"/>
     <bean id="office2pdfProvider" class="com.facishare.document.preview.common.mq.ConvertorQueueProvider"
           init-method="init" p:configName="${office2pdf_mq_config_name}"/>
     <bean id="convertPdf2HtmlEnqueueUtil"

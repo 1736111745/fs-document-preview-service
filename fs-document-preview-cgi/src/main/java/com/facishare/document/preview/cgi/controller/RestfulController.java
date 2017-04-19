@@ -55,7 +55,7 @@ public class RestfulController {
             }
             ret = String.format("{\"pageCount\":%d}", pageCount);
         } catch (Exception e) {
-            log.error("/document/getPageCount |filePath: {} | ea: {} | ei: {} ", filePath, ea, employeeId, e);
+            log.error("/document/getPageInfo |filePath: {} | ea: {} | ei: {} ", filePath, ea, employeeId, e);
             ret = String.format("{\"error\":\"%s\"}", e.getMessage());
         }
         return ret;

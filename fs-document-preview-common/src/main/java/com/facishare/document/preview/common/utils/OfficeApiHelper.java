@@ -1,0 +1,112 @@
+package com.facishare.document.preview.common.utils;
+
+import com.alibaba.fastjson.JSON;
+import com.facishare.document.preview.common.model.ConvertResult;
+import com.facishare.document.preview.common.model.PageInfo;
+import com.facishare.document.preview.common.model.RestResponse;
+import com.github.autoconf.ConfigFactory;
+import com.github.autoconf.spring.reloadable.ReloadableProperty;
+import com.google.common.base.Stopwatch;
+import com.google.common.base.Strings;
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.*;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Created by liuq on 2017/4/14.
+ */
+@Component
+@Slf4j
+public class OfficeApiHelper {
+
+    @ReloadableProperty("oosServerUrl")
+    private String oosServerUrl = "";
+    private static OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .build();
+
+    @PostConstruct
+    void init() {
+        ConfigFactory.getConfig("fs-dps-config", config -> oosServerUrl = config.get("oosServerUrl"));
+    }
+
+
+    public PageInfo getPageInfo(String path, String filePath) throws IOException {
+        PageInfo pageInfo;
+        HashMap<String, String> paramsMap = new HashMap<>();
+        paramsMap.put("filePath", filePath);
+        String json = callApi("GetPageInfo", paramsMap);
+        if (!Strings.isNullOrEmpty(json)) {
+            pageInfo = JSON.parseObject(json, PageInfo.class);
+        } else {
+            pageInfo = new PageInfo();
+            pageInfo.setSuccess(false);
+            pageInfo.setErrorMsg("获取文档页码失败，当前文档不可预览!");
+            log.error("path:{},filePath:{},获取文档页码失败！", path, filePath);
+        }
+        return pageInfo;
+    }
+
+    public boolean convertOffice2Pdf(String path, String filePath, int page) {
+        HashMap<String, String> paramsMap = new HashMap<>();
+        paramsMap.put("filePath", filePath);
+        paramsMap.put("page", String.valueOf(page));
+        String json = callApi("ConvertOnePageOffice2Pdf", paramsMap);
+        if (!Strings.isNullOrEmpty(json)) {
+            ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);
+            return convertResult.isSuccess();
+        } else {
+            log.error("path:{},filePath:{},page:{},转换文档失败！", path, filePath, page);
+            return false;
+        }
+    }
+
+    public boolean convertOffice2Pdf(String path, String filePath) {
+        HashMap<String, String> paramsMap = new HashMap<>();
+        paramsMap.put("filePath", filePath);
+        String json = callApi("ConvertOffice2Pdf", paramsMap);
+        if (!Strings.isNullOrEmpty(json)) {
+            ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);
+            return convertResult.isSuccess();
+        } else {
+            log.error("path:{},filePath:{},转换文档失败！", path, filePath);
+            return false;
+        }
+    }
+
+
+    private String callApi(String method, HashMap<String, String> paramsMap) {
+        String json = "";
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        FormBody.Builder builder = new FormBody.Builder();
+        for (String key : paramsMap.keySet()) {
+            builder.add(key, paramsMap.get(key));
+        }
+        RequestBody requestBody = builder.build();
+        String postUrl = oosServerUrl + "/Api/" + method;
+        Request request = new Request.Builder().url(postUrl).post(requestBody).build();
+        try {
+            Response response = client.newCall(request).execute();
+            log.info("response.status:{}", response.code());
+            if (response.code() == 200) {
+                json = response.body().string();
+                log.info("response.json:{}", json);
+            }
+        } catch (Exception e) {
+            log.error("call method:{},path:{},happened exception!", method, JSON.toJSON(paramsMap), e);
+        }
+        stopwatch.stop();
+        log.info("call api:{},cost:{}ms", postUrl, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        return json;
+    }
+}

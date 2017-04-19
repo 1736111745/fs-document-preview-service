@@ -267,7 +267,7 @@ public class ConvertorHelper {
       convert.setAutoDeleteTempFiles(true);
       IPICConvertor ipicConvertor = convert.convertMStoPic(filePath);
       if (ipicConvertor == null) {
-        log.warn("cannot getPageCount for {}", filePath);
+        log.warn("cannot getPageInfo for {}", filePath);
         return -1;
       }
       try {
@@ -285,7 +285,7 @@ public class ConvertorHelper {
       convert.setAutoDeleteTempFiles(true);
       IHtmlConvertor ipicConvertor = convert.convertMStoHtml(filePath);
       if (ipicConvertor == null) {
-        log.warn("cannot getPageCount for {}", filePath);
+        log.warn("cannot getPageInfo for {}", filePath);
         return null;
       }
       try {

@@ -57,7 +57,7 @@ public class OfficeApiHelper {
     }
 
     public boolean convertOffice2Pdf(String path, String filePath, int page) {
-        String params="filepath="+filePath+"page="+page;
+        String params="filepath="+filePath+"&page="+page;
         String json = callApi("ConvertOnePageOffice2Pdf", params);
         if (!Strings.isNullOrEmpty(json)) {
             ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);

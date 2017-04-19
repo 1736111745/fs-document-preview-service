@@ -93,7 +93,7 @@ public class OfficeApiHelper {
             builder.add(key, paramsMap.get(key));
         }
         RequestBody requestBody = builder.build();
-        String postUrl = oosServerUrl + "/Api/" + method;
+        String postUrl = oosServerUrl + "/Api/Office/" + method;
         Request request = new Request.Builder().url(postUrl).post(requestBody).build();
         try {
             Response response = client.newCall(request).execute();

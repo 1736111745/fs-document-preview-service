@@ -56,6 +56,18 @@ public class OfficeApiHelper {
         return pageInfo;
     }
 
+    public boolean convertExcel2Html(String path, String filePath, int page) {
+        String params = "filepath=" + filePath + "&page=" + page;
+        String json = callApi("ConvertExcel2Html", params);
+        if (!Strings.isNullOrEmpty(json)) {
+            ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);
+            return convertResult.isSuccess();
+        } else {
+            log.error("path:{},filePath:{},page:{},Excel to  Html转换失败！", path, filePath, page);
+            return false;
+        }
+    }
+
     public boolean convertOffice2Pdf(String path, String filePath, int page) {
         String params = "filepath=" + filePath + "&page=" + page;
         String json = callApi("ConvertOnePageOffice2Pdf", params);
@@ -63,7 +75,7 @@ public class OfficeApiHelper {
             ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);
             return convertResult.isSuccess();
         } else {
-            log.error("path:{},filePath:{},page:{},转换文档失败！", path, filePath, page);
+            log.error("path:{},filePath:{},page:{},PPT to Pdf转换失败！", path, filePath, page);
             return false;
         }
     }

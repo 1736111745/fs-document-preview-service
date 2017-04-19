@@ -63,6 +63,8 @@ public class PreviewController {
     CounterService counterService;
     @Autowired
     ConvertOffice2PdfEnqueueUtil convertOffice2PdfEnqueueUtil;
+    @Autowired
+    OfficeApiHelper officeApiHelper;
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
 
@@ -133,11 +135,9 @@ public class PreviewController {
                             FileOutPutor.outPut(response, dataFilePath, true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
-                            ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(1).build();
-                            ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
-                            dataFilePath = convertDocResult.getDataFilePath();
-                            if (!Strings.isNullOrEmpty(dataFilePath)) {
-                                previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
+                            boolean flag=officeApiHelper.convertExcel2Html(path,originalFilePath,pageIndex);
+                            if (flag) {
+                                previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, page+".html");
                                 FileOutPutor.outPut(response, dataFilePath, true);
                             } else {
                                 log.warn("can't resolve path:{},page:{}", path, page);

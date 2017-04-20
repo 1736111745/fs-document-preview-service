@@ -56,8 +56,6 @@ public class PreviewController {
     @Autowired
     FileTokenDao fileTokenDao;
     @Autowired
-    DocConvertService docConvertService;
-    @Autowired
     PreviewService previewService;
     @Autowired
     CounterService counterService;
@@ -249,7 +247,6 @@ public class PreviewController {
             int width = NumberUtils.toInt(UrlParametersHelper.safeGetRequestParameter(request, "width"), 1024);
             width = width > 1920 ? 1920 : width;
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-            String ea = employeeInfo.getEa();
             PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, "");
             if (previewInfoEx.isSuccess()) {
                 PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
@@ -260,16 +257,12 @@ public class PreviewController {
                             FileOutPutor.outPut(response, dataFilePath, width, true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
-                            File originalFile = new File(originalFilePath);
-                            if (!originalFile.exists()) {
-                                fileStorageProxy.DownloadAndSave(path, ea, employeeInfo.getEmployeeId(), "", originalFilePath);
-                            }
-                            ConvertDocArg convertDocArg = ConvertDocArg.builder().originalFilePath(originalFilePath).page(pageIndex).path(path).type(2).build();
-                            ConvertDocResult convertDocResult = docConvertService.convertDoc(convertDocArg);
-                            dataFilePath = convertDocResult.getDataFilePath();
-                            if (!Strings.isNullOrEmpty(dataFilePath)) {
-                                previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
-                                FileOutPutor.outPut(response, dataFilePath, width, true);
+                            boolean result = officeApiHelper.convertOffice2Png(path, originalFilePath, pageIndex);
+                            if (result) {
+                                dataFilePath = FilenameUtils.getFullPathNoEndSeparator(originalFilePath) + "/" + (pageIndex + 1) + ".png";
+                                log.info("dataFilePath:{}", dataFilePath);
+                                previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
+                                FileOutPutor.outPut(response, dataFilePath, true);
                             } else {
                                 log.warn("can't resolve path:{},page:{}", path, pageIndex);
                                 response.setStatus(404);

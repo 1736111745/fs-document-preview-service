@@ -63,7 +63,19 @@ public class OfficeApiHelper {
             ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);
             return convertResult.isSuccess();
         } else {
-            log.error("path:{},filePath:{},page:{},Excel to  Html转换失败！", path, filePath, page);
+            log.error("path:{},filePath:{},page:{},Excel to  Html 转换失败！", path, filePath, page);
+            return false;
+        }
+    }
+
+    public boolean convertOffice2Png(String path, String filePath, int page) {
+        String params = "filepath=" + filePath + "&page=" + page;
+        String json = callApi("ConvertOnePageOffice2Png", params);
+        if (!Strings.isNullOrEmpty(json)) {
+            ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);
+            return convertResult.isSuccess();
+        } else {
+            log.error("path:{},filePath:{},page:{},office to  png 转换失败！", path, filePath, page);
             return false;
         }
     }
@@ -75,7 +87,7 @@ public class OfficeApiHelper {
             ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);
             return convertResult.isSuccess();
         } else {
-            log.error("path:{},filePath:{},page:{},PPT to Pdf转换失败！", path, filePath, page);
+            log.error("path:{},filePath:{},page:{},PPT to Pdf 转换失败！", path, filePath, page);
             return false;
         }
     }

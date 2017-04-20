@@ -14,7 +14,7 @@
     <meta Name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文档预览</title>
     <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/com/jquery.lazy.min.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery.lazy.min.js"></script>
     <script type="text/javascript"
             src="<%=request.getContextPath()%>/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
     <script type="text/javascript"

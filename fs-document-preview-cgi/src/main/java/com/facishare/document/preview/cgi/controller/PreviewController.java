@@ -6,7 +6,6 @@ import com.facishare.document.preview.cgi.model.PreviewInfoEx;
 import com.facishare.document.preview.cgi.service.PreviewService;
 import com.facishare.document.preview.cgi.utils.FileOutPutor;
 import com.facishare.document.preview.cgi.utils.HandlerHtml;
-import com.facishare.document.preview.cgi.utils.RequestParamsHelper;
 import com.facishare.document.preview.cgi.utils.UrlParametersHelper;
 import com.facishare.document.preview.common.dao.FileTokenDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
@@ -217,7 +216,7 @@ public class PreviewController {
     public String docPreviewByPath(HttpServletRequest request) throws Exception {
         int pageCount = 0;
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        String path = RequestParamsHelper.safeGetRequestParameter(request, "npath") == "" ? RequestParamsHelper.safeGetRequestParameter(request, "path") : RequestParamsHelper.safeGetRequestParameter(request, "path");
+        String path = UrlParametersHelper.safeGetRequestParameter(request, "npath") == "" ? UrlParametersHelper.safeGetRequestParameter(request, "path") : UrlParametersHelper.safeGetRequestParameter(request, "path");
         if (!UrlParametersHelper.isValidPath(path)) {
             return getDocPreviewInfoResult(path, pageCount);
         }
@@ -238,7 +237,7 @@ public class PreviewController {
     @ResponseBody
     @RequestMapping(value = "/preview/DocPageByPath", method = RequestMethod.GET)
     public void docPageByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String path = RequestParamsHelper.safeGetRequestParameter(request, "npath") == "" ? RequestParamsHelper.safeGetRequestParameter(request, "path") : RequestParamsHelper.safeGetRequestParameter(request, "npath");
+        String path = UrlParametersHelper.safeGetRequestParameter(request, "npath") == "" ? UrlParametersHelper.safeGetRequestParameter(request, "path") : UrlParametersHelper.safeGetRequestParameter(request, "npath");
         int pageIndex = NumberUtils.toInt(UrlParametersHelper.safeGetRequestParameter(request, "pageIndex"), 0);
         if (!UrlParametersHelper.isValidPath(path)) {
             response.setStatus(400);

@@ -33,12 +33,7 @@ public class ViewController {
     }
 
     @RequestMapping(value = "/preview/handlePdf", method = RequestMethod.GET)
-    public String handlePdf(HttpServletRequest request) {
-        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        String grayConfig = "pdf2html";
-        String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
-        boolean pd2html = gray.isAllow(grayConfig, user);
-        return pd2html ? "pdf2html" : "pdf2png";
+    public String handlePdf() {return "pdf2html";
     }
 
     @RequestMapping(value = "/preview/handleOffice2Pdf", method = RequestMethod.GET)

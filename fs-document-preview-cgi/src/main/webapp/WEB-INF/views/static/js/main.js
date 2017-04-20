@@ -5,7 +5,6 @@ var path = getQueryStringByName("path");
 var token = getQueryStringByName("token");
 var pageCount = 0;
 var sg = "";//安全组
-var office2PdfStatus = 0;
 function getPreviewInfo() {
     $('#divLoading').show();
     $.ajax({
@@ -35,7 +34,7 @@ function doPreview() {
     else
         route = "handlePdf";
     console.log("route:" + route);
-    var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg + "&rdm=1";
+    var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg + "&rdm=2";
     location.href = url;
 }
 

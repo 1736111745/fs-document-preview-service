@@ -84,8 +84,10 @@ public class FileOutPutor {
         if (!thumbPngFile.exists()) {
             byte[] data = FileUtils.readFileToByteArray(new File(filePath));
             boolean success = thumbnailHelper.doThumbnail(data, aimWidth, aimHeight, thumbPngFile);
-            if (!success)
+            if (!success) {
+                log.info("do thumbnail with local method!");
                 Thumbnails.of(filePath).forceSize(aimWidth, aimHeight).outputQuality(0.8).outputFormat("png").toFile(thumbPngFile);
+            }
         }
         return FileUtils.readFileToByteArray(thumbPngFile);
     }

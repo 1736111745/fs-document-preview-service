@@ -54,6 +54,7 @@ public class ThumbnailHelper {
             });
             byte[] bytes = (byte[]) object;
             if (bytes != null) {
+                log.info("do thumbnail success!");
                 FileUtils.writeByteArrayToFile(thumbPngFile, bytes);
                 success = true;
             }

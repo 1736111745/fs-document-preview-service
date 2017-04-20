@@ -1,20 +1,22 @@
 package com.facishare.document.preview.cgi.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.facishare.document.preview.api.model.arg.ConvertDocArg;
-import com.facishare.document.preview.api.model.arg.Pdf2HtmlArg;
-import com.facishare.document.preview.api.model.result.ConvertDocResult;
-import com.facishare.document.preview.api.model.result.Pdf2HtmlResult;
-import com.facishare.document.preview.api.service.DocConvertService;
-import com.facishare.document.preview.api.service.Pdf2HtmlService;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfoEx;
 import com.facishare.document.preview.cgi.service.PreviewService;
-import com.facishare.document.preview.cgi.utils.*;
+import com.facishare.document.preview.cgi.utils.FileOutPutor;
+import com.facishare.document.preview.cgi.utils.HandlerHtml;
+import com.facishare.document.preview.cgi.utils.RequestParamsHelper;
+import com.facishare.document.preview.cgi.utils.UrlParametersHelper;
 import com.facishare.document.preview.common.dao.FileTokenDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
-import com.facishare.document.preview.common.model.*;
-import com.facishare.document.preview.common.utils.*;
+import com.facishare.document.preview.common.model.DownloadFileTokens;
+import com.facishare.document.preview.common.model.PreviewInfo;
+import com.facishare.document.preview.common.model.PreviewJsonInfo;
+import com.facishare.document.preview.common.utils.ConvertOffice2PdfEnqueueUtil;
+import com.facishare.document.preview.common.utils.DocPreviewInfoHelper;
+import com.facishare.document.preview.common.utils.DocTypeHelper;
+import com.facishare.document.preview.common.utils.OfficeApiHelper;
 import com.fxiaoke.metrics.CounterService;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
@@ -31,7 +33,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Comparator;
@@ -50,8 +51,6 @@ import java.util.stream.Collectors;
 public class PreviewController {
 
     @Autowired
-    FileStorageProxy fileStorageProxy;
-    @Autowired
     PreviewInfoDao previewInfoDao;
     @Autowired
     FileTokenDao fileTokenDao;
@@ -63,6 +62,8 @@ public class PreviewController {
     ConvertOffice2PdfEnqueueUtil convertOffice2PdfEnqueueUtil;
     @Autowired
     OfficeApiHelper officeApiHelper;
+    @Autowired
+    FileOutPutor fileOutPutor;
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
 
@@ -130,7 +131,7 @@ public class PreviewController {
                         String filePath = previewInfo.getOriginalFilePath();
                         String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), filePath, 1, previewInfo.getFilePathList());
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
-                            FileOutPutor.outPut(response, dataFilePath, true);
+                            fileOutPutor.outPut(response, dataFilePath, true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
                             boolean flag = officeApiHelper.convertExcel2Html(path, originalFilePath, pageIndex);
@@ -139,7 +140,7 @@ public class PreviewController {
                                 HandlerHtml.process(dataFilePath,pageIndex);
                                 log.info("dataFilePath:{}",dataFilePath);
                                 previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
-                                FileOutPutor.outPut(response, dataFilePath, true);
+                                fileOutPutor.outPut(response, dataFilePath, true);
                             } else {
                                 log.warn("can't resolve path:{},page:{}", path, page);
                                 response.setStatus(404);
@@ -254,7 +255,7 @@ public class PreviewController {
                     if (pageIndex < previewInfo.getPageCount()) {
                         String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), previewInfo.getOriginalFilePath(), 2, previewInfo.getFilePathList());
                         if (!Strings.isNullOrEmpty(dataFilePath)) {
-                            FileOutPutor.outPut(response, dataFilePath, width, true);
+                            fileOutPutor.outPut(response, dataFilePath, width, true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
                             boolean result = officeApiHelper.convertOffice2Png(path, originalFilePath, pageIndex);
@@ -262,7 +263,7 @@ public class PreviewController {
                                 dataFilePath = FilenameUtils.getFullPathNoEndSeparator(originalFilePath) + "/" + (pageIndex + 1) + ".png";
                                 log.info("dataFilePath:{}", dataFilePath);
                                 previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
-                                FileOutPutor.outPut(response, dataFilePath, true);
+                                fileOutPutor.outPut(response, dataFilePath, true);
                             } else {
                                 log.warn("can't resolve path:{},page:{}", path, pageIndex);
                                 response.setStatus(404);

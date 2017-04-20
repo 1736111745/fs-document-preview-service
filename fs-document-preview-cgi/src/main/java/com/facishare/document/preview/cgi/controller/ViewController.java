@@ -21,13 +21,14 @@ public class ViewController {
         return "preview";
     }
 
-    @RequestMapping(value = "/preview/handleExcel", method = RequestMethod.GET)
+    @RequestMapping(value = "/preview/excel2html", method = RequestMethod.GET)
     public String handleExcel() {
         return "excel2html";
     }
 
-    @RequestMapping(value = "/preview/handlePdf", method = RequestMethod.GET)
-    public String handlePdf() {return "pdf2html";
+    @RequestMapping(value = "/preview/pdf2html", method = RequestMethod.GET)
+    public String handlePdf() {
+        return "pdf2html";
     }
 
 }

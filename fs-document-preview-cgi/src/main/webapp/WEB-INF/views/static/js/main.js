@@ -29,10 +29,10 @@ function getPreviewInfo() {
 function doPreview() {
     var route = '';
     if (path.toLowerCase().indexOf("xls") >= 0) {
-        route = "handleExcel";
+        route = "excel2html";
     }
     else
-        route = "handlePdf";
+        route = "pdf2html";
     console.log("route:" + route);
     var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg + "&rdm=2";
     location.href = url;

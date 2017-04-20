@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
@@ -20,11 +21,13 @@ import java.io.OutputStream;
 @Slf4j
 @Component
 public class FileOutPutor {
-    public static void outPut(HttpServletResponse response, String filePath, boolean needThumbnail) throws IOException {
+    @Autowired
+    ThumbnailHelper thumbnailHelper;
+    public  void outPut(HttpServletResponse response, String filePath, boolean needThumbnail) throws IOException {
         outPut(response, filePath, 0, needThumbnail);
     }
 
-    public static void outPut(HttpServletResponse response, String filePath, int width, boolean needThumbnail) throws IOException {
+    public  void outPut(HttpServletResponse response, String filePath, int width, boolean needThumbnail) throws IOException {
         File file = new File(filePath);
         if (!file.exists()) {
             response.setStatus(404);
@@ -52,7 +55,7 @@ public class FileOutPutor {
         }
     }
 
-    private static byte[] handleFile(String filePath, HttpServletResponse response) throws IOException {
+    private  byte[] handleFile(String filePath, HttpServletResponse response) throws IOException {
         String fileName = FilenameUtils.getName(filePath);
         fileName = fileName.toLowerCase();
         String ext = FilenameUtils.getExtension(fileName);
@@ -61,7 +64,7 @@ public class FileOutPutor {
         return FileUtils.readFileToByteArray(new File(filePath));
     }
 
-    private static byte[] handlePng(String filePath, int width, boolean needThumbnail, HttpServletResponse response) throws IOException {
+    private  byte[] handlePng(String filePath, int width, boolean needThumbnail, HttpServletResponse response) throws IOException {
         //缩略:如果制定大小就从原图中缩略到指定大小，如果不指定大小生成固定大小给手机预览使用
         SimpleImageInfo simpleImageInfo = new SimpleImageInfo(new File(filePath));
         response.setContentType("image/png");
@@ -79,7 +82,10 @@ public class FileOutPutor {
         String thumbPngFilePath = FilenameUtils.concat(FilenameUtils.getFullPathNoEndSeparator(filePath), thumbPngFileName);
         File thumbPngFile = new File(thumbPngFilePath);
         if (!thumbPngFile.exists()) {
-            Thumbnails.of(filePath).forceSize(aimWidth, aimHeight).outputQuality(0.8).outputFormat("png").toFile(thumbPngFile);
+            byte[] data = FileUtils.readFileToByteArray(new File(filePath));
+            boolean success = thumbnailHelper.doThumbnail(data, aimWidth, aimHeight, thumbPngFile);
+            if (!success)
+                Thumbnails.of(filePath).forceSize(aimWidth, aimHeight).outputQuality(0.8).outputFormat("png").toFile(thumbPngFile);
         }
         return FileUtils.readFileToByteArray(thumbPngFile);
     }

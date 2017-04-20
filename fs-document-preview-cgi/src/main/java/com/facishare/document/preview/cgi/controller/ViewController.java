@@ -36,14 +36,4 @@ public class ViewController {
     public String handlePdf() {return "pdf2html";
     }
 
-    @RequestMapping(value = "/preview/handleOffice2Pdf", method = RequestMethod.GET)
-    public String handleOffice2Pdf() {
-        return "office2pdf";
-    }
-
-    @RequestMapping(value = "/preview/handleWordAndPPT", method = RequestMethod.GET)
-    public String handleWordAndPPT() {
-        return "office2svg";
-    }
-
 }

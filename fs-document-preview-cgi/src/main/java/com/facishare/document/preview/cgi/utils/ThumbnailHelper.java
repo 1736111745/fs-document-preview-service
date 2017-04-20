@@ -30,7 +30,7 @@ public class ThumbnailHelper {
                 thumborServiceUrl = config.get("thumborServiceUrl"));
     }
 
-    public   boolean doThumbnail(byte[] data, int toWidth, int toHeight, File thumbPngFile) {
+    public boolean doThumbnail(byte[] data, int toWidth, int toHeight, File thumbPngFile) {
         boolean success = false;
         try {
             MediaType mediaType = MediaType.parse("application/octet-stream;");
@@ -46,18 +46,17 @@ public class ThumbnailHelper {
                     .toUrlUnsafe();
             log.info("do thumbnail with url:{}", url);
             final Request request = new Request.Builder().post(body).url(url).build();
-            client.syncExecute(request, new SyncCallback() {
+            Object object = client.syncExecute(request, new SyncCallback() {
                 @Override
                 public Object response(Response response) throws Exception {
-                    if (response.code() == 2) {
-                        byte[] bytes = response.body().bytes();
-                        FileUtils.writeByteArrayToFile(thumbPngFile, bytes);
-                    }
                     return response.body().bytes();
                 }
-
             });
-            success = true;
+            byte[] bytes = (byte[]) object;
+            if (bytes != null) {
+                FileUtils.writeByteArrayToFile(thumbPngFile, bytes);
+                success = true;
+            }
         } catch (Exception e) {
             log.error("thumb fail!", e);
         }

@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -46,7 +47,7 @@ public class Pdf2HtmlHandler {
         return dataFilePath;
     }
 
-    private  String[] createProcessArgs(String filePath, String outPutDir, int page, int type) {
+    private String[] createProcessArgs(String filePath, String outPutDir, int page, int type) {
         if (type == 1)
             page = 1;
         List<String> args = Lists.newArrayList();
@@ -82,7 +83,8 @@ public class Pdf2HtmlHandler {
         args.add("--dest-dir");//输出目录
         args.add(outPutDir);
         args.add(filePath);
-        return args.toArray(new String[args.size()]);
+        String cmd = StringUtils.join(args, "  ");
+        return new String[]{cmd};
     }
 
 

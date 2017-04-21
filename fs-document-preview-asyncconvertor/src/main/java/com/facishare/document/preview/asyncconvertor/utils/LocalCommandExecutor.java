@@ -2,7 +2,6 @@ package com.facishare.document.preview.asyncconvertor.utils;
 
 import com.facishare.document.preview.asyncconvertor.model.ExecuteResult;
 import com.facishare.document.preview.asyncconvertor.model.StreamGobbler;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 
@@ -15,9 +14,9 @@ import java.util.concurrent.*;
  */
 @Slf4j
 public class LocalCommandExecutor {
-    private final ThreadFactory factory =
-            new ThreadFactoryBuilder().setDaemon(true).setNameFormat("convertHelper-%d").build();
-    private final ExecutorService executorService = Executors.newCachedThreadPool(factory);
+    static ExecutorService pool = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+            3L, TimeUnit.SECONDS,
+            new SynchronousQueue<>());
 
     public ExecuteResult executeCommand(String[] command, long timeout) {
         Process process = null;
@@ -41,7 +40,7 @@ public class LocalCommandExecutor {
                 p.wait();
                 return p.exitValue();
             };
-            executeFuture = executorService.submit(call);
+            executeFuture = pool.submit(call);
             int exitCode = executeFuture.get(timeout, TimeUnit.SECONDS);
             return new ExecuteResult(exitCode, outputGobbler.getContent());
         } catch (IOException ex) {

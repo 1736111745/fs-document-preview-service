@@ -38,11 +38,11 @@ public class LocalCommandExecutor {
             errorGobbler = new StreamGobbler(pErr, "ERROR");
             errorGobbler.start();
             Callable<Integer> call = () -> {
-                p.waitFor();
+                p.wait();
                 return p.exitValue();
             };
             executeFuture = executorService.submit(call);
-            int exitCode = executeFuture.get(timeout, TimeUnit.MILLISECONDS);
+            int exitCode = executeFuture.get(timeout, TimeUnit.SECONDS);
             return new ExecuteResult(exitCode, outputGobbler.getContent());
         } catch (IOException ex) {
             String errorMessage = "The command [" + cmds + "] execute failed.";

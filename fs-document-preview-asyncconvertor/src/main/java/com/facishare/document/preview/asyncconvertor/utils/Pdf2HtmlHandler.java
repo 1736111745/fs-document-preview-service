@@ -33,9 +33,9 @@ public class Pdf2HtmlHandler {
         int type = message.getType();
         String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
         String outPutDir = FilenameUtils.concat(basedDir, "p" + page);
-        List<String> args = createProcessArgs(filePath, outPutDir, page, type);
+        String[] args = createProcessArgs(filePath, outPutDir, page, type);
         LocalCommandExecutor executor = new LocalCommandExecutor();
-        ExecuteResult result = executor.executeCommand((String[]) args.toArray(), pdf2HtmlTimeout);
+        ExecuteResult result = executor.executeCommand(args, pdf2HtmlTimeout);
         log.info("退出码:{},输出内容:{}", result.getExitCode(), result.getExecuteOut());
         if (result.getExitCode() == 0) {
             dataFilePath = handleResult(page, filePath, outPutDir, type);
@@ -46,7 +46,7 @@ public class Pdf2HtmlHandler {
         return dataFilePath;
     }
 
-    private static List<String> createProcessArgs(String filePath, String outPutDir, int page, int type) {
+    private static String[] createProcessArgs(String filePath, String outPutDir, int page, int type) {
         if (type == 1)
             page = 1;
         List<String> args = Lists.newArrayList();
@@ -82,8 +82,7 @@ public class Pdf2HtmlHandler {
         args.add("--dest-dir");//输出目录
         args.add(outPutDir);
         args.add(filePath);
-        //log.info(StringUtils.join(args, "  "));
-        return args;
+        return args.toArray(new String[args.size()]);
     }
 
 

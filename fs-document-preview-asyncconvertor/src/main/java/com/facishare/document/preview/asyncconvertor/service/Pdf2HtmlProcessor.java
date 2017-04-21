@@ -12,10 +12,12 @@ import com.fxiaoke.metrics.CounterService;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -61,6 +63,14 @@ public class Pdf2HtmlProcessor {
         log.info("begin do convert,params:{}", JSON.toJSONString(convertorMessage));
         String ea = convertorMessage.getEa();
         String path = convertorMessage.getNpath();
+        String filePath=convertorMessage.getFilePath();
+        int page=convertorMessage.getPage();
+        String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
+        String htmlFilePath=basedDir+"/"+page+".html";
+        if(new File(htmlFilePath).exists()) {
+            log.info("data file:{} exsits!not need convert!", htmlFilePath);
+            return;
+        }
         String dataFilePath = pdf2HtmlHandler.doConvert(convertorMessage);
         if (!Strings.isNullOrEmpty(dataFilePath)) {
             counterService.inc("convert-pdf2html-ok");

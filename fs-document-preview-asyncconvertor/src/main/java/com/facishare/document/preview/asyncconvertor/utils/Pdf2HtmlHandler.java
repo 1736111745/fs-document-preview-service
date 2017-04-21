@@ -151,7 +151,7 @@ public class Pdf2HtmlHandler {
             bgFile.renameTo(new File(newBgFilePath));
         }
         handleHtml(dataFile, pageFile, dirName, cssFileName, newCssFileName, bgName, newBgName);
-        FileUtils.deleteDirectory(new File(outPutDir));
+        FileUtils.deleteQuietly(new File(outPutDir));
         return pagePath;
     }
 

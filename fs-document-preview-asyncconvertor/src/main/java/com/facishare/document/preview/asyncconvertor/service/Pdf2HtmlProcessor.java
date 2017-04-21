@@ -68,7 +68,7 @@ public class Pdf2HtmlProcessor {
         String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
         String htmlFilePath=basedDir+"/"+page+".html";
         if(new File(htmlFilePath).exists()) {
-            log.info("data file:{} exsits!not need convert!", htmlFilePath);
+            log.info("data file:{} exists!not need convert!", htmlFilePath);
             return;
         }
         String dataFilePath = pdf2HtmlHandler.doConvert(convertorMessage);

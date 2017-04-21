@@ -1,6 +1,5 @@
 package com.facishare.document.preview.asyncconvertor.utils;
 
-import com.facishare.document.preview.asyncconvertor.model.ExecuteResult;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
@@ -8,8 +7,13 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import org.zeroturnaround.exec.ProcessExecutor;
+import org.zeroturnaround.exec.ProcessResult;
+import org.zeroturnaround.exec.StartedProcess;
+import org.zeroturnaround.process.ProcessUtil;
+import org.zeroturnaround.process.Processes;
+import org.zeroturnaround.process.SystemProcess;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +21,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by liuq on 2017/3/7.
@@ -27,6 +35,7 @@ public class Pdf2HtmlHandler {
     @ReloadableProperty("pdf2HtmlTimeout")
     private int pdf2HtmlTimeout = 60;
 
+
     public String doConvert(ConvertPdf2HtmlMessage message) throws IOException {
         String dataFilePath = "";
         String filePath = message.getFilePath();
@@ -34,20 +43,47 @@ public class Pdf2HtmlHandler {
         int type = message.getType();
         String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
         String outPutDir = FilenameUtils.concat(basedDir, "p" + page);
-        String[] args = createProcessArgs(filePath, outPutDir, page, type);
-        LocalCommandExecutor executor = new LocalCommandExecutor();
-        ExecuteResult result = executor.executeCommand(args, pdf2HtmlTimeout);
-        log.info("退出码:{},输出内容:{}", result.getExitCode(), result.getExecuteOut());
-        if (result.getExitCode() == 0) {
-            dataFilePath = handleResult(page, filePath, outPutDir, type);
-        }
-        if (type == 1) {
-            FileUtils.deleteQuietly(new File(filePath));
+        List<String> args = createProcessArgs(filePath, outPutDir, page, type);
+        StartedProcess startedProcess = new ProcessExecutor()
+                .command(args)
+                .readOutput(true)
+                .start();
+        Process pdf2htmlProcess = startedProcess.getProcess();
+        try {
+            Future<ProcessResult> future = startedProcess.getFuture();
+            ProcessResult result = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
+            if (result.getExitValue() == 0) {
+                dataFilePath = handleResult(page, filePath, outPutDir, type);
+            } else
+                log.error("output:{},exit code:{}", result.outputUTF8(), result.getExitValue());
+        } catch (IOException e) {
+            log.error("do convert happened IOException!", e);
+        } catch (InterruptedException e) {
+            log.error("do convert happened InterruptedException!", e);
+        } catch (TimeoutException e) {
+            log.error("do convert happened TimeoutException!filePath:{},page:{}", filePath, page, e);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } finally {
+            if (pdf2htmlProcess != null) {
+                SystemProcess process = Processes.newStandardProcess(pdf2htmlProcess);
+                try {
+                    ProcessUtil.destroyGracefullyOrForcefullyAndWait(process, 30, TimeUnit.SECONDS, 10, TimeUnit.SECONDS);
+                    log.info("pdf2htmlProcess has been killed!");
+                } catch (InterruptedException e) {
+                    log.error("kill pdf2htmlProcess happened InterruptedException!", e);
+                } catch (TimeoutException e) {
+                    log.error("kill pdf2htmlProcess timeout!", e);
+                }
+            }
+            if (type == 1) {
+                FileUtils.deleteQuietly(new File(filePath));
+            }
         }
         return dataFilePath;
     }
 
-    private String[] createProcessArgs(String filePath, String outPutDir, int page, int type) {
+    private List<String> createProcessArgs(String filePath, String outPutDir, int page, int type) {
         if (type == 1)
             page = 1;
         List<String> args = Lists.newArrayList();
@@ -83,8 +119,7 @@ public class Pdf2HtmlHandler {
         args.add("--dest-dir");//输出目录
         args.add(outPutDir);
         args.add(filePath);
-        String cmd = StringUtils.join(args, " ");
-        return new String[]{"/bin/sh", "-c", cmd};
+        return args;
     }
 
 
@@ -95,6 +130,7 @@ public class Pdf2HtmlHandler {
         String pageName = page + ".html";
         String pagePath = FilenameUtils.concat(baseDir, pageName);
         File dataFile = new File(dataFilePath);
+        if (!dataFile.exists()) return "";
         File pageFile = new File(pagePath);
         String dirName = FilenameUtils.getBaseName(baseDir);
         String cssFileName = type == 1 ? FilenameUtils.getBaseName(filePath) + ".css" : "css" + page + ".css";
@@ -121,7 +157,6 @@ public class Pdf2HtmlHandler {
 
     private void handleHtml(File dataFile, File pageFile, String dirName, String cssName, String newCssName, String bgName, String newBgName) throws IOException {
         String html = FileUtils.readFileToString(dataFile);
-        //todo:匹配树。
         html = html.replace("base.min.css", "../static/css/base.min.css");
         html = html.replace("<link rel=\"stylesheet\" href=\"fancy.min.css\"/>", "");
         html = html.replace(cssName, "./" + dirName + "/" + newCssName);

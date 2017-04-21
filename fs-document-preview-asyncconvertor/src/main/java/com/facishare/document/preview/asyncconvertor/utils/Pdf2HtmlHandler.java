@@ -51,7 +51,7 @@ public class Pdf2HtmlHandler {
         if (type == 1)
             page = 1;
         List<String> args = Lists.newArrayList();
-        args.add("/usr/local/bin/pdf2htmlEX");//命令行开始
+        args.add("pdf2htmlEX");//命令行开始
         args.add("-f");
         args.add(String.valueOf(page));
         args.add("-l");
@@ -83,7 +83,7 @@ public class Pdf2HtmlHandler {
         args.add("--dest-dir");//输出目录
         args.add(outPutDir);
         args.add(filePath);
-        String cmd = StringUtils.join(args, "  ");
+        String cmd = StringUtils.join(args, " ");
         return new String[]{cmd};
     }
 

@@ -5,6 +5,7 @@ import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfoEx;
 import com.facishare.document.preview.cgi.service.PreviewService;
 import com.facishare.document.preview.cgi.utils.FileOutPutor;
+import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.cgi.utils.HandlerHtml;
 import com.facishare.document.preview.cgi.utils.UrlParametersHelper;
 import com.facishare.document.preview.common.dao.FileTokenDao;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Comparator;
@@ -63,6 +65,8 @@ public class PreviewController {
     OfficeApiHelper officeApiHelper;
     @Autowired
     FileOutPutor fileOutPutor;
+    @Autowired
+    FileStorageProxy fileStorageProxy;
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
 
@@ -257,6 +261,10 @@ public class PreviewController {
                             fileOutPutor.outPut(response, dataFilePath, width, true);
                         } else {
                             String originalFilePath = previewInfo.getOriginalFilePath();
+                            File originalFile = new File(originalFilePath);
+                            if (!originalFile.exists()) {
+                                fileStorageProxy.DownloadAndSave(path, employeeInfo.getEa(), employeeInfo.getEmployeeId(), "", originalFilePath);
+                            }
                             boolean result = officeApiHelper.convertOffice2Png(path, originalFilePath, pageIndex);
                             if (result) {
                                 dataFilePath = FilenameUtils.getFullPathNoEndSeparator(originalFilePath) + "/" + (pageIndex + 1) + ".png";

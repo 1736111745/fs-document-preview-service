@@ -54,7 +54,6 @@ function checkPageLoaded() {
         if (pageLoadedList.length == pageCount) {
             console.log("all page loaded!")
             clearInterval(idChkPageLoaded);
-            clearInterval(idChkConvertTimeout);
         }
     }, 100);
 }

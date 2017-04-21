@@ -24,7 +24,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        request.setAttribute("sv", "v4.3.5");
+        request.setAttribute("sv", "v4.3.6");
         String requestUri = request.getRequestURI().toLowerCase();
         String ctx = request.getContextPath();
         if (requestUri.startsWith(ctx + "/restful/") ||

@@ -61,18 +61,25 @@ public class PreviewService {
                         String fileName = SampleUUID.getUUID() + "." + extension;
                         String filePath = FilenameUtils.concat(dataDir, fileName);
                         FileUtils.writeByteArrayToFile(new File(filePath), bytes);
-                        //首先检测文档是否加密
                         PageInfo pageInfo = officeApiHelper.getPageInfo(npath, filePath);
-                        if (pageInfo.isSuccess()) {
-                            pageCount = pageInfo.getPageCount();
-                            sheetNames = pageInfo.getSheetNames();
-                            previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, npath, filePath, dataDir, bytes.length, pageCount, sheetNames);
-                            previewInfoEx.setSuccess(true);
-                            previewInfoEx.setPreviewInfo(previewInfo);
-                        } else {
+                        if(pageInfo.getPageCount()>500)
+                        {
                             previewInfoEx.setSuccess(false);
                             previewInfoEx.setPreviewInfo(null);
-                            previewInfoEx.setErrorMsg(pageInfo.getErrorMsg());
+                            previewInfoEx.setErrorMsg("当前文件页码数超过500页，不支持手机预览！");
+                        }
+                        else {
+                            if (pageInfo.isSuccess()) {
+                                pageCount = pageInfo.getPageCount();
+                                sheetNames = pageInfo.getSheetNames();
+                                previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, npath, filePath, dataDir, bytes.length, pageCount, sheetNames);
+                                previewInfoEx.setSuccess(true);
+                                previewInfoEx.setPreviewInfo(previewInfo);
+                            } else {
+                                previewInfoEx.setSuccess(false);
+                                previewInfoEx.setPreviewInfo(null);
+                                previewInfoEx.setErrorMsg(pageInfo.getErrorMsg());
+                            }
                         }
                     }
                 } else {

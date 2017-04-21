@@ -34,7 +34,7 @@ function doPreview() {
     else
         route = "pdf2html";
     console.log("route:" + route);
-    var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg + "&rdm=2";
+    var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg + "&rdm=3";
     location.href = url;
 }
 

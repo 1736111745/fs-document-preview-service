@@ -84,7 +84,7 @@ public class Pdf2HtmlHandler {
         args.add(outPutDir);
         args.add(filePath);
         String cmd = StringUtils.join(args, " ");
-        return new String[]{cmd};
+        return new String[]{"/bin/sh", "-c", cmd};
     }
 
 

@@ -5,9 +5,11 @@ import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.ahocorasick.trie.Trie;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.omg.SendingContext.RunTime;
 import org.springframework.stereotype.Component;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
@@ -49,6 +51,8 @@ public class Pdf2HtmlHandler {
                     .exitValueAny()
                     .readOutput(true)
                     .execute();
+
+
             if (processResult.getExitValue() == 0) {
                 dataFilePath = handleResult(page, filePath, outPutDir, type);
             } else
@@ -141,6 +145,7 @@ public class Pdf2HtmlHandler {
 
     private void handleHtml(File dataFile, File pageFile, String dirName, String cssName, String newCssName, String bgName, String newBgName) throws IOException {
         String html = FileUtils.readFileToString(dataFile);
+       //todo:匹配树。
         html = html.replace("base.min.css", "../static/css/base.min.css");
         html = html.replace("<link rel=\"stylesheet\" href=\"fancy.min.css\"/>", "");
         html = html.replace(cssName, "./" + dirName + "/" + newCssName);

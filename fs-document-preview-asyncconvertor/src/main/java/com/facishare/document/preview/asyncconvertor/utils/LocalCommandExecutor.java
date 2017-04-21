@@ -36,10 +36,16 @@ public class LocalCommandExecutor {
             pErr = process.getErrorStream();
             errorGobbler = new StreamGobbler(pErr, "ERROR");
             errorGobbler.start();
-            Callable<Integer> call = () -> {
-                p.wait();
-                return p.exitValue();
+            // create a Callable for the command's Process which can be called
+            // by an Executor
+            Callable<Integer> call = new Callable<Integer>() {
+                public synchronized Integer call() throws Exception {
+                    p.waitFor();
+                    return p.exitValue();
+                }
             };
+
+            // submit the command's call and get the result from a
             executeFuture = pool.submit(call);
             int exitCode = executeFuture.get(timeout, TimeUnit.SECONDS);
             return new ExecuteResult(exitCode, outputGobbler.getContent());

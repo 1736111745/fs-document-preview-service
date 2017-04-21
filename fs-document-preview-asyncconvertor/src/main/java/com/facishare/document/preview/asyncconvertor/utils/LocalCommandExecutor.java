@@ -2,7 +2,9 @@ package com.facishare.document.preview.asyncconvertor.utils;
 
 import com.facishare.document.preview.asyncconvertor.model.ExecuteResult;
 import com.facishare.document.preview.asyncconvertor.model.StreamGobbler;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,9 +15,9 @@ import java.util.concurrent.*;
  */
 @Slf4j
 public class LocalCommandExecutor {
-    static ExecutorService pool = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-            3L, TimeUnit.SECONDS,
-            new SynchronousQueue<>());
+    private final ThreadFactory factory =
+            new ThreadFactoryBuilder().setDaemon(true).setNameFormat("convertHelper-%d").build();
+    private final ExecutorService executorService = Executors.newCachedThreadPool(factory);
 
     public ExecuteResult executeCommand(String[] command, long timeout) {
         Process process = null;
@@ -24,6 +26,7 @@ public class LocalCommandExecutor {
         StreamGobbler outputGobbler = null;
         StreamGobbler errorGobbler = null;
         Future<Integer> executeFuture = null;
+        String cmds = StringUtils.join(command, " ");
         try {
             process = Runtime.getRuntime().exec(command);
             final Process p = process;
@@ -38,23 +41,23 @@ public class LocalCommandExecutor {
                 p.waitFor();
                 return p.exitValue();
             };
-            executeFuture = pool.submit(call);
+            executeFuture = executorService.submit(call);
             int exitCode = executeFuture.get(timeout, TimeUnit.MILLISECONDS);
             return new ExecuteResult(exitCode, outputGobbler.getContent());
         } catch (IOException ex) {
-            String errorMessage = "The command [" + command + "] execute failed.";
+            String errorMessage = "The command [" + cmds + "] execute failed.";
             log.error(errorMessage, ex);
             return new ExecuteResult(-1, null);
         } catch (TimeoutException ex) {
-            String errorMessage = "The command [" + command + "] timed out.";
+            String errorMessage = "The command [" + cmds + "] timed out.";
             log.error(errorMessage, ex);
             return new ExecuteResult(-1, null);
         } catch (ExecutionException ex) {
-            String errorMessage = "The command [" + command + "] did not complete due to an execution error.";
+            String errorMessage = "The command [" + cmds + "] did not complete due to an execution error.";
             log.error(errorMessage, ex);
             return new ExecuteResult(-1, null);
         } catch (InterruptedException ex) {
-            String errorMessage = "The command [" + command + "] did not complete due to an interrupted error.";
+            String errorMessage = "The command [" + cmds + "] did not complete due to an interrupted error.";
             log.error(errorMessage, ex);
             return new ExecuteResult(-1, null);
         } finally {

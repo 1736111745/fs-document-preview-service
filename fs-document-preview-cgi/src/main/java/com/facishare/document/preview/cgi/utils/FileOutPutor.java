@@ -88,6 +88,10 @@ public class FileOutPutor {
                 log.info("do thumbnail with local method!");
                 Thumbnails.of(filePath).forceSize(aimWidth, aimHeight).outputQuality(0.8).outputFormat("png").toFile(thumbPngFile);
             }
+            else
+            {
+                log.info("do thumbnail with thumbor2 success!");
+            }
         }
         return FileUtils.readFileToByteArray(thumbPngFile);
     }

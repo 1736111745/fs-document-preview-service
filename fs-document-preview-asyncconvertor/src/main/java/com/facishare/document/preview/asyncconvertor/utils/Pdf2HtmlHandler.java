@@ -46,11 +46,11 @@ public class Pdf2HtmlHandler {
         return dataFilePath;
     }
 
-    private static String[] createProcessArgs(String filePath, String outPutDir, int page, int type) {
+    private  String[] createProcessArgs(String filePath, String outPutDir, int page, int type) {
         if (type == 1)
             page = 1;
         List<String> args = Lists.newArrayList();
-        args.add("pdf2htmlEX");//命令行开始
+        args.add("/usr/local/bin/pdf2htmlEX");//命令行开始
         args.add("-f");
         args.add(String.valueOf(page));
         args.add("-l");

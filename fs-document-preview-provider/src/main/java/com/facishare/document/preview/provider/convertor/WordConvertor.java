@@ -25,4 +25,9 @@ public class WordConvertor implements IDocConvertor {
         return null;
     }
 
+    @Override
+    public String convert2Pdf(String filePath) throws Exception {
+        return null;
+    }
+
 }

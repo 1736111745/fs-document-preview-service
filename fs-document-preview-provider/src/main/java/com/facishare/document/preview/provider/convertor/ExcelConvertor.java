@@ -45,6 +45,11 @@ public class ExcelConvertor implements IDocConvertor {
         return resultFilePath;
     }
 
+    @Override
+    public String convert2Pdf(String filePath) throws Exception {
+        return null;
+    }
+
     private static String readFile(File file) throws IOException {
         StringBuffer sb = new StringBuffer();
         LineIterator it = FileUtils.lineIterator(file, "UTF-8");

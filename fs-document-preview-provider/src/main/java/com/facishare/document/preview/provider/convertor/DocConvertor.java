@@ -2,6 +2,7 @@ package com.facishare.document.preview.provider.convertor;
 
 import com.facishare.document.preview.common.model.DocType;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
+import com.facishare.document.preview.provider.utils.FilePathHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,8 @@ public class DocConvertor {
             }
             case PPT: {
                 IDocConvertor docConvertor = new PPTConvertor();
-                resultFilePath = type == 1 ? docConvertor.convert2Svg(originalFilePath, page, page) : docConvertor.convert2Png(originalFilePath, page, page);
+                resultFilePath = type == 1 ? docConvertor.convert2Svg(originalFilePath, page, page) :
+                        type == 2 ? docConvertor.convert2Png(originalFilePath, page, page) : docConvertor.convert2Pdf(originalFilePath);
                 break;
             }
             case Excel: {

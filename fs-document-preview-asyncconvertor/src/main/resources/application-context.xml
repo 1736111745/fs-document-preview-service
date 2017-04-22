@@ -32,6 +32,8 @@
     <bean id="httpClientSupport" class="com.fxiaoke.common.http.spring.HttpSupportFactoryBean"
           p:configName="fs-dps-config"/>
     <bean id="office2PdfApiHelper" class="com.facishare.document.preview.common.utils.OfficeApiHelper"/>
+    <dubbo:registry address="${dubbo.registry.address}"/>
+    <dubbo:application name="fs-dps-asyncconvertor"/>
     <dubbo:reference id="docConvertService" interface="com.facishare.document.preview.api.service.DocConvertService"
                      protocol="dubbo" retries="0" timeout="60000"/>
 </beans>

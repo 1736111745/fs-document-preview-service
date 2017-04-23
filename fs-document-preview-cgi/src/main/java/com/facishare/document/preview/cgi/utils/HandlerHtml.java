@@ -33,14 +33,18 @@ public class HandlerHtml {
                 Element image = images.get(i);
                 String src = image.attr("src");
                 if (!Strings.isNullOrEmpty(src)) {
-                    String imageFilePath = FilenameUtils.concat(baseDir, src);
-                    String imageName = FilenameUtils.getName(imageFilePath);
-                    String newImageFilPath = FilenameUtils.concat(baseDir, imageName);
-                    File imageFile = new File(imageFilePath);
-                    if (imageFile.exists()) {
-                        FileUtils.moveFile(new File(imageFilePath), new File(newImageFilPath));
+                    if (image.attr("height") == "1") {
+                        image.remove();
+                    } else {
+                        String imageFilePath = FilenameUtils.concat(baseDir, src);
+                        String imageName = FilenameUtils.getName(imageFilePath);
+                        String newImageFilPath = FilenameUtils.concat(baseDir, imageName);
+                        File imageFile = new File(imageFilePath);
+                        if (imageFile.exists()) {
+                            FileUtils.moveFile(new File(imageFilePath), new File(newImageFilPath));
+                        }
+                        image.attr("src", "./" + dirName + "/" + imageName);
                     }
-                    image.attr("src", "./" + dirName + "/" + imageName);
                 }
             }
             FileUtils.deleteQuietly(new File(imageDir));

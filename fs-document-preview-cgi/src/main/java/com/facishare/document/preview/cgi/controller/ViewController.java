@@ -21,7 +21,7 @@ public class ViewController {
         return "preview";
     }
 
-    @RequestMapping(value = "/preview/excel2html", method = RequestMethod.GET)
+    @RequestMapping(value ={"/preview/excel2html","/preview/handleExcel"}, method = RequestMethod.GET)
     public String handleExcel() {
         return "excel2html";
     }

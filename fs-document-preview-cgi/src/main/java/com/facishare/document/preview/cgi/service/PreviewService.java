@@ -52,7 +52,7 @@ public class PreviewService {
                 String extension = FilenameUtils.getExtension(npath).toLowerCase();
                 byte[] bytes = fileStorageProxy.GetBytesByPath(npath, ea, employeeId, securityGroup);
                 if (bytes != null && bytes.length > 0) {
-                    if (bytes.length > 1024 * 1024 * 30) {
+                    if (bytes.length > 1024 * 1024 * 100) {
                         previewInfoEx.setSuccess(false);
                         previewInfoEx.setPreviewInfo(null);
                         previewInfoEx.setErrorMsg("当前文件大于30M，不支持手机预览！");

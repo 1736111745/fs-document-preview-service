@@ -55,7 +55,7 @@ public class PreviewService {
                     if (bytes.length > 1024 * 1024 * 100) {
                         previewInfoEx.setSuccess(false);
                         previewInfoEx.setPreviewInfo(null);
-                        previewInfoEx.setErrorMsg("当前文件大于30M，不支持手机预览！");
+                        previewInfoEx.setErrorMsg("当前文件大于100M，不支持手机预览！");
                     } else {
                         String dataDir = new PathHelper(ea).getDataDir();
                         String fileName = SampleUUID.getUUID() + "." + extension;

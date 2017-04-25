@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -32,19 +33,17 @@ public class HandlerHtml {
             for (int i = 0; i < images.size(); i++) {
                 Element image = images.get(i);
                 String src = image.attr("src");
-                if (!Strings.isNullOrEmpty(src)) {
-                    if (image.attr("height") == "1") {
-                        image.remove();
-                    } else {
-                        String imageFilePath = FilenameUtils.concat(baseDir, src);
-                        String imageName = FilenameUtils.getName(imageFilePath);
-                        String newImageFilPath = FilenameUtils.concat(baseDir, imageName);
-                        File imageFile = new File(imageFilePath);
-                        if (imageFile.exists()) {
-                            FileUtils.moveFile(new File(imageFilePath), new File(newImageFilPath));
-                        }
-                        image.attr("src", "./" + dirName + "/" + imageName);
+                if (imageNeedRemove(image)) {
+                    image.remove();
+                } else {
+                    String imageFilePath = FilenameUtils.concat(baseDir, src);
+                    String imageName = FilenameUtils.getName(imageFilePath);
+                    String newImageFilPath = FilenameUtils.concat(baseDir, imageName);
+                    File imageFile = new File(imageFilePath);
+                    if (imageFile.exists()) {
+                        FileUtils.moveFile(new File(imageFilePath), new File(newImageFilPath));
                     }
+                    image.attr("src", "./" + dirName + "/" + imageName);
                 }
             }
             FileUtils.deleteQuietly(new File(imageDir));
@@ -61,9 +60,28 @@ public class HandlerHtml {
             String html = styleHtml + body.html();
             html = html.replace("\n", "");
             FileUtils.writeByteArrayToFile(new File(filePath), html.getBytes(encoding), false);
-        } catch (Exception e) {
+        } catch (
+                Exception e)
+
+        {
             log.info("handle html happened error!", e);
         }
+
+    }
+
+
+    private static boolean imageNeedRemove(Element image) {
+        boolean flag = false;
+        String imgHeight = image.attr("height");
+        String imgWidth = image.attr("width");
+        if (Strings.isNullOrEmpty(imgHeight) && Strings.isNullOrEmpty(imgWidth)) {
+            int width = NumberUtils.toInt(imgWidth);
+            int height = NumberUtils.toInt(imgHeight);
+            if (width < 10 || height < 10) {
+                flag = true;
+            }
+        }
+        return flag;
     }
 
     public static void main(String[] args) throws IOException {

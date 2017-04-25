@@ -46,7 +46,7 @@ public class Pdf2HtmlHandler {
         List<String> args = createProcessArgs(filePath, outPutDir, page, type);
         StartedProcess startedProcess = new ProcessExecutor()
                 .command(args)
-                .readOutput(true)
+                .readOutput(false)
                 .start();
         Process pdf2htmlProcess = startedProcess.getProcess();
         try {

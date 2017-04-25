@@ -85,7 +85,6 @@ public class HandlerHtml {
     }
 
     public static void main(String[] args) throws IOException {
-
         process("/Users/liuq/Desktop/0.html", 0);
     }
 

@@ -158,6 +158,8 @@ public class Pdf2HtmlHandler {
     private void handleHtml(String outPutDir, File dataFile, File pageFile, String dirName, String cssName, String newCssName, String bgName, String newBgName) throws IOException {
         try {
             String html = FileUtils.readFileToString(dataFile);
+            html=html.replace("<!-- Created by pdf2htmlEX (https://github.com/coolwanglu/pdf2htmlex) -->","");
+            html=html.replace("Evaluation Warning : The document was created with  Spire.Presentation for .NET","");
             html = html.replace("base.min.css", "../static/css/base.min.css");
             html = html.replace("<link rel=\"stylesheet\" href=\"fancy.min.css\"/>", "");
             html = html.replace(cssName, "./" + dirName + "/" + newCssName);
@@ -184,5 +186,8 @@ public class Pdf2HtmlHandler {
         } finally {
             FileUtils.deleteQuietly(new File(outPutDir));
         }
+    }
+
+    public static void main(String[] args) throws IOException {
     }
 }

@@ -58,20 +58,7 @@ public class Office2PdfHandler {
         log.info("hasNotConvertPageList:{}", hasNotConvertPageList);
         if (ext.equals("pdf")) {
             enqueueMultiPagePdf(ea, path, filePath, hasNotConvertPageList);
-        } else if (ext.contains("ppt")) {
-            for (int i = 0; i < hasNotConvertPageList.size(); i++) {
-                final int page = hasNotConvertPageList.get(i);
-                executorService.submit(() -> {
-                    boolean flag = officeApiHelper.convertOffice2Pdf(path, filePath, page);
-                    if (flag) {
-                        counterService.inc("ppt2pdf-success!");
-                        String pdfPageFilePath = filePath + "." + page + ".pdf";
-                        enqueue(ea, path, pdfPageFilePath, page, 1);
-                    } else
-                        counterService.inc("ppt2pdf-fail!");
-                });
-            }
-        } else if (ext.contains("doc")) {
+        } else if (ext.contains("doc")||ext.contains("ppt")) {
             executorService.submit(() -> {
                 boolean flag = officeApiHelper.convertOffice2Pdf(path, filePath);
                 if (flag) {

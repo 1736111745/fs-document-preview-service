@@ -1,5 +1,6 @@
 package com.facishare.document.preview.asyncconvertor.utils;
 
+import com.aspose.pdf.Operator;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
@@ -150,33 +151,38 @@ public class Pdf2HtmlHandler {
             String newBgFilePath = FilenameUtils.concat(baseDir, newBgName);
             bgFile.renameTo(new File(newBgFilePath));
         }
-        handleHtml(dataFile, pageFile, dirName, cssFileName, newCssFileName, bgName, newBgName);
-        FileUtils.deleteQuietly(new File(outPutDir));
+        handleHtml(outPutDir, dataFile, pageFile, dirName, cssFileName, newCssFileName, bgName, newBgName);
         return pagePath;
     }
 
-    private void handleHtml(File dataFile, File pageFile, String dirName, String cssName, String newCssName, String bgName, String newBgName) throws IOException {
-        String html = FileUtils.readFileToString(dataFile);
-        html = html.replace("base.min.css", "../static/css/base.min.css");
-        html = html.replace("<link rel=\"stylesheet\" href=\"fancy.min.css\"/>", "");
-        html = html.replace(cssName, "./" + dirName + "/" + newCssName);
-        html = html.replace("<script src=\"compatibility.min.js\"></script>", "");
-        html = html.replace("<script src=\"pdf2htmlEX.min.js\"></script>", "");
-        html = html.replace("<script>\n" +
-                "try{\n" +
-                "pdf2htmlEX.defaultViewer = new pdf2htmlEX.Viewer({});\n" +
-                "}catch(e){}\n" +
-                "</script>", "");
-        html = html.replace("<div id=\"sidebar\">\n" +
-                "<div id=\"outline\">\n" +
-                "</div>\n" +
-                "</div>", "");
-        html = html.replace("<div class=\"loading-indicator\">", "");
-        html = html.replace("<img alt=\"\" src=\"pdf2htmlEX-64x64.png\"/>", "");
-        if (!Strings.isNullOrEmpty(bgName)) {
-            html = html.replace(bgName, "./" + dirName + "/" + newBgName);
+    private void handleHtml(String outPutDir, File dataFile, File pageFile, String dirName, String cssName, String newCssName, String bgName, String newBgName) throws IOException {
+        try {
+            String html = FileUtils.readFileToString(dataFile);
+            html = html.replace("base.min.css", "../static/css/base.min.css");
+            html = html.replace("<link rel=\"stylesheet\" href=\"fancy.min.css\"/>", "");
+            html = html.replace(cssName, "./" + dirName + "/" + newCssName);
+            html = html.replace("<script src=\"compatibility.min.js\"></script>", "");
+            html = html.replace("<script src=\"pdf2htmlEX.min.js\"></script>", "");
+            html = html.replace("<script>\n" +
+                    "try{\n" +
+                    "pdf2htmlEX.defaultViewer = new pdf2htmlEX.Viewer({});\n" +
+                    "}catch(e){}\n" +
+                    "</script>", "");
+            html = html.replace("<div id=\"sidebar\">\n" +
+                    "<div id=\"outline\">\n" +
+                    "</div>\n" +
+                    "</div>", "");
+            html = html.replace("<div class=\"loading-indicator\">", "");
+            html = html.replace("<img alt=\"\" src=\"pdf2htmlEX-64x64.png\"/>", "");
+            if (!Strings.isNullOrEmpty(bgName)) {
+                html = html.replace(bgName, "./" + dirName + "/" + newBgName);
+            }
+            html = html.replace("\n", "");
+            FileUtils.writeByteArrayToFile(pageFile, html.getBytes());
+        } catch (Exception ex) {
+            log.error("handelHtml happened exception", ex);
+        } finally {
+            FileUtils.deleteQuietly(new File(outPutDir));
         }
-        html = html.replace("\n", "");
-        FileUtils.writeByteArrayToFile(pageFile, html.getBytes());
     }
 }

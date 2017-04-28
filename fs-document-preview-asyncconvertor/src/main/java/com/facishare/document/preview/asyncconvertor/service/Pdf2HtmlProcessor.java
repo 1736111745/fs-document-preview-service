@@ -63,11 +63,11 @@ public class Pdf2HtmlProcessor {
         log.info("begin do convert,params:{}", JSON.toJSONString(convertorMessage));
         String ea = convertorMessage.getEa();
         String path = convertorMessage.getNpath();
-        String filePath=convertorMessage.getFilePath();
-        int page=convertorMessage.getPage();
+        String filePath = convertorMessage.getFilePath();
+        int page = convertorMessage.getPage();
         String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
-        String htmlFilePath=basedDir+"/"+page+".html";
-        if(new File(htmlFilePath).exists()) {
+        String htmlFilePath = basedDir + "/" + page + ".html";
+        if (new File(htmlFilePath).exists()) {
             log.info("data file:{} exists!not need convert!", htmlFilePath);
             return;
         }

@@ -105,6 +105,8 @@ public class Pdf2HtmlHandler {
         }
         args.add("--embed-image");
         args.add("0");
+        args.add("--font-format");
+        args.add("svg");
         args.add("--bg-format");
         args.add("jpg");
         args.add("--no-drm");

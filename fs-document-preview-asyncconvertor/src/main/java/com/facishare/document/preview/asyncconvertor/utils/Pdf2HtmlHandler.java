@@ -1,5 +1,6 @@
 package com.facishare.document.preview.asyncconvertor.utils;
 
+import com.aspose.pdf.Font;
 import com.aspose.pdf.Operator;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
@@ -8,6 +9,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.aspectj.weaver.ast.Var;
 import org.springframework.stereotype.Component;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
@@ -26,6 +28,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Created by liuq on 2017/3/7.
@@ -139,9 +144,31 @@ public class Pdf2HtmlHandler {
         String cssFileName = type == 1 ? FilenameUtils.getBaseName(filePath) + ".css" : "css" + page + ".css";
         String newCssFileName = page + ".css";
         String cssFileFilePath = FilenameUtils.concat(outPutDir, cssFileName);
+
+
+        String cssHtml = FileUtils.readFileToString(new File(cssFileFilePath));
+        String regex = "src:url(f\\d+.woff)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(cssHtml);
+        while (matcher.find()) {
+            String fontIndex = matcher.group();
+            //找到字体
+            String fontFilePath = FilenameUtils.concat(outPutDir, "f" + fontIndex + ".woff");
+            String newFontName = "font" + page + "_f" + fontIndex + ".woff";
+            String newFontFilePath = FilenameUtils.concat(baseDir, newFontName);
+            File fontFile = new File(fontFilePath);
+            if (fontFile.exists()) {
+                File newFontFile = new File(newFontFilePath);
+                fontFile.renameTo(newFontFile);
+                String fontStyle = "src:url(f" + fontIndex + ".woff)";
+                String newFontStyle = "src:url('./" + dirName + "/" + newFontName + "')";
+                cssHtml = cssHtml.replace(fontStyle, newFontStyle);
+            }
+        }
         String newCssFilePath = FilenameUtils.concat(baseDir, newCssFileName);
-        File cssFile = new File(cssFileFilePath);
-        cssFile.renameTo(new File(newCssFilePath));
+        FileUtils.writeByteArrayToFile(new File(newCssFilePath), cssHtml.getBytes());
+
+
         //处理背景图片
         Path bgPath = Files.list(Paths.get(outPutDir)).filter(f -> f.toFile().getName().startsWith("bg")).findFirst().orElse(null);
         String bgName = "";
@@ -153,6 +180,9 @@ public class Pdf2HtmlHandler {
             String newBgFilePath = FilenameUtils.concat(baseDir, newBgName);
             bgFile.renameTo(new File(newBgFilePath));
         }
+        //处理字体
+
+
         handleHtml(outPutDir, dataFile, pageFile, dirName, cssFileName, newCssFileName, bgName, newBgName);
         return pagePath;
     }
@@ -160,8 +190,8 @@ public class Pdf2HtmlHandler {
     private void handleHtml(String outPutDir, File dataFile, File pageFile, String dirName, String cssName, String newCssName, String bgName, String newBgName) throws IOException {
         try {
             String html = FileUtils.readFileToString(dataFile);
-            html=html.replace("<!-- Created by pdf2htmlEX (https://github.com/coolwanglu/pdf2htmlex) -->","");
-            html=html.replace("Evaluation Warning : The document was created with  Spire.Presentation for .NET","");
+            html = html.replace("<!-- Created by pdf2htmlEX (https://github.com/coolwanglu/pdf2htmlex) -->", "");
+            html = html.replace("Evaluation Warning : The document was created with  Spire.Presentation for .NET", "");
             html = html.replace("base.min.css", "../static/css/base.min.css");
             html = html.replace("<link rel=\"stylesheet\" href=\"fancy.min.css\"/>", "");
             html = html.replace(cssName, "./" + dirName + "/" + newCssName);
@@ -186,7 +216,7 @@ public class Pdf2HtmlHandler {
         } catch (Exception ex) {
             log.error("handelHtml happened exception", ex);
         } finally {
-           // FileUtils.deleteQuietly(new File(outPutDir));
+            FileUtils.deleteQuietly(new File(outPutDir));
         }
     }
 }

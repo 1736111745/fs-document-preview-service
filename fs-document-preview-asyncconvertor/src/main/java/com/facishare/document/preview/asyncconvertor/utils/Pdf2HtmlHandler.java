@@ -234,7 +234,10 @@ public class Pdf2HtmlHandler {
         Matcher matcher = pattern.matcher(html);
         while (matcher.find())
         {
-            System.out.println(matcher.group());
+           String fontIndex=matcher.group();
+            String fontStyle = "url(f" + fontIndex + ".woff)";
+            String newFontStyle = "url('./33.woff')";
+            cssHtml = cssHtml.replace(fontStyle, newFontStyle);
         }
 
     }

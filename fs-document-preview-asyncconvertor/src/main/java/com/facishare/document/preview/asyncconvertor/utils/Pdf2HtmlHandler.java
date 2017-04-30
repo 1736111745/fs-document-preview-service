@@ -186,7 +186,7 @@ public class Pdf2HtmlHandler {
         } catch (Exception ex) {
             log.error("handelHtml happened exception", ex);
         } finally {
-            FileUtils.deleteQuietly(new File(outPutDir));
+           // FileUtils.deleteQuietly(new File(outPutDir));
         }
     }
 }

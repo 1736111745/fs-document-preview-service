@@ -162,7 +162,7 @@ public class Pdf2HtmlHandler {
             if (fontFile.exists()) {
                 File newFontFile = new File(newFontFilePath);
                 fontFile.renameTo(newFontFile);
-                String newFontStyle = "url('./" + dirName + "/" + newFontName + "')";
+                String newFontStyle = "url("+ newFontName + ")";
                 cssHtml = cssHtml.replace(fontStyle, newFontStyle);
             }
         }

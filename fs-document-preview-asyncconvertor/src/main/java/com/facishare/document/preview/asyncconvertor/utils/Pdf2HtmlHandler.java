@@ -149,19 +149,19 @@ public class Pdf2HtmlHandler {
 
         String cssHtml = FileUtils.readFileToString(new File(cssFileFilePath));
         String regex = "url\\(f\\d\\.woff\\)";
-        Pattern pattern = Pattern.compile(regex,Pattern.MULTILINE);
+        Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
         Matcher matcher = pattern.matcher(cssHtml);
         while (matcher.find()) {
-            String fontIndex = matcher.group();
+            String fontStyle = matcher.group();
+            String fontName = fontStyle.replace("url(", "").replace(")", "");
             //找到字体
-            String fontFilePath = FilenameUtils.concat(outPutDir, "f" + fontIndex + ".woff");
-            String newFontName = "font" + page + "_f" + fontIndex + ".woff";
+            String fontFilePath = FilenameUtils.concat(outPutDir, fontName);
+            String newFontName = "font_" + page + "_" + fontName;
             String newFontFilePath = FilenameUtils.concat(baseDir, newFontName);
             File fontFile = new File(fontFilePath);
             if (fontFile.exists()) {
                 File newFontFile = new File(newFontFilePath);
                 fontFile.renameTo(newFontFile);
-                String fontStyle = "url(f" + fontIndex + ".woff)";
                 String newFontStyle = "url('./" + dirName + "/" + newFontName + "')";
                 cssHtml = cssHtml.replace(fontStyle, newFontStyle);
             }
@@ -223,22 +223,21 @@ public class Pdf2HtmlHandler {
 
     public static void main(String[] args) {
 
-        String html="@font-face{font-family:ff1;src:url(f1.woff)format(\"woff\");}.ff1{font-family:ff1;line-height:0.908542;font-style:normal;font-weight:normal;visibility:visible;}\n" +
-                "@font-face{font-family:ff2;src:url(f2.woff)format(\"woff\");}.ff2{font-family:ff2;line-height:0.908542;font-style:normal;font-weight:normal;visibility:visible;}\n" +
-                "@font-face{font-family:ff3;src:url(f3.woff)format(\"woff\");}.ff3{font-family:ff3;line-height:1.051758;font-style:normal;font-weight:normal;visibility:visible;}\n" +
-                "@font-face{font-family:ff4;src:url(f4.woff)format(\"woff\");}.ff4{font-family:ff4;line-height:1.051758;font-style:normal;font-weight:normal;visibility:visible;}\n" +
-                "@font-face{font-family:ff5;src:url(f5.woff)format(\"woff\");}.ff5{font-family:ff5;line-height:1.015137;font-style:normal;font-weight:normal;visibility:visible;}\n" +
-                ".m0{transform:matrix(0.419956,0.000000,0.000000,0.419956,0,0);-ms-transfo";
-        String regex = "url\\(f\\d\\.woff\\)";
-        Pattern pattern = Pattern.compile(regex,Pattern.MULTILINE);
-        Matcher matcher = pattern.matcher(html);
-        while (matcher.find())
-        {
-           String fontIndex=matcher.group();
-            String fontStyle = "url(f" + fontIndex + ".woff)";
-            String newFontStyle = "url('./33.woff')";
-            html = html.replace(fontStyle, newFontStyle);
-        }
+//        String html = "@font-face{font-family:ff1;src:url(f1.woff)format(\"woff\");}.ff1{font-family:ff1;line-height:0.908542;font-style:normal;font-weight:normal;visibility:visible;}\n" +
+//                "@font-face{font-family:ff2;src:url(f2.woff)format(\"woff\");}.ff2{font-family:ff2;line-height:0.908542;font-style:normal;font-weight:normal;visibility:visible;}\n" +
+//                "@font-face{font-family:ff3;src:url(f3.woff)format(\"woff\");}.ff3{font-family:ff3;line-height:1.051758;font-style:normal;font-weight:normal;visibility:visible;}\n" +
+//                "@font-face{font-family:ff4;src:url(f4.woff)format(\"woff\");}.ff4{font-family:ff4;line-height:1.051758;font-style:normal;font-weight:normal;visibility:visible;}\n" +
+//                "@font-face{font-family:ff5;src:url(f5.woff)format(\"woff\");}.ff5{font-family:ff5;line-height:1.015137;font-style:normal;font-weight:normal;visibility:visible;}\n" +
+//                ".m0{transform:matrix(0.419956,0.000000,0.000000,0.419956,0,0);-ms-transfo";
+//        String regex = "url\\(f\\d\\.woff\\)";
+//        Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+//        Matcher matcher = pattern.matcher(html);
+//        while (matcher.find()) {
+//            String fontStyle = matcher.group();
+//            String fontName = fontStyle.replace("url(", "").replace(")", "");
+//            String newFontStyle = "url('./33.woff')";
+//            html = html.replace(fontStyle, newFontStyle);
+//        }
 
     }
 }

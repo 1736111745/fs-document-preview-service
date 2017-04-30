@@ -2,6 +2,7 @@ package com.facishare.document.preview.asyncconvertor.utils;
 
 import com.aspose.pdf.Font;
 import com.aspose.pdf.Operator;
+import com.aspose.pdf.SoundAnnotation;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
@@ -147,8 +148,8 @@ public class Pdf2HtmlHandler {
 
 
         String cssHtml = FileUtils.readFileToString(new File(cssFileFilePath));
-        String regex = "src:url(f\\d+.woff)";
-        Pattern pattern = Pattern.compile(regex);
+        String regex = "url\\(f\\d\\.woff\\)";
+        Pattern pattern = Pattern.compile(regex,Pattern.MULTILINE);
         Matcher matcher = pattern.matcher(cssHtml);
         while (matcher.find()) {
             String fontIndex = matcher.group();
@@ -160,8 +161,8 @@ public class Pdf2HtmlHandler {
             if (fontFile.exists()) {
                 File newFontFile = new File(newFontFilePath);
                 fontFile.renameTo(newFontFile);
-                String fontStyle = "src:url(f" + fontIndex + ".woff)";
-                String newFontStyle = "src:url('./" + dirName + "/" + newFontName + "')";
+                String fontStyle = "url(f" + fontIndex + ".woff)";
+                String newFontStyle = "url('./" + dirName + "/" + newFontName + "')";
                 cssHtml = cssHtml.replace(fontStyle, newFontStyle);
             }
         }
@@ -218,5 +219,23 @@ public class Pdf2HtmlHandler {
         } finally {
             FileUtils.deleteQuietly(new File(outPutDir));
         }
+    }
+
+    public static void main(String[] args) {
+
+        String html="@font-face{font-family:ff1;src:url(f1.woff)format(\"woff\");}.ff1{font-family:ff1;line-height:0.908542;font-style:normal;font-weight:normal;visibility:visible;}\n" +
+                "@font-face{font-family:ff2;src:url(f2.woff)format(\"woff\");}.ff2{font-family:ff2;line-height:0.908542;font-style:normal;font-weight:normal;visibility:visible;}\n" +
+                "@font-face{font-family:ff3;src:url(f3.woff)format(\"woff\");}.ff3{font-family:ff3;line-height:1.051758;font-style:normal;font-weight:normal;visibility:visible;}\n" +
+                "@font-face{font-family:ff4;src:url(f4.woff)format(\"woff\");}.ff4{font-family:ff4;line-height:1.051758;font-style:normal;font-weight:normal;visibility:visible;}\n" +
+                "@font-face{font-family:ff5;src:url(f5.woff)format(\"woff\");}.ff5{font-family:ff5;line-height:1.015137;font-style:normal;font-weight:normal;visibility:visible;}\n" +
+                ".m0{transform:matrix(0.419956,0.000000,0.000000,0.419956,0,0);-ms-transfo";
+        String regex = "url\\(f\\d\\.woff\\)";
+        Pattern pattern = Pattern.compile(regex,Pattern.MULTILINE);
+        Matcher matcher = pattern.matcher(html);
+        while (matcher.find())
+        {
+            System.out.println(matcher.group());
+        }
+
     }
 }

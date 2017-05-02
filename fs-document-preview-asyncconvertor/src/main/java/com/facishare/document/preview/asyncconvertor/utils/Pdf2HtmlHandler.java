@@ -1,15 +1,16 @@
 package com.facishare.document.preview.asyncconvertor.utils;
 
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
+import com.github.autoconf.ConfigFactory;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import jdk.nashorn.internal.ir.WhileNode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.poi.hssf.record.NameRecord;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.aspectj.weaver.ast.Var;
 import org.springframework.stereotype.Component;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
@@ -24,7 +25,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.BreakIterator;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +45,13 @@ import java.util.regex.Pattern;
 public class Pdf2HtmlHandler {
     @ReloadableProperty("pdf2HtmlTimeout")
     private int pdf2HtmlTimeout = 60;
+
+    private static Map<String, String> fontMap = new HashMap<>();
+
+
+    static {
+        ConfigFactory.getConfig("fs-dps-font-config", conf -> fontMap = conf.getAll());
+    }
 
 
     public String doConvert(ConvertPdf2HtmlMessage message) throws IOException {
@@ -60,8 +72,9 @@ public class Pdf2HtmlHandler {
             ProcessResult result = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
             if (result.getExitValue() == 0) {
                 dataFilePath = handleResult(page, filePath, outPutDir, type);
-            } else
-                log.error("output:{},exit code:{}", result.outputUTF8(), result.getExitValue());
+            } else {
+                log.error("do convert fail!exit value:{}", result.getExitValue());
+            }
         } catch (IOException e) {
             log.error("do convert happened IOException!", e);
         } catch (InterruptedException e) {
@@ -131,6 +144,43 @@ public class Pdf2HtmlHandler {
     }
 
 
+    private String getFontName(String fontFile) {
+
+        String fontName = "yahei";
+        List<String> args = Lists.newArrayList();
+        args.add("ttx");
+        args.add("-t");
+        args.add("name");
+        args.add(fontFile);
+        try {
+            ProcessResult processResult = new ProcessExecutor().command(args).readOutput(false).timeout(1, TimeUnit.SECONDS).execute();
+            if (processResult.getExitValue() == 0) {
+                String fontDescFilePath = fontFile.replace("woff", "ttx");
+                File fontDescFile = new File(fontDescFilePath);
+                if (fontDescFile.exists()) {
+                    String fontDesc = FileUtils.readFileToString(fontDescFile);
+                    Iterator iterator = fontMap.entrySet().iterator();
+                    while (iterator.hasNext()) {
+                        Map.Entry entry = (Map.Entry) iterator.next();
+                        String key = (String) entry.getKey();
+                        if (fontDesc.indexOf(key) > -1) {
+                            fontName = key;
+                            break;
+                        }
+                    }
+                }
+            } else
+                log.error("get font name fail,exit value:{}", processResult.getExitValue());
+        } catch (IOException e) {
+            log.error("do get font name  happened IOException!", e);
+        } catch (InterruptedException e) {
+            log.error("do get font name happened  InterruptedException!", e);
+        } catch (TimeoutException e) {
+            log.error("do get font name happened TimeoutException!font file:{}", fontFile);
+        }
+        return fontName;
+    }
+
     private String handleResult(int page, String filePath, String outPutDir, int type) throws IOException {
         String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
         String dataFileName = FilenameUtils.getBaseName(filePath) + ".html";
@@ -155,13 +205,11 @@ public class Pdf2HtmlHandler {
             String fontName = fontStyle.replace("url(", "").replace(")", "");
             //找到字体
             String fontFilePath = FilenameUtils.concat(outPutDir, fontName);
-            String newFontName = "font_" + page + "_" + fontName;
-            String newFontFilePath = FilenameUtils.concat(baseDir, newFontName);
             File fontFile = new File(fontFilePath);
             if (fontFile.exists()) {
-                File newFontFile = new File(newFontFilePath);
-                fontFile.renameTo(newFontFile);
-                String newFontStyle = "url("+ newFontName + ")";
+                String realFontName = getFontName(fontFilePath);
+                String realFontUrl = fontMap.get(realFontName);
+                String newFontStyle = "url(" + realFontUrl + ")";
                 cssHtml = cssHtml.replace(fontStyle, newFontStyle);
             }
         }

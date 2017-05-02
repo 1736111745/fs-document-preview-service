@@ -143,7 +143,6 @@ public class Pdf2HtmlHandler {
 
 
     private String getFontName(String fontFile) {
-
         String fontName = "yahei";
         List<String> args = Lists.newArrayList();
         args.add("ttx");
@@ -156,15 +155,13 @@ public class Pdf2HtmlHandler {
                 String fontDescFilePath = fontFile.replace("woff", "ttx");
                 File fontDescFile = new File(fontDescFilePath);
                 if (fontDescFile.exists()) {
-                    String fontDesc = FileUtils.readFileToString(fontDescFile);
+                    String fontDesc = FileUtils.readFileToString(fontDescFile).toLowerCase();
                     log.info(fontDesc);
                     Iterator iterator = fontMap.entrySet().iterator();
                     while (iterator.hasNext()) {
                         Map.Entry entry = (Map.Entry) iterator.next();
                         String key = (String) entry.getKey();
-                        Pattern pattern = Pattern.compile(key, Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
-                        Matcher matcher = pattern.matcher(fontDesc);
-                        if (matcher.find()) {
+                        if (fontDesc.indexOf(key) > -1) {
                             fontName = key;
                             break;
                         }
@@ -269,7 +266,6 @@ public class Pdf2HtmlHandler {
     }
 
     public static void main(String[] args) throws IOException, FontFormatException {
-
 
     }
 }

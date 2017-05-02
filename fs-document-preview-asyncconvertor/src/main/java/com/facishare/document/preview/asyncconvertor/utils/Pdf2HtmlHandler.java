@@ -1,8 +1,5 @@
 package com.facishare.document.preview.asyncconvertor.utils;
 
-import com.aspose.pdf.Font;
-import com.aspose.pdf.Operator;
-import com.aspose.pdf.SoundAnnotation;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
@@ -10,7 +7,9 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.aspectj.weaver.ast.Var;
+import org.apache.poi.hssf.record.NameRecord;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
@@ -19,6 +18,7 @@ import org.zeroturnaround.process.ProcessUtil;
 import org.zeroturnaround.process.Processes;
 import org.zeroturnaround.process.SystemProcess;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Created by liuq on 2017/3/7.
@@ -221,23 +220,10 @@ public class Pdf2HtmlHandler {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, FontFormatException {
+        String filePath = "/Users/liuq/Downloads/font_1_f4.ttx";
+        String encoding = "UTF-8";
 
-//        String html = "@font-face{font-family:ff1;src:url(f1.woff)format(\"woff\");}.ff1{font-family:ff1;line-height:0.908542;font-style:normal;font-weight:normal;visibility:visible;}\n" +
-//                "@font-face{font-family:ff2;src:url(f2.woff)format(\"woff\");}.ff2{font-family:ff2;line-height:0.908542;font-style:normal;font-weight:normal;visibility:visible;}\n" +
-//                "@font-face{font-family:ff3;src:url(f3.woff)format(\"woff\");}.ff3{font-family:ff3;line-height:1.051758;font-style:normal;font-weight:normal;visibility:visible;}\n" +
-//                "@font-face{font-family:ff4;src:url(f4.woff)format(\"woff\");}.ff4{font-family:ff4;line-height:1.051758;font-style:normal;font-weight:normal;visibility:visible;}\n" +
-//                "@font-face{font-family:ff5;src:url(f5.woff)format(\"woff\");}.ff5{font-family:ff5;line-height:1.015137;font-style:normal;font-weight:normal;visibility:visible;}\n" +
-//                ".m0{transform:matrix(0.419956,0.000000,0.000000,0.419956,0,0);-ms-transfo";
-//        String regex = "url\\(f\\d\\.woff\\)";
-//        Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
-//        Matcher matcher = pattern.matcher(html);
-//        while (matcher.find()) {
-//            String fontStyle = matcher.group();
-//            String fontName = fontStyle.replace("url(", "").replace(")", "");
-//            String newFontStyle = "url('./33.woff')";
-//            html = html.replace(fontStyle, newFontStyle);
-//        }
 
     }
 }

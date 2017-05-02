@@ -5,9 +5,11 @@ import com.github.autoconf.ConfigFactory;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
@@ -160,7 +162,9 @@ public class Pdf2HtmlHandler {
                     while (iterator.hasNext()) {
                         Map.Entry entry = (Map.Entry) iterator.next();
                         String key = (String) entry.getKey();
-                        if (fontDesc.indexOf(key) > -1) {
+                        Pattern pattern = Pattern.compile(key, Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+                        Matcher matcher = pattern.matcher(fontDesc);
+                        if (matcher.find()) {
                             fontName = key;
                             break;
                         }

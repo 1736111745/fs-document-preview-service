@@ -5,12 +5,9 @@ import com.github.autoconf.ConfigFactory;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import jdk.nashorn.internal.ir.WhileNode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.aspectj.weaver.ast.Var;
 import org.springframework.stereotype.Component;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
@@ -25,7 +22,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.BreakIterator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -159,6 +155,7 @@ public class Pdf2HtmlHandler {
                 File fontDescFile = new File(fontDescFilePath);
                 if (fontDescFile.exists()) {
                     String fontDesc = FileUtils.readFileToString(fontDescFile);
+                    log.info(fontDesc);
                     Iterator iterator = fontMap.entrySet().iterator();
                     while (iterator.hasNext()) {
                         Map.Entry entry = (Map.Entry) iterator.next();
@@ -194,7 +191,6 @@ public class Pdf2HtmlHandler {
         String cssFileName = type == 1 ? FilenameUtils.getBaseName(filePath) + ".css" : "css" + page + ".css";
         String newCssFileName = page + ".css";
         String cssFileFilePath = FilenameUtils.concat(outPutDir, cssFileName);
-
 
         String cssHtml = FileUtils.readFileToString(new File(cssFileFilePath));
         String regex = "url\\(f\\d\\.woff\\)";
@@ -269,8 +265,6 @@ public class Pdf2HtmlHandler {
     }
 
     public static void main(String[] args) throws IOException, FontFormatException {
-        String filePath = "/Users/liuq/Downloads/font_1_f4.ttx";
-        String encoding = "UTF-8";
 
 
     }

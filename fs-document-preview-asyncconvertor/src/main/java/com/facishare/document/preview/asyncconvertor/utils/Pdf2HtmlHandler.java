@@ -14,7 +14,6 @@ import org.zeroturnaround.exec.StartedProcess;
 import org.zeroturnaround.process.ProcessUtil;
 import org.zeroturnaround.process.Processes;
 import org.zeroturnaround.process.SystemProcess;
-import sun.font.FileFont;
 
 import java.awt.*;
 import java.io.File;
@@ -217,9 +216,6 @@ public class Pdf2HtmlHandler {
             String newBgFilePath = FilenameUtils.concat(baseDir, newBgName);
             bgFile.renameTo(new File(newBgFilePath));
         }
-        //处理字体
-
-
         handleHtml(outPutDir, dataFile, pageFile, dirName, cssFileName, newCssFileName, bgName, newBgName);
         return pagePath;
     }

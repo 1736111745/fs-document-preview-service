@@ -26,17 +26,9 @@ function loadAllPages() {
 
 function loadViewPort() {
     var docWidth = $(window).width();
-    if (width != "") {
-        docWidth = parseInt(width);
-    }
     var scale = docWidth * 0.96 / 1000;
     var viewport = document.querySelector("meta[name=viewport]");
-    if (width != "") {
-        viewport.setAttribute('content', 'initial-scale=' + scale + ', width=1000px');
-    }
-    else {
-        viewport.setAttribute('content', 'initial-scale=' + scale + ', width=device-width');
-    }
+    viewport.setAttribute('content', 'initial-scale=' + scale + ', width=device-width');
 }
 
 function loadPageLoader() {

@@ -59,6 +59,8 @@ public class HandlerHtml {
             }
             String html = styleHtml + body.html();
             html = html.replace("\n", "");
+            html = html.replaceAll("font-family:\"Arial\",\"sans-serif\";", "");
+            html = html.replaceAll("font-family:\"宋体\",\"sans-serif\";", "");
             FileUtils.writeByteArrayToFile(new File(filePath), html.getBytes(encoding), false);
         } catch (
                 Exception e)

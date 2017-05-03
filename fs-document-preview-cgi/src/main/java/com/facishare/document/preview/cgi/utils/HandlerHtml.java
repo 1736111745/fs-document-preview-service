@@ -22,7 +22,14 @@ public class HandlerHtml {
     public static void process(String filePath, int page) throws IOException {
         try {
             String encoding = "UTF-8";
-            Document document = Jsoup.parse(new File(filePath), encoding);
+            File htmlFile = new File(filePath);
+            if (htmlFile.length() > 1024 * 1024 * 10) {
+                //如果生成的html大于10m，就不给个错误提示
+                String html = "<h1>该工作表数据异常，请检查工作表的行数或者列数是否过大！</h1>";
+                FileUtils.writeByteArrayToFile(htmlFile, html.getBytes(encoding), false);
+                return;
+            }
+            Document document = Jsoup.parse(htmlFile, encoding);
             Element head = document.head();
             Element body = document.body();
             String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
@@ -61,7 +68,7 @@ public class HandlerHtml {
             html = html.replace("\n", "");
             html = html.replaceAll("font-family:\"Arial\",\"sans-serif\";", "");
             html = html.replaceAll("font-family:\"宋体\",\"sans-serif\";", "");
-            FileUtils.writeByteArrayToFile(new File(filePath), html.getBytes(encoding), false);
+            FileUtils.writeByteArrayToFile(htmlFile, html.getBytes(encoding), false);
         } catch (
                 Exception e)
 

@@ -127,7 +127,6 @@ public class Pdf2HtmlHandler {
         return args;
     }
 
-
     private boolean isIgnoreFont(String fontFile) {
         boolean flag = false;
         List<String> args = Lists.newArrayList();

@@ -3,7 +3,6 @@
  */
 var path = getQueryStringByName("path");
 var token = getQueryStringByName("token");
-var width = getQueryStringByName("width");
 var pageCount = 0;
 var sg = "";//安全组
 function getPreviewInfo() {
@@ -35,7 +34,7 @@ function doPreview() {
     else
         route = "pdf2html";
     console.log("route:" + route);
-    var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg + "&width=" + width + "&rdm=4";
+    var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg + "&rdm=3";
     location.href = url;
 }
 

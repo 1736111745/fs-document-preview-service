@@ -31,7 +31,12 @@ function loadViewPort() {
     }
     var scale = docWidth * 0.96 / 1000;
     var viewport = document.querySelector("meta[name=viewport]");
-    viewport.setAttribute('content', 'initial-scale=' + scale + ', width=device-width');
+    if (width != "") {
+        viewport.setAttribute('content', 'initial-scale=' + scale + ', width=1000px');
+    }
+    else {
+        viewport.setAttribute('content', 'initial-scale=' + scale + ', width=device-width');
+    }
 }
 
 function loadPageLoader() {

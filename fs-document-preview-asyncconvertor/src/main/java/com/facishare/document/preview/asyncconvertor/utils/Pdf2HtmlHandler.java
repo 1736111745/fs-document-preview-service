@@ -14,6 +14,7 @@ import org.zeroturnaround.exec.StartedProcess;
 import org.zeroturnaround.process.ProcessUtil;
 import org.zeroturnaround.process.Processes;
 import org.zeroturnaround.process.SystemProcess;
+import sun.font.FileFont;
 
 import java.awt.*;
 import java.io.File;
@@ -80,7 +81,7 @@ public class Pdf2HtmlHandler {
                 }
             }
             if (type == 1) {
-                // FileUtils.deleteQuietly(new File(filePath));
+                FileUtils.deleteQuietly(new File(filePath));
             }
         }
         return dataFilePath;
@@ -127,6 +128,37 @@ public class Pdf2HtmlHandler {
         return args;
     }
 
+
+    private boolean isIgnoreFont(String fontFile) {
+        boolean flag = false;
+        List<String> args = Lists.newArrayList();
+        args.add("ttx");
+        args.add("-t");
+        args.add("name");
+        args.add(fontFile);
+        try {
+            ProcessResult processResult = new ProcessExecutor().command(args).readOutput(false).timeout(1, TimeUnit.SECONDS).execute();
+            if (processResult.getExitValue() == 0) {
+                String fontDescFilePath = fontFile.replace("woff", "ttx");
+                File fontDescFile = new File(fontDescFilePath);
+                if (fontDescFile.exists()) {
+                    String fontDesc = FileUtils.readFileToString(fontDescFile);
+                    if (fontDesc.indexOf("DFKai-SB") > -1) {
+                        flag = true;
+                    }
+                }
+            } else
+                log.error("get font name fail,exit value:{}", processResult.getExitValue());
+        } catch (IOException e) {
+            log.error("do get font name  happened IOException!", e);
+        } catch (InterruptedException e) {
+            log.error("do get font name happened  InterruptedException!", e);
+        } catch (TimeoutException e) {
+            log.error("do get font name happened TimeoutException!font file:{}", fontFile);
+        }
+        return flag;
+    }
+
     private String handleResult(int page, String filePath, String outPutDir, int type) throws IOException {
         String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
         String dataFileName = FilenameUtils.getBaseName(filePath) + ".html";
@@ -151,14 +183,24 @@ public class Pdf2HtmlHandler {
             String fontName = fontStyle.replace("url(", "").replace(")", "");
             //找到字体
             String fontFilePath = FilenameUtils.concat(outPutDir, fontName);
-            String newFontName = "font_" + page + "_" + fontName;
-            String newFontFilePath = FilenameUtils.concat(baseDir, newFontName);
             File fontFile = new File(fontFilePath);
             if (fontFile.exists()) {
-                File newFontFile = new File(newFontFilePath);
-                fontFile.renameTo(newFontFile);
-                String newFontStyle = "url(" + newFontName + ")";
-                cssHtml = cssHtml.replace(fontStyle, newFontStyle);
+                boolean flag = isIgnoreFont(fontFilePath);
+                if (flag) {
+                    String regexFontFace = "@font-face.*format\\(\"woff\"\\);}";
+                    cssHtml = cssHtml.replaceAll(regexFontFace, "");//取消webfont，减少用户流量和提高页面加载速度。
+                    String regexCommonFont = "font-family:ff\\d";
+                    String securityFontFamily = " font-family:Helvetica,monospace,sans-self";
+                    cssHtml = cssHtml.replaceAll(regexCommonFont, securityFontFamily);//采用通用字体渲染网页
+                    break;
+                } else {
+                    String newFontName = "font_" + page + "_" + fontName;
+                    String newFontFilePath = FilenameUtils.concat(baseDir, newFontName);
+                    File newFontFile = new File(newFontFilePath);
+                    fontFile.renameTo(newFontFile);
+                    String newFontStyle = "url(" + newFontName + ")";
+                    cssHtml = cssHtml.replace(fontStyle, newFontStyle);
+                }
             }
         }
         String newCssFilePath = FilenameUtils.concat(baseDir, newCssFileName);

@@ -141,44 +141,6 @@ public class Pdf2HtmlHandler {
         return args;
     }
 
-
-    private String getFontName(String fontFile) {
-        String fontName = "yahei";
-        List<String> args = Lists.newArrayList();
-        args.add("ttx");
-        args.add("-t");
-        args.add("name");
-        args.add(fontFile);
-        try {
-            ProcessResult processResult = new ProcessExecutor().command(args).readOutput(false).timeout(1, TimeUnit.SECONDS).execute();
-            if (processResult.getExitValue() == 0) {
-                String fontDescFilePath = fontFile.replace("woff", "ttx");
-                File fontDescFile = new File(fontDescFilePath);
-                if (fontDescFile.exists()) {
-                    String fontDesc = FileUtils.readFileToString(fontDescFile).toLowerCase();
-                    log.info(fontDesc);
-                    Iterator iterator = fontMap.entrySet().iterator();
-                    while (iterator.hasNext()) {
-                        Map.Entry entry = (Map.Entry) iterator.next();
-                        String key = (String) entry.getKey();
-                        if (fontDesc.indexOf(key) > -1) {
-                            fontName = key;
-                            break;
-                        }
-                    }
-                }
-            } else
-                log.error("get font name fail,exit value:{}", processResult.getExitValue());
-        } catch (IOException e) {
-            log.error("do get font name  happened IOException!", e);
-        } catch (InterruptedException e) {
-            log.error("do get font name happened  InterruptedException!", e);
-        } catch (TimeoutException e) {
-            log.error("do get font name happened TimeoutException!font file:{}", fontFile);
-        }
-        return fontName;
-    }
-
     private String handleResult(int page, String filePath, String outPutDir, int type) throws IOException {
         String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
         String dataFileName = FilenameUtils.getBaseName(filePath) + ".html";
@@ -192,13 +154,27 @@ public class Pdf2HtmlHandler {
         String cssFileName = type == 1 ? FilenameUtils.getBaseName(filePath) + ".css" : "css" + page + ".css";
         String newCssFileName = page + ".css";
         String cssFileFilePath = FilenameUtils.concat(outPutDir, cssFileName);
-        String cssHtml = FileUtils.readFileToString(new File(cssFileFilePath));
-        String regexFontFace = "@font-face.*format\\(\"woff\"\\);}";
-        cssHtml=cssHtml.replaceAll(regexFontFace,"");//取消webfont，减少用户流量和提高页面加载速度。
-        String regexCommonFont="font-family:ff\\d";
-        String securityFontFamily=" font-family:Helvetica,monospace,sans-self";
 
-        cssHtml=cssHtml.replaceAll(regexCommonFont,securityFontFamily);//采用通用字体渲染网页
+
+        String cssHtml = FileUtils.readFileToString(new File(cssFileFilePath));
+        String regex = "url\\(f\\d\\.woff\\)";
+        Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+        Matcher matcher = pattern.matcher(cssHtml);
+        while (matcher.find()) {
+            String fontStyle = matcher.group();
+            String fontName = fontStyle.replace("url(", "").replace(")", "");
+            //找到字体
+            String fontFilePath = FilenameUtils.concat(outPutDir, fontName);
+            String newFontName = "font_" + page + "_" + fontName;
+            String newFontFilePath = FilenameUtils.concat(baseDir, newFontName);
+            File fontFile = new File(fontFilePath);
+            if (fontFile.exists()) {
+                File newFontFile = new File(newFontFilePath);
+                fontFile.renameTo(newFontFile);
+                String newFontStyle = "url("+ newFontName + ")";
+                cssHtml = cssHtml.replace(fontStyle, newFontStyle);
+            }
+        }
         String newCssFilePath = FilenameUtils.concat(baseDir, newCssFileName);
         FileUtils.writeByteArrayToFile(new File(newCssFilePath), cssHtml.getBytes());
 

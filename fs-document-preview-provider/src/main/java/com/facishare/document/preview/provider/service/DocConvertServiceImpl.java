@@ -19,45 +19,45 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @Slf4j
 public class DocConvertServiceImpl implements DocConvertService {
-  @Autowired
-  private DocConvertor docConvertor;
-  @Autowired
-  private CounterService counterService;
+    @Autowired
+    private DocConvertor docConvertor;
+    @Autowired
+    private CounterService counterService;
 
-  @Override
-  public GetPageCountResult getPageCount(GetPageCountArg arg) throws Exception {
-    log.info("begin get page count:{}", arg);
-    int pageCount = ConvertorHelper.getOldWordOrPPTPageCount(arg.getFilePath());
-    if (pageCount < 0) {
-      counterService.inc("get-page-count-fail");
-      throw new RuntimeException("convertor is busy, file: " + arg.getFilePath());
-    } else {
-      counterService.inc("get-page-count-ok");
+    @Override
+    public GetPageCountResult getPageCount(GetPageCountArg arg) throws Exception {
+        log.info("begin get page count:{}", arg);
+        int pageCount = ConvertorHelper.getOldWordOrPPTPageCount(arg.getFilePath());
+        if (pageCount < 0) {
+            counterService.inc("get-page-count-fail");
+            throw new RuntimeException("convertor is busy, file: " + arg.getFilePath());
+        } else {
+            counterService.inc("get-page-count-ok");
+        }
+        return GetPageCountResult.builder().pageCount(pageCount).build();
     }
-    return GetPageCountResult.builder().pageCount(pageCount).build();
-  }
 
-  public ConvertDocResult convertDoc(ConvertDocArg arg) throws Exception {
-    log.info("begin convert doc,arg:{}", arg);
-    String path = arg.getPath();
-    String originalFilePath = arg.getOriginalFilePath();
-    int page = arg.getPage();
-    int type = arg.getType();
-    String dataFilePath = docConvertor.doConvert(path, originalFilePath, page, type);
-    if (Strings.isNullOrEmpty(dataFilePath)) {
-      counterService.inc("convert-fail");
-      throw new RuntimeException("cannot convert, file: " + originalFilePath);
-    } else {
-      counterService.inc("convert-ok");
+    public ConvertDocResult convertDoc(ConvertDocArg arg) throws Exception {
+        log.info("begin convert doc,arg:{}", arg);
+        String path = arg.getPath();
+        String originalFilePath = arg.getOriginalFilePath();
+        int page = arg.getPage();
+        int type = arg.getType();
+        String dataFilePath = docConvertor.doConvert(path, originalFilePath, page, type);
+        if (Strings.isNullOrEmpty(dataFilePath)) {
+            counterService.inc("convert-fail");
+            throw new RuntimeException("cannot convert, file: " + originalFilePath);
+        } else {
+            counterService.inc("convert-ok");
+        }
+        ConvertDocResult result = ConvertDocResult.builder().dataFilePath(dataFilePath).build();
+        log.info("end convert doc,result:{}", result);
+        return result;
     }
-    ConvertDocResult result = ConvertDocResult.builder().dataFilePath(dataFilePath).build();
-    log.info("end convert doc,result:{}", result);
-    return result;
-  }
 
-  @Override
-  public AsyncConvertDocResult asyncConvertDoc(AsyncConvertDocArg arg) throws Exception {
-    AsyncConvertDocResult asyncConvertDocResult = AsyncConvertDocResult.builder().success(true).build();
-    return asyncConvertDocResult;
-  }
+    @Override
+    public AsyncConvertDocResult asyncConvertDoc(AsyncConvertDocArg arg) throws Exception {
+        AsyncConvertDocResult asyncConvertDocResult = AsyncConvertDocResult.builder().success(true).build();
+        return asyncConvertDocResult;
+    }
 }

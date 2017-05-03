@@ -192,27 +192,13 @@ public class Pdf2HtmlHandler {
         String cssFileName = type == 1 ? FilenameUtils.getBaseName(filePath) + ".css" : "css" + page + ".css";
         String newCssFileName = page + ".css";
         String cssFileFilePath = FilenameUtils.concat(outPutDir, cssFileName);
-
         String cssHtml = FileUtils.readFileToString(new File(cssFileFilePath));
-        String regex = "url\\(f\\d\\.woff\\)";
-        Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
-        Matcher matcher = pattern.matcher(cssHtml);
-        while (matcher.find()) {
-            String fontStyle = matcher.group();
-            String fontName = fontStyle.replace("url(", "").replace(")", "");
-            //找到字体
-            String fontFilePath = FilenameUtils.concat(outPutDir, fontName);
-            File fontFile = new File(fontFilePath);
-            if (fontFile.exists()) {
-                String realFontName = getFontName(fontFilePath);
-                String realFontUrl = fontMap.get(realFontName);
-                String newFontStyle = "url(" + realFontUrl + ")";
-                cssHtml = cssHtml.replace(fontStyle, newFontStyle);
-            }
-        }
+        String regexFontFace = "@font-face.*format\\(\"woff\"\\);}";
+        cssHtml=cssHtml.replaceAll(regexFontFace,"");//取消webfont，减少用户流量和提高页面加载速度。
+        String regexCommonFont="font-family:ff\\d";
+        cssHtml=cssHtml.replaceAll(regexCommonFont,"font-family:Helvetica");//采用通用字体渲染网页
         String newCssFilePath = FilenameUtils.concat(baseDir, newCssFileName);
         FileUtils.writeByteArrayToFile(new File(newCssFilePath), cssHtml.getBytes());
-
 
         //处理背景图片
         Path bgPath = Files.list(Paths.get(outPutDir)).filter(f -> f.toFile().getName().startsWith("bg")).findFirst().orElse(null);
@@ -266,6 +252,14 @@ public class Pdf2HtmlHandler {
     }
 
     public static void main(String[] args) throws IOException, FontFormatException {
+        String s = "@font-face{font-family:ff1;src:url(https://a9.fspage.com/FSR/fonts/simsun.woff)format(\"woff\");}.ff1{font-family:ff1;line-height:0.964844;font-style:normal;font-weight:normal;visibility:visible;}\n" +
+                "@font-face{font-family:ff2;src:url(https://a9.fspage.com/FSR/fonts/simsun.woff)format(\"woff\");}.ff2{font-family:ff2;line-height:0.964844;font-style:normal;font-weight:normal;visibility:visible;}\n" +
+                "@font-face{font-family:ff3;src:url(https://a9.fspage.com/FSR/fonts/simsun.woff)format(\"woff\");}.ff3{font-family:ff3;line-height:0.964844;font-style:normal;font-weight:normal;visibility:visible;}\n" +
+                "@font-face{font-family:ff4;src:url(https://a9.fspage.com/FSR/fonts/msyh.woff)format(\"woff\");}.ff4{font-family:ff4;line-height:0.795410;font-style:normal;font-weight:normal;visibility:visible;}";
+        String regex = "@font-face.*format\\(\"woff\"\\);}";
+        s=s.replaceAll(regex,"");
 
+        String regex1="font-family:ff\\d";
+        s=s.replaceAll(regex1,"font-family:Helvetica");
     }
 }

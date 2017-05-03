@@ -196,6 +196,9 @@ public class Pdf2HtmlHandler {
         String regexFontFace = "@font-face.*format\\(\"woff\"\\);}";
         cssHtml=cssHtml.replaceAll(regexFontFace,"");//取消webfont，减少用户流量和提高页面加载速度。
         String regexCommonFont="font-family:ff\\d";
+        String securityFontFamlily="font-family:Tahoma,Arial,Roboto,\"Droid Sans\",\"Helvetica Neue\",\"Droid Sans Fallback\",\"Heiti SC\",\"Hiragino Sans GB\",Simsun,sans-self";
+        ;
+
         cssHtml=cssHtml.replaceAll(regexCommonFont,"font-family:Helvetica");//采用通用字体渲染网页
         String newCssFilePath = FilenameUtils.concat(baseDir, newCssFileName);
         FileUtils.writeByteArrayToFile(new File(newCssFilePath), cssHtml.getBytes());

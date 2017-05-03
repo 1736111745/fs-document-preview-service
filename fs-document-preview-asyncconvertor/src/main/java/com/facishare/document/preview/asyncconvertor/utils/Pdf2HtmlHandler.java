@@ -1,15 +1,12 @@
 package com.facishare.document.preview.asyncconvertor.utils;
 
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
-import com.github.autoconf.ConfigFactory;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
@@ -24,10 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -43,14 +37,6 @@ import java.util.regex.Pattern;
 public class Pdf2HtmlHandler {
     @ReloadableProperty("pdf2HtmlTimeout")
     private int pdf2HtmlTimeout = 60;
-
-    private static Map<String, String> fontMap = new HashMap<>();
-
-
-    static {
-        ConfigFactory.getConfig("fs-dps-font-config", conf -> fontMap = conf.getAll());
-    }
-
 
     public String doConvert(ConvertPdf2HtmlMessage message) throws IOException {
         String dataFilePath = "";
@@ -94,7 +80,7 @@ public class Pdf2HtmlHandler {
                 }
             }
             if (type == 1) {
-                FileUtils.deleteQuietly(new File(filePath));
+               // FileUtils.deleteQuietly(new File(filePath));
             }
         }
         return dataFilePath;
@@ -171,7 +157,7 @@ public class Pdf2HtmlHandler {
             if (fontFile.exists()) {
                 File newFontFile = new File(newFontFilePath);
                 fontFile.renameTo(newFontFile);
-                String newFontStyle = "url("+ newFontName + ")";
+                String newFontStyle = "url(" + newFontName + ")";
                 cssHtml = cssHtml.replace(fontStyle, newFontStyle);
             }
         }
@@ -235,9 +221,9 @@ public class Pdf2HtmlHandler {
                 "@font-face{font-family:ff3;src:url(https://a9.fspage.com/FSR/fonts/simsun.woff)format(\"woff\");}.ff3{font-family:ff3;line-height:0.964844;font-style:normal;font-weight:normal;visibility:visible;}\n" +
                 "@font-face{font-family:ff4;src:url(https://a9.fspage.com/FSR/fonts/msyh.woff)format(\"woff\");}.ff4{font-family:ff4;line-height:0.795410;font-style:normal;font-weight:normal;visibility:visible;}";
         String regex = "@font-face.*format\\(\"woff\"\\);}";
-        s=s.replaceAll(regex,"");
+        s = s.replaceAll(regex, "");
 
-        String regex1="font-family:ff\\d";
-        s=s.replaceAll(regex1,"font-family:Helvetica");
+        String regex1 = "font-family:ff\\d";
+        s = s.replaceAll(regex1, "font-family:Helvetica");
     }
 }

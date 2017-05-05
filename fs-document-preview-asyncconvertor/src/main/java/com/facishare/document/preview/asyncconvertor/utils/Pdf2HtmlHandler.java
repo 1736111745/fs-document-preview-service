@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * Created by liuq on 2017/3/7.
@@ -135,7 +136,7 @@ public class Pdf2HtmlHandler {
         args.add("name");
         args.add(fontFile);
         try {
-            ProcessResult processResult = new ProcessExecutor().command(args).readOutput(false).timeout(1, TimeUnit.SECONDS).execute();
+            ProcessResult processResult = new ProcessExecutor().command(args).readOutput(true).timeout(1, TimeUnit.SECONDS).execute();
             if (processResult.getExitValue() == 0) {
                 String fontDescFilePath = fontFile.replace("woff", "ttx");
                 File fontDescFile = new File(fontDescFilePath);
@@ -145,8 +146,9 @@ public class Pdf2HtmlHandler {
                         flag = true;
                     }
                 }
-            } else
+            } else {
                 log.error("get font name fail,exit value:{}", processResult.getExitValue());
+            }
         } catch (IOException e) {
             log.error("do get font name  happened IOException!", e);
         } catch (InterruptedException e) {
@@ -170,8 +172,6 @@ public class Pdf2HtmlHandler {
         String cssFileName = type == 1 ? FilenameUtils.getBaseName(filePath) + ".css" : "css" + page + ".css";
         String newCssFileName = page + ".css";
         String cssFileFilePath = FilenameUtils.concat(outPutDir, cssFileName);
-
-
         String cssHtml = FileUtils.readFileToString(new File(cssFileFilePath));
         String regex = "url\\(f\\d\\.woff\\)";
         Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
@@ -203,11 +203,13 @@ public class Pdf2HtmlHandler {
         }
         String newCssFilePath = FilenameUtils.concat(baseDir, newCssFileName);
         FileUtils.writeByteArrayToFile(new File(newCssFilePath), cssHtml.getBytes());
-
         //处理背景图片
-        Path bgPath = Files.list(Paths.get(outPutDir)).filter(f -> f.toFile().getName().startsWith("bg")).findFirst().orElse(null);
         String bgName = "";
         String newBgName = "";
+        Path bgPath;
+        try (Stream<Path> stream = Files.list(Paths.get(outPutDir)).filter(f -> f.toFile().getName().startsWith("bg"))) {
+            bgPath = stream.findFirst().orElse(null);
+        }
         if (bgPath != null) {
             File bgFile = bgPath.toFile();
             bgName = bgFile.getName();
@@ -253,9 +255,10 @@ public class Pdf2HtmlHandler {
     }
 
     public static void main(String[] args) throws IOException, FontFormatException {
-        String s = "ce:nowrap; background:auto; mso-pattern:auto; font-size:10pt; font-weight:400; font-style:normal; font-family:\"Arial\",\"sans-serif\"; mso-protection:locked visible; mso-style-name:\"常规 21\"; }.style29 { text-align:general; vertical-align:bottom; white-space:nowrap; background:auto; mso-pattern:auto; font-size:10pt; font-weight:400; font-style:normal; font-family:\"Arial\",\"sans-serif\"; mso-protection:locked visible; mso-style-name:\"常规 10\"; }.style30 { text-align:general; vertical-align:bottom; white-space:nowrap; background:auto; mso-pattern:auto; font-size:10pt; font-weight:400; font-style:normal; font-family:\"Arial\",\"sans-serif\"; mso-protection:locked visible; mso-style-name:\"常规 11\"; }.style31 { text-align:general; vertical-align:bottom; white-space:nowrap; background:auto; mso-pattern:auto; font-size:10pt; font-weight:400; font-style:normal; font-family:\"Arial\",\"sans-serif\"; mso-protection:locked visible; mso-style-name:\"常规 13\"; }.style32 { text-align:general; vertical-align:bottom; white-space:nowrap; background:auto; mso-pattern:auto; font-size:10pt; font-weight:400; font-style:normal; font-family:\"Arial\",\"sans-serif\"; mso-protection:locked visible; mso-style-name:\"常规 14\"; }.style33 { text-align:general; vertical-align:bottom; white-space:nowrap; background:auto; mso-pattern:auto; font-size:10pt; font-weight:400; font-style:normal; font-family:\"Arial\",\"sans-serif\"; mso-protection:locked visible; mso-style-name:\"常规 15\"; }.style34 { text-align:general; vertical-align:bottom; white-space:nowrap; background:auto; mso-pattern:auto; font-size:10pt; font-weight:400; font-style:normal; font-family:\"Arial\",\"sans-serif\"; mso-protection:locked visible; mso-style-name:\"常规 20\"; }.style35 { text-align:general; vertical-align:bottom; white-space:nowrap; background:auto; mso-pattern:auto; font-size:10pt; font-weight:400; font-style:normal; font-family:\"Arial\",\"sans-serif\"; mso-protection:locked visible; mso-style-name:\"常规 17\"; }.style36 { text-align:general; vertical-align:bottom; white-space:nowrap; background:auto; mso-pattern:auto; font-size:10pt; font-weight:400; font-style:normal; font-family:\"Arial\",\"sans-serif\"; mso-protection:locked visible; mso-style-name:\"常规 22\"; }.style37 { text-align:general; vertical-align:bottom; white-space:nowrap; background:auto; mso-pattern:auto; font-size:10pt; font-weight:400; font-style:normal; font-family:\"Arial\",\"sans-serif\"; mso-protection:locked visible; mso-style-name:\"常规 18\"; }.style38 { text-align:general; vertical-align:bottom; white-space:nowrap; background:auto; mso-pattern:auto; font-size:10pt; font-weight:400; font-style:normal; font-family:\"Arial\",\"sans-serif\"; mso-protection:locked visible; mso-style-name:\"常规 23\"; }.style39 { text-align:general; vertical-align:bottom; white-space:nowrap; background:auto; mso-pattern:auto; font-size:10pt; font-weight:400; font-style:normal; font-family:\"Arial\",\"sans-serif\"; mso-protection:locked visible; mso-style-name:\"常规 19\"; }.style40 { text-align:general; vertical-align:bottom; white-space:nowrap; background:auto; mso-pattern:auto; font-size:10pt; font-weight:400; font-style:normal; font-family:\"Arial\",\"sans-serif\"; mso-protection:locked visible; mso-style-name:\"常规 24\"; }.style41 { text-align:general; vertical-align:bottom; white-space:nowrap; background:auto; mso-pattern:auto; font-size:10pt; font-weight:400; font-style:normal; font-family:\"Arial\",\"sans-serif\"; mso-protection:locked visible; mso-style-name:\"常规 2\"; }.style42 { text-align:general; vertical-align:bottom; white-space:nowrap; background:auto; mso-pattern:auto; font-size:10pt; font-weight:400; font-style:normal; font-family:\"Arial\",\"sans-serif\"; mso-protection:locked visible; mso-style-name:\"常规 30\"; }.style43 { text-align:general; vertical-align:bottom; white-space:nowrap; background:auto; mso-pattern:auto; font-size:10pt; font-weight:400; font-style:normal; font-family:\"Arial\",\"sans-serif\"; mso-protection:locked visible; mso-style-name:\"常规 25\"; }.style44 { text-align:general; vertical-align:bottom; white-space:nowrap; background:auto; mso-pattern:auto; font-}";
-        s = s.replaceAll("font-family:\"Arial\",\"sans-serif\";", "");
-        s=s.replaceAll("font-family:\"宋体\",\"sans-serif\";","");
-
+        ConvertPdf2HtmlMessage convertPdf2HtmlMessage = new ConvertPdf2HtmlMessage();
+        convertPdf2HtmlMessage.setType(2);
+        convertPdf2HtmlMessage.setPage(1);
+        convertPdf2HtmlMessage.setFilePath("/Users/liuq/filetest/abc.pdf");
+        new Pdf2HtmlHandler().doConvert(convertPdf2HtmlMessage);
     }
 }

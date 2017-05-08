@@ -68,7 +68,7 @@ public class HandlerHtml {
             html = html.replace("\n", "");
             html = html.replaceAll("font-family:\"Arial\",\"sans-serif\";", "");
             html = html.replaceAll("font-family:\"宋体\",\"sans-serif\";", "");
-            html = html.replace(" font-family: \"Tahoma\", \"sans-serif\",""");
+            html = html.replaceAll("font-family: \"Tahoma\", \"sans-serif\";", "");
             FileUtils.writeByteArrayToFile(htmlFile, html.getBytes(encoding), false);
         } catch (
                 Exception e)

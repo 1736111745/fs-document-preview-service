@@ -1,5 +1,9 @@
 package com.facishare.document.preview.asyncconvertor.utils;
 
+import com.artofsolving.jodconverter.DocumentConverter;
+import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
+import com.artofsolving.jodconverter.openoffice.connection.SocketOpenOfficeConnection;
+import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConverter;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
@@ -15,7 +19,6 @@ import org.zeroturnaround.process.ProcessUtil;
 import org.zeroturnaround.process.Processes;
 import org.zeroturnaround.process.SystemProcess;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -254,11 +257,17 @@ public class Pdf2HtmlHandler {
         }
     }
 
-    public static void main(String[] args) throws IOException, FontFormatException {
-        ConvertPdf2HtmlMessage convertPdf2HtmlMessage = new ConvertPdf2HtmlMessage();
-        convertPdf2HtmlMessage.setType(2);
-        convertPdf2HtmlMessage.setPage(1);
-        convertPdf2HtmlMessage.setFilePath("/Users/liuq/filetest/abc.pdf");
-        new Pdf2HtmlHandler().doConvert(convertPdf2HtmlMessage);
+    public static void main(String[] args) throws Exception {
+        OpenOfficeConnection connection = new SocketOpenOfficeConnection("192.168.1.105", 8100);
+        connection.connect();
+        DocumentConverter converter = new OpenOfficeDocumentConverter(connection);
+        try {
+            File docFile = new File("/Users/liuq/Downloads/aaa.doc");
+            File pdfFile = new File("/Users/liuq/Downloads/aabd.pdf");
+            converter.convert(docFile, pdfFile);
+            //close the connection
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 }

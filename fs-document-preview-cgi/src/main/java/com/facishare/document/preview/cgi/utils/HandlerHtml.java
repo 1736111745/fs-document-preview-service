@@ -68,7 +68,7 @@ public class HandlerHtml {
             html = html.replace("\n", "");
             html = html.replaceAll("font-family:\"Arial\",\"sans-serif\";", "");
             html = html.replaceAll("font-family:\"宋体\",\"sans-serif\";", "");
-            html = html.replaceAll("font-family: \"Tahoma\", \"sans-serif\";", "");
+            html = html.replaceAll(" font-family: \"Tahoma\",\"sans-serif\";", "");
             FileUtils.writeByteArrayToFile(htmlFile, html.getBytes(encoding), false);
         } catch (
                 Exception e)
@@ -95,7 +95,25 @@ public class HandlerHtml {
     }
 
     public static void main(String[] args) throws IOException {
-        process("/Users/liuq/Desktop/0.html", 0);
+       String a="   }\n" +
+               "\n" +
+               "    td {\n" +
+               "        mso-style-parent: style0;\n" +
+               "        mso-number-format: General;\n" +
+               "        text-align: general;\n" +
+               "        vertical-align: bottom;\n" +
+               "        white-space: nowrap;\n" +
+               "        background: auto;\n" +
+               "        mso-pattern: auto;\n" +
+               "        color: #000000;\n" +
+               "        font-size: 11pt;\n" +
+               "        font-weight: 400;\n" +
+               "        font-style: normal;\n" +
+               "        font-family: \"Tahoma\",\"sans-serif\";\n" +
+               "        border: none;\n" +
+               "        mso-protection: locked visible;\n" +
+               "        mso-ignore: padding;";
+        a = a.replaceAll(" font-family: \"Tahoma\",\"sans-serif\";", "");
     }
 
 }

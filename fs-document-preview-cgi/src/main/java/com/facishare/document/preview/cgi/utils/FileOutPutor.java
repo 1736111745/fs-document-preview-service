@@ -40,7 +40,8 @@ public class FileOutPutor {
                 response.setHeader("Cache-Control", "max-age=86400"); // HTTP/1.1
                 if (fileName.contains(".png")) {
                     buffer = handlePng(filePath, width, needThumbnail, response);
-                } else {
+                }
+                else {
                     buffer = handleFile(filePath, response);
                 }
                 response.setContentLength(buffer.length);
@@ -62,8 +63,8 @@ public class FileOutPutor {
         String mime = MimeTypeHelper.getMimeType(ext);
         response.setContentType(mime);
         if (filePath.toLowerCase().contains(".txt")) {
-            String encode = guessFileEncoding(new File(filePath), new nsDetector());
-            log.info("encode:{}",encode);
+            String encode = EncodingDetect.getJavaEncode(filePath);
+            log.info("encode:{}", encode);
             response.setCharacterEncoding(encode);
         }
         return FileUtils.readFileToByteArray(new File(filePath));
@@ -97,76 +98,5 @@ public class FileOutPutor {
             }
         }
         return FileUtils.readFileToByteArray(thumbPngFile);
-    }
-
-    /**
-     * 获取文件的编码
-     *
-     * @param file
-     * @param det
-     * @return
-     * @throws FileNotFoundException
-     * @throws IOException
-     */
-
-    private String guessFileEncoding(File file, nsDetector det) throws IOException {
-        FileInputStream fi = null;
-        try {
-            final boolean[] found = {false};
-            final String[] encoding = {null};
-            // Set an observer...
-            // The Notify() will be called when a matching charset is found.
-            det.Init(charset -> {
-                encoding[0] = charset;
-                found[0] = true;
-            });
-            BufferedInputStream imp = new BufferedInputStream(fi);
-            byte[] buf = new byte[1024];
-            int len;
-            boolean done;
-            boolean isAscii = false;
-            fi = FileUtils.openInputStream(file);
-            while ((len = imp.read(buf, 0, buf.length)) != -1) {
-                // Check if the stream is only ascii.
-                isAscii = det.isAscii(buf, len);
-                if (isAscii) {
-                    break;
-                }
-                // DoIt if non-ascii and not done yet.
-                done = det.DoIt(buf, len, false);
-                if (done) {
-                    break;
-                }
-            }
-            imp.close();
-            det.DataEnd();
-            if (isAscii) {
-                encoding[0] = "ASCII";
-                found[0] = true;
-            }
-            if (!found[0]) {
-                String[] prob = det.getProbableCharsets();
-                //这里将可能的字符集组合起来返回
-                for (int i = 0; i < prob.length; i++) {
-                    if (i == 0) {
-                        encoding[0] = prob[i];
-                    } else {
-                        encoding[0] += "," + prob[i];
-                    }
-                }
-                if (prob.length > 0) {
-                    // 在没有发现情况下,也可以只取第一个可能的编码,这里返回的是一个可能的序列
-                    return encoding[0];
-                } else {
-                    return "utf-8";
-                }
-            }
-            return encoding[0];
-        } catch (Exception ex) {
-            return "utf-8";
-        } finally {
-            if (fi != null)
-                fi.close();
-        }
     }
 }

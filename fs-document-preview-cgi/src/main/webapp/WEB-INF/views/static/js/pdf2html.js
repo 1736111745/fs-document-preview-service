@@ -12,7 +12,7 @@ $(function () {
     loadAllPages();
     checkConvertStatus();
     checkPageLoaded();
-    $(window).on('orientationchange', function() {
+    $(window).on('resize', function() {
         loadViewPort();
     });
 });

@@ -56,7 +56,7 @@ public class OfficeApiHelper {
         return pageInfo;
     }
 
-    public String  convertFile(String path, String filePath) throws IOException {
+    public String  convertFile(String filePath) throws IOException {
         String params = "filepath=" + filePath;
         String newFilePath = callApi("ConvertFile", params).replace("\"","");
         return Strings.isNullOrEmpty(newFilePath)?filePath:newFilePath;

@@ -230,7 +230,7 @@ public class PreviewController {
             if (previewInfo != null) {
                 map.put("success", true);
                 map.put("dirName", previewInfo.getDirName());
-                map.put("fileName", FilenameUtils.getBaseName(previewInfo.getOriginalFilePath()));
+                map.put("fileName", FilenameUtils.getName(previewInfo.getOriginalFilePath()));
             } else {
                 map.put("success", false);
                 map.put("errorMsg", "系统错误!");

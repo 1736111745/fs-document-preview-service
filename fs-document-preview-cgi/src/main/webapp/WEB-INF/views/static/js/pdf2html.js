@@ -12,9 +12,11 @@ $(function () {
     loadAllPages();
     checkConvertStatus();
     checkPageLoaded();
-    $(window).on('resize', function() {
-        loadViewPort();
-    });
+    window.addEventListener('orientationchange', function() {
+        setTimeout(function() {
+          loadViewPort();
+        }, 300);
+    }, false);
 });
 
 function loadAllPages() {
@@ -28,7 +30,6 @@ function loadAllPages() {
 
 function loadViewPort() {
     var docWidth = $(window).width();
-    alert(docWidth);
     var scale = docWidth * 0.96 / 1000;
     var viewport = document.querySelector("meta[name=viewport]");
     viewport.setAttribute('content', 'initial-scale=' + scale + ', width=device-width');

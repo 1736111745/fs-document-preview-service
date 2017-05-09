@@ -35,12 +35,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /**
@@ -140,8 +142,8 @@ public class PreviewController {
                             boolean flag = officeApiHelper.convertExcel2Html(path, originalFilePath, pageIndex);
                             if (flag) {
                                 dataFilePath = FilenameUtils.getFullPathNoEndSeparator(originalFilePath) + "/" + page + ".html";
-                                HandlerHtml.process(dataFilePath,pageIndex);
-                                log.info("dataFilePath:{}",dataFilePath);
+                                HandlerHtml.process(dataFilePath, pageIndex);
+                                log.info("dataFilePath:{}", dataFilePath);
                                 previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
                                 fileOutPutor.outPut(response, dataFilePath, true);
                             } else {
@@ -367,13 +369,21 @@ public class PreviewController {
                                 sorted(Comparator.comparingInt(o -> NumberUtils.toInt(FilenameUtils.getBaseName(o)))).
                                 collect(Collectors.toList());
                     //转换完毕后清理原始文件
+                    List<Path> pathList;
                     if (dataFilePathList.size() == previewInfo.getPageCount()) {
-                        Files.list(Paths.get(previewInfo.getDataDir())).filter(p ->
+                        try (Stream<Path> stream = Files.list(Paths.get(previewInfo.getDataDir())).filter(p ->
                         {
                             String fileName = p.toFile().getName();
                             String ext = FilenameUtils.getExtension(fileName).toLowerCase();
                             return ext.contains("ppt") || ext.contains("doc") || ext.contains("pdf");
-                        }).forEach(p1 -> FileUtils.deleteQuietly(p1.toFile()));
+                        })) {
+                            pathList = stream.collect(Collectors.toList());
+                        }
+                        if (pathList != null) {
+                            pathList.forEach(path1 -> {
+                                FileUtils.deleteQuietly(path1.toFile());
+                            });
+                        }
                     }
                     Map<String, Object> map = new HashMap<>();
                     map.put("list", dataFilePathList);

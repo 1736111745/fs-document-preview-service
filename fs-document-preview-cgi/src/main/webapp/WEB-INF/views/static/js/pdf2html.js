@@ -12,11 +12,6 @@ $(function () {
     loadAllPages();
     checkConvertStatus();
     checkPageLoaded();
-    window.addEventListener('orientationchange', function() {
-        setTimeout(function() {
-          loadViewPort();
-        }, 300);
-    }, false);
 });
 
 function loadAllPages() {

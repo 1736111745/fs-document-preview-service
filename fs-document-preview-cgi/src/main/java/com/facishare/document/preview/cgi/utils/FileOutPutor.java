@@ -63,6 +63,7 @@ public class FileOutPutor {
         response.setContentType(mime);
         if (filePath.toLowerCase().contains(".txt")) {
             String encode = guessFileEncoding(new File(filePath), new nsDetector());
+            log.info("encode:{}",encode);
             response.setCharacterEncoding(encode);
         }
         return FileUtils.readFileToByteArray(new File(filePath));
@@ -153,12 +154,11 @@ public class FileOutPutor {
                         encoding[0] += "," + prob[i];
                     }
                 }
-
                 if (prob.length > 0) {
                     // 在没有发现情况下,也可以只取第一个可能的编码,这里返回的是一个可能的序列
                     return encoding[0];
                 } else {
-                    return null;
+                    return "utf-8";
                 }
             }
             return encoding[0];
@@ -168,6 +168,5 @@ public class FileOutPutor {
             if (fi != null)
                 fi.close();
         }
-
     }
 }

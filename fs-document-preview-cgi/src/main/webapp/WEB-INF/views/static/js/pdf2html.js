@@ -12,6 +12,9 @@ $(function () {
     loadAllPages();
     checkConvertStatus();
     checkPageLoaded();
+    $(window).on('orientationchange', function() {
+        loadViewPort();
+    });
 });
 
 function loadAllPages() {

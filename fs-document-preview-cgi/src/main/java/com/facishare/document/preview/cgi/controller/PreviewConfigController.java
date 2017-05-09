@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 public class PreviewConfigController {
     private FsGrayReleaseBiz gray = FsGrayRelease.getInstance("dps");
     @ReloadableProperty("allowPreviewExtension")
-    private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
+    private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf|txt";
 
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewConfig", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")

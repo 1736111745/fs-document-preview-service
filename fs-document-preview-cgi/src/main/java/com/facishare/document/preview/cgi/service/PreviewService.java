@@ -61,11 +61,17 @@ public class PreviewService {
                         String fileName = SampleUUID.getUUID() + "." + extension;
                         String filePath = FilenameUtils.concat(dataDir, fileName);
                         FileUtils.writeByteArrayToFile(new File(filePath), bytes);
-                        //旧版本office格式e转换为新版本office格式
-                        if (extension.contains("xls") || extension.contains("doc") || extension.contains("ppt")) {
-                            filePath = officeApiHelper.convertFile(filePath);
+                        PageInfo pageInfo = new PageInfo();
+                        if (extension.equals("txt")) {
+                            pageInfo.setSuccess(true);
+                            pageInfo.setPageCount(1);
+                        } else {
+                            //旧版本office格式e转换为新版本office格式
+                            if (extension.equals("xls") || extension.equals("doc") || extension.equals("ppt")) {
+                                filePath = officeApiHelper.convertFile(filePath);
+                            }
+                            pageInfo = officeApiHelper.getPageInfo(npath, filePath);
                         }
-                        PageInfo pageInfo = officeApiHelper.getPageInfo(npath, filePath);
                         if (pageInfo.getPageCount() > 500) {
                             previewInfoEx.setSuccess(false);
                             previewInfoEx.setPreviewInfo(null);

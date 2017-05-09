@@ -61,14 +61,14 @@ public class PreviewService {
                         String fileName = SampleUUID.getUUID() + "." + extension;
                         String filePath = FilenameUtils.concat(dataDir, fileName);
                         FileUtils.writeByteArrayToFile(new File(filePath), bytes);
+                        //旧版本office格式e转换为新版本office格式
+                        filePath=officeApiHelper.convertFile(npath,filePath);
                         PageInfo pageInfo = officeApiHelper.getPageInfo(npath, filePath);
-                        if(pageInfo.getPageCount()>500)
-                        {
+                        if (pageInfo.getPageCount() > 500) {
                             previewInfoEx.setSuccess(false);
                             previewInfoEx.setPreviewInfo(null);
                             previewInfoEx.setErrorMsg("当前文件页码数超过500页，不支持手机预览！");
-                        }
-                        else {
+                        } else {
                             if (pageInfo.isSuccess()) {
                                 pageCount = pageInfo.getPageCount();
                                 sheetNames = pageInfo.getSheetNames();

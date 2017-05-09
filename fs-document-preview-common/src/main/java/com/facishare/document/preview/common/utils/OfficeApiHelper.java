@@ -56,6 +56,12 @@ public class OfficeApiHelper {
         return pageInfo;
     }
 
+    public String  convertFile(String path, String filePath) throws IOException {
+        String params = "filepath=" + filePath;
+        String newFilePath = callApi("ConvertFile", params);
+        return Strings.isNullOrEmpty(newFilePath)?filePath:newFilePath;
+    }
+
     public boolean convertExcel2Html(String path, String filePath, int page) {
         String params = "filepath=" + filePath + "&page=" + page;
         String json = callApi("ConvertExcel2Html", params);

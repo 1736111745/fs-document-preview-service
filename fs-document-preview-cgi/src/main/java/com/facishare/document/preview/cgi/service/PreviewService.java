@@ -62,7 +62,7 @@ public class PreviewService {
                         String filePath = FilenameUtils.concat(dataDir, fileName);
                         FileUtils.writeByteArrayToFile(new File(filePath), bytes);
                         //旧版本office格式e转换为新版本office格式
-                        if (extension == "xls" || extension == "doc" || extension == "ppt") {
+                        if (extension.contains("xls") || extension.contains("doc") || extension.contains("ppt")) {
                             filePath = officeApiHelper.convertFile(filePath);
                         }
                         PageInfo pageInfo = officeApiHelper.getPageInfo(npath, filePath);

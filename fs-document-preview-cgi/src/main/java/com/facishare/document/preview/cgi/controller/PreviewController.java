@@ -216,6 +216,31 @@ public class PreviewController {
 
 
     @ResponseBody
+    @RequestMapping(value = "/preview/getTxtPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String getTxtPreviewInfo(HttpServletRequest request) {
+        String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
+        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+        String ea = employeeInfo.getEa();
+        Map<String, Object> map = new HashMap<>();
+        if (path.equals("")) {
+            map.put("success", false);
+            map.put("errorMsg", "参数错误!");
+        } else {
+            PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
+            if (previewInfo != null) {
+                map.put("success", true);
+                map.put("dirName", previewInfo.getDirName());
+                map.put("fileName", FilenameUtils.getBaseName(previewInfo.getOriginalFilePath()));
+            } else {
+                map.put("success", false);
+                map.put("errorMsg", "系统错误!");
+            }
+        }
+        return JSONObject.toJSONString(map);
+    }
+
+
+    @ResponseBody
     @RequestMapping(value = "/preview/DocPreviewByPath", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String docPreviewByPath(HttpServletRequest request) throws Exception {
         int pageCount = 0;

@@ -26,7 +26,33 @@ function getPreviewInfo() {
         }
     });
 }
+
+
 function doPreview() {
+    if (path.toLowerCase().indexOf("txt") >= 0) {
+        doPreviewTxt();
+    }
+    else {
+        doPreviewOffice();
+    }
+}
+
+function doPreviewTxt() {
+    $.ajax({
+        type: 'get',
+        dataType: 'json',
+        async: false,
+        url: window.contextPath + '/preview/getTxtPreviewInfo?path=' + path,
+        success: function (data) {
+            var dirName = data.dirName;
+            var fileName = data.fileName;
+            var url = window.contextPath + '/preview/' + dirName + "/" + fileName;
+            location.href = url;
+        }
+    });
+}
+
+function doPreviewOffice() {
     var route = '';
     if (path.toLowerCase().indexOf("xls") >= 0) {
         route = "excel2html";

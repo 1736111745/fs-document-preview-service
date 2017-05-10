@@ -1,7 +1,10 @@
 package com.facishare.document.preview.cgi.filter;
 
+import com.facishare.common.web.util.WebUtil;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.utils.AuthHelper;
+import com.fxiaoke.common.Guard;
+import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -9,6 +12,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -21,7 +25,8 @@ import java.io.IOException;
 public class AuthFilter extends OncePerRequestFilter {
     @Autowired
     AuthHelper authHelper;
-
+    @ReloadableProperty("authTempKey")
+    private String authTempKey="3~T4oFe&";
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         request.setAttribute("sv", "v4.8.3");
@@ -47,9 +52,28 @@ public class AuthFilter extends OncePerRequestFilter {
                     employeeInfo.setEmployeeId(1000);
                     request.setAttribute("Auth", employeeInfo);
                 } else {
-                    log.warn("requestUri:{},is invalid auth", requestUri);
-                    response.setStatus(403);
-                    return;
+                    //检测下临时cookie
+                    Cookie cookie = WebUtil.getCookie(request, "auth_temp");
+                    if(cookie!=null)
+                    {
+                        Guard guard=new Guard(authTempKey);
+                        try {
+                            String ea=guard.decode(cookie.getValue());
+                            employeeInfo = new EmployeeInfo();
+                            employeeInfo.setEa(ea);
+                            employeeInfo.setEmployeeId(1000);
+                            request.setAttribute("Auth", employeeInfo);
+                        } catch (Exception e) {
+                            log.warn("requestUri:{},is invalid auth", requestUri);
+                            response.setStatus(403);
+                            return;
+                        }
+                    }
+                    else {
+                        log.warn("requestUri:{},is invalid auth", requestUri);
+                        response.setStatus(403);
+                        return;
+                    }
                 }
 
             } else {

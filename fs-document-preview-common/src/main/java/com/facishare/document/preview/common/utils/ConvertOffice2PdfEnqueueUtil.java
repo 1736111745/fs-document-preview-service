@@ -27,11 +27,11 @@ public class ConvertOffice2PdfEnqueueUtil {
     @Resource(name = "office2pdfProvider")
     ConvertorQueueProvider convertorQueueProvider;
 
-    public void enqueue(String ea, String path) {
+    public void enqueue(String ea, String path, int width) {
         PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
         if (previewInfo == null) return;
         List<String> dataFilePathList = previewInfo.getFilePathList();
-        if (dataFilePathList!=null&&dataFilePathList.size() == previewInfo.getPageCount()) return;
+        if (dataFilePathList != null && dataFilePathList.size() == previewInfo.getPageCount()) return;
         int status = office2PdfTaskDao.getTaskStatus(ea, path);
         if (status == -1) {
             log.info("begin enqueue,ea:{},path:{}", ea, path);
@@ -40,6 +40,7 @@ public class ConvertOffice2PdfEnqueueUtil {
             convertorMessage.setEa(ea);
             convertorMessage.setFilePath(previewInfo.getOriginalFilePath());
             convertorMessage.setNpath(path);
+            convertorMessage.setPageWidth(width);
             convertorQueueProvider.office2pdf(convertorMessage);
         }
     }

@@ -47,9 +47,10 @@ public class Pdf2HtmlHandler {
         String filePath = message.getFilePath();
         int page = message.getPage();
         int type = message.getType();
+        int width = message.getPageWidth();
         String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
         String outPutDir = FilenameUtils.concat(basedDir, "p" + page);
-        List<String> args = createProcessArgs(filePath, outPutDir, page, type);
+        List<String> args = createProcessArgs(filePath, outPutDir, page, type, width);
         StartedProcess startedProcess = new ProcessExecutor()
                 .command(args)
                 .readOutput(false)
@@ -90,7 +91,7 @@ public class Pdf2HtmlHandler {
         return dataFilePath;
     }
 
-    private List<String> createProcessArgs(String filePath, String outPutDir, int page, int type) {
+    private List<String> createProcessArgs(String filePath, String outPutDir, int page, int type, int width) {
         if (type == 1)
             page = 1;
         List<String> args = Lists.newArrayList();
@@ -100,7 +101,7 @@ public class Pdf2HtmlHandler {
         args.add("-l");
         args.add(String.valueOf(page));
         args.add("--fit-width");//缩放px
-        args.add("1000");
+        args.add(String.valueOf(width));
         args.add("--embed-outline");//链接文件单独输出
         args.add("0");
         args.add("--embed-css");

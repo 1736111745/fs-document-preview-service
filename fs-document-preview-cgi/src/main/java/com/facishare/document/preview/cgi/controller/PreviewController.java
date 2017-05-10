@@ -70,7 +70,7 @@ public class PreviewController {
     @Autowired
     FileStorageProxy fileStorageProxy;
     @ReloadableProperty("allowPreviewExtension")
-    private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf";
+    private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf|txt";
 
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -326,13 +326,15 @@ public class PreviewController {
     @RequestMapping(value = "/preview/checkPdf2HtmlStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void checkPdf2HtmlStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
+        String widthStr = UrlParametersHelper.safeGetRequestParameter(request, "width");
+        int width = NumberUtils.toInt(widthStr);
         if (!UrlParametersHelper.isValidPath(path)) {
             response.setStatus(400);
         }
         try {
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             String ea = employeeInfo.getEa();
-            convertOffice2PdfEnqueueUtil.enqueue(ea, path);
+            convertOffice2PdfEnqueueUtil.enqueue(ea, path, width);
         } catch (Exception e) {
             log.warn("checkPdf2HtmlStatus happened exception", e);
         } finally {
@@ -380,9 +382,7 @@ public class PreviewController {
                             pathList = stream.collect(Collectors.toList());
                         }
                         if (pathList != null) {
-                            pathList.forEach(path1 -> {
-                                FileUtils.deleteQuietly(path1.toFile());
-                            });
+                            pathList.forEach(path1 -> FileUtils.deleteQuietly(path1.toFile()));
                         }
                     }
                     Map<String, Object> map = new HashMap<>();
@@ -418,7 +418,5 @@ public class PreviewController {
         docPreviewInfo.setPageCount(pageCount);
         return JSONObject.toJSONString(docPreviewInfo);
     }
-
-
 }
 

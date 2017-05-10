@@ -57,10 +57,11 @@ public class Office2PdfProcessor {
         String ea = office2PdfMessage.getEa();
         String path = office2PdfMessage.getNpath();
         String filePath = office2PdfMessage.getFilePath();
+        int width=office2PdfMessage.getPageWidth();
         int status = office2PdfTaskDao.getTaskStatus(ea, path);
         if (status == 0) {
             office2PdfTaskDao.beginExecute(ea, path);
-            office2PdfHandler.convertOffice2Pdf(ea, path, filePath);
+            office2PdfHandler.convertOffice2Pdf(ea, path, filePath,width);
         }
     }
 }

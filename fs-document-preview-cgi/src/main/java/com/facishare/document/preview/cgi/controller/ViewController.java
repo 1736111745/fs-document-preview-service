@@ -27,8 +27,6 @@ public class ViewController {
     }
 
     @RequestMapping(value = {"/preview/pdf2html", "/preview/handlePdf"}, method = RequestMethod.GET)
-    public String handlePdf() {
-        return "pdf2html";
-    }
+    public String handlePdf() {return  "pdf2html";}
 
 }

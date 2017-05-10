@@ -5,6 +5,7 @@ var filePathList = [];//已经转换完毕的页码.html
 var loadedList = [];//用户已经滑动过的页码
 var pageLoadedList = [];//用户已经加载的页码
 var timeout = 100000;
+var width=parseInt(getQueryStringByName("width"));
 $(function () {
     loadViewPort();
     checkConvertTimeout();
@@ -25,7 +26,7 @@ function loadAllPages() {
 
 function loadViewPort() {
     var docWidth = $(window).width();
-    var scale = docWidth * 0.96 / 1000;
+    var scale = docWidth * 0.96 / width;
     var viewport = document.querySelector("meta[name=viewport]");
     viewport.setAttribute('content', 'initial-scale=' + scale + ', width=device-width');
 }
@@ -92,7 +93,7 @@ function checkConvertStatus() {
 }
 
 function checkPdf2HtmlStatus() {
-    var url = window.contextPath + '/preview/checkPdf2HtmlStatus?path=' + path + "&sg=" + sg
+    var url = window.contextPath + '/preview/checkPdf2HtmlStatus?path=' + path + "&sg=" + sg+"&width="+width;
     $.get(url);
 }
 
@@ -111,6 +112,7 @@ function queryPdf2HtmlStatus() {
     });
     return flag;
 }
+
 var idChkConvertTimeout;//超时后还没有加载完毕就提示预览超时。同时停止查询轮询和检测页码轮询方法。
 function checkConvertTimeout() {
     idChkConvertTimeout = setTimeout(function () {

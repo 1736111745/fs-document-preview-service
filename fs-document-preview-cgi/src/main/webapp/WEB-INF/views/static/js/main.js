@@ -5,6 +5,8 @@ var path = getQueryStringByName("path");
 var token = getQueryStringByName("token");
 var pageCount = 0;
 var sg = "";//安全组
+var width = getQueryStringByName("width");
+width=width==""?1000:width;
 function getPreviewInfo() {
     $('#divLoading').show();
     $.ajax({
@@ -60,7 +62,7 @@ function doPreviewOffice() {
     else
         route = "pdf2html";
     console.log("route:" + route);
-    var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg + "&rdm=3";
+    var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg + "&width=" + width + "&rnd=1.0.1";
     location.href = url;
 }
 

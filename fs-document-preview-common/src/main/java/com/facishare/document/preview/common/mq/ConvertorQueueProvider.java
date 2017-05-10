@@ -28,12 +28,9 @@ public class ConvertorQueueProvider {
         log.info("finish init rocketmq!");
     }
 
-    public void office2pdf(ConvertMessageBase message) {
-        enqueue(message);
-    }
+    public void office2pdf(ConvertMessageBase message) {enqueue(message);}
 
-
-    private   <T extends ProtoBase> void enqueue(T message) {
+    private <T extends ProtoBase> void enqueue(T message) {
         log.info("enqueue:{}", com.alibaba.fastjson.JSON.toJSON(message));
         Message messageExt = new Message();
         messageExt.setBody(message.toProto());
@@ -41,7 +38,7 @@ public class ConvertorQueueProvider {
         log.info("enqueue completed!message topic:{}", messageExt.getTopic());
     }
 
-    public  void pdf2html(ConvertPdf2HtmlMessage message) {
+    public void pdf2html(ConvertPdf2HtmlMessage message) {
         enqueue(message);
     }
 

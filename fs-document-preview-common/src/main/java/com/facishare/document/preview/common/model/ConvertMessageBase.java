@@ -16,4 +16,6 @@ public class ConvertMessageBase extends ProtoBase {
     private String npath;
     @Tag(3)
     private String filePath;
+    @Tag(4)
+    private int pageWidth;//转换出来的页面宽带
 }

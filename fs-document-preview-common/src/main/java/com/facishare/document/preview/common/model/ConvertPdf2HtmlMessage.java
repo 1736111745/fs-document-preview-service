@@ -9,10 +9,10 @@ import lombok.Data;
  */
 @Data
 public class ConvertPdf2HtmlMessage extends ConvertMessageBase{
-    @Tag(4)
-    private String filePath;//物理文件名
     @Tag(5)
-    private int page;//页码
+    private String filePath;//物理文件名
     @Tag(6)
+    private int page;//页码
+    @Tag(7)
     private int type;//1:单页pdf  2:多页pdf
 }

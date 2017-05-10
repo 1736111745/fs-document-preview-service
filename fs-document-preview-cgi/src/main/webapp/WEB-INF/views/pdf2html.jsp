@@ -31,7 +31,7 @@
 
         div.border {
             text-align: center;
-            width: <%=request:${requestScope.width}%>px;
+            width: ${width}px;
             margin: 5px auto;
             border: 1px solid rgb(27, 30, 33)
         }

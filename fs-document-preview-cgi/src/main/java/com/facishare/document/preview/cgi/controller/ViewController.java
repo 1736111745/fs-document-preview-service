@@ -41,7 +41,9 @@ public class ViewController {
         if (htmlWidthList.contains(widthStr)) {
             width = NumberUtils.toInt(widthStr);
         }
-        return new ModelAndView("pdf2html", "width", width);
+        ModelAndView modelAndView = new ModelAndView("pdf2html");
+        modelAndView.addObject("width", width);
+        return modelAndView;
     }
 
 }

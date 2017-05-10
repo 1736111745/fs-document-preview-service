@@ -6,7 +6,7 @@ var token = getQueryStringByName("token");
 var pageCount = 0;
 var sg = "";//安全组
 var width = getQueryStringByName("width");
-width=width==""?1000:width;
+width = width == "" ? 1000 : width;
 function getPreviewInfo() {
     $('#divLoading').show();
     $.ajax({

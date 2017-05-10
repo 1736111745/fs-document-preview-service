@@ -71,6 +71,8 @@ public class PreviewController {
     FileStorageProxy fileStorageProxy;
     @ReloadableProperty("allowPreviewExtension")
     private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf|txt";
+    @ReloadableProperty("htmlWidthList")
+    private String htmlWidthList = "1000|640";
 
     @ResponseBody
     @RequestMapping(value = "/preview/getPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -326,12 +328,15 @@ public class PreviewController {
     @RequestMapping(value = "/preview/checkPdf2HtmlStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void checkPdf2HtmlStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
-        String widthStr = UrlParametersHelper.safeGetRequestParameter(request, "width");
-        int width = NumberUtils.toInt(widthStr);
         if (!UrlParametersHelper.isValidPath(path)) {
             response.setStatus(400);
         }
         try {
+            String widthStr = UrlParametersHelper.safeGetRequestParameter(request, "width");
+            int width = 1000;
+            if (htmlWidthList.contains(widthStr)) {
+                width = NumberUtils.toInt(widthStr);
+            }
             EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
             String ea = employeeInfo.getEa();
             convertOffice2PdfEnqueueUtil.enqueue(ea, path, width);

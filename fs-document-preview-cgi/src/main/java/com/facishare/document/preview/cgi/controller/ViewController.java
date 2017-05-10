@@ -1,8 +1,14 @@
 package com.facishare.document.preview.cgi.controller;
 
+import com.facishare.document.preview.cgi.utils.UrlParametersHelper;
+import com.github.autoconf.spring.reloadable.ReloadableProperty;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by liuq on 16/9/29.
@@ -10,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 @RequestMapping("/")
 public class ViewController {
+    @ReloadableProperty("htmlWidthList")
+    private String htmlWidthList = "1000|640";
 
     @RequestMapping(value = "/preview/bypath", method = RequestMethod.GET)
     public String previewByPath() {
@@ -27,6 +35,13 @@ public class ViewController {
     }
 
     @RequestMapping(value = {"/preview/pdf2html", "/preview/handlePdf"}, method = RequestMethod.GET)
-    public String handlePdf() {return  "pdf2html";}
+    public ModelAndView handlePdf(HttpServletRequest request) {
+        String widthStr = UrlParametersHelper.safeGetRequestParameter(request, "width");
+        int width = 1000;
+        if (htmlWidthList.contains(widthStr)) {
+            width = NumberUtils.toInt(widthStr);
+        }
+        return new ModelAndView("pdf2html", "width", width);
+    }
 
 }

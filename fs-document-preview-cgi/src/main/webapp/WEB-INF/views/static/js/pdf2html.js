@@ -13,6 +13,9 @@ $(function () {
     loadAllPages();
     checkConvertStatus();
     checkPageLoaded();
+    $(window).resize(function () {
+        loadViewPort();
+    });
 });
 
 function loadAllPages() {
@@ -62,7 +65,7 @@ function checkPageLoaded() {
 function loadData(i) {
     var htmlName = (i + 1) + ".html";
     if ($.inArray(htmlName, filePathList) >= 0) {
-        var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg + "&ver=1.1";
+        var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg + "&ver=2.1";
         var iframeId = 'frame' + i;
         var divPageId = 'divPage' + i;
         var element = $('#' + divPageId);

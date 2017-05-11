@@ -48,7 +48,7 @@ function loadSheet(i) {
         timeout: 1800000,
         dataType: 'json',
         async: true,
-        url: window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg,
+        url: window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg+"&ver=2.0",
         beforeSend: function () {
             $('#divLoading').show();
         },

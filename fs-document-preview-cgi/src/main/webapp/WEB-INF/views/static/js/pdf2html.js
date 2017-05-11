@@ -5,7 +5,7 @@ var filePathList = [];//已经转换完毕的页码.html
 var loadedList = [];//用户已经滑动过的页码
 var pageLoadedList = [];//用户已经加载的页码
 var timeout = 100000;
-var width=parseInt(getQueryStringByName("width"));
+var width = parseInt(getQueryStringByName("width"));
 $(function () {
     loadViewPort();
     checkConvertTimeout();
@@ -25,10 +25,13 @@ function loadAllPages() {
 }
 
 function loadViewPort() {
-    var docWidth = $(window).width();
-    var scale = docWidth * 0.96 / width;
-    var viewport = document.querySelector("meta[name=viewport]");
-    viewport.setAttribute('content', 'initial-scale=' + scale);
+    // var docWidth = $(window).width();
+    // var scale = docWidth * 0.96 / width;
+    // var viewport = document.querySelector("meta[name=viewport]");
+    // viewport.setAttribute('content', 'initial-scale=' + scale);
+    if (screen.width < 620) {
+        document.getElementById('WebViewport').setAttribute('content', 'width=620px,initial-scale=' + screen.width / 620 + ',target-densitydpi=device-dpi,minimum-scale=0.5,maximum-scale=1,user-scalable=1');
+    }
 }
 
 function loadPageLoader() {
@@ -93,7 +96,7 @@ function checkConvertStatus() {
 }
 
 function checkPdf2HtmlStatus() {
-    var url = window.contextPath + '/preview/checkPdf2HtmlStatus?path=' + path + "&sg=" + sg+"&width="+width;
+    var url = window.contextPath + '/preview/checkPdf2HtmlStatus?path=' + path + "&sg=" + sg + "&width=" + width;
     $.get(url);
 }
 

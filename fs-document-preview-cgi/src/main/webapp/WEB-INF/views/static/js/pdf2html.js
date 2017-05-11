@@ -25,13 +25,10 @@ function loadAllPages() {
 }
 
 function loadViewPort() {
-    // var docWidth = $(window).width();
-    // var scale = docWidth * 0.96 / width;
-    // var viewport = document.querySelector("meta[name=viewport]");
-    // viewport.setAttribute('content', 'initial-scale=' + scale);
-    if (screen.width < 620) {
-        document.getElementById('WebViewport').setAttribute('content', 'width=620px,initial-scale=' + screen.width / 620 + ',target-densitydpi=device-dpi,minimum-scale=0.5,maximum-scale=1,user-scalable=1');
-    }
+    var docWidth = $(window).width();
+    var scale = docWidth * 0.96 / width;
+    var viewport = document.querySelector("meta[name=viewport]");
+    viewport.setAttribute('content', 'initial-scale=' + scale + ', width=' + docWidth + 'px');
 }
 
 function loadPageLoader() {

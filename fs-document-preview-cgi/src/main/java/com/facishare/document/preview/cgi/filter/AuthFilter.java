@@ -26,10 +26,11 @@ public class AuthFilter extends OncePerRequestFilter {
     @Autowired
     AuthHelper authHelper;
     @ReloadableProperty("authTempKey")
-    private String authTempKey="3~T4oFe&";
+    private String authTempKey = "3~T4oFe&";
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        request.setAttribute("sv", "v4.8.3");
+        request.setAttribute("sv", "v4.8.5");
         String requestUri = request.getRequestURI().toLowerCase();
         String ctx = request.getContextPath();
         if (requestUri.startsWith(ctx + "/restful/") ||
@@ -54,11 +55,10 @@ public class AuthFilter extends OncePerRequestFilter {
                 } else {
                     //检测下临时cookie
                     Cookie cookie = WebUtil.getCookie(request, "auth_temp");
-                    if(cookie!=null)
-                    {
-                        Guard guard=new Guard(authTempKey);
+                    if (cookie != null) {
+                        Guard guard = new Guard(authTempKey);
                         try {
-                            String ea=guard.decode(cookie.getValue());
+                            String ea = guard.decode(cookie.getValue());
                             employeeInfo = new EmployeeInfo();
                             employeeInfo.setEa(ea);
                             employeeInfo.setEmployeeId(1000);
@@ -68,8 +68,7 @@ public class AuthFilter extends OncePerRequestFilter {
                             response.setStatus(403);
                             return;
                         }
-                    }
-                    else {
+                    } else {
                         log.warn("requestUri:{},is invalid auth", requestUri);
                         response.setStatus(403);
                         return;

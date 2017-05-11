@@ -387,7 +387,7 @@ public class PreviewController {
                             pathList = stream.collect(Collectors.toList());
                         }
                         if (pathList != null) {
-                            pathList.forEach(path1 -> FileUtils.deleteQuietly(path1.toFile()));
+                           // pathList.forEach(path1 -> FileUtils.deleteQuietly(path1.toFile()));
                         }
                     }
                     Map<String, Object> map = new HashMap<>();

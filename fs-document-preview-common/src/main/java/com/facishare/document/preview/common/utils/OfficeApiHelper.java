@@ -1,24 +1,19 @@
 package com.facishare.document.preview.common.utils;
 
 import com.alibaba.fastjson.JSON;
+import com.facishare.document.preview.common.model.ConvertOldOfficeVersionResult;
 import com.facishare.document.preview.common.model.ConvertResult;
 import com.facishare.document.preview.common.model.PageInfo;
-import com.facishare.document.preview.common.model.RestResponse;
 import com.github.autoconf.ConfigFactory;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -56,10 +51,14 @@ public class OfficeApiHelper {
         return pageInfo;
     }
 
-    public String  convertFile(String filePath) throws IOException {
+    public ConvertOldOfficeVersionResult convertFile(String filePath) throws IOException {
+        ConvertOldOfficeVersionResult result = null;
         String params = "filepath=" + filePath;
-        String newFilePath = callApi("ConvertFile", params).replace("\"","");
-        return Strings.isNullOrEmpty(newFilePath)?filePath:newFilePath;
+        String json = callApi("ConvertFile", params);
+        if (!Strings.isNullOrEmpty(json)) {
+            result = JSON.parseObject(json, ConvertOldOfficeVersionResult.class);
+        }
+        return result;
     }
 
     public boolean convertExcel2Html(String path, String filePath, int page) {

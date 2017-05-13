@@ -4,6 +4,7 @@ import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfoEx;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
+import com.facishare.document.preview.common.model.ConvertOldOfficeVersionResult;
 import com.facishare.document.preview.common.model.PageInfo;
 import com.facishare.document.preview.common.model.PreviewInfo;
 import com.facishare.document.preview.common.utils.OfficeApiHelper;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.rmi.dgc.Lease;
 import java.util.List;
 
 /**
@@ -68,7 +70,10 @@ public class PreviewService {
                         } else {
                             //旧版本office格式e转换为新版本office格式
                             if (extension.equals("xls") || extension.equals("doc") || extension.equals("ppt")) {
-                                filePath = officeApiHelper.convertFile(filePath);
+                                ConvertOldOfficeVersionResult result = officeApiHelper.convertFile(filePath);
+                                if (result != null && result.isSuccess()) {
+                                    filePath = result.getNewFilePath();
+                                }
                             }
                             pageInfo = officeApiHelper.getPageInfo(npath, filePath);
                         }

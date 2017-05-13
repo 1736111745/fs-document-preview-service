@@ -1,9 +1,6 @@
 package com.facishare.document.preview.asyncconvertor.utils;
 
-import com.artofsolving.jodconverter.DocumentConverter;
-import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
-import com.artofsolving.jodconverter.openoffice.connection.SocketOpenOfficeConnection;
-import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConverter;
+import com.aspose.slides.SaveFormat;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
@@ -32,6 +29,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import com.aspose.words.*;
+import com.aspose.slides.*;
 
 /**
  * Created by liuq on 2017/3/7.
@@ -259,16 +258,10 @@ public class Pdf2HtmlHandler {
     }
 
     public static void main(String[] args) throws Exception {
-        OpenOfficeConnection connection = new SocketOpenOfficeConnection("192.168.1.105", 8100);
-        connection.connect();
-        DocumentConverter converter = new OpenOfficeDocumentConverter(connection);
-        try {
-            File docFile = new File("/Users/liuq/Downloads/aaa.doc");
-            File pdfFile = new File("/Users/liuq/Downloads/aabd.pdf");
-            converter.convert(docFile, pdfFile);
-            //close the connection
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+        String filePath = "/Users/liuq/Downloads/hvpqm7ty.pptx";
+        String pdfFilePath = filePath + ".pdf";
+        Presentation document = new Presentation(filePath);
+        document.save(pdfFilePath, SaveFormat.Pdf);
+
     }
 }

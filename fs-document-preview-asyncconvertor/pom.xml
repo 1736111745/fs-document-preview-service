@@ -425,11 +425,11 @@
             <artifactId>jsoup</artifactId>
             <version>1.10.2</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.artofsolving/jodconverter -->
+        <!-- https://mvnrepository.com/artifact/org.docx4j/docx4j -->
         <dependency>
-            <groupId>com.artofsolving</groupId>
-            <artifactId>jodconverter</artifactId>
-            <version>2.2.1</version>
+            <groupId>org.docx4j</groupId>
+            <artifactId>docx4j</artifactId>
+            <version>3.3.3</version>
         </dependency>
 
     </dependencies>

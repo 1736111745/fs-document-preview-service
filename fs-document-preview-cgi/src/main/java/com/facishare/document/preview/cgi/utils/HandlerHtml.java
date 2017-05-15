@@ -21,10 +21,11 @@ public class HandlerHtml {
 
     public static void process(String filePath, int page) throws IOException {
         try {
-            log.info("begin handle html,filePath:{},page:{}",filePath,page);
             String encoding = "UTF-8";
             File htmlFile = new File(filePath);
-            if (htmlFile.length() > 1024 * 1024 * 10) {
+            long fileSize = htmlFile.length();
+            log.info("begin handle html,filePath:{},page:{},file size", filePath, page, fileSize);
+            if (fileSize > 1024 * 1024 * 10) {
                 //如果生成的html大于10m，就不给个错误提示
                 String html = "<h3>该工作表数据异常，请检查工作表的行数或者列数是否过大！</h3>";
                 FileUtils.writeByteArrayToFile(htmlFile, html.getBytes(encoding), false);

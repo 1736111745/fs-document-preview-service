@@ -21,6 +21,7 @@ public class HandlerHtml {
 
     public static void process(String filePath, int page) throws IOException {
         try {
+            log.info("begin handle html,filePath:{},page:{}",filePath,page);
             String encoding = "UTF-8";
             File htmlFile = new File(filePath);
             if (htmlFile.length() > 1024 * 1024 * 10) {
@@ -91,25 +92,7 @@ public class HandlerHtml {
     }
 
     public static void main(String[] args) throws IOException {
-        String a = "   }\n" +
-                "\n" +
-                "    td {\n" +
-                "        mso-style-parent: style0;\n" +
-                "        mso-number-format: General;\n" +
-                "        text-align: general;\n" +
-                "        vertical-align: bottom;\n" +
-                "        white-space: nowrap;\n" +
-                "        background: auto;\n" +
-                "        mso-pattern: auto;\n" +
-                "        color: #000000;\n" +
-                "        font-size: 11pt;\n" +
-                "        font-weight: 400;\n" +
-                "        font-style: normal;\n" +
-                "        font-family: \"Tahoma\",\"sans-serif\";\n" +
-                "        border: none;\n" +
-                "        mso-protection: locked visible;\n" +
-                "        mso-ignore: padding;";
-        a = a.replaceAll(" font-family: \"Tahoma\",\"sans-serif\";", "");
+
     }
 
 }

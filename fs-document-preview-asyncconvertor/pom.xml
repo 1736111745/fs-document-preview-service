@@ -431,6 +431,11 @@
             <artifactId>docx4j</artifactId>
             <version>3.3.3</version>
         </dependency>
+        <dependency>
+            <groupId>aspose.slides</groupId>
+            <artifactId>aspose.slides</artifactId>
+            <version>16.7.0</version>
+        </dependency>
 
     </dependencies>
     <build>

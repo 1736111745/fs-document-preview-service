@@ -1,8 +1,9 @@
 package com.facishare.document.preview.common.utils;
-
-
 import com.facishare.document.preview.common.model.DocType;
 import org.apache.commons.io.FilenameUtils;
+
+import java.io.IOException;
+
 
 /**
  * Created by liuq on 16/9/9.
@@ -26,4 +27,10 @@ public class DocTypeHelper {
                 return DocType.Other;
         }
     }
+
+    public static void main(String[] args) throws IOException {
+    }
+
+
+
 }

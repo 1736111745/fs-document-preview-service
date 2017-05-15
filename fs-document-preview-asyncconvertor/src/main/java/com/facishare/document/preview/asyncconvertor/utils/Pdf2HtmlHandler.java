@@ -1,5 +1,6 @@
 package com.facishare.document.preview.asyncconvertor.utils;
 
+import com.aspose.slides.Presentation;
 import com.aspose.slides.SaveFormat;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
@@ -29,8 +30,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-import com.aspose.words.*;
-import com.aspose.slides.*;
 
 /**
  * Created by liuq on 2017/3/7.

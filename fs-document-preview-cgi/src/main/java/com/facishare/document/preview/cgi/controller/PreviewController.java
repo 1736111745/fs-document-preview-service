@@ -197,8 +197,9 @@ public class PreviewController {
 
     @ResponseBody
     @RequestMapping(value = "/preview/getDirName", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getDirName(HttpServletRequest request) {
+    public String getDirName(HttpServletRequest request) throws Exception {
         String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
+        String securityGroup=UrlParametersHelper.safeGetRequestParameter(request, "path");
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String ea = employeeInfo.getEa();
         Map<String, Object> map = new HashMap<>();
@@ -206,10 +207,10 @@ public class PreviewController {
             map.put("success", false);
             map.put("errorMsg", "参数错误!");
         } else {
-            PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
-            if (previewInfo != null) {
+            PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
+            if (previewInfoEx!=null&&previewInfoEx.getPreviewInfo()!=null) {
                 map.put("success", true);
-                map.put("dirName", previewInfo.getDirName());
+                map.put("dirName", previewInfoEx.getPreviewInfo().getDirName());
             } else {
                 map.put("success", false);
                 map.put("errorMsg", "系统错误!");

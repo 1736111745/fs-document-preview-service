@@ -173,19 +173,19 @@ public class PreviewController {
 
     @ResponseBody
     @RequestMapping(value = "/preview/getSheetNames", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getSheetNames(HttpServletRequest request) {
+    public String getSheetNames(HttpServletRequest request) throws Exception {
         String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
+        String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        String ea = employeeInfo.getEa();
         Map<String, Object> map = new HashMap<>();
         if (path.equals("")) {
             map.put("success", false);
             map.put("errorMsg", "参数错误!");
         } else {
-            PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
-            if (previewInfo != null) {
+            PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
+            if (previewInfoEx != null && previewInfoEx.getPreviewInfo() != null) {
                 map.put("success", true);
-                map.put("sheets", previewInfo.getSheetNames());
+                map.put("sheets", previewInfoEx.getPreviewInfo().getSheetNames());
             } else {
                 map.put("success", false);
                 map.put("errorMsg", "系统错误!");
@@ -199,7 +199,7 @@ public class PreviewController {
     @RequestMapping(value = "/preview/getDirName", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getDirName(HttpServletRequest request) throws Exception {
         String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
-        String securityGroup=UrlParametersHelper.safeGetRequestParameter(request, "path");
+        String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String ea = employeeInfo.getEa();
         Map<String, Object> map = new HashMap<>();
@@ -208,7 +208,7 @@ public class PreviewController {
             map.put("errorMsg", "参数错误!");
         } else {
             PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
-            if (previewInfoEx!=null&&previewInfoEx.getPreviewInfo()!=null) {
+            if (previewInfoEx != null && previewInfoEx.getPreviewInfo() != null) {
                 map.put("success", true);
                 map.put("dirName", previewInfoEx.getPreviewInfo().getDirName());
             } else {
@@ -222,8 +222,9 @@ public class PreviewController {
 
     @ResponseBody
     @RequestMapping(value = "/preview/getTxtPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getTxtPreviewInfo(HttpServletRequest request) {
+    public String getTxtPreviewInfo(HttpServletRequest request) throws Exception {
         String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
+        String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
         String ea = employeeInfo.getEa();
         Map<String, Object> map = new HashMap<>();
@@ -231,11 +232,11 @@ public class PreviewController {
             map.put("success", false);
             map.put("errorMsg", "参数错误!");
         } else {
-            PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
-            if (previewInfo != null) {
+            PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, securityGroup);
+            if (previewInfoEx != null && previewInfoEx.getPreviewInfo() != null) {
                 map.put("success", true);
-                map.put("dirName", previewInfo.getDirName());
-                map.put("fileName", FilenameUtils.getName(previewInfo.getOriginalFilePath()));
+                map.put("dirName", previewInfoEx.getPreviewInfo().getDirName());
+                map.put("fileName", FilenameUtils.getName(previewInfoEx.getPreviewInfo().getOriginalFilePath()));
             } else {
                 map.put("success", false);
                 map.put("errorMsg", "系统错误!");

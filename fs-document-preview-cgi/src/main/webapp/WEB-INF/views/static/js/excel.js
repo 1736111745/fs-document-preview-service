@@ -10,7 +10,7 @@ function loadSheetNames() {
         type: 'get',
         dataType: 'json',
         async: false,
-        url: window.contextPath + '/preview/getSheetNames?path=' + path,
+        url: window.contextPath + '/preview/getSheetNames?path=' + path+"&sg="+sg,
         success: function (data) {
             if (data.success) {
                 var sheets = data.sheets;

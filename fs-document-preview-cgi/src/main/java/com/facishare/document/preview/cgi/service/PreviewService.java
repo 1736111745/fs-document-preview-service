@@ -69,7 +69,7 @@ public class PreviewService {
                             pageInfo.setPageCount(1);
                         } else {
                             //旧版本office格式e转换为新版本office格式
-                            if (extension.equals("xls") || extension.equals("doc") || extension.equals("ppt")) {
+                            if (extension.contains("xls") || extension.contains("doc") || extension.contains("ppt")) {
                                 ConvertOldOfficeVersionResult result = officeApiHelper.convertFile(filePath);
                                 if (result != null && result.isSuccess()) {
                                     filePath = result.getNewFilePath();

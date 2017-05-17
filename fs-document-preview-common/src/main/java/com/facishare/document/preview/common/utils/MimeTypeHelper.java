@@ -44,7 +44,7 @@ public class MimeTypeHelper {
         s_mapMimeTypes.put("crt", "application/x-x509-ca-cert");
         s_mapMimeTypes.put("csh", "application/x-csh");
         s_mapMimeTypes.put("css", "text/css");
-        s_mapMimeTypes.put("csv", "text/comma-separated-values");
+        s_mapMimeTypes.put("csv", "text/plain");
         s_mapMimeTypes.put("dcr", "application/x-director");
         s_mapMimeTypes.put("dir", "application/x-director");
         s_mapMimeTypes.put("dll", "application/x-msdownload");

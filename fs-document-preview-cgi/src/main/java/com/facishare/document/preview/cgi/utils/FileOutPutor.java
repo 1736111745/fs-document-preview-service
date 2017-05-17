@@ -40,8 +40,7 @@ public class FileOutPutor {
                 response.setHeader("Cache-Control", "max-age=86400"); // HTTP/1.1
                 if (fileName.contains(".png")) {
                     buffer = handlePng(filePath, width, needThumbnail, response);
-                }
-                else {
+                } else {
                     buffer = handleFile(filePath, response);
                 }
                 response.setContentLength(buffer.length);
@@ -62,7 +61,7 @@ public class FileOutPutor {
         String ext = FilenameUtils.getExtension(fileName);
         String mime = MimeTypeHelper.getMimeType(ext);
         response.setContentType(mime);
-        if (filePath.toLowerCase().contains(".txt")) {
+        if (filePath.toLowerCase().contains(".txt") || filePath.toLowerCase().contains(".csv")) {
             String encode = EncodingDetect.getJavaEncode(filePath);
             log.info("encode:{}", encode);
             response.setCharacterEncoding(encode);

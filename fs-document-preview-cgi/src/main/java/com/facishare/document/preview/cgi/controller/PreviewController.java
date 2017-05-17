@@ -70,7 +70,7 @@ public class PreviewController {
     @Autowired
     FileStorageProxy fileStorageProxy;
     @ReloadableProperty("allowPreviewExtension")
-    private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf|txt";
+    private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf|txt|csv";
     @ReloadableProperty("htmlWidthList")
     private String htmlWidthList = "1000|640";
 
@@ -226,7 +226,6 @@ public class PreviewController {
         String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
         String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
         EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        String ea = employeeInfo.getEa();
         Map<String, Object> map = new HashMap<>();
         if (path.equals("")) {
             map.put("success", false);

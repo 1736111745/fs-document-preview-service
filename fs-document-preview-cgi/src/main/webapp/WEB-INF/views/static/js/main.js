@@ -31,7 +31,7 @@ function getPreviewInfo() {
 
 
 function doPreview() {
-    if (path.toLowerCase().indexOf("txt") >= 0) {
+    if (path.toLowerCase().indexOf("txt") >= 0 || path.toLowerCase().indexOf("csv") >= 0) {
         doPreviewTxt();
     }
     else {
@@ -44,7 +44,7 @@ function doPreviewTxt() {
         type: 'get',
         dataType: 'json',
         async: false,
-        url: window.contextPath + '/preview/getTxtPreviewInfo?path=' + path+"&sg="+sg,
+        url: window.contextPath + '/preview/getTxtPreviewInfo?path=' + path + "&sg=" + sg,
         success: function (data) {
             var dirName = data.dirName;
             var fileName = data.fileName;

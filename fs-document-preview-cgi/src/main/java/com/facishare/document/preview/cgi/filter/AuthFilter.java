@@ -30,7 +30,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        request.setAttribute("sv", "v5.0.0");
+        request.setAttribute("sv", "v5.0.1");
         String requestUri = request.getRequestURI().toLowerCase();
         String ctx = request.getContextPath();
         if (requestUri.startsWith(ctx + "/restful/") ||

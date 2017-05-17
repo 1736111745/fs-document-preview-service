@@ -64,7 +64,7 @@ public class PreviewService {
                         String filePath = FilenameUtils.concat(dataDir, fileName);
                         FileUtils.writeByteArrayToFile(new File(filePath), bytes);
                         PageInfo pageInfo = new PageInfo();
-                        if (extension.equals("txt")) {
+                        if (extension.equals("txt")||extension.equals("csv")) {
                             pageInfo.setSuccess(true);
                             pageInfo.setPageCount(1);
                         } else {

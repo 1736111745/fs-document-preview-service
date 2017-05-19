@@ -47,6 +47,8 @@ public class AuthFilter extends OncePerRequestFilter {
             EmployeeInfo employeeInfo = authHelper.getAuthInfo(request);
             if (employeeInfo == null) {
                 //检测下临时cookie
+                String cookieStr=request.getHeader("Cookie");
+                log.info("cookie string:{}",cookieStr);
                 Cookie cookie = WebUtil.getCookie(request, "auth_temp");
                 if (cookie != null) {
                     log.info("get auth_temp,value:{}",cookie.getValue());

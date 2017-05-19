@@ -26,7 +26,7 @@ public class AuthFilter extends OncePerRequestFilter {
     @Autowired
     AuthHelper authHelper;
     @ReloadableProperty("authTempKey")
-    private String authTempKey = "3~T4oFe&";
+    private String authTempKey = "~]Ec5SrXX<.557uf";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -46,28 +46,30 @@ public class AuthFilter extends OncePerRequestFilter {
         } else {
             EmployeeInfo employeeInfo = authHelper.getAuthInfo(request);
             if (employeeInfo == null) {
-                String profile = System.getProperty("spring.profiles.active");
-                if (!profile.equals("foneshare")) {
-                    employeeInfo = new EmployeeInfo();
-                    employeeInfo.setEa("2");
-                    employeeInfo.setEmployeeId(1000);
-                    request.setAttribute("Auth", employeeInfo);
+                //检测下临时cookie
+                Cookie cookie = WebUtil.getCookie(request, "auth_temp");
+                if (cookie != null) {
+                    log.info("get auth_temp,value:{}",cookie.getValue());
+                    Guard guard = new Guard(authTempKey);
+                    try {
+                        String ea = guard.decode(cookie.getValue());
+                        employeeInfo = new EmployeeInfo();
+                        employeeInfo.setEa(ea);
+                        employeeInfo.setEmployeeId(1000);
+                        request.setAttribute("Auth", employeeInfo);
+                    } catch (Exception e) {
+                        log.warn("requestUri:{},is invalid auth", requestUri);
+                        response.setStatus(403);
+                        return;
+                    }
                 } else {
-                    //检测下临时cookie
-                    Cookie cookie = WebUtil.getCookie(request, "auth_temp");
-                    if (cookie != null) {
-                        Guard guard = new Guard(authTempKey);
-                        try {
-                            String ea = guard.decode(cookie.getValue());
-                            employeeInfo = new EmployeeInfo();
-                            employeeInfo.setEa(ea);
-                            employeeInfo.setEmployeeId(1000);
-                            request.setAttribute("Auth", employeeInfo);
-                        } catch (Exception e) {
-                            log.warn("requestUri:{},is invalid auth", requestUri);
-                            response.setStatus(403);
-                            return;
-                        }
+                    log.warn("can't get auth_temp!", requestUri);
+                    String profile = System.getProperty("spring.profiles.active");
+                    if (!profile.equals("foneshare")) {
+                        employeeInfo = new EmployeeInfo();
+                        employeeInfo.setEa("2");
+                        employeeInfo.setEmployeeId(1000);
+                        request.setAttribute("Auth", employeeInfo);
                     } else {
                         log.warn("requestUri:{},is invalid auth", requestUri);
                         response.setStatus(403);
@@ -80,5 +82,6 @@ public class AuthFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
         }
+
     }
 }

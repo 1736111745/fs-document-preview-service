@@ -83,7 +83,7 @@ public class Pdf2HtmlProcessor {
         log.info("end do convert,params:{},cost:{}ms", JSON.toJSONString(convertorMessage), stopWatch.getTime());
     }
     public static void main(String[] args) throws Exception {
-        String va1="80B512F7816FBFD1BC6E4DD19CC4D1AF";
+        String va1="CEF7B286F448129EFD2551E438DB4F71";
         Guard guard = new Guard("~]Ec5SrXX<.557uf");
         System.out.println(guard.decode(va1));
 

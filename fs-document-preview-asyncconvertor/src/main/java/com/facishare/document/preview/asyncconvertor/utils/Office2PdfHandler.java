@@ -40,7 +40,7 @@ public class Office2PdfHandler {
             new ThreadFactoryBuilder().setDaemon(true).setNameFormat("office-to-pdf-%d").build();
     private final ExecutorService executorService = Executors.newCachedThreadPool(factory);
 
-    public void convertOffice2Pdf(String ea, String path, String filePath,int width) throws Exception {
+    public void convertOffice2Pdf(String ea, String path, String filePath, int width) throws Exception {
         String ext = FilenameUtils.getExtension(filePath).toLowerCase();
         PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
         int pageCount = previewInfo.getPageCount();
@@ -57,19 +57,36 @@ public class Office2PdfHandler {
         }
         log.info("hasNotConvertPageList:{}", hasNotConvertPageList);
         if (ext.equals("pdf")) {
-            enqueueMultiPagePdf(ea, path, filePath, hasNotConvertPageList,width);
+            enqueueMultiPagePdf(ea, path, filePath, hasNotConvertPageList, width);
         } else if (ext.contains("ppt")) {
-            for (int i = 0; i < hasNotConvertPageList.size(); i++) {
-                final int page = hasNotConvertPageList.get(i);
+            int hasNotConvertPageCount = hasNotConvertPageList.size();
+            if(hasNotConvertPageCount<20) {
+                for (int i = 0; i < hasNotConvertPageList.size(); i++) {
+                    final int page = hasNotConvertPageList.get(i);
+                    executorService.submit(() -> {
+                        boolean flag = officeApiHelper.convertOffice2Pdf(path, filePath, page);
+                        if (flag) {
+                            counterService.inc("ppt2pdf-success!");
+                            String pdfPageFilePath = filePath + "." + page + ".pdf";
+                            enqueue(ea, path, pdfPageFilePath, page, 1, width);
+                        } else
+                            counterService.inc("ppt2pdf-fail!");
+                    });
+                }
+            }
+            else
+            {
                 executorService.submit(() -> {
-                    boolean flag = officeApiHelper.convertOffice2Pdf(path, filePath, page);
+                    boolean flag = officeApiHelper.convertOffice2Pdf(path, filePath);
                     if (flag) {
                         counterService.inc("ppt2pdf-success!");
-                        String pdfPageFilePath = filePath + "." + page + ".pdf";
-                        enqueue(ea, path, pdfPageFilePath, page, 1,width);
-                    } else
+                        String pdfPageFilePath = filePath + ".pdf";
+                        enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList, width);
+                    } else {
                         counterService.inc("ppt2pdf-fail!");
+                    }
                 });
+
             }
         } else if (ext.contains("doc")) {
             executorService.submit(() -> {
@@ -77,7 +94,7 @@ public class Office2PdfHandler {
                 if (flag) {
                     counterService.inc("word2pdf-success!");
                     String pdfPageFilePath = filePath + ".pdf";
-                    enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList,width);
+                    enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList, width);
                 } else {
                     counterService.inc("word2pdf-fail!");
                 }
@@ -85,14 +102,14 @@ public class Office2PdfHandler {
         }
     }
 
-    private void enqueueMultiPagePdf(String ea, String path, String filePath, List<Integer> hasNotConvertPageList,int width) {
+    private void enqueueMultiPagePdf(String ea, String path, String filePath, List<Integer> hasNotConvertPageList, int width) {
         for (int i = 0; i < hasNotConvertPageList.size(); i++) {
             int page = hasNotConvertPageList.get(i);
             enqueue(ea, path, filePath, page, 2, width);
         }
     }
 
-    private void enqueue(String ea, String path, String filePath, int page, int type,int width) {
+    private void enqueue(String ea, String path, String filePath, int page, int type, int width) {
         ConvertPdf2HtmlMessage message = new ConvertPdf2HtmlMessage();
         message.setNpath(path);
         message.setFilePath(filePath);

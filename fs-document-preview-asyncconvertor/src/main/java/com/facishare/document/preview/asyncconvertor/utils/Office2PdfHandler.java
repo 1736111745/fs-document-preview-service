@@ -6,6 +6,7 @@ import com.facishare.document.preview.common.model.PreviewInfo;
 import com.facishare.document.preview.common.mq.ConvertorQueueProvider;
 import com.facishare.document.preview.common.utils.OfficeApiHelper;
 import com.fxiaoke.metrics.CounterService;
+import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,8 @@ public class Office2PdfHandler {
     PreviewInfoDao previewInfoDao;
     @Autowired
     private CounterService counterService;
+    @ReloadableProperty("pptMaxPage")
+    private int pptMaxPage = 20;
     private final ThreadFactory factory =
             new ThreadFactoryBuilder().setDaemon(true).setNameFormat("office-to-pdf-%d").build();
     private final ExecutorService executorService = Executors.newCachedThreadPool(factory);
@@ -55,12 +58,12 @@ public class Office2PdfHandler {
                 }
             }
         }
-        log.info("hasNotConvertPageList:{}", hasNotConvertPageList);
         if (ext.equals("pdf")) {
             enqueueMultiPagePdf(ea, path, filePath, hasNotConvertPageList, width);
         } else if (ext.contains("ppt")) {
             int hasNotConvertPageCount = hasNotConvertPageList.size();
-            if(hasNotConvertPageCount<20) {
+            if(hasNotConvertPageCount<=pptMaxPage) {
+                log.info("convert ppt to  pdf page by page!");
                 for (int i = 0; i < hasNotConvertPageList.size(); i++) {
                     final int page = hasNotConvertPageList.get(i);
                     executorService.submit(() -> {
@@ -75,9 +78,9 @@ public class Office2PdfHandler {
                 }
             }
             else
-            {
+            { log.info("convert ppt to  pdf once time!");
                 executorService.submit(() -> {
-                    boolean flag = officeApiHelper.convertOffice2Pdf(path, filePath);
+                    boolean flag = officeApiHelper.convertPPT2Pdf(path, filePath);
                     if (flag) {
                         counterService.inc("ppt2pdf-success!");
                         String pdfPageFilePath = filePath + ".pdf";

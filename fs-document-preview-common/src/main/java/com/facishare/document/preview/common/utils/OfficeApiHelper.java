@@ -22,9 +22,8 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Slf4j
 public class OfficeApiHelper {
-
-    @ReloadableProperty("oosServerUrl")
-    private String oosServerUrl = "";
+    private String officeConvertorServerUrl = "";
+    private String ppt2pdfServerUrl="";
     private static OkHttpClient client = new OkHttpClient.Builder()
             .connectTimeout(60, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
@@ -32,14 +31,18 @@ public class OfficeApiHelper {
 
     @PostConstruct
     void init() {
-        ConfigFactory.getConfig("fs-dps-config", config -> oosServerUrl = config.get("oosServerUrl"));
+        ConfigFactory.getConfig("fs-dps-config", config ->
+        {
+            officeConvertorServerUrl = config.get("officeConvertorServerUrl");
+            ppt2pdfServerUrl = config.get("ppt2pdfServerUrl");
+        });
     }
 
 
     public PageInfo getPageInfo(String path, String filePath) throws IOException {
         PageInfo pageInfo;
         String params = "filepath=" + filePath;
-        String json = callApi("GetPageInfo", params);
+        String json = callApi(officeConvertorServerUrl,"GetPageInfo", params);
         if (!Strings.isNullOrEmpty(json)) {
             pageInfo = JSON.parseObject(json, PageInfo.class);
         } else {
@@ -54,7 +57,7 @@ public class OfficeApiHelper {
     public ConvertOldOfficeVersionResult convertFile(String filePath) throws IOException {
         ConvertOldOfficeVersionResult result = null;
         String params = "filepath=" + filePath;
-        String json = callApi("ConvertFile", params);
+        String json = callApi(officeConvertorServerUrl,"ConvertFile", params);
         if (!Strings.isNullOrEmpty(json)) {
             result = JSON.parseObject(json, ConvertOldOfficeVersionResult.class);
         }
@@ -63,7 +66,7 @@ public class OfficeApiHelper {
 
     public boolean convertExcel2Html(String path, String filePath, int page) {
         String params = "filepath=" + filePath + "&page=" + page;
-        String json = callApi("ConvertExcel2Html", params);
+        String json = callApi(officeConvertorServerUrl,"ConvertExcel2Html", params);
         if (!Strings.isNullOrEmpty(json)) {
             ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);
             return convertResult.isSuccess();
@@ -75,7 +78,7 @@ public class OfficeApiHelper {
 
     public boolean convertOffice2Png(String path, String filePath, int page) {
         String params = "filepath=" + filePath + "&page=" + page;
-        String json = callApi("ConvertOnePageOffice2Png", params);
+        String json = callApi(officeConvertorServerUrl,"ConvertOnePageOffice2Png", params);
         if (!Strings.isNullOrEmpty(json)) {
             ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);
             return convertResult.isSuccess();
@@ -87,7 +90,7 @@ public class OfficeApiHelper {
 
     public boolean convertOffice2Pdf(String path, String filePath, int page) {
         String params = "filepath=" + filePath + "&page=" + page;
-        String json = callApi("ConvertOnePageOffice2Pdf", params);
+        String json = callApi(officeConvertorServerUrl,"ConvertOnePageOffice2Pdf", params);
         if (!Strings.isNullOrEmpty(json)) {
             ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);
             return convertResult.isSuccess();
@@ -97,9 +100,11 @@ public class OfficeApiHelper {
         }
     }
 
+
+
     public boolean convertOffice2Pdf(String path, String filePath) {
         String params = "filepath=" + filePath;
-        String json = callApi("ConvertOffice2Pdf", params);
+        String json = callApi(officeConvertorServerUrl,"ConvertOffice2Pdf", params);
         if (!Strings.isNullOrEmpty(json)) {
             ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);
             return convertResult.isSuccess();
@@ -110,10 +115,25 @@ public class OfficeApiHelper {
     }
 
 
-    private String callApi(String method, String params) {
+
+    public boolean convertPPT2Pdf(String path, String filePath) {
+
+        String params = "filepath=" + filePath;
+        String json = callApi(ppt2pdfServerUrl, "ConvertOffice2Pdf", params);
+        if (!Strings.isNullOrEmpty(json)) {
+            ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);
+            return convertResult.isSuccess();
+        } else {
+            log.error("path:{},filePath:{},ppt转换pdf档失败！", path, filePath);
+            return false;
+        }
+    }
+
+
+    private String callApi(String url,String method, String params) {
         String json = "";
         Stopwatch stopwatch = Stopwatch.createStarted();
-        String postUrl = oosServerUrl + "/Api/Office/" + method;
+        String postUrl = url + "/Api/Office/" + method;
         if (!Strings.isNullOrEmpty(params)) {
             postUrl = postUrl + "?" + params;
         }

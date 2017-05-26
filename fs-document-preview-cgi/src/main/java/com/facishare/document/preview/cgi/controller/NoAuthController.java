@@ -28,9 +28,10 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/open/training")
 @Slf4j
 public class NoAuthController {
-  @ReloadableProperty("allowPreviewExtension")
+
   @Autowired
   PreviewInfoHelper previewInfoHelper;
+  @ReloadableProperty("allowPreviewExtension")
   private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf|txt|csv";
   @Autowired
   PreviewService previewService;

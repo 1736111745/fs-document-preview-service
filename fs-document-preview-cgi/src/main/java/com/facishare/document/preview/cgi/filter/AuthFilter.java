@@ -72,7 +72,6 @@ public class AuthFilter extends OncePerRequestFilter {
             return;
           }
         }
-
       } else {
         request.setAttribute("Auth", employeeInfo);
       }

@@ -9,20 +9,20 @@ import javax.servlet.http.HttpServletRequest;
  */
 
 public class UrlParametersHelper {
-    public static String safeGetRequestParameter(HttpServletRequest request, String paramName) {
-        String value = request.getParameter(paramName) == null ? "" : request.getParameter(paramName).trim();
-        return value;
-    }
+  public static String safeGetRequestParameter(HttpServletRequest request, String paramName) {
+    String value = request.getParameter(paramName) == null ? "" : request.getParameter(paramName).trim();
+    return value;
+  }
 
-    public static   boolean isValidPath(String path) {
-        if (Strings.isNullOrEmpty(path))
-            return false;
-        if (path.startsWith("N_") || path.startsWith("TN_") || path.startsWith("TG_")
-                || path.startsWith("A_") || path.startsWith("TA_")
-                || path.startsWith("G_") || path.startsWith("F_") || path.startsWith("S_")) {
-            return true;
-        }
-        String[] pathSplit = path.split("_");
-        return pathSplit.length == 3;
+  public static boolean isValidPath(String path) {
+    if (Strings.isNullOrEmpty(path)) {
+      return false;
     }
+    if (path.startsWith("N_") || path.startsWith("TN_") || path.startsWith("TG_") || path.startsWith("A_") ||
+      path.startsWith("TA_") || path.startsWith("G_") || path.startsWith("F_") || path.startsWith("S_")) {
+      return true;
+    }
+    String[] pathSplit = path.split("_");
+    return pathSplit.length == 3;
+  }
 }

@@ -2,7 +2,8 @@ package com.facishare.document.preview.cgi.controller;
 
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfoEx;
-import com.facishare.document.preview.cgi.service.PreviewService;
+import com.facishare.document.preview.cgi.utils.EmployeeHelper;
+import com.facishare.document.preview.cgi.utils.PreviewInfoHelper;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,41 +15,32 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/restful")
 @Slf4j
 public class RestfulController {
-    @Autowired
-    private PreviewService previewService;
+  @Autowired
+  private PreviewInfoHelper previewInfoHelper;
 
-    /**
-     * 获取文档页码数
-     *
-     * @param filePath          文件路径
-     * @param ea 企业账号
-     * @param employeeId        员工id
-     * @return
-     */
-    @RequestMapping(value = "/document/getPageCount", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String documentPageCount(String filePath, String ea, Integer employeeId) {
-        String ret;
-        try {
-            Preconditions.checkNotNull(filePath, "filePath is null");
-            Preconditions.checkNotNull(ea, "ea is null");
-            Preconditions.checkNotNull(employeeId, "employeeId is null");
-            PreviewInfoEx previewInfoEx = getPreviewInfo(createEmployeeInfo(ea, employeeId), filePath);
-            Preconditions.checkNotNull(previewInfoEx.getPreviewInfo(), "document can't found!");
-            ret = String.format("{\"pageCount\":%d}", previewInfoEx.getPreviewInfo().getPageCount());
-        } catch (Exception e) {
-            log.error("/document/getPageCount |filePath: {} | ea: {} | ei: {} ", filePath, ea, employeeId, e);
-            ret = String.format("{\"error\":\"%s\"}", e.getMessage());
-        }
-        return ret;
+  /**
+   * 获取文档页码数
+   * @param filePath   文件路径
+   * @param ea         企业账号
+   * @param employeeId 员工id
+   * @return
+   */
+  @RequestMapping(value = "/document/getPageCount", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+  public String documentPageCount(String filePath, String ea, int employeeId) {
+    String ret;
+    try {
+      Preconditions.checkNotNull(filePath, "filePath is null");
+      Preconditions.checkNotNull(ea, "ea is null");
+      Preconditions.checkNotNull(employeeId, "employeeId is null");
+      EmployeeInfo employeeInfo = EmployeeHelper.createEmployeeInfo(ea, employeeId);
+      PreviewInfoEx previewInfoEx =previewInfoHelper.getPreviewInfo(employeeInfo, filePath, "");
+      Preconditions.checkNotNull(previewInfoEx.getPreviewInfo(), "document can't found!");
+      ret = String.format("{\"pageCount\":%d}", previewInfoEx.getPreviewInfo().getPageCount());
+    } catch (Exception e) {
+      log.error("/document/getPageCount |filePath: {} | ea: {} | ei: {} ", filePath, ea, employeeId, e);
+      ret = String.format("{\"error\":\"%s\"}", e.getMessage());
     }
+    return ret;
+  }
 
-    public PreviewInfoEx getPreviewInfo(EmployeeInfo employeeInfo, String path) throws Exception {
-        return previewService.getPreviewInfo(employeeInfo, path,"");
-    }
-    private EmployeeInfo createEmployeeInfo(String ea, int ei) {
-        EmployeeInfo employeeInfo = new EmployeeInfo();
-        employeeInfo.setEa(ea);
-        employeeInfo.setEmployeeId(ei);
-        return employeeInfo;
-    }
 }

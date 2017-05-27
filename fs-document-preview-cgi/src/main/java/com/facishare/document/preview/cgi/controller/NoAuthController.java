@@ -10,7 +10,6 @@ import com.fxiaoke.common.Guard;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.mongodb.util.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -50,12 +49,12 @@ public class NoAuthController {
     int pageCount = 0;
     String pathToken = UrlParametersHelper.safeGetRequestParameter(request, "path");
     String token = UrlParametersHelper.safeGetRequestParameter(request, "token");
-    log.info("pathToken:{},token:{}",pathToken,token);
-    if (!UrlParametersHelper.isValidPath(pathToken)||Strings.isNullOrEmpty(token)) {
+    log.info("pathToken:{},token:{}", pathToken, token);
+    if (Strings.isNullOrEmpty(pathToken) || Strings.isNullOrEmpty(token)) {
       return ResponseJsonHelper.getDocPreviewInfoResult(pathToken, pageCount);
     }
-    String path=getPath(token);
-    if(Strings.isNullOrEmpty(path)) {
+    String path = getPath(token);
+    if (Strings.isNullOrEmpty(path)) {
       return ResponseJsonHelper.getDocPreviewInfoResult(pathToken, pageCount);
     }
     String extension = FilenameUtils.getExtension(path).toLowerCase();
@@ -63,7 +62,7 @@ public class NoAuthController {
       return ResponseJsonHelper.getDocPreviewInfoResult(path, pageCount);
     }
     EmployeeInfo employeeInfo = getEmployeeInfo(token);
-    log.info("path:{},employeeInfo:{}",path, com.alibaba.fastjson.JSON.toJSON(employeeInfo));
+    log.info("path:{},employeeInfo:{}", path, com.alibaba.fastjson.JSON.toJSON(employeeInfo));
     if (employeeInfo == null) {
       return ResponseJsonHelper.getDocPreviewInfoResult(path, pageCount);
     }
@@ -83,12 +82,12 @@ public class NoAuthController {
     String pathToken = UrlParametersHelper.safeGetRequestParameter(request, "path");
     String token = UrlParametersHelper.safeGetRequestParameter(request, "token");
     int pageIndex = NumberUtils.toInt(UrlParametersHelper.safeGetRequestParameter(request, "pageIndex"), 0);
-    if (!UrlParametersHelper.isValidPath(pathToken) || Strings.isNullOrEmpty(token)) {
+    if (Strings.isNullOrEmpty(pathToken) || Strings.isNullOrEmpty(token)) {
       response.setStatus(400);
       return;
     }
-    String path=getPath(token);
-    if(Strings.isNullOrEmpty(path)) {
+    String path = getPath(token);
+    if (Strings.isNullOrEmpty(path)) {
       response.setStatus(400);
       return;
     }
@@ -114,6 +113,7 @@ public class NoAuthController {
       return "";
     }
   }
+
   private EmployeeInfo getEmployeeInfo(String token) {
     Guard guard = new Guard(previewKey);
     try {

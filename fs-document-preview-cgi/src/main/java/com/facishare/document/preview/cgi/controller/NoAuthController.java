@@ -54,6 +54,7 @@ public class NoAuthController {
       return ResponseJsonHelper.getDocPreviewInfoResult(pathToken, pageCount);
     }
     String path = getPath(pathToken);
+    log.info("path:{}",path);
     if (Strings.isNullOrEmpty(path)) {
       return ResponseJsonHelper.getDocPreviewInfoResult(pathToken, pageCount);
     }

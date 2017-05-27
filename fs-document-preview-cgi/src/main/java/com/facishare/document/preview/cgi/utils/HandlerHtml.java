@@ -1,5 +1,7 @@
 package com.facishare.document.preview.cgi.utils;
 
+import com.fxiaoke.common.Guard;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -12,6 +14,7 @@ import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by liuq on 2017/4/20.
@@ -92,8 +95,19 @@ public class HandlerHtml {
     return flag;
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) throws Exception {
+    String key="X8wh+9~+PKmG)b65";
+    Guard guard=new Guard(key);
+    String path=guard.decode("56F9238D3201D166DCAF187570B687A84644C580CA25FD982B68039BC5EFE55D8343E29F018668669CA2DA0C5EE876F9CA39DCC1734D1D7122612EB8D3BD73B0");
+    String eaInfo=guard.decode("F1FA07C03B164A41000BC7D19769B761E30AE86FA5C6699A");
+    List<String> list = Splitter.on(".").trimResults().omitEmptyStrings().splitToList(eaInfo);
+    if (list.size() == 3) {
+      String ea = list.get(1);
+      String employeeIdStr = list.get(2);
+      if (NumberUtils.isNumber(employeeIdStr)) {
+        int employeeId = NumberUtils.toInt(employeeIdStr);
+      }
 
+    }
   }
-
 }

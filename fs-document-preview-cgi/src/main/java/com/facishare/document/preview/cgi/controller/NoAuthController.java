@@ -10,6 +10,7 @@ import com.fxiaoke.common.Guard;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.mongodb.util.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -62,6 +63,7 @@ public class NoAuthController {
       return ResponseJsonHelper.getDocPreviewInfoResult(path, pageCount);
     }
     EmployeeInfo employeeInfo = getEmployeeInfo(token);
+    log.info("path:{},employeeInfo:{}",path, com.alibaba.fastjson.JSON.toJSON(employeeInfo));
     if (employeeInfo == null) {
       return ResponseJsonHelper.getDocPreviewInfoResult(path, pageCount);
     }

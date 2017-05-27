@@ -108,7 +108,7 @@ public class NoAuthController {
   private String getPath(String token) {
     Guard guard = new Guard(previewKey);
     try {
-      return guard.decode(previewKey);
+      return guard.decode(token);
     } catch (Exception ex) {
       log.warn("unknown token,can't convert to path!token:{}", token, ex);
       return "";

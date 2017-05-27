@@ -53,7 +53,7 @@ public class NoAuthController {
     if (Strings.isNullOrEmpty(pathToken) || Strings.isNullOrEmpty(token)) {
       return ResponseJsonHelper.getDocPreviewInfoResult(pathToken, pageCount);
     }
-    String path = getPath(token);
+    String path = getPath(pathToken);
     if (Strings.isNullOrEmpty(path)) {
       return ResponseJsonHelper.getDocPreviewInfoResult(pathToken, pageCount);
     }
@@ -86,7 +86,7 @@ public class NoAuthController {
       response.setStatus(400);
       return;
     }
-    String path = getPath(token);
+    String path = getPath(pathToken);
     if (Strings.isNullOrEmpty(path)) {
       response.setStatus(400);
       return;

@@ -49,6 +49,7 @@ public class NoAuthController {
     int pageCount = 0;
     String pathToken = UrlParametersHelper.safeGetRequestParameter(request, "path");
     String token = UrlParametersHelper.safeGetRequestParameter(request, "token");
+    log.info("pathToken:{},token:{}",pathToken,token);
     if (!UrlParametersHelper.isValidPath(pathToken)||Strings.isNullOrEmpty(token)) {
       return ResponseJsonHelper.getDocPreviewInfoResult(pathToken, pageCount);
     }

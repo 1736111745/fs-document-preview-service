@@ -63,7 +63,7 @@ public class NoAuthController {
       return ResponseJsonHelper.getDocPreviewInfoResult(path, pageCount);
     }
     EmployeeInfo employeeInfo = getEmployeeInfo(token);
-    log.info("path:{},employeeInfo:{}", path, com.alibaba.fastjson.JSON.toJSON(employeeInfo));
+    log.info("employeeInfo:{}", com.alibaba.fastjson.JSON.toJSON(employeeInfo));
     if (employeeInfo == null) {
       return ResponseJsonHelper.getDocPreviewInfoResult(path, pageCount);
     }

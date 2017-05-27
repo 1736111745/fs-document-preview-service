@@ -47,12 +47,14 @@ public class NoAuthController {
   @RequestMapping(value = "/preview/DocPreviewByPath", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
   public String docPreviewByPath(HttpServletRequest request) throws Exception {
     int pageCount = 0;
-    String path = UrlParametersHelper.safeGetRequestParameter(request, "npath") == "" ?
-      UrlParametersHelper.safeGetRequestParameter(request, "path") :
-      UrlParametersHelper.safeGetRequestParameter(request, "path");
+    String pathToken = UrlParametersHelper.safeGetRequestParameter(request, "path");
     String token = UrlParametersHelper.safeGetRequestParameter(request, "token");
-    if (!UrlParametersHelper.isValidPath(path)||Strings.isNullOrEmpty(token)) {
-      return ResponseJsonHelper.getDocPreviewInfoResult(path, pageCount);
+    if (!UrlParametersHelper.isValidPath(pathToken)||Strings.isNullOrEmpty(token)) {
+      return ResponseJsonHelper.getDocPreviewInfoResult(pathToken, pageCount);
+    }
+    String path=getPath(token);
+    if(Strings.isNullOrEmpty(path)) {
+      return ResponseJsonHelper.getDocPreviewInfoResult(pathToken, pageCount);
     }
     String extension = FilenameUtils.getExtension(path).toLowerCase();
     if (allowPreviewExtension.indexOf(extension) == -1) {
@@ -75,12 +77,15 @@ public class NoAuthController {
   @ResponseBody
   @RequestMapping(value = "/preview/DocPageByPath", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
   public void docPageByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    String path = UrlParametersHelper.safeGetRequestParameter(request, "npath") == "" ?
-      UrlParametersHelper.safeGetRequestParameter(request, "path") :
-      UrlParametersHelper.safeGetRequestParameter(request, "npath");
+    String pathToken = UrlParametersHelper.safeGetRequestParameter(request, "path");
     String token = UrlParametersHelper.safeGetRequestParameter(request, "token");
     int pageIndex = NumberUtils.toInt(UrlParametersHelper.safeGetRequestParameter(request, "pageIndex"), 0);
-    if (!UrlParametersHelper.isValidPath(path) || Strings.isNullOrEmpty(token)) {
+    if (!UrlParametersHelper.isValidPath(pathToken) || Strings.isNullOrEmpty(token)) {
+      response.setStatus(400);
+      return;
+    }
+    String path=getPath(token);
+    if(Strings.isNullOrEmpty(path)) {
       response.setStatus(400);
       return;
     }
@@ -97,20 +102,34 @@ public class NoAuthController {
     }
   }
 
-  private EmployeeInfo getEmployeeInfo(String token) throws Exception {
+  private String getPath(String token) {
     Guard guard = new Guard(previewKey);
-    String eaInfo = guard.decode(token);
-    List<String> list = Splitter.on(".").trimResults().omitEmptyStrings().splitToList(eaInfo);
-    if (list.size() == 3) {
-      String ea = list.get(1);
-      String employeeIdStr = list.get(2);
-      if (NumberUtils.isNumber(employeeIdStr)) {
-        int employeeId = NumberUtils.toInt(employeeIdStr);
-        return EmployeeHelper.createEmployeeInfo(ea, employeeId);
+    try {
+      return guard.decode(previewKey);
+    } catch (Exception ex) {
+      log.warn("unknown token,can't convert to path!token:{}", token, ex);
+      return "";
+    }
+  }
+  private EmployeeInfo getEmployeeInfo(String token) {
+    Guard guard = new Guard(previewKey);
+    try {
+      String eaInfo = guard.decode(token);
+      List<String> list = Splitter.on(".").trimResults().omitEmptyStrings().splitToList(eaInfo);
+      if (list.size() == 3) {
+        String ea = list.get(1);
+        String employeeIdStr = list.get(2);
+        if (NumberUtils.isNumber(employeeIdStr)) {
+          int employeeId = NumberUtils.toInt(employeeIdStr);
+          return EmployeeHelper.createEmployeeInfo(ea, employeeId);
+        } else {
+          return null;
+        }
       } else {
         return null;
       }
-    } else {
+    } catch (Exception ex) {
+      log.warn("unknown token,can't convert to ea info!token:{}", token, ex);
       return null;
     }
   }

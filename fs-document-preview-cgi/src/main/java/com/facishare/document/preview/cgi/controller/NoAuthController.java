@@ -83,16 +83,19 @@ public class NoAuthController {
     String pathToken = UrlParametersHelper.safeGetRequestParameter(request, "path");
     String token = UrlParametersHelper.safeGetRequestParameter(request, "token");
     int pageIndex = NumberUtils.toInt(UrlParametersHelper.safeGetRequestParameter(request, "pageIndex"), 0);
+    log.info("pathToken:{},token:{}", pathToken, token);
     if (Strings.isNullOrEmpty(pathToken) || Strings.isNullOrEmpty(token)) {
       response.setStatus(400);
       return;
     }
     String path = getPath(pathToken);
+    log.info("path:{}", path);
     if (Strings.isNullOrEmpty(path)) {
       response.setStatus(400);
       return;
     }
     EmployeeInfo employeeInfo = getEmployeeInfo(token);
+    log.info("employeeInfo:{}", com.alibaba.fastjson.JSON.toJSON(employeeInfo));
     if (employeeInfo == null) {
       response.setStatus(400);
       return;

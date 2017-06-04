@@ -38,7 +38,7 @@ public class PreviewService {
     DocPageResult result = new DocPageResult();
     try {
       PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, "");
-      log.info("previewInfoEx:{}",previewInfoEx);
+      log.info("path:{},previewInfoEx:{}", path, com.alibaba.fastjson.JSON.toJSON(previewInfoEx));
       if (!previewInfoEx.isSuccess()) {
         log.warn("can't get previewInfo,path:{},pageIndex:{}", path, pageIndex);
         result.setCode(404);

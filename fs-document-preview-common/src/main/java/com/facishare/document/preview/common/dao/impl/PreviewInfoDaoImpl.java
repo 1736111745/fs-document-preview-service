@@ -28,101 +28,129 @@ import java.util.List;
 @Repository
 public class PreviewInfoDaoImpl implements PreviewInfoDao {
 
-    @Autowired
-    private DatastoreExt dpsDataStore;
+  @Autowired
+  private DatastoreExt dpsDataStore;
 
-    @Override
-    public void savePreviewInfo(String ea, String path, String dataFilePath) {
-        String dataFileName = FilenameUtils.getName(dataFilePath);
-        Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
-        query.criteria("path").equal(path).criteria("ea").equal(ea);
-        UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
-        update.add("filePathList", dataFileName);
-        dpsDataStore.findAndModify(query, update);
+  @Override
+  public void savePreviewInfo(String ea, String path, String dataFilePath) {
+    String dataFileName = FilenameUtils.getName(dataFilePath);
+    Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+    if(path.startsWith("A_"))
+    {
+      query.criteria("path").equal(path);
     }
+    else {
+      query.criteria("path").equal(path).criteria("ea").equal(ea);
+    }
+    UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
+    update.add("filePathList", dataFileName);
+    dpsDataStore.findAndModify(query, update);
+  }
 
-    @Override
-    public String getDataFilePath(String path, int page, String dataDir, String filePath, int type,
-                                  List<String> filePathList) throws IOException {
-        String dataFilePath = "";
-        DocType docType = DocTypeHelper.getDocType(filePath);
-        String dataFileName = "";
-        int pageIndex = page + 1;
-        if (filePathList != null && filePathList.size() > 0) {
-            switch (docType) {
-                case PDF: {
-                    if (type == 1) {
-                        dataFileName = filePathList.stream().filter(x -> (x.equals(pageIndex + ".html"))).findFirst().orElse("");
-                    } else if (type == 2) {
-                        dataFileName = filePathList.stream().filter(x -> (x.equals(pageIndex + ".jpg") || x.equals(pageIndex + ".png"))).findFirst().orElse("");
-                    }
-                    break;
-                }
-                case Excel: {
-                    dataFileName = filePathList.stream().filter(x -> x.equals(page + ".html")).findFirst().orElse("");
-                    break;
-                }
-                case Word: {
-                    if (type == 1) {
-                        dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".html")).findFirst().orElse("");
-                    } else {
-                        dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".jpg") || (x.equals(pageIndex + ".png"))).findFirst().orElse("");
-                    }
-                    break;
-                }
-                case PPT: {
-                    if (type == 1) {
-                        dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".html")).findFirst().orElse("");
-                    } else {
-                        dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".jpg") || (x.equals(pageIndex + ".png"))).findFirst().orElse("");
-                    }
-                    break;
-                }
-            }
+  @Override
+  public String getDataFilePath(String path,
+                                int page,
+                                String dataDir,
+                                String filePath,
+                                int type,
+                                List<String> filePathList) throws IOException {
+    String dataFilePath = "";
+    DocType docType = DocTypeHelper.getDocType(filePath);
+    String dataFileName = "";
+    int pageIndex = page + 1;
+    if (filePathList != null && filePathList.size() > 0) {
+      switch (docType) {
+        case PDF: {
+          if (type == 1) {
+            dataFileName = filePathList.stream().filter(x -> (x.equals(pageIndex + ".html"))).findFirst().orElse("");
+          } else if (type == 2) {
+            dataFileName = filePathList.stream()
+                                       .filter(x -> (x.equals(pageIndex + ".jpg") || x.equals(pageIndex + ".png")))
+                                       .findFirst()
+                                       .orElse("");
+          }
+          break;
         }
-        if (!Strings.isNullOrEmpty(dataFileName)) {
-            dataFilePath = FilenameUtils.concat(dataDir, dataFileName);
+        case Excel: {
+          dataFileName = filePathList.stream().filter(x -> x.equals(page + ".html")).findFirst().orElse("");
+          break;
         }
-        return dataFilePath;
+        case Word: {
+          if (type == 1) {
+            dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".html")).findFirst().orElse("");
+          } else {
+            dataFileName = filePathList.stream()
+                                       .filter(x -> x.equals(pageIndex + ".jpg") || (x.equals(pageIndex + ".png")))
+                                       .findFirst()
+                                       .orElse("");
+          }
+          break;
+        }
+        case PPT: {
+          if (type == 1) {
+            dataFileName = filePathList.stream().filter(x -> x.equals(pageIndex + ".html")).findFirst().orElse("");
+          } else {
+            dataFileName = filePathList.stream()
+                                       .filter(x -> x.equals(pageIndex + ".jpg") || (x.equals(pageIndex + ".png")))
+                                       .findFirst()
+                                       .orElse("");
+          }
+          break;
+        }
+      }
     }
-
-    @Override
-    public String getBaseDir(String dirName) {
-        Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
-        query.criteria("dirName").equal(dirName);
-        PreviewInfo previewInfo = query.get();
-        return previewInfo == null ? "" : previewInfo.getDataDir();
+    if (!Strings.isNullOrEmpty(dataFileName)) {
+      dataFilePath = FilenameUtils.concat(dataDir, dataFileName);
     }
+    return dataFilePath;
+  }
+
+  @Override
+  public String getBaseDir(String dirName) {
+    Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+    query.criteria("dirName").equal(dirName);
+    PreviewInfo previewInfo = query.get();
+    return previewInfo == null ? "" : previewInfo.getDataDir();
+  }
 
 
-    @Override
-    @Synchronized
-    public PreviewInfo initPreviewInfo(String ea, int employeeId, String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames) {
-        PreviewInfo previewInfo = new PreviewInfo();
-        previewInfo.setDocSize(docSize);
-        previewInfo.setDirName(FilenameUtils.getBaseName(dataDir));
-        previewInfo.setCreateTime(new Date());
-        int yyyyMMdd = DateUtil.getFormatDateInt("yyyyMMdd");
-        previewInfo.setCreateYYMMDD(yyyyMMdd);
-        previewInfo.setEa(ea);
-        previewInfo.setEmployeeId(employeeId);
-        previewInfo.setDataDir(dataDir);
-        previewInfo.setPath(path);
-        previewInfo.setSheetNames(sheetNames);
-        previewInfo.setPageCount(pageCount);
-        previewInfo.setOriginalFilePath(originalFilePath);
-        List<String> filePathList = new ArrayList<>();
-        previewInfo.setFilePathList(filePathList);
-        dpsDataStore.insert("PreviewInfo", previewInfo);
-        dpsDataStore.ensureIndexes();
-        return previewInfo;
-    }
+  @Override
+  @Synchronized
+  public PreviewInfo initPreviewInfo(String ea,
+                                     int employeeId,
+                                     String path,
+                                     String originalFilePath,
+                                     String dataDir,
+                                     long docSize,
+                                     int pageCount,
+                                     List<String> sheetNames) {
+    PreviewInfo previewInfo = new PreviewInfo();
+    previewInfo.setDocSize(docSize);
+    previewInfo.setDirName(FilenameUtils.getBaseName(dataDir));
+    previewInfo.setCreateTime(new Date());
+    int yyyyMMdd = DateUtil.getFormatDateInt("yyyyMMdd");
+    previewInfo.setCreateYYMMDD(yyyyMMdd);
+    previewInfo.setEa(ea);
+    previewInfo.setEmployeeId(employeeId);
+    previewInfo.setDataDir(dataDir);
+    previewInfo.setPath(path);
+    previewInfo.setSheetNames(sheetNames);
+    previewInfo.setPageCount(pageCount);
+    previewInfo.setOriginalFilePath(originalFilePath);
+    List<String> filePathList = new ArrayList<>();
+    previewInfo.setFilePathList(filePathList);
+    dpsDataStore.insert("PreviewInfo", previewInfo);
+    dpsDataStore.ensureIndexes();
+    return previewInfo;
+  }
 
-    @Override
-    public PreviewInfo getInfoByPath(String ea, String path) {
-        Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
-        query.criteria("path").equal(path).criteria("ea").equal(ea);
-        return query.get();
-    }
-
+  @Override
+  public PreviewInfo getInfoByPath(String ea, String path) {
+    Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+    if (path.startsWith("A_")) {
+      query.criteria("path").equal(path);
+    } else {
+      query.criteria("path").equal(path).criteria("ea").equal(ea);
+    } return query.get();
+  }
 }

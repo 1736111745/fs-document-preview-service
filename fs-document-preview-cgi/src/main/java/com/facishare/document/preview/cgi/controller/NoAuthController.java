@@ -54,7 +54,7 @@ public class NoAuthController {
       return ResponseJsonHelper.getDocPreviewInfoResult(pathToken, pageCount);
     }
     String path = getPath(pathToken);
-    log.info("path:{}",path);
+    log.info("path:{}", path);
     if (Strings.isNullOrEmpty(path)) {
       return ResponseJsonHelper.getDocPreviewInfoResult(pathToken, pageCount);
     }
@@ -99,9 +99,13 @@ public class NoAuthController {
     }
     int width = NumberUtils.toInt(UrlParametersHelper.safeGetRequestParameter(request, "width"), 1024);
     width = width > 1920 ? 1920 : width;
+    log.info("preview in no auth condition,path:{},employeeInfo:{},pageIndex:{}",path,com.alibaba.fastjson.JSON.toJSON(employeeInfo),pageIndex);
     DocPageResult result = previewService.getDocPage(employeeInfo, path, pageIndex);
     if (result.getCode() == 200) {
       fileOutPutor.outPut(response, result.getDataFilePath(), width, true);
+    } else {
+      response.setStatus(404);
+      return;
     }
   }
 

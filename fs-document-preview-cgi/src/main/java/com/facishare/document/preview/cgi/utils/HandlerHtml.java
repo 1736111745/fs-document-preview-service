@@ -98,8 +98,8 @@ public class HandlerHtml {
   public static void main(String[] args) throws Exception {
     String key="X8wh+9~+PKmG)b65";
     Guard guard=new Guard(key);
-    String path=guard.decode("56F9238D3201D166DCAF187570B687A84644C580CA25FD982B68039BC5EFE55D8343E29F018668669CA2DA0C5EE876F9CA39DCC1734D1D7122612EB8D3BD73B0");
-    String eaInfo=guard.decode("F1FA07C03B164A41000BC7D19769B761E30AE86FA5C6699A");
+    String path=guard.decode("29312003AE53598CD1D2D5EB9C0D967C74DED72BD296B67021B27DCD7BA6BCEA2C4B8A58A513306672E6028851EFE37B957FF809712FEAF6F5ADC10E9168A793");
+    String eaInfo=guard.decode("A70CCF2F0C221CBD3A6DFC4CA7D494426983B270C0857747");
     List<String> list = Splitter.on(".").trimResults().omitEmptyStrings().splitToList(eaInfo);
     if (list.size() == 3) {
       String ea = list.get(1);

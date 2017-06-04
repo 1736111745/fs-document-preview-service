@@ -104,6 +104,7 @@ public class NoAuthController {
     width = width > 1920 ? 1920 : width;
     log.info("preview in no auth condition,path:{},employeeInfo:{},pageIndex:{}",path,com.alibaba.fastjson.JSON.toJSON(employeeInfo),pageIndex);
     DocPageResult result = previewService.getDocPage(employeeInfo, path, pageIndex);
+    log.info("result:{}",com.alibaba.fastjson.JSON.toJSON(result));
     if (result.getCode() == 200) {
       fileOutPutor.outPut(response, result.getDataFilePath(), width, true);
     } else {

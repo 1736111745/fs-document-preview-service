@@ -34,6 +34,7 @@ public class PreviewService {
   FileStorageProxy fileStorageProxy;
 
   public DocPageResult getDocPage(EmployeeInfo employeeInfo, String path, int pageIndex) {
+    log.info("begin get doc page,employeeInfo:{},path:{},pageIndex:{}",com.alibaba.fastjson.JSON.toJSON(employeeInfo),path,pageIndex);
     DocPageResult result = new DocPageResult();
     try {
       PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, "");

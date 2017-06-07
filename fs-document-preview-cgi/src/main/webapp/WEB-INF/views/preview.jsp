@@ -23,6 +23,8 @@
       height: 530px;
       border-radius: 3px;
       background-color: #ffffff;
+      margin: 0 auto;
+      top: 50%;
     }
     div.msg
     {
@@ -35,7 +37,7 @@
   </style>
 <body>
 <div class="main">
-  <img src="static/images/nosurport.png" width="88px" height="96px"/>
+  <div style="text-align: center"><img  id="imgIcon" src="<%=request.getContextPath()%>/static/images/nosurport.png" width="88px" height="96px"/></div>
   <div class="msg" id="msg"></div>
 </div>
 </body>

@@ -23,7 +23,7 @@
       height: 530px;
       border-radius: 3px;
       background-color: #ffffff;
-      margin-top: 50%;
+      margin: 50%;
     }
     div.msg
     {

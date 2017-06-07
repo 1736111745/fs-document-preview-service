@@ -15,7 +15,6 @@ function getPreviewInfo() {
         async: false,
         url: window.contextPath + '/preview/getPreviewInfo?path=' + path + '&token=' + token,
         success: function (data) {
-            $('#divLoading').hide();
             if (data.canPreview) {
                 pageCount = data.pageCount;
                 path = data.path;
@@ -23,7 +22,7 @@ function getPreviewInfo() {
                 doPreview();
             }
             else {
-                document.write("<h3>" + data.errorMsg + "</h3>");
+                $("#msg").html(data.errorMsg);
             }
         }
     });
@@ -68,6 +67,5 @@ function doPreviewOffice() {
 
 //入口
 $(document).ready(function () {
-    $('#divLoading').hide();
     getPreviewInfo();
 });

@@ -39,7 +39,9 @@
 
     div.center {
       text-align: center;
-      font-size: 24px;
+      font-size: 14px;
+      margin-bottom: 10px;
+      margin-top: 10px;
     }
 
     @viewport {

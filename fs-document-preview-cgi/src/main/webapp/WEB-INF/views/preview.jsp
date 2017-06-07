@@ -18,11 +18,24 @@
   <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/main.js?v=<%=request.getAttribute("sv")%>"></script>
   <link href="<%=request.getContextPath()%>/static/css/main.css?v=<%=request.getAttribute("sv")%>" rel="stylesheet">
   <style>
-
+    div.main {
+      width: 640px;
+      height: 530px;
+      border-radius: 3px;
+      background-color: #ffffff;
+    }
+    div.msg
+    {
+      width: 189px;
+      height: 40px;
+      font-size: 14px;
+      text-align: center;
+      color: #bdbdbd;
+    }
   </style>
 <body>
-<div id="divLoading">
-  <div id="background" class="background"></div>
-  <div id="progressBar" class="progressBar"></div>
+<div class="main">
+  <img src="static/images/nosurport.png" width="88px" height="96px"/>
+  <div class="msg" id="msg"></div>
 </div>
 </body>

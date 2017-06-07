@@ -30,7 +30,6 @@
     {
       width: 189px;
       height: 40px;
-      font-size: 14px;
       text-align: center;
       color: #bdbdbd;
     }

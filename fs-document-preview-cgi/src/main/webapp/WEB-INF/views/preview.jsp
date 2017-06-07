@@ -37,7 +37,7 @@
   </style>
 <body>
 <div class="main">
-  <div style="text-align: center"><img  id="imgIcon" src="<%=request.getContextPath()%>/static/images/nosurport.png" width="88px" height="96px"/></div>
+  <div style="margin: 0 auto"><img  id="imgIcon" src="<%=request.getContextPath()%>/static/images/nosurport.png" width="176px" height="192px"/></div>
   <div class="msg" id="msg"></div>
 </div>
 </body>

@@ -83,7 +83,7 @@ public class Pdf2HtmlHandler {
                 }
             }
             if (type == 1) {
-                FileUtils.deleteQuietly(new File(filePath));
+               // FileUtils.deleteQuietly(new File(filePath));
             }
         }
         return dataFilePath;

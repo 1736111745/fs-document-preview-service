@@ -47,7 +47,7 @@
     }
   </style>
 <body>
-<div class="main">
+<div class="main" id="main">
   <div class="img-center"><img id="imgIcon" src="<%=request.getContextPath()%>/static/images/encrypt.png" width="176px" height="192px"/></div>
   <div class="msg" id="msg"></div>
 </div>

@@ -32,6 +32,7 @@ function getPreviewInfo() {
         else {
           $('#imgIcon').attr("src", damageImage);
         }
+        $("#main").show();
       }
     }
   });
@@ -76,5 +77,6 @@ function doPreviewOffice() {
 
 //入口
 $(document).ready(function () {
+  $("#main").hide();
   getPreviewInfo();
 });

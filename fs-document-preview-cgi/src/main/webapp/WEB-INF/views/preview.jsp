@@ -31,14 +31,9 @@
       height: 530px;
       border-radius: 3px;
       background-color: #ffffff;
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      margin-left: -320px;
-      top: -265px;
-      text-align: center;
+      margin: 30px auto;
     }
-    .main .img-ctner {
+    .main .img-center {
       width: 176px;
       height: 192px;
       margin: 0 auto;
@@ -54,7 +49,7 @@
   </style>
 <body>
 <div class="main">
-  <div class="img-ctner"><img id="imgIcon" src="<%=request.getContextPath()%>/static/images/nosurport.png" width="176px" height="192px"/></div>
+  <div class="img-center"><img id="imgIcon" src="<%=request.getContextPath()%>/static/images/nosurport.png" width="176px" height="192px"/></div>
   <div class="msg" id="msg"></div>
 </div>
 </body>

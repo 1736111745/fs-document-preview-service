@@ -26,7 +26,7 @@ function getPreviewInfo() {
         $("#msg").html(data.errorMsg);
         var encryptImage = window.contextPath + "/static/images/encrypt.png";
         var damageImage = window.contextPath + "/static/images/damage.png";
-        if (errorMsg.index("加密") > -1) {
+        if (errorMsg.indexOf("加密") > -1) {
           $('#imgIcon').src(encryptImage);
         }
         else {

@@ -57,7 +57,7 @@
   <title>pdf文档预览</title>
 </head>
 <body>
-<div id="main">
+<div id="main" style="background-color: #ccc">
 
 </div>
 </body>

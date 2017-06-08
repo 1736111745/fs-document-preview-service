@@ -27,10 +27,10 @@ function getPreviewInfo() {
         var encryptImage = window.contextPath + "/static/images/encrypt.png";
         var damageImage = window.contextPath + "/static/images/damage.png";
         if (errorMsg.indexOf("加密") > -1) {
-          $('#imgIcon').src(encryptImage);
+          $('#imgIcon').attr("src", encryptImage);
         }
         else {
-          $('#imgIcon').src(damageImage);
+          $('#imgIcon').attr("src", damageImage);
         }
       }
     }

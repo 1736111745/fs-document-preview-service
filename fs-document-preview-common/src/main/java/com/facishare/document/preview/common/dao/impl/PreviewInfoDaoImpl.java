@@ -36,11 +36,9 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
   public void savePreviewInfo(String ea, String path, String dataFilePath) {
     String dataFileName = FilenameUtils.getName(dataFilePath);
     Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
-    if(path.startsWith("A_"))
-    {
+    if (path.startsWith("A_")) {
       query.criteria("path").equal(path);
-    }
-    else {
+    } else {
       query.criteria("path").equal(path).criteria("ea").equal(ea);
     }
     UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
@@ -152,6 +150,23 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
       query.criteria("path").equal(path);
     } else {
       query.criteria("path").equal(path).criteria("ea").equal(ea);
-    } return query.get();
+    }
+    return query.get();
+  }
+
+  //批量删除预览记录
+  @Override
+  public void patchClean(String ea, List<String> pathList) {
+    Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+    query.criteria("ea").equal(ea).criteria("path").in(pathList);
+    dpsDataStore.delete(query);
+  }
+
+  //查询预览文档
+  @Override
+  public List<PreviewInfo> getInfoByPathList(String ea, List<String> pathList) {
+    Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+    query.criteria("ea").equal(ea).criteria("path").in(pathList);
+    return query.asList();
   }
 }

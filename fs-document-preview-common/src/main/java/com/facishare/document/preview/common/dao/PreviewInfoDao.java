@@ -20,4 +20,8 @@ public interface PreviewInfoDao {
     PreviewInfo initPreviewInfo(String ea, int employeeId, String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames);
 
     PreviewInfo getInfoByPath(String ea, String path);
+    //批量删除预览文档
+    void  patchClean(String ea,List<String> pathList);
+    //查询预览文档
+    List<PreviewInfo> getInfoByPathList(String ea,List<String> pathList);
 }

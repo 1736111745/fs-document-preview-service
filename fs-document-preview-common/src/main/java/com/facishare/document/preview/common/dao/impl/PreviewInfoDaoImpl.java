@@ -7,6 +7,7 @@ import com.facishare.document.preview.common.utils.DateUtil;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.github.mongo.support.DatastoreExt;
 import com.google.common.base.Strings;
+import com.mongodb.BasicDBObject;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -30,7 +31,6 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
 
     @Autowired
     private DatastoreExt dpsDataStore;
-
     @Override
     public void savePreviewInfo(String ea, String path, String dataFilePath) {
         String dataFileName = FilenameUtils.getName(dataFilePath);
@@ -123,6 +123,31 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
         query.criteria("path").equal(path).criteria("ea").equal(ea);
         return query.get();
+    }
+
+    //批量删除预览记录
+    @Override
+    public void patchClean(String ea, List<String> pathList) {
+        Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+        query.criteria("ea").equal(ea).criteria("path").in(pathList);
+        dpsDataStore.delete(query);
+    }
+    //查询预览文档
+    @Override
+    public List<PreviewInfo> getInfoByPathList(String ea, List<String> pathList) {
+        Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+        query.criteria("ea").equal(ea).criteria("path").in(pathList);
+        return query.asList();
+        /*
+         Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+        for(String path:pathList)
+        {
+            String basePath=path.substring(0,path.lastIndexOf("."));
+            query.criteria("path").contains(basePath);
+        }
+        query.criteria("ea").equal(ea);
+        return query.asList();
+         */
     }
 
 }

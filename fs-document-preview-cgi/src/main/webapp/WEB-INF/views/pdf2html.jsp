@@ -10,50 +10,53 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta Name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文档预览</title>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery.lazy.min.js"></script>
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/static/js/pdf2html.js?v=<%=request.getAttribute("sv")%>"></script>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta Name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文档预览</title>
+  <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery-1.11.1.min.js"></script>
+  <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery.lazy.min.js"></script>
+  <script type="text/javascript"
+          src="<%=request.getContextPath()%>/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
+  <script type="text/javascript"
+          src="<%=request.getContextPath()%>/static/js/pdf2html.js?v=<%=request.getAttribute("sv")%>"></script>
 
-    <script>
-        window.contextPath = "<%=request.getContextPath()%>";
-    </script>
-    <style type="text/css">
-        div.lazy {
-            background: #FFFFFF url("<%=request.getContextPath()%>/static/images/loading.gif") no-repeat center;
-            height: 500px;
-        }
+  <script>
+    window.contextPath = "<%=request.getContextPath()%>";
+  </script>
+  <style type="text/css">
+    div.lazy {
+      background: #FFFFFF url("<%=request.getContextPath()%>/static/images/loading.gif") no-repeat center;
+      height: 500px;
+    }
 
-        div.border {
-            text-align: center;
-            width: ${width}px;
-            margin: 5px auto;
-            border: 1px solid rgb(27, 30, 33)
-        }
+    div.border {
+      text-align: center;
+      width: ${width}px;
+      margin: 5px auto;
+      background-color: #ffffff;
+      box-shadow: 0 2px 14px 0 rgba(0, 0, 0, 0.15);
+    }
 
-        div.center {
-            text-align: center;
-            font-size: 24px;
-        }
+    div.center {
+      text-align: center;
+      font-size: 14px;
+      margin-bottom: 10px;
+      margin-top: 10px;
+    }
 
-        @viewport {
-            zoom: 1.0;
-            width: 620px;
-        }
+    @viewport {
+      zoom: 1.0;
+      width: 620px;
+    }
 
-        @-ms-viewport {
-            width: 620px;
-            zoom: 1.0;
-        }
-    </style>
-    <title>pdf文档预览</title>
+    @-ms-viewport {
+      width: 620px;
+      zoom: 1.0;
+    }
+  </style>
+  <title>pdf文档预览</title>
 </head>
-<body>
+<body style="background-color: #ccc">
 <div id="main">
 </div>
 </body>

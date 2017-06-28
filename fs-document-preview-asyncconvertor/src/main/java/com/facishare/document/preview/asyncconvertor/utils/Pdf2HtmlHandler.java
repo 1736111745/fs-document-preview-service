@@ -206,6 +206,7 @@ public class Pdf2HtmlHandler {
         }
       }
     }
+    //替换代码
     cssHtml=cssHtml.replace("visibility:hidden","visibility:visible");
     String newCssFilePath = FilenameUtils.concat(baseDir, newCssFileName);
     FileUtils.writeByteArrayToFile(new File(newCssFilePath), cssHtml.getBytes());

@@ -203,6 +203,7 @@ public class Pdf2HtmlHandler {
           fontFile.renameTo(newFontFile);
           String newFontStyle = "url(" + newFontName + ")";
           cssHtml = cssHtml.replace(fontStyle, newFontStyle);
+          cssHtml=cssHtml.replace("visibility:hidden","visibility:visible");
         }
       }
     }

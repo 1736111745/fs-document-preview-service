@@ -8,7 +8,6 @@ import com.facishare.common.rocketmq.AutoConfRocketMQProcessor;
 import com.facishare.document.preview.asyncconvertor.utils.Pdf2HtmlHandler;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
-import com.fxiaoke.common.Guard;
 import com.fxiaoke.metrics.CounterService;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
@@ -84,9 +83,7 @@ public class Pdf2HtmlProcessor {
   }
 
   public static void main(String[] args) throws Exception {
-    String va1 = "CEF7B286F448129EFD2551E438DB4F71";
-    Guard guard = new Guard("~]Ec5SrXX<.557uf");
-    System.out.println(guard.decode(va1));
+
 
   }
 }

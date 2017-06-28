@@ -6,7 +6,6 @@ import com.facishare.document.preview.cgi.utils.AuthHelper;
 import com.fxiaoke.common.Guard;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;

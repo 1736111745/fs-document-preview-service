@@ -204,9 +204,9 @@ public class Pdf2HtmlHandler {
           String newFontStyle = "url(" + newFontName + ")";
           cssHtml = cssHtml.replace(fontStyle, newFontStyle);
         }
-        cssHtml=cssHtml.replace("visibility:hidden","visibility:visible");
       }
     }
+    cssHtml=cssHtml.replace("visibility:hidden","visibility:visible");
     String newCssFilePath = FilenameUtils.concat(baseDir, newCssFileName);
     FileUtils.writeByteArrayToFile(new File(newCssFilePath), cssHtml.getBytes());
     //处理背景图片

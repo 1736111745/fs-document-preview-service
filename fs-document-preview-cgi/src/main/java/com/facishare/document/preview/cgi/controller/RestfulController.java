@@ -62,9 +62,6 @@ public class RestfulController {
   @RequestMapping(value = "/maintance/preview/clean", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
   public boolean documentPageClean(String ea,
                                    @RequestParam(required = false, value = "filePathList") List<String> filePathList) {
-    //todo:1.删除monogo记录 2.清理文件。
-    //从mongo中读取逻辑路径（记录）
-    // PreviewInfo previewInfo=previewInfoDao.getInfoByPath(ea,filePath);
     List<PreviewInfo> previewInfoList = previewInfoDao.getInfoByPathList(ea, filePathList);
     if (previewInfoList == null) {
       return true;

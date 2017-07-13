@@ -8,9 +8,12 @@ import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.github.mongo.support.DatastoreExt;
 import com.google.common.base.Strings;
 import com.mongodb.BasicDBObject;
+import com.mongodb.QueryBuilder;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.mongodb.morphia.query.Criteria;
+import org.mongodb.morphia.query.FieldCriteria;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -165,8 +168,14 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
   //查询预览文档
   @Override
   public List<PreviewInfo> getInfoByPathList(String ea, List<String> pathList) {
-    Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
-    query.criteria("ea").equal(ea).criteria("path").in(pathList);
-    return query.asList();
+    Query<PreviewInfo> q = dpsDataStore.createQuery(PreviewInfo.class);
+    List<Criteria> criterias = new ArrayList<>();
+    q.criteria("ea").equal(ea);
+    for (String path : pathList) {
+      String pathWithNoExt = FilenameUtils.removeExtension(path);
+      criterias.add(q.criteria("path").contains(pathWithNoExt));
+    }
+    q.or(criterias.toArray(new Criteria[criterias.size()]));
+    return q.asList();
   }
 }

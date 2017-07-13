@@ -37,7 +37,7 @@ public class FileStorageProxy {
         arg.downloadSecurityGroup = securityGroup;
         arg.gPath = path;
         return gFileStorageService.downloadFile(arg).data;
-      } else if (path.startsWith("A_")) {
+      } else if (path.startsWith("A_")||path.startsWith("TA_")) {
         ADownloadFile.Arg arg = new ADownloadFile.Arg();
         arg.setaPath(path);
         arg.setBusiness("Preview");

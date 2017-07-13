@@ -11,6 +11,7 @@ import com.facishare.document.preview.common.model.PreviewInfo;
 import com.facishare.document.preview.common.utils.OfficeApiHelper;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,7 +55,7 @@ public class PreviewService {
           } else {
             String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), previewInfo.getOriginalFilePath(), 2, previewInfo
               .getFilePathList());
-            if (!Strings.isNullOrEmpty(dataFilePath)) {
+            if (!Strings.isNullOrEmpty(dataFilePath) && new File(dataFilePath).exists()) {
               result.setCode(200);
               result.setDataFilePath(dataFilePath);
             } else {

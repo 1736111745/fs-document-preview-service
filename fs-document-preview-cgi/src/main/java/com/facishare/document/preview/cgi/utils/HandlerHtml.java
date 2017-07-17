@@ -35,7 +35,6 @@ public class HandlerHtml {
         return;
       }
       Document document = Jsoup.parse(htmlFile, encoding);
-      Element head = document.head();
       Element body = document.body();
       String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
       String dirName = FilenameUtils.getName(baseDir);
@@ -59,22 +58,7 @@ public class HandlerHtml {
         }
       }
       FileUtils.deleteQuietly(new File(imageDir));
-      Elements styles = head.getElementsByTag("style");
-      StringBuilder styleBuilder = new StringBuilder();
-      String styleHtml = "";
-      for (int i = 0; i < styles.size(); i++) {
-        Element style = styles.get(i);
-        styleBuilder.append(style.html());
-      }
-      if (styleBuilder.length() > 0) {
-        styleHtml = "<style>" + styleBuilder.toString() + "</style>";
-      }
-      String html = styleHtml + body.html();
-      html = html.replace("\n", "");
-//      html = html.replaceAll("font-family:\"Arial\",\"sans-serif\";", "");
-//      html = html.replaceAll("font-family:\"宋体\",\"sans-serif\";", "");
-//      html = html.replaceAll(" font-family: \"Tahoma\",\"sans-serif\";", "");
-      FileUtils.writeByteArrayToFile(htmlFile, html.getBytes(encoding), false);
+      FileUtils.writeByteArrayToFile(htmlFile, document.html().getBytes(encoding), false);
     } catch (Exception e) {
       log.info("handle html happened error!", e);
     }

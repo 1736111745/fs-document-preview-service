@@ -71,9 +71,9 @@ public class HandlerHtml {
       }
       String html = styleHtml + body.html();
       html = html.replace("\n", "");
-      html = html.replaceAll("font-family:\"Arial\",\"sans-serif\";", "");
-      html = html.replaceAll("font-family:\"宋体\",\"sans-serif\";", "");
-      html = html.replaceAll(" font-family: \"Tahoma\",\"sans-serif\";", "");
+//      html = html.replaceAll("font-family:\"Arial\",\"sans-serif\";", "");
+//      html = html.replaceAll("font-family:\"宋体\",\"sans-serif\";", "");
+//      html = html.replaceAll(" font-family: \"Tahoma\",\"sans-serif\";", "");
       FileUtils.writeByteArrayToFile(htmlFile, html.getBytes(encoding), false);
     } catch (Exception e) {
       log.info("handle html happened error!", e);

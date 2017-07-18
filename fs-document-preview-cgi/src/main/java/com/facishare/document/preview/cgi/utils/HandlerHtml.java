@@ -49,12 +49,13 @@ public class HandlerHtml {
         } else {
           String imageFilePath = FilenameUtils.concat(baseDir, src);
           String imageName = FilenameUtils.getName(imageFilePath);
-          String newImageFilPath = FilenameUtils.concat(baseDir, imageName);
+          String newImageName = page + "-" + imageName;
+          String newImageFilPath = FilenameUtils.concat(baseDir, newImageName);
           File imageFile = new File(imageFilePath);
           if (imageFile.exists()) {
             FileUtils.moveFile(new File(imageFilePath), new File(newImageFilPath));
           }
-          image.attr("src", "./" + dirName + "/" + imageName);
+          image.attr("src", "./" + dirName + "/" + newImageName);
         }
       }
       FileUtils.deleteQuietly(new File(imageDir));
@@ -80,18 +81,5 @@ public class HandlerHtml {
   }
 
   public static void main(String[] args) throws Exception {
-    String key="X8wh+9~+PKmG)b65";
-    Guard guard=new Guard(key);
-    String path=guard.decode("8837AC54360E998C102E090F387841C0775FD4AEE6E4C1FB3CA0482284823D4CD183DB92BFC9F35E5513F13421610F546F7AA7EF096E834C7CCF9B902CF6837D");
-    String eaInfo=guard.decode("38B80EA5B53BA31967BB9ACCA26A458D23E6CCB07178A36C");
-    List<String> list = Splitter.on(".").trimResults().omitEmptyStrings().splitToList(eaInfo);
-    if (list.size() == 3) {
-      String ea = list.get(1);
-      String employeeIdStr = list.get(2);
-      if (NumberUtils.isNumber(employeeIdStr)) {
-        int employeeId = NumberUtils.toInt(employeeIdStr);
-      }
-
-    }
   }
 }

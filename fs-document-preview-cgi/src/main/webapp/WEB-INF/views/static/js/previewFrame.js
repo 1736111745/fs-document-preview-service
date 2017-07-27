@@ -16,7 +16,7 @@ $(function () {
 
 function loadViewPort() {
   var docWidth = $(window).width();
-  var scale = docWidth * 0.96 / width;
+  var scale = docWidth * 0.96 / 1000;
   var viewport = document.querySelector("meta[name=viewport]");
   viewport.setAttribute('content', 'initial-scale=' + scale + ', width=' + docWidth + 'px');
 }

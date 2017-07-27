@@ -32,10 +32,16 @@
     }
 
     div.center {
-      text-align: center;
-      font-size: 14px;
-      margin-bottom: 10px;
-      margin-top: 10px;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      background-color: #000;
+      width:50%;
+      height: 50%;
+      -webkit-transform: translateX(-50%) translateY(-50%);
+      -moz-transform: translateX(-50%) translateY(-50%);
+      -ms-transform: translateX(-50%) translateY(-50%);
+      transform: translateX(-50%) translateY(-50%);
     }
 
     @viewport {
@@ -51,7 +57,7 @@
   <title>文档预览</title>
 </head>
 <body style="background-color: #ccc">
-<div id="main" class="border">
+<div id="main" class="border center">
 </div>
 </body>
 </html>

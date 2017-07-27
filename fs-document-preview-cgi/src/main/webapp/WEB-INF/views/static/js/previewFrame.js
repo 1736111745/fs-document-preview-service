@@ -12,12 +12,9 @@ $(function () {
 
 
 function loadData(i) {
-  var htmlName = (i + 1) + ".html";
-  if ($.inArray(htmlName, filePathList) >= 0) {
-    var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg + "&ver=2.1";
-    var iframe="<iframe id='framePage' src='" + url + "' onload='resize(this)' onresize='resize(this)' scrolling='no' frameborder='0' width='100%'></iframe>";
-    $('#main').html()
-  }
+  var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg + "&ver=2.1";
+  var iframe="<iframe id='framePage' src='" + url + "' onload='resize(this)' onresize='resize(this)' scrolling='no' frameborder='0' width='100%'></iframe>";
+  $('#main').html();
 }
 
 function resize(obj) {

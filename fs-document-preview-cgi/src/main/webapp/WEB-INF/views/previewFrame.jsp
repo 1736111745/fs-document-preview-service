@@ -35,9 +35,6 @@
       position: fixed;
       top: 50%;
       left: 50%;
-      background-color: #000;
-      width:50%;
-      height: 50%;
       -webkit-transform: translateX(-50%) translateY(-50%);
       -moz-transform: translateX(-50%) translateY(-50%);
       -ms-transform: translateX(-50%) translateY(-50%);

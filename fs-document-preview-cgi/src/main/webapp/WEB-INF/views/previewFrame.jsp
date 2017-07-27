@@ -25,7 +25,7 @@
 
     div.border {
       text-align: center;
-      width: ${width}px;
+      width: 1000px;
       margin: 5px auto;
       background-color: #ffffff;
       box-shadow: 0 2px 14px 0 rgba(0, 0, 0, 0.15);
@@ -51,7 +51,7 @@
   <title>文档预览</title>
 </head>
 <body style="background-color: #ccc">
-<div id="main">
+<div id="main" class="border">
 </div>
 </body>
 </html>

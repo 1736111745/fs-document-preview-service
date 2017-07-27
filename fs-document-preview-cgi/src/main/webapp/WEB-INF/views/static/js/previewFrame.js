@@ -7,8 +7,19 @@ var path = getQueryStringByName("path");
 var page=getQueryStringByName("page");
 
 $(function () {
-   loadData(page)
+   loadViewPort();
+   loadData(page);
+  $(window).resize(function () {
+    loadViewPort();
+  });
 })
+
+function loadViewPort() {
+  var docWidth = $(window).width();
+  var scale = docWidth * 0.96 / width;
+  var viewport = document.querySelector("meta[name=viewport]");
+  viewport.setAttribute('content', 'initial-scale=' + scale + ', width=' + docWidth + 'px');
+}
 
 
 function loadData(i) {

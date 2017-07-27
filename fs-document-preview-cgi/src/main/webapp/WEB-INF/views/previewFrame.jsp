@@ -44,7 +44,7 @@
     }
 
     @-ms-viewport {
-      width: 620px;
+      width: 1000px;
       zoom: 1.0;
     }
   </style>

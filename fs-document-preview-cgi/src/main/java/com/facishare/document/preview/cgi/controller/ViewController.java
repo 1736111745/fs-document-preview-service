@@ -16,34 +16,40 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 @RequestMapping("/")
 public class ViewController {
-    @ReloadableProperty("htmlWidthList")
-    private String htmlWidthList = "1000|640";
+  @ReloadableProperty("htmlWidthList")
+  private String htmlWidthList = "1000|640";
 
-    @RequestMapping(value = "/preview/bypath", method = RequestMethod.GET)
-    public String previewByPath() {
-        return "preview";
-    }
+  @RequestMapping(value = "/preview/bypath", method = RequestMethod.GET)
+  public String previewByPath() {
+    return "preview";
+  }
 
-    @RequestMapping(value = "/preview/bytoken", method = RequestMethod.GET)
-    public String previewByToken() {
-        return "preview";
-    }
+  @RequestMapping(value = "/preview/bytoken", method = RequestMethod.GET)
+  public String previewByToken() {
+    return "preview";
+  }
 
-    @RequestMapping(value = {"/preview/excel2html", "/preview/handleExcel"}, method = RequestMethod.GET)
-    public String handleExcel() {
-        return "excel2html";
-    }
+  @RequestMapping(value = {"/preview/excel2html", "/preview/handleExcel"}, method = RequestMethod.GET)
+  public String handleExcel() {
+    return "excel2html";
+  }
 
-    @RequestMapping(value = {"/preview/pdf2html", "/preview/handlePdf"}, method = RequestMethod.GET)
-    public ModelAndView handlePdf(HttpServletRequest request) {
-        String widthStr = UrlParametersHelper.safeGetRequestParameter(request, "width");
-        int width = 1000;
-        if (htmlWidthList.contains(widthStr)) {
-            width = NumberUtils.toInt(widthStr);
-        }
-        ModelAndView modelAndView = new ModelAndView("pdf2html");
-        modelAndView.addObject("width", width);
-        return modelAndView;
+  @RequestMapping(value = {"/preview/pdf2html", "/preview/handlePdf"}, method = RequestMethod.GET)
+  public ModelAndView handlePdf(HttpServletRequest request) {
+    String widthStr = UrlParametersHelper.safeGetRequestParameter(request, "width");
+    int width = 1000;
+    if (htmlWidthList.contains(widthStr)) {
+      width = NumberUtils.toInt(widthStr);
     }
+    ModelAndView modelAndView = new ModelAndView("pdf2html");
+    modelAndView.addObject("width", width);
+    return modelAndView;
+  }
+
+  @RequestMapping(value = {"/preview/previewFrame"}, method = RequestMethod.GET)
+  public String previewFrame() {
+    return "previewFrame";
+  }
+
 
 }

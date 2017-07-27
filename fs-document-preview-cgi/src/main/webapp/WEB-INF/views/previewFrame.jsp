@@ -1,8 +1,8 @@
 <%--
   Created by IntelliJ IDEA.
   User: liuq
-  Date: 2017/2/20
-  Time: 16:37
+  Date: 2017/7/27
+  Time: 10:58
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -17,17 +17,11 @@
   <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery.lazy.min.js"></script>
   <script type="text/javascript"
           src="<%=request.getContextPath()%>/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
-  <script type="text/javascript"
-          src="<%=request.getContextPath()%>/static/js/pdf2html.js?v=<%=request.getAttribute("sv")%>"></script>
-
+  <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/previewFrame.js?v=<%=request.getAttribute("sv")%>"></script>
   <script>
     window.contextPath = "<%=request.getContextPath()%>";
   </script>
   <style type="text/css">
-    div.lazy {
-      background: #FFFFFF url("<%=request.getContextPath()%>/static/images/loading.gif") no-repeat center;
-      height: 500px;
-    }
 
     div.border {
       text-align: center;

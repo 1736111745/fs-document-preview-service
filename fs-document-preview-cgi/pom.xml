@@ -347,6 +347,11 @@
             <artifactId>jchardet</artifactId>
             <version>1.0</version>
         </dependency>
+      <dependency>
+        <groupId>com.github.colin-lee</groupId>
+        <artifactId>rpc-trace</artifactId>
+        <version>1.4.1</version>
+      </dependency>
     </dependencies>
     <build>
         <plugins>

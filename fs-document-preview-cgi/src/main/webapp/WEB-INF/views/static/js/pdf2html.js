@@ -13,9 +13,17 @@ $(function () {
   loadAllPages();
   checkConvertStatus();
   checkPageLoaded();
-  $(window).resize(function () {
-    loadViewPort();
-  });
+  //ios的旋转方法和android不一样
+  if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+    $(window).on("orientationchange",function(){
+      loadViewPort();
+    });
+  }
+  else {
+    $(window).resize(function () {
+      loadViewPort();
+    });
+  }
 });
 
 function loadAllPages() {

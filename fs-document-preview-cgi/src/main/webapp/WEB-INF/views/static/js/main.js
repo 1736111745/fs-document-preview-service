@@ -40,7 +40,7 @@ function getPreviewInfo() {
 
 
 function doPreview() {
-  if (path.toLowerCase().indexOf("txt") >= 0 || path.toLowerCase().indexOf("csv") >= 0) {
+  if (path.toLowerCase().indexOf("txt") >= 0 || path.toLowerCase().indexOf("csv") >= 0|| path.toLowerCase().indexOf("svg") >= 0) {
     doPreviewTxt();
   }
   else {

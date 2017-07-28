@@ -13,23 +13,9 @@ $(function () {
   loadAllPages();
   checkConvertStatus();
   checkPageLoaded();
-  window.addEventListener('orientationchange', function(){
+  $(window).resize(function () {
     loadViewPort();
-  }, false);
-  // //ios的旋转方法和android不一样
-  // console.log(navigator.userAgent);
-  // if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
-  //   console.log("this is apple device!")
-  //   $(window).on("orientationchange", function (event) {
-  //     console.log('orientationchange: ' + event.orientation);
-  //     loadViewPort();
-  //   });
-  // }
-  // else {
-  //   $(window).resize(function () {
-  //     loadViewPort();
-  //   });
-  // }
+  });
 });
 
 function loadAllPages() {

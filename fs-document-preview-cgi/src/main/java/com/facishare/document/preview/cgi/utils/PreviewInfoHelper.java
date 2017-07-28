@@ -65,7 +65,7 @@ public class PreviewInfoHelper {
             String filePath = FilenameUtils.concat(dataDir, fileName);
             FileUtils.writeByteArrayToFile(new File(filePath), bytes);
             PageInfo pageInfo = new PageInfo();
-            if (extension.equals("txt") || extension.equals("csv")) {
+            if (extension.equals("txt") || extension.equals("csv")||extension.equals("svg")) {
               pageInfo.setSuccess(true);
               pageInfo.setPageCount(1);
             } else {

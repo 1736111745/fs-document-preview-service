@@ -15,6 +15,7 @@ $(function () {
   checkPageLoaded();
   //ios的旋转方法和android不一样
   if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+    console.log("this is apple device!")
     $(window).on("orientationchange",function(){
       loadViewPort();
     });

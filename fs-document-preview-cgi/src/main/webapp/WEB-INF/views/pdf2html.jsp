@@ -19,7 +19,7 @@
           src="<%=request.getContextPath()%>/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
   <script type="text/javascript"
           src="<%=request.getContextPath()%>/static/js/pdf2html.js?v=<%=request.getAttribute("sv")%>"></script>
-
+  <script type="text/javascript"  src="<%=request.getContextPath()%>/static/common/orientationchange-fix.min.js"></script>
   <script>
     window.contextPath = "<%=request.getContextPath()%>";
   </script>

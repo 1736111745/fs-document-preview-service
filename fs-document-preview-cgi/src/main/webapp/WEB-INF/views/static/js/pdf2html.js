@@ -6,27 +6,30 @@ var loadedList = [];//用户已经滑动过的页码
 var pageLoadedList = [];//用户已经加载的页码
 var timeout = 100000;
 var width = parseInt(getQueryStringByName("width"));
-$(function () {
+$(function (win) {
   loadViewPort();
   checkConvertTimeout();
   checkPdf2HtmlStatus();
   loadAllPages();
   checkConvertStatus();
   checkPageLoaded();
-  //ios的旋转方法和android不一样
-  console.log(navigator.userAgent);
-  if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
-    console.log("this is apple device!")
-    $(window).on("orientationchange", function (event) {
-      console.log('orientationchange: ' + event.orientation);
-      loadViewPort();
-    });
-  }
-  else {
-    $(window).resize(function () {
-      loadViewPort();
-    });
-  }
+  win.addEventListener('orientationchange', function(){
+    loadViewPort();
+  }, false);
+  // //ios的旋转方法和android不一样
+  // console.log(navigator.userAgent);
+  // if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+  //   console.log("this is apple device!")
+  //   $(window).on("orientationchange", function (event) {
+  //     console.log('orientationchange: ' + event.orientation);
+  //     loadViewPort();
+  //   });
+  // }
+  // else {
+  //   $(window).resize(function () {
+  //     loadViewPort();
+  //   });
+  // }
 });
 
 function loadAllPages() {

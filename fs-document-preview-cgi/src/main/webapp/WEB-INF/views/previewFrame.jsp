@@ -31,15 +31,15 @@
       box-shadow: 0 2px 14px 0 rgba(0, 0, 0, 0.15);
     }
 
-    div.center {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      -webkit-transform: translateX(-50%) translateY(-50%);
-      -moz-transform: translateX(-50%) translateY(-50%);
-      -ms-transform: translateX(-50%) translateY(-50%);
-      transform: translateX(-50%) translateY(-50%);
-    }
+    /*div.center {*/
+      /*position: fixed;*/
+      /*top: 50%;*/
+      /*left: 50%;*/
+      /*-webkit-transform: translateX(-50%) translateY(-50%);*/
+      /*-moz-transform: translateX(-50%) translateY(-50%);*/
+      /*-ms-transform: translateX(-50%) translateY(-50%);*/
+      /*transform: translateX(-50%) translateY(-50%);*/
+    /*}*/
 
     @viewport {
       zoom: 1.0;
@@ -54,7 +54,7 @@
   <title>文档预览</title>
 </head>
 <body style="background-color: #ccc">
-<div id="main" class="border center">
+<div id="main" class="border">
 </div>
 </body>
 </html>

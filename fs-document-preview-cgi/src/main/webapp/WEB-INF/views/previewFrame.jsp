@@ -54,7 +54,7 @@
   <title>文档预览</title>
 </head>
 <body style="background-color: #ccc">
-<div id="main" class="border">
+<div id="main" class="border" style="margin-top: 200px">
 </div>
 </body>
 </html>

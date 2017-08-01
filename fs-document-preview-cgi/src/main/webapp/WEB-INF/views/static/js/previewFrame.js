@@ -16,7 +16,7 @@ $(function () {
 
 function loadViewPort() {
   var docWidth = $(window).width();
-  var scale = docWidth * 0.96 / 1000;
+  var scale = docWidth * 0.96 / width;
   var viewport = document.querySelector("meta[name=viewport]");
   viewport.setAttribute('content', 'initial-scale=' + scale + ', width=' + docWidth + 'px');
 }
@@ -29,11 +29,7 @@ function loadData(i) {
 }
 
 function resize(obj) {
-  var height = $(obj.contentWindow.document).find("div[id='page-container']").height();
-  var iframeHeight = height + 20;
-  $(obj).height(iframeHeight);
-  var docHeight = $(window).height();
-  var top = (docHeight - iframeHeight) / 2;
-  $("#main").css("margin-top", top + "px");
-
+  var height = $(obj.contentWindow.document).find("div[id='page-container']").height()
+  $(obj).height(height + 20);
+  $(obj.parentElement).removeClass("lazy");
 }

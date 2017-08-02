@@ -109,6 +109,7 @@ public class PreviewInfoHelper {
         if (!extension.contains("xls")) {
           if (previewInfo.getDirection() == 0) {
             pageInfo = officeApiHelper.getPageInfo(npath, previewInfo.getOriginalFilePath());
+            log.info("pageInfo:{}",pageInfo);
             previewInfoDao.updateDirection(ea, npath, pageInfo.getDirection());
             previewInfo.setDirection(pageInfo.getDirection());
           }

@@ -111,9 +111,9 @@ public class PreviewInfoHelper {
             pageInfo = officeApiHelper.getPageInfo(npath, previewInfo.getOriginalFilePath());
             previewInfoDao.updateDirection(ea, npath, pageInfo.getDirection());
             previewInfo.setDirection(pageInfo.getDirection());
-            previewInfoEx.setPreviewInfo(previewInfo);
           }
         }
+        previewInfoEx.setPreviewInfo(previewInfo);
       }
     } catch (Exception e) {
       log.error("getPreviewInfo happened exception!,npath:{}", npath, e);

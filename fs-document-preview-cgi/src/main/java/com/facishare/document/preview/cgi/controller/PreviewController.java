@@ -102,6 +102,7 @@ public class PreviewController {
     String docType = DocTypeHelper.getDocType(path).getName();
     counterService.inc("docType." + docType);
     PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup);
+    log.info("previewInfo:{}",previewInfoEx);
     if (previewInfoEx.isSuccess()) {
       PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
       if (previewInfo == null || previewInfo.getPageCount() == 0) {

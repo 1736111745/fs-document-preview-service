@@ -13,11 +13,13 @@ public interface PreviewInfoDao {
 
     void savePreviewInfo(String ea, String path, String dataFilePath);
 
+    void updateDirection(String ea,String path,int direction);
+
     String getDataFilePath(String path, int page, String dataDir, String filePath, int type, List<String> filePathList) throws IOException;
 
     String getBaseDir(String folderName);
 
-    PreviewInfo initPreviewInfo(String ea, int employeeId, String path, String originalFilePath, String dataDir, long docSize, int pageCount, List<String> sheetNames);
+    PreviewInfo initPreviewInfo(String ea, int employeeId, String path, String originalFilePath, String dataDir, long docSize, int pageCount,int direction, List<String> sheetNames);
 
     PreviewInfo getInfoByPath(String ea, String path);
     //批量删除预览文档

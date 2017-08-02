@@ -13,6 +13,7 @@ import com.facishare.document.preview.common.utils.SampleUUID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ import java.rmi.dgc.Lease;
 import java.util.List;
 
 /**
- * Created by wuzh on 2016/11/23.
+ * Created by liuq on 2016/11/23.
  */
 @Slf4j
 @Component
@@ -51,8 +52,9 @@ public class PreviewInfoHelper {
       PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, npath);
       int pageCount;
       List<String> sheetNames;
+      String extension = FilenameUtils.getExtension(npath).toLowerCase();
+      PageInfo pageInfo = new PageInfo();
       if (previewInfo == null) {
-        String extension = FilenameUtils.getExtension(npath).toLowerCase();
         byte[] bytes = fileStorageProxy.GetBytesByPath(npath, ea, employeeId, securityGroup);
         if (bytes != null && bytes.length > 0) {
           if (bytes.length > 1024 * 1024 * 100) {
@@ -64,8 +66,7 @@ public class PreviewInfoHelper {
             String fileName = SampleUUID.getUUID() + "." + extension;
             String filePath = FilenameUtils.concat(dataDir, fileName);
             FileUtils.writeByteArrayToFile(new File(filePath), bytes);
-            PageInfo pageInfo = new PageInfo();
-            if (extension.equals("txt") || extension.equals("csv")||extension.equals("svg")) {
+            if (extension.equals("txt") || extension.equals("csv") || extension.equals("svg")) {
               pageInfo.setSuccess(true);
               pageInfo.setPageCount(1);
             } else {
@@ -86,7 +87,8 @@ public class PreviewInfoHelper {
               if (pageInfo.isSuccess()) {
                 pageCount = pageInfo.getPageCount();
                 sheetNames = pageInfo.getSheetNames();
-                previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, npath, filePath, dataDir, bytes.length, pageCount, sheetNames);
+                previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, npath, filePath, dataDir, bytes.length, pageCount, pageInfo
+                  .getDirection(), sheetNames);
                 previewInfoEx.setSuccess(true);
                 previewInfoEx.setPreviewInfo(previewInfo);
               } else {
@@ -104,7 +106,14 @@ public class PreviewInfoHelper {
         }
       } else {
         previewInfoEx.setSuccess(true);
-        previewInfoEx.setPreviewInfo(previewInfo);
+        if (!extension.contains("xls")) {
+          if (previewInfo.getDirection() == 0) {
+            pageInfo = officeApiHelper.getPageInfo(npath, previewInfo.getOriginalFilePath());
+            previewInfoDao.updateDirection(ea, npath, pageInfo.getDirection());
+            previewInfo.setDirection(pageInfo.getDirection());
+            previewInfoEx.setPreviewInfo(previewInfo);
+          }
+        }
       }
     } catch (Exception e) {
       log.error("getPreviewInfo happened exception!,npath:{}", npath, e);

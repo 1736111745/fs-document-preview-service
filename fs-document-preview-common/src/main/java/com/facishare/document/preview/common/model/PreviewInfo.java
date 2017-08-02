@@ -25,6 +25,7 @@ public class PreviewInfo {
     private int createYYMMDD;
     private String ea;
     private int pageCount;
+    private int direction;
     private List<String> sheetNames;
     private String dirName;
     private String dataDir;

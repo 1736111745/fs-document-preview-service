@@ -50,6 +50,20 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
   }
 
   @Override
+  public void updateDirection(String ea, String path, int direction) {
+    Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+    if (path.startsWith("A_")) {
+      query.criteria("path").equal(path);
+    } else {
+      query.criteria("path").equal(path).criteria("ea").equal(ea);
+    }
+    UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
+    update.add("direction", direction);
+    dpsDataStore.findAndModify(query, update);
+  }
+
+
+  @Override
   public String getDataFilePath(String path,
                                 int page,
                                 String dataDir,
@@ -125,6 +139,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
                                      String dataDir,
                                      long docSize,
                                      int pageCount,
+                                     int direction,
                                      List<String> sheetNames) {
     PreviewInfo previewInfo = new PreviewInfo();
     previewInfo.setDocSize(docSize);
@@ -136,6 +151,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     previewInfo.setEmployeeId(employeeId);
     previewInfo.setDataDir(dataDir);
     previewInfo.setPath(path);
+    previewInfo.setDirection(direction);
     previewInfo.setSheetNames(sheetNames);
     previewInfo.setPageCount(pageCount);
     previewInfo.setOriginalFilePath(originalFilePath);

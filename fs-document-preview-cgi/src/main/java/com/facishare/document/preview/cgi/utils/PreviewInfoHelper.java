@@ -108,8 +108,12 @@ public class PreviewInfoHelper {
         previewInfoEx.setSuccess(true);
         if (!extension.contains("xls")) {
           if (previewInfo.getDirection() == 0) {
+            byte[] bytes = fileStorageProxy.GetBytesByPath(npath, ea, employeeId, securityGroup);
+            if (!new File(previewInfo.getOriginalFilePath()).exists()) {
+              FileUtils.writeByteArrayToFile(new File(previewInfo.getOriginalFilePath()), bytes);
+            }
             pageInfo = officeApiHelper.getPageInfo(npath, previewInfo.getOriginalFilePath());
-            log.info("pageInfo:{}",pageInfo);
+            log.info("pageInfo:{}", pageInfo);
             previewInfoDao.updateDirection(ea, npath, pageInfo.getDirection());
             previewInfo.setDirection(pageInfo.getDirection());
           }

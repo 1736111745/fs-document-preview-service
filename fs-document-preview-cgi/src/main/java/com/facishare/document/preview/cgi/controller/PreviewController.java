@@ -182,6 +182,7 @@ public class PreviewController {
       map.put("errorMsg", "参数错误!");
     } else {
       PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup);
+      log.info("previewInfoEx:{}",previewInfoEx);
       if (previewInfoEx != null && previewInfoEx.getPreviewInfo() != null) {
         map.put("success", true);
         map.put("sheets", previewInfoEx.getPreviewInfo().getSheetNames());

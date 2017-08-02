@@ -58,7 +58,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
       query.criteria("path").equal(path).criteria("ea").equal(ea);
     }
     UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
-    update.add("direction", direction,true);
+    update.set("direction", direction);
     dpsDataStore.findAndModify(query, update);
   }
 

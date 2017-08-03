@@ -43,7 +43,7 @@
 
     @viewport {
       zoom: 1.0;
-      width: 620px;
+      width: 1000px;
     }
 
     @-ms-viewport {

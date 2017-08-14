@@ -13,9 +13,6 @@ $(function () {
   loadAllPages();
   checkConvertStatus();
   checkPageLoaded();
-  $(window).resize(function () {
-    loadViewPort();
-  });
 });
 
 function loadAllPages() {

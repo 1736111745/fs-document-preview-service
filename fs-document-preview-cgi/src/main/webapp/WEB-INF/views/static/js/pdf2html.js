@@ -17,9 +17,11 @@ $(function () {
 
 
 function orientationEvent() {
-  $(window).on("orientationchange",function(){
-    alert("方向已改变!");
-  });
+  window.addEventListener("onorientationchange"  in window ? "orientationchange" : "resize", orientationChange, false);
+}
+
+function orientationChange(){
+  alert("屏幕旋转!")
 }
 
 function loadAllPages() {

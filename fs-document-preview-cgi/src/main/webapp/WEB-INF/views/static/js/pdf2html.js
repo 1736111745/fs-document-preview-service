@@ -6,32 +6,28 @@ var loadedList = [];//用户已经滑动过的页码
 var pageLoadedList = [];//用户已经加载的页码
 var timeout = 100000;
 var width = parseInt(getQueryStringByName("width"));
-var lastDirection = 1;//表示为竖向
+var screenWidth = window.screen.width;//屏幕宽度
+var screenHeight = window.screen.height;//屏幕高度；
+var ua = navigator.userAgent;
+var isIOS = /iphone|ipod|ipad/ig.test(ua);
 $(function () {
-  loadViewPort();
-  orientationEvent();
   checkConvertTimeout();
   checkPdf2HtmlStatus();
   loadAllPages();
   checkConvertStatus();
   checkPageLoaded();
+  loadViewPort();
+  window.addEventListener("orientationchange", function () {
+    if (isIOS) {
+      if (window.orientation != 0) {//横屏
+        screenWidth = window.screen.height;
+        screenHeight = window.screen.width;
+      }
+    }
+    loadViewPort();
+  }, true);
 });
 
-function orientationEvent() {
-  setInterval(function () {
-    loadViewPort();
-    console.log(document.querySelector("meta[name=viewport]").getAttribute('content'));
-  }, 500);
-}
-
-// function orientationEvent() {
-//   $(window).one("onorientationchange"  in window ? "orientationchange" : "resize", orientationChange, false);
-// }
-
-// function orientationChange(){
-//   loadViewPort();
-//   orientationEvent();
-// }
 
 function loadAllPages() {
   for (var i = 0; i < pageCount; i++) {
@@ -42,16 +38,13 @@ function loadAllPages() {
   }
 }
 
+
 function loadViewPort() {
-  var docWidth = $(window).width();
-  var docHeight = $(window).height();
-  var currentDirection = docWidth > docHeight ? 2 : 1;
-  if (currentDirection != lastDirection) {
-    var scale = docWidth * 0.96 / width;
-    var viewport = document.querySelector("meta[name=viewport]");
-    viewport.setAttribute('content', 'initial-scale=' + scale + ',width=device-width');
-  }
-  lastDirection = currentDirection;
+  var scale = screenWidth * 0.96 / width;
+  alert("w:" + screenWidth + "/h:" + screenHeight + "/" + scale);
+  var viewport = document.querySelector("meta[name=viewport]");
+  viewport.content = 'width=' + screenWidth + ',initial-scale=' + scale;
+  alert(document.querySelector("meta[name=viewport]").getAttribute('content'));
 
 }
 

@@ -17,39 +17,9 @@ $(function () {
 
 
 function orientationEvent() {
-  var supportOrientation = (typeof window.orientation == "number" && typeof window.onorientationchange == "object");
-
-  var updateOrientation = function () {
-    if (supportOrientation) {
-      updateOrientation = function () {
-        var orientation = window.orientation;
-        switch (orientation) {
-          case 90:
-          case -90:
-            orientation = "landscape";
-            break;
-          default:
-            orientation = "portrait";
-        }
-        loadViewPort();
-      };
-    } else {
-      updateOrientation = function () {
-        loadViewPort();
-      };
-    }
-    updateOrientation();
-  };
-
-  var init = function () {
-    updateOrientation();
-    if (supportOrientation) {
-      window.addEventListener("orientationchange", updateOrientation, false);
-    } else {
-      window.setInterval(updateOrientation, 1000);
-    }
-  };
-  window.addEventListener("DOMContentLoaded", init, false);
+  $(window).on("orientationchange",function(){
+    alert("方向已改变!");
+  });
 }
 
 function loadAllPages() {

@@ -14,14 +14,14 @@ $(function () {
   loadAllPages();
   checkConvertStatus();
   checkPageLoaded();
-  $(window).resize(function () {
-    var docWidth = $(window).width();
-    var isXZ = Math.abs(tempWidth - docWidth) > 10;//是否旋转
-    if (isXZ) {
-      loadViewPort();
-    }
-    tempWidth = docWidth;
-  });
+  // $(window).resize(function () {
+  //   var docWidth = $(window).width();
+  //   var isXZ = Math.abs(tempWidth - docWidth) > 10;//是否旋转
+  //   if (isXZ) {
+  //     loadViewPort();
+  //   }
+  //   tempWidth = docWidth;
+  // });
 });
 
 
@@ -85,14 +85,20 @@ function loadData(i) {
     var iframeId = 'frame' + i;
     var divPageId = 'divPage' + i;
     var element = $('#' + divPageId);
-    if ($('#' + iframeId).length == 0) {
-      $("<iframe id='" + iframeId + "' src='" + url + "' onload='resize(this)' onresize='resize(this)' scrolling='no' frameborder='0' width='100%'></iframe>").prependTo(element);
+    if (element.childNodes.length == 0) {
+      element.load(url);
+      // $("<iframe id='" + iframeId + "' src='" + url + "' onload='resize(this)' onresize='resize(this)' scrolling='no' frameborder='0' width='100%'></iframe>").prependTo(element);
       element.load();
       if ($.inArray(i, pageLoadedList) == -1) {
         pageLoadedList.push(i);
       }
     }
   }
+}
+
+function loadPageData() {
+
+
 }
 
 function resize(obj) {

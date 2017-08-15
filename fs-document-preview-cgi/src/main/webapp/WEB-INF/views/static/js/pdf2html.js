@@ -6,6 +6,7 @@ var loadedList = [];//用户已经滑动过的页码
 var pageLoadedList = [];//用户已经加载的页码
 var timeout = 100000;
 var width = parseInt(getQueryStringByName("width"));
+var tempWidth=0;
 $(function () {
   //orientationEvent();
   checkConvertTimeout();
@@ -15,7 +16,10 @@ $(function () {
   checkPageLoaded();
   $(window).resize(function () {
     var docWidth = $(window).width();
-    alert(docWidth);
+    if(tempWidth!=docWidth) {
+      loadViewPort();
+    }
+    tempWidth=docWidth;
   });
 });
 

@@ -17,11 +17,12 @@ $(function () {
 
 
 function orientationEvent() {
-  window.addEventListener("onorientationchange"  in window ? "orientationchange" : "resize", orientationChange, false);
+  $(window).one("onorientationchange"  in window ? "orientationchange" : "resize", orientationChange, false);
 }
 
 function orientationChange(){
   loadViewPort();
+  orientationEvent();
 }
 
 function loadAllPages() {

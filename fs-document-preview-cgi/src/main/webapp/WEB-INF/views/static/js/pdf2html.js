@@ -21,7 +21,7 @@ function orientationEvent() {
 }
 
 function orientationChange(){
-  alert("屏幕旋转!")
+  loadViewPort();
 }
 
 function loadAllPages() {

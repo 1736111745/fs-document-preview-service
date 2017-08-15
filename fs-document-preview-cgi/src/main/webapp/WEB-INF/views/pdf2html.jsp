@@ -19,7 +19,6 @@
           src="<%=request.getContextPath()%>/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
   <script type="text/javascript"
           src="<%=request.getContextPath()%>/static/js/pdf2html.js?v=<%=request.getAttribute("sv")%>"></script>
-  <script type="text/javascript"  src="<%=request.getContextPath()%>/static/common/orientationchange-fix.min.js"></script>
   <script>
     window.contextPath = "<%=request.getContextPath()%>";
   </script>
@@ -37,21 +36,23 @@
       box-shadow: 0 2px 14px 0 rgba(0, 0, 0, 0.15);
     }
 
+    @media all and (orientation : landscape) {
+      body {
+        background-color: #ff0000;
+      }
+    }
+
+    @media all and (orientation : portrait){
+      body {
+        background-color: #00ff00;
+      }
+    }
+
     div.center {
       text-align: center;
       font-size: 14px;
       margin-bottom: 10px;
       margin-top: 10px;
-    }
-
-    @viewport {
-      zoom: 1.0;
-      width: 620px;
-    }
-
-    @-ms-viewport {
-      width: 620px;
-      zoom: 1.0;
     }
   </style>
   <title>文档预览</title>

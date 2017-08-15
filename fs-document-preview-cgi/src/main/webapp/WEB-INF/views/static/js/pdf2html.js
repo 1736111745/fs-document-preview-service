@@ -6,24 +6,23 @@ var loadedList = [];//用户已经滑动过的页码
 var pageLoadedList = [];//用户已经加载的页码
 var timeout = 100000;
 var width = parseInt(getQueryStringByName("width"));
-var tempWidth = 0;
+var lastDirection = 1;//表示为竖向
 $(function () {
-  //orientationEvent();
+  loadViewPort();
+  orientationEvent();
   checkConvertTimeout();
   checkPdf2HtmlStatus();
   loadAllPages();
   checkConvertStatus();
   checkPageLoaded();
-  // $(window).resize(function () {
-  //   var docWidth = $(window).width();
-  //   var isXZ = Math.abs(tempWidth - docWidth) > 10;//是否旋转
-  //   if (isXZ) {
-  //     loadViewPort();
-  //   }
-  //   tempWidth = docWidth;
-  // });
 });
 
+function orientationEvent() {
+  setInterval(function () {
+    loadViewPort();
+    console.log(document.querySelector("meta[name=viewport]").getAttribute('content'));
+  }, 500);
+}
 
 // function orientationEvent() {
 //   $(window).one("onorientationchange"  in window ? "orientationchange" : "resize", orientationChange, false);
@@ -45,9 +44,15 @@ function loadAllPages() {
 
 function loadViewPort() {
   var docWidth = $(window).width();
-  var scale = docWidth * 0.96 / width;
-  var viewport = document.querySelector("meta[name=viewport]");
-  viewport.setAttribute('content', 'initial-scale=' + scale + ',width=device-width');
+  var docHeight = $(window).height();
+  var currentDirection = docWidth > docHeight ? 2 : 1;
+  if (currentDirection != lastDirection) {
+    var scale = docWidth * 0.96 / width;
+    var viewport = document.querySelector("meta[name=viewport]");
+    viewport.setAttribute('content', 'initial-scale=' + scale + ',width=device-width');
+  }
+  lastDirection = currentDirection;
+
 }
 
 function loadPageLoader() {
@@ -85,20 +90,14 @@ function loadData(i) {
     var iframeId = 'frame' + i;
     var divPageId = 'divPage' + i;
     var element = $('#' + divPageId);
-    if (element.childNodes.length == 0) {
-      element.load(url);
-      // $("<iframe id='" + iframeId + "' src='" + url + "' onload='resize(this)' onresize='resize(this)' scrolling='no' frameborder='0' width='100%'></iframe>").prependTo(element);
+    if ($('#' + iframeId).length == 0) {
+      $("<iframe id='" + iframeId + "' src='" + url + "' onload='resize(this)' scrolling='no' frameborder='0' width='100%'></iframe>").prependTo(element);
       element.load();
       if ($.inArray(i, pageLoadedList) == -1) {
         pageLoadedList.push(i);
       }
     }
   }
-}
-
-function loadPageData() {
-
-
 }
 
 function resize(obj) {

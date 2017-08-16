@@ -19,10 +19,18 @@ $(function () {
   loadViewPort();
   window.addEventListener("orientationchange", function () {
     if (isIOS) {
-      if (window.orientation != 0) {//横屏
-        screenWidth = window.screen.height;
-        screenHeight = window.screen.width;
+      if (window.orientation != 0) {//横屏 宽度取大的值
+        screenWidth = Math.max(window.screen.width, window.screen.height);
+        screenHeight = Math.min(window.screen.width, window.screen.height);
       }
+      else {//竖屏 宽度取晓得值
+        screenWidth = Math.min(window.screen.width, window.screen.height);
+        screenHeight = Math.max(window.screen.width, window.screen.height);
+      }
+    }
+    else {
+      screenWidth = window.screen.width;
+      screenHeight = window.screen.height;
     }
     loadViewPort();
   }, true);
@@ -41,10 +49,10 @@ function loadAllPages() {
 
 function loadViewPort() {
   var scale = screenWidth * 0.96 / width;
-  alert("w:" + screenWidth + "/h:" + screenHeight + "/" + scale);
+  //alert("w:" + screenWidth + "/h:" + screenHeight + "/" + scale);
   var viewport = document.querySelector("meta[name=viewport]");
   viewport.content = 'width=' + screenWidth + ',initial-scale=' + scale;
-  alert(document.querySelector("meta[name=viewport]").getAttribute('content'));
+  //alert(document.querySelector("meta[name=viewport]").getAttribute('content'));
 
 }
 

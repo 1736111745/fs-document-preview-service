@@ -36,17 +36,6 @@
       box-shadow: 0 2px 14px 0 rgba(0, 0, 0, 0.15);
     }
 
-    @media all and (orientation : landscape) {
-      body {
-        background-color: #ff0000;
-      }
-    }
-
-    @media all and (orientation : portrait){
-      body {
-        background-color: #00ff00;
-      }
-    }
 
     div.center {
       text-align: center;

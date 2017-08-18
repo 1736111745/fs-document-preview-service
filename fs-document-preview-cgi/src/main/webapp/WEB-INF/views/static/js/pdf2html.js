@@ -35,7 +35,7 @@ $(function () {
     }
     window.setTimeout(function () {
       loadViewPort();
-    },400);
+    },200);
   }, true);
 });
 

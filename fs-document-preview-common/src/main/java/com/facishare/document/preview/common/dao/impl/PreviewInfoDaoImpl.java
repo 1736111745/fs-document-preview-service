@@ -166,13 +166,20 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
 
   @Override
   public PreviewInfo getInfoByPath(String ea, String path, int width) {
-    log.info("getInfoByPath args,ea:{},path:{},width:{}",ea,path,width);
+    log.info("getInfoByPath args,ea:{},path:{},width:{}", ea, path, width);
     Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
     if (width == 1000) {
       if (path.startsWith("A_")) {
-        query.criteria("path").equal(path);
+        query.criteria("path")
+             .equal(path)
+             .and(query.criteria("width").doesNotExist().or(query.criteria("width").equal(width)));
       } else {
-        query.criteria("path").equal(path).criteria("ea").equal(ea);
+        query.criteria("path")
+             .equal(path)
+             .criteria("ea")
+             .equal(ea)
+             .and(query.criteria("width").doesNotExist().or(query.criteria("width").equal(width)));
+        ;
       }
     } else {
       if (path.startsWith("A_")) {
@@ -181,7 +188,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         query.criteria("path").equal(path).criteria("ea").equal(ea).criteria("width").equal(width);
       }
     }
-    log.info("query:{}",query.toString());
+    log.info("query:{}", query.toString());
     return query.get();
   }
 

@@ -140,7 +140,8 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
                                      long docSize,
                                      int pageCount,
                                      int direction,
-                                     List<String> sheetNames) {
+                                     List<String> sheetNames,
+                                     int width) {
     PreviewInfo previewInfo = new PreviewInfo();
     previewInfo.setDocSize(docSize);
     previewInfo.setDirName(FilenameUtils.getBaseName(dataDir));
@@ -154,6 +155,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     previewInfo.setDirection(direction);
     previewInfo.setSheetNames(sheetNames);
     previewInfo.setPageCount(pageCount);
+    previewInfo.setWidth(width);
     previewInfo.setOriginalFilePath(originalFilePath);
     List<String> filePathList = new ArrayList<>();
     previewInfo.setFilePathList(filePathList);
@@ -163,12 +165,20 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
   }
 
   @Override
-  public PreviewInfo getInfoByPath(String ea, String path) {
+  public PreviewInfo getInfoByPath(String ea, String path, int width) {
     Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
-    if (path.startsWith("A_")) {
-      query.criteria("path").equal(path);
+    if (width == 1000) {
+      if (path.startsWith("A_")) {
+        query.criteria("path").equal(path);
+      } else {
+        query.criteria("path").equal(path).criteria("ea").equal(ea);
+      }
     } else {
-      query.criteria("path").equal(path).criteria("ea").equal(ea);
+      if (path.startsWith("A_")) {
+        query.criteria("path").equal(path).criteria("width").equal(width);
+      } else {
+        query.criteria("path").equal(path).criteria("ea").equal(ea).criteria("width").equal(width);
+      }
     }
     return query.get();
   }

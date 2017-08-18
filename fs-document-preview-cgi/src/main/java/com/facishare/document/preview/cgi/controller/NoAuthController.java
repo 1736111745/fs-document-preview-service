@@ -49,6 +49,7 @@ public class NoAuthController {
     int pageCount = 0;
     String pathToken = UrlParametersHelper.safeGetRequestParameter(request, "path");
     String token = UrlParametersHelper.safeGetRequestParameter(request, "token");
+    int width = NumberUtils.toInt(UrlParametersHelper.safeGetRequestParameter(request, "width"), 1000);
     log.info("pathToken:{},token:{}", pathToken, token);
     if (Strings.isNullOrEmpty(pathToken) || Strings.isNullOrEmpty(token)) {
       return ResponseJsonHelper.getDocPreviewInfoResult(pathToken, pageCount);
@@ -67,7 +68,7 @@ public class NoAuthController {
     if (employeeInfo == null) {
       return ResponseJsonHelper.getDocPreviewInfoResult(path, pageCount);
     }
-    PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, "");
+    PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, "",width);
     if (previewInfoEx.isSuccess()) {
       PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
       if (previewInfo != null) {

@@ -3,7 +3,6 @@ package com.facishare.document.preview.cgi.service.training;
 import com.facishare.document.preview.cgi.model.DocPageResult;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfoEx;
-import com.facishare.document.preview.cgi.utils.EmployeeHelper;
 import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.cgi.utils.PreviewInfoHelper;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
@@ -11,7 +10,6 @@ import com.facishare.document.preview.common.model.PreviewInfo;
 import com.facishare.document.preview.common.utils.OfficeApiHelper;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,7 +36,7 @@ public class PreviewService {
     log.info("begin get doc page,employeeInfo:{},path:{},pageIndex:{}", com.alibaba.fastjson.JSON.toJSON(employeeInfo), path, pageIndex);
     DocPageResult result = new DocPageResult();
     try {
-      PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, "");
+      PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, "",1000);
       log.info("path:{},previewInfoEx:{}", path, com.alibaba.fastjson.JSON.toJSON(previewInfoEx));
       if (!previewInfoEx.isSuccess()) {
         log.warn("can't get previewInfo,path:{},pageIndex:{}", path, pageIndex);

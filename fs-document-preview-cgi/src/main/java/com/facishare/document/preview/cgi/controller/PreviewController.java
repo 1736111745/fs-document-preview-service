@@ -75,6 +75,7 @@ public class PreviewController {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
     String token = UrlParametersHelper.safeGetRequestParameter(request, "token");
     EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+    int width = NumberUtils.toInt(UrlParametersHelper.safeGetRequestParameter(request, "width"), 1000);
     String securityGroup = "";
     if (path.equals("") && token.equals("")) {
       return ResponseJsonHelper.getPreviewInfoResult("参数错误!");
@@ -101,7 +102,7 @@ public class PreviewController {
     String defaultErrMsg = "该文件不可以预览!";
     String docType = DocTypeHelper.getDocType(path).getName();
     counterService.inc("docType." + docType);
-    PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup);
+    PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup,width);
     log.info("previewInfo:{}",previewInfoEx);
     if (previewInfoEx.isSuccess()) {
       PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
@@ -121,6 +122,7 @@ public class PreviewController {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
     String page = UrlParametersHelper.safeGetRequestParameter(request, "page");
     String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
+    int width = NumberUtils.toInt(UrlParametersHelper.safeGetRequestParameter(request, "width"), 1000);
     if (!UrlParametersHelper.isValidPath(path)) {
       response.setStatus(400);
       return;
@@ -128,7 +130,7 @@ public class PreviewController {
     try {
       int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
       EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup);
+      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup,width);
       if (!previewInfoEx.isSuccess()) {
         log.warn("can't resolve path:{},page:{},reason:can't get preview info", path, page);
         response.setStatus(404);
@@ -181,7 +183,7 @@ public class PreviewController {
       map.put("success", false);
       map.put("errorMsg", "参数错误!");
     } else {
-      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup);
+      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup,1000);
       log.info("previewInfoEx:{}",previewInfoEx);
       if (previewInfoEx != null && previewInfoEx.getPreviewInfo() != null) {
         map.put("success", true);
@@ -195,30 +197,6 @@ public class PreviewController {
   }
 
 
-  @ResponseBody
-  @RequestMapping(value = "/preview/getDirName", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-  public String getDirName(HttpServletRequest request) throws Exception {
-    String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
-    String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
-    EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-    String ea = employeeInfo.getEa();
-    Map<String, Object> map = new HashMap<>();
-    if (path.equals("")) {
-      map.put("success", false);
-      map.put("errorMsg", "参数错误!");
-    } else {
-      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup);
-      if (previewInfoEx != null && previewInfoEx.getPreviewInfo() != null) {
-        map.put("success", true);
-        map.put("dirName", previewInfoEx.getPreviewInfo().getDirName());
-      } else {
-        map.put("success", false);
-        map.put("errorMsg", "系统错误!");
-      }
-    }
-    return JSONObject.toJSONString(map);
-  }
-
 
   @ResponseBody
   @RequestMapping(value = "/preview/getTxtPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -231,7 +209,7 @@ public class PreviewController {
       map.put("success", false);
       map.put("errorMsg", "参数错误!");
     } else {
-      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup);
+      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup,1000);
       if (previewInfoEx != null && previewInfoEx.getPreviewInfo() != null) {
         map.put("success", true);
         map.put("dirName", previewInfoEx.getPreviewInfo().getDirName());
@@ -260,7 +238,7 @@ public class PreviewController {
     if (allowPreviewExtension.indexOf(extension) == -1) {
       return ResponseJsonHelper.getDocPreviewInfoResult(path, pageCount);
     }
-    PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, "");
+    PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, "",1000);
     if (previewInfoEx.isSuccess()) {
       PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
       if (previewInfo != null) {
@@ -320,13 +298,14 @@ public class PreviewController {
   public String queryPdf2HtmlStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
     String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
+    int width = NumberUtils.toInt(UrlParametersHelper.safeGetRequestParameter(request, "width"), 1000);
     if (!UrlParametersHelper.isValidPath(path)) {
       response.setStatus(400);
       return "";
     }
     try {
       EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup);
+      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup,width);
       if (!previewInfoEx.isSuccess()) {
         return "";
       } else {

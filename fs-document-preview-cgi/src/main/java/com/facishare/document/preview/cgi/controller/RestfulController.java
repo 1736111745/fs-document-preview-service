@@ -43,7 +43,7 @@ public class RestfulController {
       Preconditions.checkNotNull(ea, "ea is null");
       Preconditions.checkNotNull(employeeId, "employeeId is null");
       EmployeeInfo employeeInfo = EmployeeHelper.createEmployeeInfo(ea, employeeId);
-      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, filePath, "");
+      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, filePath, "",1000);
       Preconditions.checkNotNull(previewInfoEx.getPreviewInfo(), "document can't found!");
       ret = String.format("{\"pageCount\":%d}", previewInfoEx.getPreviewInfo().getPageCount());
     } catch (Exception e) {

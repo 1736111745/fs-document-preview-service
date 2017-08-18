@@ -33,4 +33,5 @@ public class PreviewInfo {
     private long docSize;//原始大小
     private String originalFilePath;//原始文件
     private List<String> filePathList;
+    private int width;//文档页码宽度
 }

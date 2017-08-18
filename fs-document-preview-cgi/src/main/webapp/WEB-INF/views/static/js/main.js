@@ -13,7 +13,7 @@ function getPreviewInfo() {
     type: 'get',
     dataType: 'json',
     async: false,
-    url: window.contextPath + '/preview/getPreviewInfo?path=' + path + '&token=' + token,
+    url: window.contextPath + '/preview/getPreviewInfo?path=' + path + '&token=' + token+"&width="+width,
     success: function (data) {
       if (data.canPreview) {
         pageCount = data.pageCount;

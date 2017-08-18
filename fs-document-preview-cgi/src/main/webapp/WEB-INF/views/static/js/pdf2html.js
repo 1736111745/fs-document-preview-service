@@ -91,7 +91,7 @@ function checkPageLoaded() {
 function loadData(i) {
   var htmlName = (i + 1) + ".html";
   if ($.inArray(htmlName, filePathList) >= 0) {
-    var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg + "&ver=2.1";
+    var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg + "&width="+width+"&ver=2.1";
     var iframeId = 'frame' + i;
     var divPageId = 'divPage' + i;
     var element = $('#' + divPageId);
@@ -128,7 +128,7 @@ function checkPdf2HtmlStatus() {
 
 function queryPdf2HtmlStatus() {
   var flag = false;//是否转换完毕
-  var url = window.contextPath + '/preview/queryPdf2HtmlStatus?path=' + path + "&sg=" + sg
+  var url = window.contextPath + '/preview/queryPdf2HtmlStatus?path=' + path + "&sg=" + sg+"&width="+width;
   $.ajax({
     type: 'get',
     dataType: 'json',

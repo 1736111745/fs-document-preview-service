@@ -44,12 +44,12 @@ public class PreviewInfoHelper {
    * @return
    * @throws Exception
    */
-  public PreviewInfoEx getPreviewInfo(EmployeeInfo employeeInfo, String npath, String securityGroup) throws Exception {
+  public PreviewInfoEx getPreviewInfo(EmployeeInfo employeeInfo, String npath, String securityGroup,int width) throws Exception {
     String ea = employeeInfo.getEa();
     int employeeId = employeeInfo.getEmployeeId();
     PreviewInfoEx previewInfoEx = new PreviewInfoEx();
     try {
-      PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, npath);
+      PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, npath,width);
       int pageCount;
       List<String> sheetNames;
       String extension = FilenameUtils.getExtension(npath).toLowerCase();
@@ -88,7 +88,7 @@ public class PreviewInfoHelper {
                 pageCount = pageInfo.getPageCount();
                 sheetNames = pageInfo.getSheetNames();
                 previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, npath, filePath, dataDir, bytes.length, pageCount, pageInfo
-                  .getDirection(), sheetNames);
+                  .getDirection(), sheetNames,width);
                 previewInfoEx.setSuccess(true);
                 previewInfoEx.setPreviewInfo(previewInfo);
               } else {

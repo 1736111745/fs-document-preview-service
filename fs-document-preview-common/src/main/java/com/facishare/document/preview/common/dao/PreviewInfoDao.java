@@ -19,9 +19,9 @@ public interface PreviewInfoDao {
 
     String getBaseDir(String folderName);
 
-    PreviewInfo initPreviewInfo(String ea, int employeeId, String path, String originalFilePath, String dataDir, long docSize, int pageCount,int direction, List<String> sheetNames);
+    PreviewInfo initPreviewInfo(String ea, int employeeId, String path, String originalFilePath, String dataDir, long docSize, int pageCount,int direction, List<String> sheetNames,int width);
 
-    PreviewInfo getInfoByPath(String ea, String path);
+    PreviewInfo getInfoByPath(String ea, String path,int width);
     //批量删除预览文档
     void  patchClean(String ea,List<String> pathList);
     //查询预览文档

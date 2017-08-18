@@ -10,14 +10,11 @@ import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,7 +43,7 @@ public class Office2PdfHandler {
 
   public void convertOffice2Pdf(String ea, String path, String filePath, int width) throws Exception {
     String ext = FilenameUtils.getExtension(filePath).toLowerCase();
-    PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path);
+    PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path,width);
     int pageCount = previewInfo.getPageCount();
     List<String> dataFilePathList = previewInfo.getFilePathList();
     if (dataFilePathList == null) {

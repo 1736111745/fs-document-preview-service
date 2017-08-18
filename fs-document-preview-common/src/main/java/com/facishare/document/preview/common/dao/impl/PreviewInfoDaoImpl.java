@@ -170,16 +170,11 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
     if (width == 1000) {
       if (path.startsWith("A_")) {
-        query.criteria("path")
-             .equal(path)
+        query.and(query.criteria("path").equal(path))
              .and(query.criteria("width").doesNotExist().or(query.criteria("width").equal(width)));
       } else {
-        query.criteria("path")
-             .equal(path)
-             .criteria("ea")
-             .equal(ea)
+        query.and(query.criteria("path").equal(path).criteria("ea").equal("ea"))
              .and(query.criteria("width").doesNotExist().or(query.criteria("width").equal(width)));
-        ;
       }
     } else {
       if (path.startsWith("A_")) {

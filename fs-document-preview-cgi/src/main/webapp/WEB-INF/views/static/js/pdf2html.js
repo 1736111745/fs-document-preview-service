@@ -18,6 +18,7 @@ $(function () {
   checkPageLoaded();
   loadViewPort();
   window.addEventListener("orientationchange", function () {
+    //alert("isIOS:"+isIOS);
     if (isIOS) {
       if (window.orientation != 0) {//横屏 宽度取大的值
         screenWidth = Math.max(window.screen.width, window.screen.height);
@@ -29,10 +30,12 @@ $(function () {
       }
     }
     else {
-      screenWidth = window.screen.width;
-      screenHeight = window.screen.height;
+      screenWidth = $(window).width();
+      screenHeight = $(window).height();
     }
-    loadViewPort();
+    window.setTimeout(function () {
+      loadViewPort();
+    },1000);
   }, true);
 });
 
@@ -48,6 +51,7 @@ function loadAllPages() {
 
 
 function loadViewPort() {
+  //alert("width:"+width+",screenWidth:"+screenWidth);
   var scale = screenWidth * 0.96 / width;
   //alert("w:" + screenWidth + "/h:" + screenHeight + "/" + scale);
   var viewport = document.querySelector("meta[name=viewport]");

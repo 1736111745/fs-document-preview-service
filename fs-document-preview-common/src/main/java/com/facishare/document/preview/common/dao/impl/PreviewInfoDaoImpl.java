@@ -171,10 +171,10 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     if (width == 1000) {
       if (path.startsWith("A_")) {
         query.and(query.criteria("path").equal(path))
-             .and(query.or(query.criteria("width").doesNotExist()).or(query.criteria("width").equal(width)));
+             .and(query.criteria("width").doesNotExist().or(query.criteria("width").equal(width)));
       } else {
         query.and(query.criteria("path").equal(path).criteria("ea").equal(ea))
-             .and(query.or(query.criteria("width").doesNotExist()).or(query.criteria("width").equal(width)));
+             .and(query.criteria("width").doesNotExist().or(query.criteria("width").equal(width)));
       }
     } else {
       if (path.startsWith("A_")) {
@@ -182,8 +182,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
       } else {
         query.criteria("path").equal(path).criteria("ea").equal(ea).criteria("width").equal(width);
       }
-    }
-    log.info("query:{}", query.toString());
+    } log.info("query:{}", query.toString());
     return query.get();
   }
 

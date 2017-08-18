@@ -168,22 +168,28 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
   public PreviewInfo getInfoByPath(String ea, String path, int width) {
     log.info("getInfoByPath args,ea:{},path:{},width:{}", ea, path, width);
     Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
-    List<Criteria> criterias = new ArrayList<>();
     if (width == 1000) {
       if (path.startsWith("A_")) {
-        query.criteria("path").equal(path);
+        query.criteria("path")
+             .equal(path)
+             .add(query.criteria("width").equal(width).or(query.criteria("width").doesNotExist()));
+        ;
       } else {
-        query.criteria("path").equal(path).criteria("ea").equal(ea);
+        query.criteria("path")
+             .equal(path)
+             .criteria("ea")
+             .equal(ea)
+             .add(query.criteria("width").equal(width).or(query.criteria("width").doesNotExist()));
       }
-      criterias.add(query.criteria("width").equal(width).or(query.criteria("width").doesNotExist()));
-      query.and(criterias.toArray(new Criteria[criterias.size()]));
+
     } else {
       if (path.startsWith("A_")) {
         query.criteria("path").equal(path).criteria("width").equal(width);
       } else {
         query.criteria("path").equal(path).criteria("ea").equal(ea).criteria("width").equal(width);
       }
-    } log.info("query:{}", query.toString());
+    }
+    log.info("query:{}", query.toString());
     return query.get();
   }
 

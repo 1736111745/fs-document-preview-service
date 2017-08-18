@@ -44,17 +44,21 @@ public class PreviewInfoHelper {
    * @return
    * @throws Exception
    */
-  public PreviewInfoEx getPreviewInfo(EmployeeInfo employeeInfo, String npath, String securityGroup,int width) throws Exception {
+  public PreviewInfoEx getPreviewInfo(EmployeeInfo employeeInfo,
+                                      String npath,
+                                      String securityGroup,
+                                      int width) throws Exception {
     String ea = employeeInfo.getEa();
     int employeeId = employeeInfo.getEmployeeId();
     PreviewInfoEx previewInfoEx = new PreviewInfoEx();
     try {
-      PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, npath,width);
+      PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, npath, width);
       int pageCount;
       List<String> sheetNames;
       String extension = FilenameUtils.getExtension(npath).toLowerCase();
       PageInfo pageInfo = new PageInfo();
       if (previewInfo == null) {
+        log.info("preview info is null!path:{}", npath);
         byte[] bytes = fileStorageProxy.GetBytesByPath(npath, ea, employeeId, securityGroup);
         if (bytes != null && bytes.length > 0) {
           if (bytes.length > 1024 * 1024 * 100) {
@@ -66,6 +70,7 @@ public class PreviewInfoHelper {
             String fileName = SampleUUID.getUUID() + "." + extension;
             String filePath = FilenameUtils.concat(dataDir, fileName);
             FileUtils.writeByteArrayToFile(new File(filePath), bytes);
+            log.info("save file to {},npath:{}", filePath, npath);
             if (extension.equals("txt") || extension.equals("csv") || extension.equals("svg")) {
               pageInfo.setSuccess(true);
               pageInfo.setPageCount(1);
@@ -88,7 +93,7 @@ public class PreviewInfoHelper {
                 pageCount = pageInfo.getPageCount();
                 sheetNames = pageInfo.getSheetNames();
                 previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, npath, filePath, dataDir, bytes.length, pageCount, pageInfo
-                  .getDirection(), sheetNames,width);
+                  .getDirection(), sheetNames, width);
                 previewInfoEx.setSuccess(true);
                 previewInfoEx.setPreviewInfo(previewInfo);
               } else {

@@ -1,7 +1,5 @@
 package com.facishare.document.preview.cgi.utils;
 
-import com.alibaba.fastjson.JSON;
-import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.fsi.proxy.model.warehouse.a.ADownloadFile;
 import com.facishare.fsi.proxy.model.warehouse.a.User;
 import com.facishare.fsi.proxy.model.warehouse.g.GFileDownload;
@@ -31,6 +29,7 @@ public class FileStorageProxy {
 
   public byte[] GetBytesByPath(String path, String ea, int employeeId, String securityGroup) {
     try {
+      log.info("download a file,path:{},ea:{},employeeId:{},securityGroup:{}", path,ea,employeeId,securityGroup);
       if (path.startsWith("G_")) {
         GFileDownload.Arg arg = new GFileDownload.Arg();
         arg.downloadUser = "E." + employeeId;
@@ -44,7 +43,6 @@ public class FileStorageProxy {
         arg.setFileSecurityGroup(securityGroup);
         User user = new User(ea, employeeId);
         arg.setUser(user);
-        log.info("download a file,arg:{}", JSON.toJSONString(arg));
         return aFileStorageService.downloadFile(arg).getData();
       } else {
         NDownloadFile.Arg arg = new NDownloadFile.Arg();

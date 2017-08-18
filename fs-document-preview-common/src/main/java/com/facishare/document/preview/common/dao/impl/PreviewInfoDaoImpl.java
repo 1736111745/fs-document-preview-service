@@ -164,30 +164,29 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
   @Override
   public PreviewInfo getInfoByPath(String ea, String path, int width) {
     log.info("getInfoByPath args,ea:{},path:{},width:{}", ea, path, width);
-    Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+    Query<PreviewInfo> q1 = dpsDataStore.createQuery(PreviewInfo.class);
+    Query<PreviewInfo> q2 = dpsDataStore.createQuery(PreviewInfo.class);
+    Query<PreviewInfo> q3 = dpsDataStore.createQuery(PreviewInfo.class);
     if (width == 1000) {
       if (path.startsWith("A_")) {
-        query.criteria("path")
-             .equal(path)
-             .add(query.criteria("width").equal(width).or(query.criteria("width").doesNotExist()));
-        ;
+        q1.criteria("path").equal(path).add(q2.criteria("width").equal(width).or(q3.criteria("width").doesNotExist()));
       } else {
-        query.criteria("path")
-             .equal(path)
-             .criteria("ea")
-             .equal(ea)
-             .add(query.criteria("width").equal(width).or(query.criteria("width").doesNotExist()));
+        q1.criteria("path")
+          .equal(path)
+          .criteria("ea")
+          .equal(ea)
+          .add(q2.criteria("width").equal(width).or(q3.criteria("width").doesNotExist()));
       }
 
     } else {
       if (path.startsWith("A_")) {
-        query.criteria("path").equal(path).criteria("width").equal(width);
+        q1.criteria("path").equal(path).criteria("width").equal(width);
       } else {
-        query.criteria("path").equal(path).criteria("ea").equal(ea).criteria("width").equal(width);
+        q1.criteria("path").equal(path).criteria("ea").equal(ea).criteria("width").equal(width);
       }
     }
-    log.info("query:{}", query.toString());
-    return query.get();
+    log.info("query:{}", q1.toString());
+    return q1.get();
   }
 
   //批量删除预览记录

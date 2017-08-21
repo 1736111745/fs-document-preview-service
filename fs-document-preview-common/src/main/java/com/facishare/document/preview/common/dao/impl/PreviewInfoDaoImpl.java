@@ -166,6 +166,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
   public PreviewInfo getInfoByPath(String ea, String path, int width) {
     log.info("getInfoByPath args,ea:{},path:{},width:{}", ea, path, width);
     Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+    PreviewInfo previewInfo=null;
     if (path.startsWith("A_")) {
       query.field("path").equal(path);
     } else {
@@ -178,10 +179,12 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
       return null;
     }
     if (width == 1000) {
-      return previewInfoList.stream().filter(p -> p.getWidth() == width || p.getWidth() == 0).findFirst().orElse(null);
+      previewInfo= previewInfoList.stream().filter(p -> p.getWidth() == width || p.getWidth() == 0).findFirst().orElse(null);
     } else {
-      return previewInfoList.stream().filter(p -> p.getWidth() == width).findFirst().orElse(null);
+      previewInfo= previewInfoList.stream().filter(p -> p.getWidth() == width).findFirst().orElse(null);
     }
+    log.info("preview info:{}",previewInfoList);
+    return previewInfo;
   }
 
   //批量删除预览记录

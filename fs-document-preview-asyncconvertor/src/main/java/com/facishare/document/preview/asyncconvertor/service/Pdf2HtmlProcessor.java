@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.WildcardType;
 
 /**
  * Created by liuq on 2017/3/9.
@@ -74,7 +75,7 @@ public class Pdf2HtmlProcessor {
     String dataFilePath = pdf2HtmlHandler.doConvert(convertorMessage);
     if (!Strings.isNullOrEmpty(dataFilePath)) {
       counterService.inc("convert-pdf2html-ok");
-      previewInfoDao.savePreviewInfo(ea, path, dataFilePath);
+      previewInfoDao.savePreviewInfo(ea, path, dataFilePath,convertorMessage.getPageWidth());
     } else {
       counterService.inc("convert-pdf2html-fail");
     }

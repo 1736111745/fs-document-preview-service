@@ -20,28 +20,34 @@ import java.util.List;
 @Slf4j
 @Component
 public class ConvertOffice2PdfEnqueueUtil {
-    @Autowired
-    PreviewInfoDao previewInfoDao;
-    @Autowired
-    Office2PdfTaskDao office2PdfTaskDao;
-    @Resource(name = "office2pdfProvider")
-    ConvertorQueueProvider convertorQueueProvider;
+  @Autowired
+  PreviewInfoDao previewInfoDao;
+  @Autowired
+  Office2PdfTaskDao office2PdfTaskDao;
+  @Resource(name = "office2pdfProvider")
+  ConvertorQueueProvider convertorQueueProvider;
 
-    public void enqueue(String ea, String path, int width) {
-        PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path,width);
-        if (previewInfo == null) return;
-        List<String> dataFilePathList = previewInfo.getFilePathList();
-        if (dataFilePathList != null && dataFilePathList.size() == previewInfo.getPageCount()) return;
-        int status = office2PdfTaskDao.getTaskStatus(ea, path);
-        if (status == -1) {
-            log.info("begin enqueue,ea:{},path:{}", ea, path);
-            office2PdfTaskDao.addTask(ea, path);
-            ConvertMessageBase convertorMessage = new ConvertMessageBase();
-            convertorMessage.setEa(ea);
-            convertorMessage.setFilePath(previewInfo.getOriginalFilePath());
-            convertorMessage.setNpath(path);
-            convertorMessage.setPageWidth(width);
-            convertorQueueProvider.office2pdf(convertorMessage);
-        }
+  public void enqueue(String ea, String path, int width) {
+    log.info("enqueue args,ea:{},path:{},width:{}", ea, path, width);
+    PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path, width);
+    log.info("previewInfo:{}",previewInfo);
+    if (previewInfo == null) {
+      return;
     }
+    List<String> dataFilePathList = previewInfo.getFilePathList();
+    if (dataFilePathList != null && dataFilePathList.size() == previewInfo.getPageCount()) {
+      return;
+    }
+    int status = office2PdfTaskDao.getTaskStatus(ea, path);
+    if (status == -1) {
+      log.info("begin enqueue,ea:{},path:{}", ea, path);
+      office2PdfTaskDao.addTask(ea, path);
+      ConvertMessageBase convertorMessage = new ConvertMessageBase();
+      convertorMessage.setEa(ea);
+      convertorMessage.setFilePath(previewInfo.getOriginalFilePath());
+      convertorMessage.setNpath(path);
+      convertorMessage.setPageWidth(width);
+      convertorQueueProvider.office2pdf(convertorMessage);
+    }
+  }
 }

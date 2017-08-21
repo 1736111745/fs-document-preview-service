@@ -7,6 +7,7 @@ import com.facishare.document.preview.common.utils.DateUtil;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.github.mongo.support.DatastoreExt;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -165,24 +166,22 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
   public PreviewInfo getInfoByPath(String ea, String path, int width) {
     log.info("getInfoByPath args,ea:{},path:{},width:{}", ea, path, width);
     Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
-    if (width == 1000) {
-      if (path.startsWith("A_")) {
-        query.field("path").equal(path);
-      } else {
-        query.field("path").equal(path);
-        query.field("ea").equal(ea);
-      }
-      query.or(query.criteria("width").equal(width), query.criteria("width").doesNotExist());
-
+    if (path.startsWith("A_")) {
+      query.field("path").equal(path);
     } else {
-      //      if (path.startsWith("A_")) {
-      //        q1.criteria("path").equal(path).criteria("width").equal(width);
-      //      } else {
-      //        q1.criteria("path").equal(path).criteria("ea").equal(ea).criteria("width").equal(width);
-      //      }
+      query.field("path").equal(path);
+      query.field("ea").equal(ea);
     }
-    log.info("query:{}", query.toString());
-    return query.get();
+    List<PreviewInfo> previewInfoList = Lists.newArrayList();
+    log.info("preview info list:{}",previewInfoList);
+    if (previewInfoList == null) {
+      return null;
+    }
+    if (width == 1000) {
+      return previewInfoList.stream().filter(p -> p.getWidth() == width || p.getWidth() == 0).findFirst().orElse(null);
+    } else {
+      return previewInfoList.stream().filter(p -> p.getWidth() == width).findFirst().orElse(null);
+    }
   }
 
   //批量删除预览记录

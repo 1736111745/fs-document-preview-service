@@ -2,7 +2,6 @@ package com.facishare.document.preview.cgi.utils;
 
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfoEx;
-import com.facishare.document.preview.cgi.utils.FileStorageProxy;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.ConvertOldOfficeVersionResult;
 import com.facishare.document.preview.common.model.PageInfo;
@@ -13,13 +12,10 @@ import com.facishare.document.preview.common.utils.SampleUUID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.rmi.dgc.Lease;
 import java.util.List;
 
 /**

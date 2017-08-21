@@ -172,7 +172,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
       query.field("path").equal(path);
       query.field("ea").equal(ea);
     }
-    List<PreviewInfo> previewInfoList = Lists.newArrayList();
+    List<PreviewInfo> previewInfoList = query.asList();
     log.info("preview info list:{}",previewInfoList);
     if (previewInfoList == null) {
       return null;

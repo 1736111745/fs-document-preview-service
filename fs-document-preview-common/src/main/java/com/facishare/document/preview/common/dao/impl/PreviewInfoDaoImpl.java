@@ -7,7 +7,6 @@ import com.facishare.document.preview.common.utils.DateUtil;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.github.mongo.support.DatastoreExt;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -34,17 +33,35 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
   private DatastoreExt dpsDataStore;
 
   @Override
-  public void savePreviewInfo(String ea, String path, String dataFilePath) {
+  public void savePreviewInfo(String ea, String path, String dataFilePath, int width) {
     String dataFileName = FilenameUtils.getName(dataFilePath);
     Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
-    if (path.startsWith("A_")) {
-      query.criteria("path").equal(path);
-    } else {
-      query.criteria("path").equal(path).criteria("ea").equal(ea);
-    }
+    createQuery(query,ea,path,width);
     UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
     update.add("filePathList", dataFileName);
     dpsDataStore.findAndModify(query, update);
+  }
+
+
+  private void createQuery(Query<PreviewInfo> query,String ea,String path,int width)
+  {
+    if (width == 1000) {
+      if (path.startsWith("A_")) {
+        query.and(query.criteria("path").equal(path))
+             .and(query.or(query.criteria("width").equal(width)).criteria("width").doesNotExist());
+
+      } else {
+        query.and(query.criteria("path").equal(path).criteria("ea").equal(ea))
+             .and(query.or(query.criteria("width").equal(width)).criteria("width").doesNotExist());
+      }
+    } else {
+      if (path.startsWith("A_")) {
+        query.and(query.criteria("path").equal(path)).and(query.or(query.criteria("width").equal(width)));
+
+      } else {
+        query.and(query.criteria("path").equal(path).criteria("ea").equal(ea)).and(query.or(query.criteria("width").equal(width)));
+      }
+    }
   }
 
   @Override
@@ -164,27 +181,9 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
 
   @Override
   public PreviewInfo getInfoByPath(String ea, String path, int width) {
-    //log.info("getInfoByPath args,ea:{},path:{},width:{}", ea, path, width);
     Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
-    PreviewInfo previewInfo;
-    if (path.startsWith("A_")) {
-      query.field("path").equal(path);
-    } else {
-      query.field("path").equal(path);
-      query.field("ea").equal(ea);
-    }
-    List<PreviewInfo> previewInfoList = query.asList();
-    //log.info("preview info list:{}",previewInfoList);
-    if (previewInfoList == null) {
-      return null;
-    }
-    if (width == 1000) {
-      previewInfo= previewInfoList.stream().filter(p -> p.getWidth() == width || p.getWidth() == 0).findFirst().orElse(null);
-    } else {
-      previewInfo= previewInfoList.stream().filter(p -> p.getWidth() == width).findFirst().orElse(null);
-    }
-    //log.info("preview info:{}",previewInfoList);
-    return previewInfo;
+    createQuery(query,ea,path,width);
+    return query.get();
   }
 
   //批量删除预览记录
@@ -193,6 +192,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
     query.criteria("ea").equal(ea).criteria("path").in(pathList);
     dpsDataStore.delete(query);
+
   }
 
   //查询预览文档

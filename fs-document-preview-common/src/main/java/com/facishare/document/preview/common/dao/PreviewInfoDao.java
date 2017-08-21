@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface PreviewInfoDao {
 
-    void savePreviewInfo(String ea, String path, String dataFilePath);
+    void savePreviewInfo(String ea, String path, String dataFilePath,int width);
 
     void updateDirection(String ea,String path,int direction);
 

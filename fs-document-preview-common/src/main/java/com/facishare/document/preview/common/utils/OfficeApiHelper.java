@@ -43,6 +43,7 @@ public class OfficeApiHelper {
         PageInfo pageInfo;
         String params = "filepath=" + filePath;
         String json = callApi(officeConvertorServerUrl,"GetPageInfo", params);
+        log.info("get page info response json:{}",json);
         if (!Strings.isNullOrEmpty(json)) {
             pageInfo = JSON.parseObject(json, PageInfo.class);
         } else {

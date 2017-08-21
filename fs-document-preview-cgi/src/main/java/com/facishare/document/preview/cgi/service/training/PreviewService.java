@@ -67,7 +67,7 @@ public class PreviewService {
                 dataFilePath =
                   FilenameUtils.getFullPathNoEndSeparator(originalFilePath) + "/" + (pageIndex + 1) + ".png";
                 log.info("dataFilePath:{}", dataFilePath);
-                previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
+                previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath,1000);
                 result.setCode(200);
                 result.setDataFilePath(dataFilePath);
               } else {

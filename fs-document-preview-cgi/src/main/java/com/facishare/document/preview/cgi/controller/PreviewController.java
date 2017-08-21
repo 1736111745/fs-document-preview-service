@@ -156,7 +156,7 @@ public class PreviewController {
                 dataFilePath = FilenameUtils.getFullPathNoEndSeparator(originalFilePath) + "/" + page + ".html";
                 HandlerHtml.process(dataFilePath, pageIndex);
                 log.info("dataFilePath:{}", dataFilePath);
-                previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath);
+                previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath,width);
                 fileOutPutor.outPut(response, dataFilePath, false);
               } else {
                 log.warn("can't resolve path:{},page:{}", path, page);

@@ -39,7 +39,7 @@
 
     div.center {
       text-align: center;
-      font-size: 14px;
+      font-size: 1em;
       margin-bottom: 10px;
       margin-top: 10px;
     }

@@ -72,6 +72,7 @@ public class Office2PdfTaskDaoImpl implements Office2PdfTaskDao {
         convertTask.setEa(ea);
         convertTask.setPath(path);
         convertTask.setCreateTime(new Date());
+        convertTask.setWidth(width);
         convertTask.setLastModifyTime(new Date());
         convertTask.setStatus(0);
         dpsDataStore.insert(convertTask);

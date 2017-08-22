@@ -5,7 +5,6 @@ import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.ConvertMessageBase;
 import com.facishare.document.preview.common.model.PreviewInfo;
 import com.facishare.document.preview.common.mq.ConvertorQueueProvider;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,7 +29,7 @@ public class ConvertOffice2PdfEnqueueUtil {
   public void enqueue(String ea, String path, int width) {
     log.info("enqueue args,ea:{},path:{},width:{}", ea, path, width);
     PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path, width);
-    log.info("previewInfo:{}",previewInfo);
+    log.info("previewInfo:{}", previewInfo);
     if (previewInfo == null) {
       return;
     }
@@ -38,10 +37,10 @@ public class ConvertOffice2PdfEnqueueUtil {
     if (dataFilePathList != null && dataFilePathList.size() == previewInfo.getPageCount()) {
       return;
     }
-    int status = office2PdfTaskDao.getTaskStatus(ea, path);
+    int status = office2PdfTaskDao.getTaskStatus(ea, path, width);
     if (status == -1) {
       log.info("begin enqueue,ea:{},path:{}", ea, path);
-      office2PdfTaskDao.addTask(ea, path);
+      office2PdfTaskDao.addTask(ea, path, width);
       ConvertMessageBase convertorMessage = new ConvertMessageBase();
       convertorMessage.setEa(ea);
       convertorMessage.setFilePath(previewInfo.getOriginalFilePath());

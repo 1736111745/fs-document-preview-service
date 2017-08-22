@@ -23,5 +23,6 @@ public class Office2PdfTask {
     private Date createTime;
     private Date lastModifyTime;
     private int status;
+    private int width;
 }
 

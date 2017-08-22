@@ -2,6 +2,7 @@ package com.facishare.document.preview.common.dao.impl;
 
 import com.facishare.document.preview.common.dao.Office2PdfTaskDao;
 import com.facishare.document.preview.common.model.Office2PdfTask;
+import com.facishare.document.preview.common.model.PreviewInfo;
 import com.github.mongo.support.DatastoreExt;
 import lombok.extern.slf4j.Slf4j;
 import org.mongodb.morphia.query.Query;
@@ -20,10 +21,10 @@ public class Office2PdfTaskDaoImpl implements Office2PdfTaskDao {
     private DatastoreExt dpsDataStore;
 
     @Override
-    public int getTaskStatus(String ea, String path) {
+    public int getTaskStatus(String ea, String path,int width) {
         int status = -1;
         Query<Office2PdfTask> query = dpsDataStore.createQuery(Office2PdfTask.class);
-        query.criteria("ea").equal(ea).criteria("path").equal(path);
+        createQuery(query,ea,path,width);
         Office2PdfTask convertTask = query.get();
         if (convertTask != null) {
             status = convertTask.getStatus();
@@ -31,9 +32,19 @@ public class Office2PdfTaskDaoImpl implements Office2PdfTaskDao {
         return status;
     }
 
-    private void modifyTaskStatus(String ea, String path, int status) {
+    private void createQuery(Query<Office2PdfTask> query, String ea, String path, int width)
+    {
+        if (width == 1000) {
+            query.and(query.criteria("ea").equal(ea).criteria("path").equal(path))
+                 .and(query.or(query.criteria("width").equal(width)).criteria("width").doesNotExist());
+        } else {
+            query.and(query.criteria("path").equal(path).criteria("ea").equal(ea)).and(query.or(query.criteria("width").equal(width)));
+        }
+    }
+
+    private void modifyTaskStatus(String ea, String path, int width,int status) {
         Query<Office2PdfTask> query = dpsDataStore.createQuery(Office2PdfTask.class);
-        query.criteria("ea").equal(ea).criteria("path").equal(path);
+        createQuery(query,ea,path,width);
         UpdateOperations<Office2PdfTask> update = dpsDataStore.createUpdateOperations(Office2PdfTask.class);
         update.set("status", status);
         update.set("lastModifyTime", new Date());
@@ -41,22 +52,22 @@ public class Office2PdfTaskDaoImpl implements Office2PdfTaskDao {
     }
 
 
-    public void beginExecute(String ea, String path) {
-        modifyTaskStatus(ea, path, 1);
+    public void beginExecute(String ea, String path,int width) {
+        modifyTaskStatus(ea, path, 1,width);
     }
 
     @Override
-    public void executeFail(String ea, String path) {
-        modifyTaskStatus(ea, path, 3);
+    public void executeFail(String ea, String path,int width) {
+        modifyTaskStatus(ea, path, 3,width);
     }
 
     @Override
-    public void executeSuccess(String ea, String path) {
-        modifyTaskStatus(ea, path, 2);
+    public void executeSuccess(String ea, String path,int width) {
+        modifyTaskStatus(ea, path, 2,width);
     }
 
     @Override
-    public void  addTask(String ea, String path) {
+    public void  addTask(String ea, String path,int width) {
         Office2PdfTask convertTask = new Office2PdfTask();
         convertTask.setEa(ea);
         convertTask.setPath(path);

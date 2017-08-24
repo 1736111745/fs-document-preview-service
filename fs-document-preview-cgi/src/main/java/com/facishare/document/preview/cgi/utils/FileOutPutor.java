@@ -69,6 +69,9 @@ public class FileOutPutor {
         return FileUtils.readFileToByteArray(new File(filePath));
     }
 
+
+
+
     private byte[] handlePng(String filePath, int width, boolean needThumbnail, HttpServletResponse response) throws IOException {
         //缩略:如果制定大小就从原图中缩略到指定大小，如果不指定大小生成固定大小给手机预览使用
         SimpleImageInfo simpleImageInfo = new SimpleImageInfo(new File(filePath));

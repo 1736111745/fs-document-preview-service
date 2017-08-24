@@ -3,12 +3,20 @@ package com.facishare.document.preview.asyncconvertor.utils;
 import com.aspose.slides.Presentation;
 import com.aspose.slides.SaveFormat;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
+import com.fxiaoke.common.http.handler.SyncCallback;
+import com.fxiaoke.common.http.spring.OkHttpSupport;
+import com.fxiaoke.common.image.SimpleImageInfo;
+import com.github.autoconf.ConfigFactory;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.squareup.pollexor.Thumbor;
+import com.squareup.pollexor.ThumborUrlBuilder;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.http.HeaderIterator;
 import org.springframework.stereotype.Component;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
@@ -17,6 +25,7 @@ import org.zeroturnaround.process.ProcessUtil;
 import org.zeroturnaround.process.Processes;
 import org.zeroturnaround.process.SystemProcess;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,6 +48,14 @@ import java.util.stream.Stream;
 public class Pdf2HtmlHandler {
   @ReloadableProperty("pdf2HtmlTimeout")
   private int pdf2HtmlTimeout = 60;
+  @Resource(name = "httpClientSupport")
+  private OkHttpSupport client;
+  private static String thumborServiceUrl = "";
+
+  static {
+    ConfigFactory.getInstance()
+                 .getConfig("fs-dps-config", config -> thumborServiceUrl = config.get("thumborServiceUrl"));
+  }
 
   public String doConvert(ConvertPdf2HtmlMessage message) throws IOException {
     String dataFilePath = "";
@@ -224,6 +241,29 @@ public class Pdf2HtmlHandler {
       newBgName = "bg" + page + ".jpg";
       String newBgFilePath = FilenameUtils.concat(baseDir, newBgName);
       bgFile.renameTo(new File(newBgFilePath));
+      //缩略
+      try {
+        SimpleImageInfo simpleImageInfo = new SimpleImageInfo(new File(newBgFilePath));
+        int width = simpleImageInfo.getWidth();
+        int height = simpleImageInfo.getHeight();
+        if(width>1000&&height>1000) {
+          int newWidth, newHeight;
+          if (width > height) {
+            newHeight = 1000;
+            newWidth = 1000 * width / height;
+          } else {
+            newWidth = 1000;
+            newHeight = 1000 * height / width;
+          }
+          log.info("width:{},height:{},newWidth:{},newHeight:{}", width, height, newWidth, newHeight);
+          doThumbnail(FileUtils.readFileToByteArray(new File(newBgFilePath)), newWidth, newHeight, new File(newBgFilePath));
+        }
+      }
+      catch (Exception ex)
+      {
+
+      }
+
     }
     handleHtml(outPutDir, dataFile, pageFile, dirName, cssFileName, newCssFileName, bgName, newBgName);
     return pagePath;
@@ -270,5 +310,35 @@ public class Pdf2HtmlHandler {
     Presentation document = new Presentation(filePath);
     document.save(pdfFilePath, SaveFormat.Pdf);
 
+  }
+
+  public boolean doThumbnail(byte[] data, int toWidth, int toHeight, File thumbPngFile) {
+    boolean success = false;
+    try {
+      MediaType mediaType = MediaType.parse("application/octet-stream;");
+      RequestBody body = MultipartBody.create(mediaType, data);
+      Thumbor thumbor = Thumbor.create(thumborServiceUrl);
+      List<String> filters = Lists.newArrayList();
+      filters.add(ThumborUrlBuilder.quality(80));
+      String[] filterArray = filters.toArray(new String[filters.size()]);
+      String url = thumbor.buildImage("post").filter(filterArray).resize(toWidth, toHeight).smart().toUrlUnsafe();
+      log.info("do thumbnail with url:{}", url);
+      final Request request = new Request.Builder().post(body).url(url).build();
+      Object object = client.syncExecute(request, new SyncCallback() {
+        @Override
+        public Object response(Response response) throws Exception {
+          return response.body().bytes();
+        }
+      });
+      byte[] bytes = (byte[]) object;
+      if (bytes != null) {
+        log.info("do thumbnail success!");
+        FileUtils.writeByteArrayToFile(thumbPngFile, bytes);
+        success = true;
+      }
+    } catch (Exception e) {
+      log.error("thumb fail!", e);
+    }
+    return success;
   }
 }

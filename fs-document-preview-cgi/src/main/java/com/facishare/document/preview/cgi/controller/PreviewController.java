@@ -151,7 +151,7 @@ public class PreviewController {
               fileOutPutor.outPut(response, dataFilePath, false);
             } else {
               String originalFilePath = previewInfo.getOriginalFilePath();
-              boolean flag = officeApiHelper.convertExcel2Html(path, originalFilePath, pageIndex);
+              boolean flag = officeApiHelper.convertExcel2Html(originalFilePath, pageIndex);
               if (flag) {
                 dataFilePath = FilenameUtils.getFullPathNoEndSeparator(originalFilePath) + "/" + page + ".html";
                 HandlerHtml.process(dataFilePath, pageIndex);

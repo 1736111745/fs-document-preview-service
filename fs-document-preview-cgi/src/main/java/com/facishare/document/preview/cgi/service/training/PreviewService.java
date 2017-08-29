@@ -62,7 +62,7 @@ public class PreviewService {
               if (!originalFile.exists()) {
                 fileStorageProxy.DownloadAndSave(path, employeeInfo.getEa(), employeeInfo.getEmployeeId(), "", originalFilePath);
               }
-              boolean apiResult = officeApiHelper.convertOffice2Png(path, originalFilePath, pageIndex);
+              boolean apiResult = officeApiHelper.convertOffice2Png(originalFilePath, pageIndex);
               if (apiResult) {
                 dataFilePath =
                   FilenameUtils.getFullPathNoEndSeparator(originalFilePath) + "/" + (pageIndex + 1) + ".png";

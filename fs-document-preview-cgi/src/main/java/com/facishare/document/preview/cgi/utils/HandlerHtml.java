@@ -1,7 +1,5 @@
 package com.facishare.document.preview.cgi.utils;
 
-import com.fxiaoke.common.Guard;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -14,7 +12,6 @@ import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by liuq on 2017/4/20.

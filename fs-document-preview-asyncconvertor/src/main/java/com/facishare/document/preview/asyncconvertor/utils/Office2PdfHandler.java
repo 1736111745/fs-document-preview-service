@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -66,38 +67,55 @@ public class Office2PdfHandler {
         for (int i = 0; i < hasNotConvertPageList.size(); i++) {
           final int page = hasNotConvertPageList.get(i);
           executorService.submit(() -> {
-            boolean flag = officeApiHelper.convertOffice2Pdf(path, filePath, page);
-            if (flag) {
-              counterService.inc("ppt2pdf-success!");
-              String pdfPageFilePath = filePath + "." + page + ".pdf";
-              enqueue(ea, path, pdfPageFilePath, page, 1, width);
-            } else {
+            boolean flag = false;
+            try {
+              flag = officeApiHelper.convertOffice2Pdf(filePath, page);
+              if (flag) {
+                counterService.inc("ppt2pdf-success!");
+                String pdfPageFilePath = filePath + "." + page + ".pdf";
+                enqueue(ea, path, pdfPageFilePath, page, 1, width);
+              } else {
+                counterService.inc("ppt2pdf-fail!");
+              }
+            } catch (IOException e) {
               counterService.inc("ppt2pdf-fail!");
             }
+
           });
         }
       } else {
         log.info("convert ppt to  pdf once time!");
         executorService.submit(() -> {
-          boolean flag = officeApiHelper.convertPPT2Pdf(path, filePath);
-          if (flag) {
-            counterService.inc("ppt2pdf-success!");
-            String pdfPageFilePath = filePath + ".pdf";
-            enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList, width);
-          } else {
+          boolean flag;
+          try {
+            flag = officeApiHelper.convertPPT2Pdf(filePath);
+            if (flag) {
+              counterService.inc("ppt2pdf-success!");
+              String pdfPageFilePath = filePath + ".pdf";
+              enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList, width);
+            } else {
+              counterService.inc("ppt2pdf-fail!");
+            }
+          } catch (IOException e) {
             counterService.inc("ppt2pdf-fail!");
           }
+
         });
 
       }
     } else if (ext.contains("doc")) {
       executorService.submit(() -> {
-        boolean flag = officeApiHelper.convertOffice2Pdf(path, filePath);
-        if (flag) {
-          counterService.inc("word2pdf-success!");
-          String pdfPageFilePath = filePath + ".pdf";
-          enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList, width);
-        } else {
+        boolean flag;
+        try {
+          flag = officeApiHelper.convertOffice2Pdf(filePath);
+          if (flag) {
+            counterService.inc("word2pdf-success!");
+            String pdfPageFilePath = filePath + ".pdf";
+            enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList, width);
+          } else {
+            counterService.inc("word2pdf-fail!");
+          }
+        } catch (IOException e) {
           counterService.inc("word2pdf-fail!");
         }
       });

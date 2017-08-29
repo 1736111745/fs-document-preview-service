@@ -50,6 +50,7 @@ public class MimeTypeHelper {
         s_mapMimeTypes.put("dll", "application/x-msdownload");
         s_mapMimeTypes.put("dms", "application/octet-stream");
         s_mapMimeTypes.put("doc", "application/msword");
+        s_mapMimeTypes.put("docx", "application/msword");
         s_mapMimeTypes.put("dtd", "application/xml-dtd");
         s_mapMimeTypes.put("dvi", "application/x-dvi");
         s_mapMimeTypes.put("dxr", "application/x-director");
@@ -113,6 +114,7 @@ public class MimeTypeHelper {
         s_mapMimeTypes.put("pnm", "image/x-portable-anymap");
         s_mapMimeTypes.put("ppm", "image/x-portable-pixmap");
         s_mapMimeTypes.put("ppt", "application/vnd.ms-powerpoint");
+        s_mapMimeTypes.put("pptx", "application/vnd.ms-powerpoint");
         s_mapMimeTypes.put("ps", "application/postscript");
         s_mapMimeTypes.put("qt", "video/quicktime");
         s_mapMimeTypes.put("ra", "audio/x-pn-realaudio");

@@ -5,14 +5,19 @@ import com.facishare.document.preview.common.model.ConvertOldOfficeVersionResult
 import com.facishare.document.preview.common.model.ConvertResult;
 import com.facishare.document.preview.common.model.PageInfo;
 import com.github.autoconf.ConfigFactory;
-import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Component;
+import org.zeroturnaround.zip.ZipUtil;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -23,16 +28,14 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class OfficeApiHelper {
     private String officeConvertorServerUrl = "";
-    private String ppt2pdfServerUrl="";
-    private static OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .build();
+    private String ppt2pdfServerUrl = "";
+    private static OkHttpClient client = new OkHttpClient.Builder().connectTimeout(60, TimeUnit.SECONDS)
+                                                                   .readTimeout(60, TimeUnit.SECONDS)
+                                                                   .build();
 
     @PostConstruct
     void init() {
-        ConfigFactory.getConfig("fs-dps-config", config ->
-        {
+        ConfigFactory.getConfig("fs-dps-config", config -> {
             officeConvertorServerUrl = config.get("officeConvertorServerUrl");
             ppt2pdfServerUrl = config.get("ppt2pdfServerUrl");
         });
@@ -41,9 +44,10 @@ public class OfficeApiHelper {
 
     public PageInfo getPageInfo(String path, String filePath) throws IOException {
         PageInfo pageInfo;
-        String params = "filepath=" + filePath;
-        String json = callApi(officeConvertorServerUrl,"GetPageInfo", params);
-        log.info("get page info response json:{}",json);
+        String params = "path=" + filePath;
+        byte[] data=FileUtils.readFileToByteArray(new File(filePath));
+        String json = (String)callApi(officeConvertorServerUrl, "GetPageInfoByStream", params,data);
+        log.info("get page info response json:{}", json);
         if (!Strings.isNullOrEmpty(json)) {
             pageInfo = JSON.parseObject(json, PageInfo.class);
         } else {
@@ -57,100 +61,185 @@ public class OfficeApiHelper {
 
     public ConvertOldOfficeVersionResult convertFile(String filePath) throws IOException {
         ConvertOldOfficeVersionResult result = null;
-        String params = "filepath=" + filePath;
-        String json = callApi(officeConvertorServerUrl,"ConvertFile", params);
-        if (!Strings.isNullOrEmpty(json)) {
-            result = JSON.parseObject(json, ConvertOldOfficeVersionResult.class);
+        String params = "path=" + filePath;
+        byte[] data=FileUtils.readFileToByteArray(new File(filePath));
+        Object obj = callApi(officeConvertorServerUrl, "ConvertFileByStream", params,data);
+        if(obj instanceof String) {
+            result = JSON.parseObject((String) obj, ConvertOldOfficeVersionResult.class);
+        }
+        else {
+            byte[] bytes = (byte[]) obj;
+            result.setErrorMsg("");
+            result.setSuccess(true);
+            String newFilePath = filePath + "x";
+            try {
+                FileUtils.writeByteArrayToFile(new File(newFilePath), bytes);
+            } catch (IOException e) {
+
+            }
+            result.setNewFilePath(newFilePath);
         }
         return result;
     }
 
-    public boolean convertExcel2Html(String path, String filePath, int page) {
-        String params = "filepath=" + filePath + "&page=" + page;
-        String json = callApi(officeConvertorServerUrl,"ConvertExcel2Html", params);
-        if (!Strings.isNullOrEmpty(json)) {
-            ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);
+    public boolean convertExcel2Html(String filePath, int page) throws IOException {
+        String params = "path=" + filePath + "&page=" + page;
+        byte[] data=FileUtils.readFileToByteArray(new File(filePath));
+        Object obj = callApi(officeConvertorServerUrl, "ConvertExcel2HtmlByStream", params,data);
+        if(obj instanceof String) {
+            ConvertResult convertResult = JSON.parseObject((String) obj, ConvertResult.class);
             return convertResult.isSuccess();
         } else {
-            log.error("path:{},filePath:{},page:{},Excel to  Html 转换失败！", path, filePath, page);
-            return false;
+            byte[] bytes = (byte[]) obj;
+            //zip的数据流，解压缩到文件夹
+            String zipFileFullName = filePath + ".zip";
+            File zipFile = new File(zipFileFullName);
+            FileUtils.writeByteArrayToFile(zipFile, bytes);
+            String outPutDirPath = FilenameUtils.concat(zipFile.getParent(), SampleUUID.getUUID());
+            File outPutDir = new File(outPutDirPath);
+            ZipUtil.unpack(zipFile, outPutDir);
+            String[] files = outPutDir.list();
+            for (int i = 0; i < files.length; i++) {
+                String tmpFile = files[i];
+                if (tmpFile.contains("\\")) {
+                    String[] array = tmpFile.split("\\\\");
+                    String folder = array[0];
+                    File targetFolder = new File(FilenameUtils.concat(zipFile.getParent(), folder));
+                    if (!targetFolder.exists()) {
+                        targetFolder.mkdir();
+                    }
+                    String file = array[1];
+                    File targetFile = new File(FilenameUtils.concat(targetFolder.getAbsolutePath(), file));
+                    FileUtils.moveFile(new File(outPutDirPath+"/"+tmpFile), targetFile);
+                } else {
+                    FileUtils.moveFileToDirectory(new File(FilenameUtils.concat(outPutDirPath,tmpFile)), new File(zipFile.getParent()), true);
+                }
+            }
+            FileUtils.deleteQuietly(outPutDir);
+            FileUtils.deleteQuietly(zipFile);
+            return true;
         }
     }
 
-    public boolean convertOffice2Png(String path, String filePath, int page) {
-        String params = "filepath=" + filePath + "&page=" + page;
-        String json = callApi(officeConvertorServerUrl,"ConvertOnePageOffice2Png", params);
-        if (!Strings.isNullOrEmpty(json)) {
-            ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);
+    public boolean convertOffice2Png(String filePath, int page) throws IOException {
+        String params = "path=" + filePath + "&page=" + page;
+        byte[] data=FileUtils.readFileToByteArray(new File(filePath));
+        Object obj = callApi(officeConvertorServerUrl, "ConvertOnePageOffice2PngByStream", params,data);
+        if (obj instanceof String) {
+            ConvertResult convertResult = JSON.parseObject((String) obj, ConvertResult.class);
             return convertResult.isSuccess();
         } else {
-            log.error("path:{},filePath:{},page:{},office to  png 转换失败！", path, filePath, page);
-            return false;
+            byte[] bytes = (byte[]) obj;
+            File file = new File(filePath);
+            String dir = file.getParent();
+            String pngFileName = (page + 1) + ".png";
+            File pngFile = new File(FilenameUtils.concat(dir, pngFileName));
+            FileUtils.writeByteArrayToFile(pngFile, bytes);
+            return true;
         }
     }
 
-    public boolean convertOffice2Pdf(String path, String filePath, int page) {
-        String params = "filepath=" + filePath + "&page=" + page;
-        String json = callApi(officeConvertorServerUrl,"ConvertOnePageOffice2Pdf", params);
-        if (!Strings.isNullOrEmpty(json)) {
-            ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);
+    public boolean convertOffice2Pdf(String filePath, int page) throws IOException {
+        String params = "path=" + filePath + "&page=" + page;
+        byte[] data=FileUtils.readFileToByteArray(new File(filePath));
+        Object obj = callApi(officeConvertorServerUrl, "ConvertOnePageOffice2PdfByStream", params,data);
+        if (obj instanceof String) {
+            ConvertResult convertResult = JSON.parseObject((String) obj, ConvertResult.class);
             return convertResult.isSuccess();
         } else {
-            log.error("path:{},filePath:{},page:{},PPT to Pdf 转换失败！", path, filePath, page);
-            return false;
-        }
-    }
-
-
-
-    public boolean convertOffice2Pdf(String path, String filePath) {
-        String params = "filepath=" + filePath;
-        String json = callApi(officeConvertorServerUrl,"ConvertOffice2Pdf", params);
-        if (!Strings.isNullOrEmpty(json)) {
-            ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);
-            return convertResult.isSuccess();
-        } else {
-            log.error("path:{},filePath:{},转换文档失败！", path, filePath);
-            return false;
-        }
-    }
-
-
-
-    public boolean convertPPT2Pdf(String path, String filePath) {
-
-        String params = "filepath=" + filePath;
-        String json = callApi(ppt2pdfServerUrl, "ConvertOffice2Pdf", params);
-        if (!Strings.isNullOrEmpty(json)) {
-            ConvertResult convertResult = JSON.parseObject(json, ConvertResult.class);
-            return convertResult.isSuccess();
-        } else {
-            log.error("path:{},filePath:{},ppt转换pdf档失败！", path, filePath);
-            return false;
+            byte[] bytes = (byte[]) obj;
+            File file = new File(filePath);
+            String dir = file.getParent();
+            String pdfFileName = filePath + "." + page + ".pdf";
+            File pdfFile = new File(FilenameUtils.concat(dir, pdfFileName));
+            FileUtils.writeByteArrayToFile(pdfFile, bytes);
+            return true;
         }
     }
 
 
-    private String callApi(String url,String method, String params) {
-        String json = "";
+    public boolean convertOffice2Pdf(String filePath) throws IOException {
+       return convertOffice2Pdf(officeConvertorServerUrl,filePath);
+    }
+
+    public  boolean convertOffice2Pdf(String url,String filePath) throws IOException {
+        String params = "path=" + filePath;
+        byte[] data=FileUtils.readFileToByteArray(new File(filePath));
+        Object obj = callApi(url, "ConvertOffice2PdfByStream", params,data);
+        if (obj instanceof String) {
+            ConvertResult convertResult = JSON.parseObject((String) obj, ConvertResult.class);
+            return convertResult.isSuccess();
+        } else {
+            byte[] bytes = (byte[]) obj;
+            File file = new File(filePath);
+            String dir = file.getParent();
+            String pdfFileName = filePath + ".pdf";
+            File pdfFile = new File(FilenameUtils.concat(dir, pdfFileName));
+            FileUtils.writeByteArrayToFile(pdfFile, bytes);
+            return true;
+        }
+    }
+
+    public boolean convertPPT2Pdf(String filePath) throws IOException {
+
+       return convertOffice2Pdf(ppt2pdfServerUrl,filePath);
+    }
+
+
+    private Object callApi(String url, String method, String params,byte[] data) {
+        Object obj = null;
         Stopwatch stopwatch = Stopwatch.createStarted();
         String postUrl = url + "/Api/Office/" + method;
         if (!Strings.isNullOrEmpty(params)) {
             postUrl = postUrl + "?" + params;
         }
-        Request request = new Request.Builder().url(postUrl).get().build();
+        RequestBody fileBody = RequestBody.create(MediaType.parse("application/octet-stream"), data);
+        RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                                                             .addFormDataPart("file", "file", fileBody)
+                                                             .build();
+
+
+        Request request = new Request.Builder().url(postUrl).post(requestBody).build();
         try {
             Response response = client.newCall(request).execute();
             log.info("response.status:{}", response.code());
-            if (response.code() == 200) {
-                json = response.body().string();
-                log.info("response.json:{}", json);
+            if (response.header("Content-Type").contains("json")) {
+                obj = response.body().string();
+                log.info("response.json:{}", obj);
+            } else {
+                obj = response.body().bytes();
             }
         } catch (Exception e) {
             log.error("call method:{},path:{},happened exception!", method, params, e);
         }
         stopwatch.stop();
         log.info("call api:{},cost:{}ms", postUrl, stopwatch.elapsed(TimeUnit.MILLISECONDS));
-        return json;
+        return obj;
+    }
+
+
+    public static void main(String[] args) throws IOException {
+        String json = "";
+        String file = "/Users/liuq/Downloads/范雄飞客户对账单_201706220309.xlsx";
+        byte[] bytes = IOUtils.toByteArray(new FileInputStream(file));
+        String postUrl = "http://172.28.2.161:9999/Api/Office/ConvertExcel2HtmlByStream?npath=a.jpg&page=0";
+        RequestBody fileBody = RequestBody.create(MediaType.parse("application/octet-stream"), bytes);
+        RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                                                             .addFormDataPart("file", "file", fileBody)
+                                                             .build();
+
+
+        Request request = new Request.Builder().url(postUrl).post(requestBody).build();
+        try {
+            Response response = client.newCall(request).execute();
+            log.info("response.status:{}", response.code());
+            if (response.code() == 200) {
+                byte[]  data = response.body().bytes();
+                FileUtils.writeByteArrayToFile(new File("/Users/liuq/Downloads/zip.zip"),data);
+                log.info("response.json:{}", json);
+            }
+        } catch (Exception e) {
+
+        }
     }
 }

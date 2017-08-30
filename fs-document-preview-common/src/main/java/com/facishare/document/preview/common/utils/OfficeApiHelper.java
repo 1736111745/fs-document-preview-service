@@ -60,7 +60,7 @@ public class OfficeApiHelper {
     }
 
     public ConvertOldOfficeVersionResult convertFile(String filePath) throws IOException {
-        ConvertOldOfficeVersionResult result = null;
+        ConvertOldOfficeVersionResult result;
         String params = "path=" + filePath;
         byte[] data=FileUtils.readFileToByteArray(new File(filePath));
         Object obj = callApi(officeConvertorServerUrl, "ConvertFileByStream", params,data);
@@ -68,6 +68,7 @@ public class OfficeApiHelper {
             result = JSON.parseObject((String) obj, ConvertOldOfficeVersionResult.class);
         }
         else {
+            result=new ConvertOldOfficeVersionResult();
             byte[] bytes = (byte[]) obj;
             result.setErrorMsg("");
             result.setSuccess(true);

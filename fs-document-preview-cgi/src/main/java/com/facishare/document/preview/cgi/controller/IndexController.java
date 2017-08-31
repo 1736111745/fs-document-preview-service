@@ -1,8 +1,10 @@
 package com.facishare.document.preview.cgi.controller;
 
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
+import com.facishare.document.preview.cgi.utils.AES256Utils;
 import com.facishare.fsi.proxy.model.warehouse.n.fileupload.NUploadFileDirect;
 import com.facishare.fsi.proxy.service.NFileStorageService;
+import com.google.common.base.Joiner;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.slf4j.Logger;
@@ -90,11 +92,14 @@ public class IndexController {
             arg.setSourceUser(employeeInfo.getSourceUser());
             NUploadFileDirect.Result result = nFileStorageService.nUploadFileDirect(arg, employeeInfo.getEa());
             String npath = result.getFinalNPath();
-            return "redirect:/preview/bypath?path=" + npath + "&name=" + URLEncoder.encode(fileName, CharEncoding.UTF_8);
+            String ea = employeeInfo.getEa();
+            int employeeId = 10000;
+            String aes = AES256Utils.encode(Joiner.on(':').join(ea, employeeId, npath, "", System.currentTimeMillis()));
+            // return "redirect:/preview/bypath?path=" + npath + "&name=" + URLEncoder.encode(fileName, CharEncoding.UTF_8);
+            return "redirect:/preview/bysharetoken?shareToken=" + aes;
         } catch (Exception e) {
             throw e;
         }
-
     }
 
 }

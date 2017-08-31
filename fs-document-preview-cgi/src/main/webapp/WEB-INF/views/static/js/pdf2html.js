@@ -6,6 +6,7 @@ var loadedList = [];//用户已经滑动过的页码
 var pageLoadedList = [];//用户已经加载的页码
 var timeout = 100000;
 var width = parseInt(getQueryStringByName("width"));
+var sharetoken = getQueryStringByName("shareToken");
 var screenWidth = window.screen.width;//屏幕宽度
 var screenHeight = window.screen.height;//屏幕高度；
 var ua = navigator.userAgent;
@@ -91,7 +92,7 @@ function checkPageLoaded() {
 function loadData(i) {
   var htmlName = (i + 1) + ".html";
   if ($.inArray(htmlName, filePathList) >= 0) {
-    var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg + "&width="+width+"&ver=2.1";
+    var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg + "&width="+width+"&sharetoken="+sharetoken+"&ver=2.1";
     var iframeId = 'frame' + i;
     var divPageId = 'divPage' + i;
     var element = $('#' + divPageId);
@@ -122,13 +123,13 @@ function checkConvertStatus() {
 }
 
 function checkPdf2HtmlStatus() {
-  var url = window.contextPath + '/preview/checkPdf2HtmlStatus?path=' + path + "&sg=" + sg + "&width=" + width;
+  var url = window.contextPath + '/preview/checkPdf2HtmlStatus?path=' + path + "&sg=" + sg + "&width=" + width+"&sharetoken="+sharetoken;
   $.get(url);
 }
 
 function queryPdf2HtmlStatus() {
   var flag = false;//是否转换完毕
-  var url = window.contextPath + '/preview/queryPdf2HtmlStatus?path=' + path + "&sg=" + sg+"&width="+width;
+  var url = window.contextPath + '/preview/queryPdf2HtmlStatus?path=' + path + "&sg=" + sg+"&width="+width+"&sharetoken="+sharetoken;
   $.ajax({
     type: 'get',
     dataType: 'json',

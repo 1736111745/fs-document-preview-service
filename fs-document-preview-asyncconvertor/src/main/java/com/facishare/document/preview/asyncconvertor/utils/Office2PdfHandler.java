@@ -67,7 +67,7 @@ public class Office2PdfHandler {
         for (int i = 0; i < hasNotConvertPageList.size(); i++) {
           final int page = hasNotConvertPageList.get(i);
           executorService.submit(() -> {
-            boolean flag = false;
+            boolean flag;
             try {
               flag = officeApiHelper.convertOffice2Pdf(filePath, page);
               if (flag) {

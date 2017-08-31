@@ -3,6 +3,7 @@
  */
 var path = getQueryStringByName("path");
 var token = getQueryStringByName("token");
+var sharetoken = getQueryStringByName("shareToken");
 var pageCount = 0;
 var sg = "";//安全组
 var width = getQueryStringByName("width");
@@ -13,7 +14,7 @@ function getPreviewInfo() {
     type: 'get',
     dataType: 'json',
     async: false,
-    url: window.contextPath + '/preview/getPreviewInfo?path=' + path + '&token=' + token+"&width="+width,
+    url: window.contextPath + '/preview/getPreviewInfo?path=' + path + '&token=' + token + "&width=" + width+"&sharetoken="+sharetoken,
     success: function (data) {
       if (data.canPreview) {
         pageCount = data.pageCount;
@@ -40,7 +41,7 @@ function getPreviewInfo() {
 
 
 function doPreview() {
-  if (path.toLowerCase().indexOf("txt") >= 0 || path.toLowerCase().indexOf("csv") >= 0|| path.toLowerCase().indexOf("svg") >= 0) {
+  if (path.toLowerCase().indexOf("txt") >= 0 || path.toLowerCase().indexOf("csv") >= 0 || path.toLowerCase().indexOf("svg") >= 0) {
     doPreviewTxt();
   }
   else {
@@ -53,7 +54,7 @@ function doPreviewTxt() {
     type: 'get',
     dataType: 'json',
     async: false,
-    url: window.contextPath + '/preview/getTxtPreviewInfo?path=' + path + "&sg=" + sg,
+    url: window.contextPath + '/preview/getTxtPreviewInfo?path=' + path + "&sg=" + sg+"&sharetoken="+sharetoken,
     success: function (data) {
       var dirName = data.dirName;
       var fileName = data.fileName;
@@ -71,12 +72,50 @@ function doPreviewOffice() {
   else
     route = "pdf2html";
   console.log("route:" + route);
-  var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg + "&width=" + width + "&rnd=1.0.1";
+  var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg + "&width=" + width +"&sharetoken="+sharetoken+ "&rnd=1.0.1";
   location.href = url;
 }
+
+function checkShareToken() {
+  if (sharetoken != "") {
+    $.ajax({
+      type: 'get',
+      dataType: 'json',
+      async: false,
+      url: window.contextPath + '/share/preview/parseShareToken?shareToken=' + sharetoken,
+      success: function (d) {
+        if (d.success) {
+          path = d.data.path;
+          sg = d.data.securityGroup;
+          getPreviewInfo();
+        }
+        else {
+          var errorMsg = "参数错误";
+          $("#msg").html(errorMsg);
+          var damageImage = window.contextPath + "/static/images/damage.png";
+          $('#imgIcon').attr("src", damageImage);
+          $("#main").show();
+        }
+      }
+    });
+  }
+  else {
+    var errorMsg = "参数错误";
+    $("#msg").html(errorMsg);
+    var damageImage = window.contextPath + "/static/images/damage.png";
+    $('#imgIcon').attr("src", damageImage);
+    $("#main").show();
+  }
+}
+
 
 //入口
 $(document).ready(function () {
   $("#main").hide();
-  getPreviewInfo();
+  if (location.href.indexOf("bysharetoken") > -1) {
+    checkShareToken();
+  }
+  else {
+    getPreviewInfo();
+  }
 });

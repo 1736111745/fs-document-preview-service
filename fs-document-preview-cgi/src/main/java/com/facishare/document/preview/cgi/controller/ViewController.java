@@ -29,6 +29,11 @@ public class ViewController {
     return "preview";
   }
 
+  @RequestMapping(value = "/preview/bysharetoken", method = RequestMethod.GET)
+  public String previewByShareToken() {
+    return "preview";
+  }
+
   @RequestMapping(value = {"/preview/excel2html", "/preview/handleExcel"}, method = RequestMethod.GET)
   public String handleExcel() {
     return "excel2html";

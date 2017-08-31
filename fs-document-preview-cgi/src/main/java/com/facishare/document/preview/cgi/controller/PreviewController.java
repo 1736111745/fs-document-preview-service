@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.facishare.document.preview.cgi.model.DocPageResult;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfoEx;
+import com.facishare.document.preview.cgi.model.ShareTokenParamInfo;
 import com.facishare.document.preview.cgi.service.training.PreviewService;
 import com.facishare.document.preview.cgi.utils.*;
 import com.facishare.document.preview.common.dao.FileTokenDao;
@@ -116,6 +117,8 @@ public class PreviewController {
       return ResponseJsonHelper.getPreviewInfoResult(errMsg);
     }
   }
+
+
 
   @RequestMapping(value = "/preview/getFilePath")
   public void getFilePath(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -343,6 +346,31 @@ public class PreviewController {
     } catch (Exception e) {
       return "";
     }
+  }
+  @ResponseBody
+  @RequestMapping(value = "/share/preview/parseShareToken", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+  public String parseShareToken(HttpServletRequest request) throws Exception {
+    String shareToken = UrlParametersHelper.safeGetRequestParameter(request, "shareToken");
+    Map<String, Object> map = new HashMap<>();
+    if(Strings.isNullOrEmpty(shareToken))
+    {
+      map.put("success", false);
+      map.put("errorMsg", "参数错误!");
+    }
+    else {
+      ShareTokenParamInfo shareTokenParamInfo = ShareTokenUtil.convertToken2ParamInfo(shareToken);
+      if(shareTokenParamInfo!=null)
+      {
+        map.put("success", true);
+        map.put("data",shareTokenParamInfo);
+      }
+      else
+      {
+        map.put("success", false);
+        map.put("errorMsg", "参数错误!");
+      }
+    }
+    return JSONObject.toJSONString(map);
   }
 }
 

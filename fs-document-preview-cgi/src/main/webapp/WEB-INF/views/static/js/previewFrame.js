@@ -5,20 +5,44 @@ var sg = getQueryStringByName("sg");
 var pageCount = getQueryStringByName("pageCount");
 var path = getQueryStringByName("path");
 var page = getQueryStringByName("page");
-
+var screenWidth = window.screen.width;//屏幕宽度
+var screenHeight = window.screen.height;//屏幕高度；
+var ua = navigator.userAgent;
+var isIOS = /iphone|ipod|ipad/ig.test(ua);
 $(function () {
   loadViewPort();
   loadData(page);
-  $(window).resize(function () {
-    loadViewPort();
-  });
+  window.addEventListener("orientationchange", function () {
+    //alert("isIOS:"+isIOS);
+    if (isIOS) {
+      if (window.orientation != 0) {//横屏 宽度取大的值
+        screenWidth = Math.max(window.screen.width, window.screen.height);
+        screenHeight = Math.min(window.screen.width, window.screen.height);
+      }
+      else {//竖屏 宽度取晓得值
+        screenWidth = Math.min(window.screen.width, window.screen.height);
+        screenHeight = Math.max(window.screen.width, window.screen.height);
+      }
+    }
+    else {
+      screenWidth = $(window).width();
+      screenHeight = $(window).height();
+    }
+    window.setTimeout(function () {
+      loadViewPort();
+    },200);
+  }, true);
 })
 
+
 function loadViewPort() {
-  var docWidth = $(window).width();
-  var scale = docWidth * 1 / 1000;
+  //alert("width:"+width+",screenWidth:"+screenWidth);
+  var scale = screenWidth * 0.99 / width;
+  //alert("w:" + screenWidth + "/h:" + screenHeight + "/" + scale);
   var viewport = document.querySelector("meta[name=viewport]");
-  viewport.setAttribute('content', 'initial-scale=' + scale + ', width=' + docWidth + 'px');
+  viewport.content = 'width=' + screenWidth + ',initial-scale=' + scale;
+  //alert(document.querySelector("meta[name=viewport]").getAttribute('content'));
+
 }
 
 

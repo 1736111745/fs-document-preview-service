@@ -108,7 +108,7 @@ function loadData(i) {
 
 function resize(obj) {
   var height = $(obj.contentWindow.document).find("div[id='page-container']").height()
-  $(obj).height(height + 20);
+  $(obj).height(height);
   $(obj.parentElement).removeClass("lazy");
 }
 

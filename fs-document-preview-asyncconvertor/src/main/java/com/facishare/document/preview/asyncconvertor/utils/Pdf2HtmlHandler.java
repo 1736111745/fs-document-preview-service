@@ -72,6 +72,7 @@ public class Pdf2HtmlHandler {
       Future<ProcessResult> future = startedProcess.getFuture();
       ProcessResult result = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
       if (result.getExitValue() == 0) {
+        log.info("pdf2html finished,begin handle result!");
         dataFilePath = handleResult(page, filePath, outPutDir, type);
       } else {
         log.error("do convert fail!exit value:{}", result.getExitValue());
@@ -302,14 +303,6 @@ public class Pdf2HtmlHandler {
     } finally {
       FileUtils.deleteQuietly(new File(outPutDir));
     }
-  }
-
-  public static void main(String[] args) throws Exception {
-    String filePath = "/Users/liuq/Downloads/hvpqm7ty.pptx";
-    String pdfFilePath = filePath + ".pdf";
-    Presentation document = new Presentation(filePath);
-    document.save(pdfFilePath, SaveFormat.Pdf);
-
   }
 
   public boolean doThumbnail(byte[] data, int toWidth, int toHeight, File thumbPngFile) {

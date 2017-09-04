@@ -37,7 +37,7 @@ $(function () {
 
 function loadViewPort() {
   //alert("width:"+width+",screenWidth:"+screenWidth);
-  var scale = screenWidth * 0.99 / width;
+  var scale = screenWidth * 0.99 / 1000;
   //alert("w:" + screenWidth + "/h:" + screenHeight + "/" + scale);
   var viewport = document.querySelector("meta[name=viewport]");
   viewport.content = 'width=' + screenWidth + ',initial-scale=' + scale;

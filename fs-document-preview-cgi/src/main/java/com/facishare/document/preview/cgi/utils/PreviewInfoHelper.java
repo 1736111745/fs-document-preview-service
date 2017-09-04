@@ -57,45 +57,52 @@ public class PreviewInfoHelper {
         log.info("preview info is null!path:{}", npath);
         byte[] bytes = fileStorageProxy.GetBytesByPath(npath, ea, employeeId, securityGroup);
         if (bytes != null && bytes.length > 0) {
-          if (bytes.length > 1024 * 1024 * 100) {
+          if(extension.contains("xls")&&bytes.length > 1024 * 1024 * 20) {
             previewInfoEx.setSuccess(false);
             previewInfoEx.setPreviewInfo(null);
-            previewInfoEx.setErrorMsg("当前文件大于100M，不支持预览！");
-          } else {
-            String dataDir = new PathHelper(ea).getDataDir();
-            String fileName = SampleUUID.getUUID() + "." + extension;
-            String filePath = FilenameUtils.concat(dataDir, fileName);
-            FileUtils.writeByteArrayToFile(new File(filePath), bytes);
-            log.info("save file to {},npath:{}", filePath, npath);
-            if (extension.equals("txt") || extension.equals("csv") || extension.equals("svg")) {
-              pageInfo.setSuccess(true);
-              pageInfo.setPageCount(1);
-            } else {
-              //旧版本office格式e转换为新版本office格式
-              if (extension.equals("xls") || extension.equals("doc") || extension.equals("ppt")) {
-                ConvertOldOfficeVersionResult result = officeApiHelper.convertFile(filePath);
-                if (result != null && result.isSuccess()) {
-                  filePath = result.getNewFilePath();
-                }
-              }
-              pageInfo = officeApiHelper.getPageInfo(npath, filePath);
-            }
-            if (pageInfo.getPageCount() > 500) {
+            previewInfoEx.setErrorMsg("excel文件大于20M，不支持预览！");
+          }
+          else {
+            if (bytes.length > 1024 * 1024 * 100) {
               previewInfoEx.setSuccess(false);
               previewInfoEx.setPreviewInfo(null);
-              previewInfoEx.setErrorMsg("当前文件页码数超过500页，不支持预览！");
+              previewInfoEx.setErrorMsg("当前文件大于100M，不支持预览！");
             } else {
-              if (pageInfo.isSuccess()) {
-                pageCount = pageInfo.getPageCount();
-                sheetNames = pageInfo.getSheetNames();
-                previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, npath, filePath, dataDir, bytes.length, pageCount, pageInfo
-                  .getDirection(), sheetNames, width);
-                previewInfoEx.setSuccess(true);
-                previewInfoEx.setPreviewInfo(previewInfo);
+              String dataDir = new PathHelper(ea).getDataDir();
+              String fileName = SampleUUID.getUUID() + "." + extension;
+              String filePath = FilenameUtils.concat(dataDir, fileName);
+              FileUtils.writeByteArrayToFile(new File(filePath), bytes);
+              log.info("save file to {},npath:{}", filePath, npath);
+              if (extension.equals("txt") || extension.equals("csv") || extension.equals("svg")) {
+                pageInfo.setSuccess(true);
+                pageInfo.setPageCount(1);
               } else {
+                //旧版本office格式e转换为新版本office格式
+                if (extension.equals("xls") || extension.equals("doc") || extension.equals("ppt")) {
+                  ConvertOldOfficeVersionResult result = officeApiHelper.convertFile(filePath);
+                  if (result != null && result.isSuccess()) {
+                    filePath = result.getNewFilePath();
+                  }
+                }
+                pageInfo = officeApiHelper.getPageInfo(npath, filePath);
+              }
+              if (pageInfo.getPageCount() > 500) {
                 previewInfoEx.setSuccess(false);
                 previewInfoEx.setPreviewInfo(null);
-                previewInfoEx.setErrorMsg(pageInfo.getErrorMsg());
+                previewInfoEx.setErrorMsg("当前文件页码数超过500页，不支持预览！");
+              } else {
+                if (pageInfo.isSuccess()) {
+                  pageCount = pageInfo.getPageCount();
+                  sheetNames = pageInfo.getSheetNames();
+                  previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, npath, filePath, dataDir, bytes.length, pageCount, pageInfo
+                    .getDirection(), sheetNames, width);
+                  previewInfoEx.setSuccess(true);
+                  previewInfoEx.setPreviewInfo(previewInfo);
+                } else {
+                  previewInfoEx.setSuccess(false);
+                  previewInfoEx.setPreviewInfo(null);
+                  previewInfoEx.setErrorMsg(pageInfo.getErrorMsg());
+                }
               }
             }
           }

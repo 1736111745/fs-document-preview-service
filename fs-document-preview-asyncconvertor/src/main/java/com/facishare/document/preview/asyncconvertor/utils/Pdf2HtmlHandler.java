@@ -1,7 +1,5 @@
 package com.facishare.document.preview.asyncconvertor.utils;
 
-import com.aspose.slides.Presentation;
-import com.aspose.slides.SaveFormat;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.fxiaoke.common.http.handler.SyncCallback;
 import com.fxiaoke.common.http.spring.OkHttpSupport;
@@ -16,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.http.HeaderIterator;
 import org.springframework.stereotype.Component;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;

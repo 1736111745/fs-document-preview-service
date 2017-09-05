@@ -9,6 +9,7 @@ var screenWidth = window.screen.width;//屏幕宽度
 var screenHeight = window.screen.height;//屏幕高度；
 var ua = navigator.userAgent;
 var isIOS = /iphone|ipod|ipad/ig.test(ua);
+var width=1000;
 $(function () {
   loadViewPort();
   loadData(page);
@@ -37,7 +38,7 @@ $(function () {
 
 function loadViewPort() {
   //alert("width:"+width+",screenWidth:"+screenWidth);
-  var scale = screenWidth * 0.99 / 1000;
+  var scale = screenWidth * 0.99 / width;
   //alert("w:" + screenWidth + "/h:" + screenHeight + "/" + scale);
   var viewport = document.querySelector("meta[name=viewport]");
   viewport.content = 'width=' + screenWidth + ',initial-scale=' + scale;
@@ -47,7 +48,7 @@ function loadViewPort() {
 
 
 function loadData(i) {
-  var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg + "&ver=2.1";
+  var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&width="+width+"&sg=" + sg + "&ver=2.1";
   var iframe = "<iframe id='framePage' src='" + url + "' onload='resize(this)' onresize='resize(this)' scrolling='no' frameborder='0' width='100%'></iframe>";
   $('#main').html(iframe);
 }

@@ -27,6 +27,9 @@ public class ConvertOffice2PdfEnqueueUtil {
   ConvertorQueueProvider convertorQueueProvider;
 
   public void enqueue(String ea, String path, int width) {
+    if(width==0) {
+      width = 1000;
+    }
     log.info("enqueue args,ea:{},path:{},width:{}", ea, path, width);
     PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path, width);
     log.info("previewInfo:{}", previewInfo);

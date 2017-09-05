@@ -40,16 +40,6 @@
       /*-ms-transform: translateX(-50%) translateY(-50%);*/
       /*transform: translateX(-50%) translateY(-50%);*/
     /*}*/
-
-    @viewport {
-      zoom: 1.0;
-      width: 1000px;
-    }
-
-    @-ms-viewport {
-      width: 1000px;
-      zoom: 1.0;
-    }
   </style>
   <title>文档预览</title>
 </head>

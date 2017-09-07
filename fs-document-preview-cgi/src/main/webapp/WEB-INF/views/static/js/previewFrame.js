@@ -42,7 +42,7 @@ function loadViewPort() {
   var scale = 1.0;
   if (screenHeight < screenWidth) { //横屏
     if (height > screenHeight) {
-      scale = screenHeight * 0.98 * screenWidth / width * height;
+      scale = screenHeight * 0.98 * screenWidth / (width * height);
     }
     else {
       scale = screenWidth * 0.98 / width;

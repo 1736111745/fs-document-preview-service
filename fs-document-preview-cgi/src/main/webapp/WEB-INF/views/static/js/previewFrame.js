@@ -12,46 +12,54 @@ var isIOS = /iphone|ipod|ipad/ig.test(ua);
 var width = 1000;
 $(function () {
   loadData(page);
+  if (window.orientation != 0) {//横屏 宽度取大的值
+    screenWidth = Math.max(window.screen.width, window.screen.height);
+    screenHeight = Math.min(window.screen.width, window.screen.height);
+  }
+  else {//竖屏 宽度取晓得值
+    screenWidth = Math.min(window.screen.width, window.screen.height);
+    screenHeight = Math.max(window.screen.width, window.screen.height);
+  }
   window.addEventListener("orientationchange", function () {
+    //alert("isIOS:"+isIOS);
+    if (isIOS) {
+      if (window.orientation != 0) {//横屏 宽度取大的值
+        screenWidth = Math.max(window.screen.width, window.screen.height);
+        screenHeight = Math.min(window.screen.width, window.screen.height);
+      }
+      else {//竖屏 宽度取晓得值
+        screenWidth = Math.min(window.screen.width, window.screen.height);
+        screenHeight = Math.max(window.screen.width, window.screen.height);
+      }
+    }
+    else {
+      screenWidth = $(window).width();
+      screenHeight = $(window).height();
+    }
     window.setTimeout(function () {
       loadViewPort();
     }, 200);
   }, true);
-})
-
-function getScreenSize() {
-  if (isIOS) {
-    if (window.orientation != 0) {//横屏 宽度取大的值
-      screenWidth = Math.max(window.screen.availWidth, window.screen.availHeight);
-      screenHeight = Math.min(window.screen.availWidth, window.screen.availHeight);
-    }
-    else {//竖屏 宽度取小得值
-      screenWidth = Math.min(window.screen.availWidth, window.screen.availHeight);
-      screenHeight = Math.max(window.screen.availWidth, window.screen.availHeight);
-    }
-  }
-  else {
-    screenWidth = $(window).width();
-    screenHeight = $(window).height();
-  }
-}
+});
 
 function loadViewPort() {
-  getScreenSize();
-  var height= $("#framePage").height();
+  var deviceWidth = screenWidth;
+  var height = $("#framePage").height();
   var scale = 1.0;
-  if (screenHeight < screenWidth) { //横屏
+  if (window.orientation != 0) { //横屏
     if (height > screenHeight) {
-      scale = screenHeight * 0.98 * screenWidth / (width * height);
+      scale = screenHeight * 0.98 / height;
+      deviceWidth = scale * width / 0.98;
     }
     else {
       scale = screenWidth * 0.98 / width;
+      deviceWidth = screenWidth;
     }
   }
   else
     scale = screenWidth * 0.98 / width;
   var viewport = document.querySelector("meta[name=viewport]");
-  viewport.content = 'width=' + screenWidth + ',initial-scale=' + scale;
+  viewport.content = 'width=' + deviceWidth + ',initial-scale=' + scale;
 
 }
 

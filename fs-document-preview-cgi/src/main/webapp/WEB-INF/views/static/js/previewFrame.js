@@ -14,35 +14,49 @@ $(function () {
   loadData(page);
   loadViewPort();
   window.addEventListener("orientationchange", function () {
-    //alert("isIOS:"+isIOS);
-    if (isIOS) {
-      if (window.orientation != 0) {//横屏 宽度取大的值
-        screenWidth = Math.max(window.screen.availWidth, window.screen.availHeight);
-        screenHeight = Math.min(window.screen.availWidth, window.screen.availHeight);
-      }
-      else {//竖屏 宽度取小得值
-        screenWidth = Math.min(window.screen.availWidth, window.screen.availHeight);
-        screenHeight = Math.max(window.screen.availWidth, window.screen.availHeight);
-      }
-    }
-    else {
-      screenWidth = $(window).width();
-      screenHeight = $(window).height();
-    }
     window.setTimeout(function () {
       loadViewPort();
     }, 200);
   }, true);
 })
 
+function getScreenSize() {
+  if (isIOS) {
+    if (window.orientation != 0) {//横屏 宽度取大的值
+      screenWidth = Math.max(window.screen.availWidth, window.screen.availHeight);
+      screenHeight = Math.min(window.screen.availWidth, window.screen.availHeight);
+    }
+    else {//竖屏 宽度取小得值
+      screenWidth = Math.min(window.screen.availWidth, window.screen.availHeight);
+      screenHeight = Math.max(window.screen.availWidth, window.screen.availHeight);
+    }
+  }
+  else {
+    screenWidth = $(window).width();
+    screenHeight = $(window).height();
+  }
+}
 
 function loadViewPort() {
+  getScreenSize();
+  var obj = $("#framePage");
   //alert("width:"+width+",screenWidth:"+screenWidth);
-  var scale = screenWidth * 0.99 / width;
-  //alert("w:" + screenWidth + "/h:" + screenHeight + "/" + scale);
+  var height = $(obj.contentWindow.document).find("div[id='page-container']").height()
+  console.log("iframe height:" + height);
+  var scale = 1.0;
+  if (screenHeight < screenWidth) { //横屏
+    if (height > screenHeight) {
+      scale = screenHeight * 0.98 * screenWidth / width * height;
+    }
+    else {
+      scale = screenWidth * 0.98 / width;
+    }
+  }
+  else
+    scale = screenWidth * 0.98 / width;
+
   var viewport = document.querySelector("meta[name=viewport]");
   viewport.content = 'width=' + screenWidth + ',initial-scale=' + scale;
-  //alert(document.querySelector("meta[name=viewport]").getAttribute('content'));
 
 }
 
@@ -55,6 +69,6 @@ function loadData(i) {
 
 function resize(obj) {
   var height = $(obj.contentWindow.document).find("div[id='page-container']").height()
-  $(obj).height(height + 20);
+  $(obj).height(height);
   $(obj.parentElement).removeClass("lazy");
 }

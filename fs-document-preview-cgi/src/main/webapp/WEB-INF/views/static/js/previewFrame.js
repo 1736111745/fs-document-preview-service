@@ -48,8 +48,8 @@ function loadViewPort() {
   var scale = 1.0;
   if (window.orientation != 0) { //横屏
     if (height > screenHeight) {
-      scale = screenHeight * 0.98 / height;
-      deviceWidth = scale * width / 0.98;
+      deviceWidth = width * screenHeight / height;
+      scale = deviceWidth * 0.98 / width;
     }
     else {
       scale = screenWidth * 0.98 / width;
@@ -60,7 +60,6 @@ function loadViewPort() {
     scale = screenWidth * 0.98 / width;
   var viewport = document.querySelector("meta[name=viewport]");
   viewport.content = 'width=' + deviceWidth + ',initial-scale=' + scale;
-
 }
 
 

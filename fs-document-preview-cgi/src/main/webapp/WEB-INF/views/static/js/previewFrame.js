@@ -11,8 +11,8 @@ var ua = navigator.userAgent;
 var isIOS = /iphone|ipod|ipad/ig.test(ua);
 var width=1000;
 $(function () {
-  loadViewPort();
   loadData(page);
+  loadViewPort();
   window.addEventListener("orientationchange", function () {
     //alert("isIOS:"+isIOS);
     if (isIOS) {
@@ -20,7 +20,7 @@ $(function () {
         screenWidth = Math.max(window.screen.width, window.screen.height);
         screenHeight = Math.min(window.screen.width, window.screen.height);
       }
-      else {//竖屏 宽度取晓得值
+      else {//竖屏 宽度取小得值
         screenWidth = Math.min(window.screen.width, window.screen.height);
         screenHeight = Math.max(window.screen.width, window.screen.height);
       }

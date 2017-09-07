@@ -182,8 +182,8 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
   @Override
   public PreviewInfo getInfoByPath(String ea, String path, int width) {
     Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
-    log.info("query:{}", query);
     createQuery(query, ea, path, width);
+    log.info("query:{}", query);
     return query.get();
   }
 

@@ -12,7 +12,6 @@ var isIOS = /iphone|ipod|ipad/ig.test(ua);
 var width = 1000;
 $(function () {
   loadData(page);
-  loadViewPort();
   window.addEventListener("orientationchange", function () {
     window.setTimeout(function () {
       loadViewPort();
@@ -39,10 +38,7 @@ function getScreenSize() {
 
 function loadViewPort() {
   getScreenSize();
-  var obj = $("#framePage");
-  //alert("width:"+width+",screenWidth:"+screenWidth);
-  var height = $(obj.contentWindow.document).find("div[id='page-container']").height()
-  console.log("iframe height:" + height);
+  var height= $("#framePage").height();
   var scale = 1.0;
   if (screenHeight < screenWidth) { //横屏
     if (height > screenHeight) {
@@ -54,7 +50,6 @@ function loadViewPort() {
   }
   else
     scale = screenWidth * 0.98 / width;
-
   var viewport = document.querySelector("meta[name=viewport]");
   viewport.content = 'width=' + screenWidth + ',initial-scale=' + scale;
 
@@ -71,4 +66,5 @@ function resize(obj) {
   var height = $(obj.contentWindow.document).find("div[id='page-container']").height()
   $(obj).height(height);
   $(obj.parentElement).removeClass("lazy");
+  loadViewPort();
 }

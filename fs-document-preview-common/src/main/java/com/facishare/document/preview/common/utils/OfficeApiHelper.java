@@ -92,32 +92,11 @@ public class OfficeApiHelper {
             return convertResult.isSuccess();
         } else {
             byte[] bytes = (byte[]) obj;
-            //zip的数据流，解压缩到文件夹
-            String zipFileFullName = filePath + ".zip";
-            File zipFile = new File(zipFileFullName);
-            FileUtils.writeByteArrayToFile(zipFile, bytes);
-            String outPutDirPath = FilenameUtils.concat(zipFile.getParent(), SampleUUID.getUUID());
-            File outPutDir = new File(outPutDirPath);
-            ZipUtil.unpack(zipFile, outPutDir);
-            String[] files = outPutDir.list();
-            for (int i = 0; i < files.length; i++) {
-                String tmpFile = files[i];
-                if (tmpFile.contains("\\")) {
-                    String[] array = tmpFile.split("\\\\");
-                    String folder = array[0];
-                    File targetFolder = new File(FilenameUtils.concat(zipFile.getParent(), folder));
-                    if (!targetFolder.exists()) {
-                        targetFolder.mkdir();
-                    }
-                    String file = array[1];
-                    File targetFile = new File(FilenameUtils.concat(targetFolder.getAbsolutePath(), file));
-                    FileUtils.moveFile(new File(outPutDirPath+"/"+tmpFile), targetFile);
-                } else {
-                    FileUtils.moveFileToDirectory(new File(FilenameUtils.concat(outPutDirPath,tmpFile)), new File(zipFile.getParent()), true);
-                }
-            }
-            //FileUtils.deleteQuietly(outPutDir);
-            //FileUtils.deleteQuietly(zipFile);
+            File file = new File(filePath);
+            String dir = file.getParent();
+            String htmlFileName = page + ".html";
+            File htmlFile = new File(FilenameUtils.concat(dir, htmlFileName));
+            FileUtils.writeByteArrayToFile(htmlFile, bytes);
             return true;
         }
     }

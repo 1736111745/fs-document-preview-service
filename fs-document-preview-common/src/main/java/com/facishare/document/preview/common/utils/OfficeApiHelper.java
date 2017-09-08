@@ -116,8 +116,8 @@ public class OfficeApiHelper {
                     FileUtils.moveFileToDirectory(new File(FilenameUtils.concat(outPutDirPath,tmpFile)), new File(zipFile.getParent()), true);
                 }
             }
-            FileUtils.deleteQuietly(outPutDir);
-            FileUtils.deleteQuietly(zipFile);
+            //FileUtils.deleteQuietly(outPutDir);
+            //FileUtils.deleteQuietly(zipFile);
             return true;
         }
     }

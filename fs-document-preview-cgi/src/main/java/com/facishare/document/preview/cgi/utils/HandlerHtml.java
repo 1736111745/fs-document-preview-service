@@ -33,29 +33,15 @@ public class HandlerHtml {
       }
       Document document = Jsoup.parse(htmlFile, encoding);
       Element body = document.body();
-      String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
-      String dirName = FilenameUtils.getName(baseDir);
-      String imageDirName = page + "_files";
-      String imageDir = FilenameUtils.concat(baseDir, imageDirName);
+      Elements links = document.head().getElementsByTag("link");
+      links.remove();
       Elements images = body.getElementsByTag("img");
       for (int i = 0; i < images.size(); i++) {
         Element image = images.get(i);
-        String src = image.attr("src");
         if (imageNeedRemove(image)) {
           image.remove();
-        } else {
-          String imageFilePath = FilenameUtils.concat(baseDir, src);
-          String imageName = FilenameUtils.getName(imageFilePath);
-          String newImageName = page + "-" + imageName;
-          String newImageFilPath = FilenameUtils.concat(baseDir, newImageName);
-          File imageFile = new File(imageFilePath);
-          if (imageFile.exists()) {
-            FileUtils.moveFile(new File(imageFilePath), new File(newImageFilPath));
-          }
-          image.attr("src", "./" + dirName + "/" + newImageName);
         }
       }
-      FileUtils.deleteQuietly(new File(imageDir));
       FileUtils.writeByteArrayToFile(htmlFile, document.html().getBytes(encoding), false);
     } catch (Exception e) {
       log.info("handle html happened error!", e);

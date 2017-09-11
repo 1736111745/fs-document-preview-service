@@ -27,7 +27,7 @@ $(function () {
         screenWidth = Math.max(window.screen.width, window.screen.height);
         screenHeight = Math.min(window.screen.width, window.screen.height);
       }
-      else {//竖屏 宽度取晓得值
+      else {//竖屏 宽度取小得值
         screenWidth = Math.min(window.screen.width, window.screen.height);
         screenHeight = Math.max(window.screen.width, window.screen.height);
       }
@@ -46,18 +46,18 @@ function loadViewPort() {
   var deviceWidth = screenWidth;
   var height = $("#framePage").height();
   var scale = 1.0;
-  if (window.orientation != 0) { //横屏
+  if (window.orientation != 0 && path.toLowerCase().indexOf("ppt") >= 0) { //横屏
     if (height > screenHeight) {
       deviceWidth = width * screenHeight / height;
-      scale = deviceWidth * 0.98 / width;
+      scale = deviceWidth * 0.96 / width;
     }
     else {
-      scale = screenWidth * 0.98 / width;
+      scale = screenWidth * 0.96 / width;
       deviceWidth = screenWidth;
     }
   }
   else
-    scale = screenWidth * 0.98 / width;
+    scale = screenWidth * 0.96 / width;
   var viewport = document.querySelector("meta[name=viewport]");
   viewport.content = 'width=' + deviceWidth + ',initial-scale=' + scale;
 }

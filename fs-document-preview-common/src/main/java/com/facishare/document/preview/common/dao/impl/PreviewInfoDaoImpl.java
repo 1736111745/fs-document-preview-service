@@ -36,14 +36,14 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
   public void savePreviewInfo(String ea, String path, String dataFilePath, int width) {
     String dataFileName = FilenameUtils.getName(dataFilePath);
     Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
-    createQuery(query,ea,path,width);
+    query=createQuery(query, ea, path, width);
     UpdateOperations<PreviewInfo> update = dpsDataStore.createUpdateOperations(PreviewInfo.class);
     update.add("filePathList", dataFileName);
     dpsDataStore.findAndModify(query, update);
   }
 
 
-  private void createQuery(Query<PreviewInfo> query,String ea,String path,int width)
+  private Query<PreviewInfo> createQuery(Query<PreviewInfo> query,String ea,String path,int width)
   {
     if (width == 1000) {
       if (path.startsWith("A_")) {
@@ -62,6 +62,8 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         query.and(query.criteria("path").equal(path).criteria("ea").equal(ea)).and(query.or(query.criteria("width").equal(width)));
       }
     }
+    log.info("query:{}", query);
+    return query;
   }
 
 
@@ -168,8 +170,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
   @Override
   public PreviewInfo getInfoByPath(String ea, String path, int width) {
     Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
-    createQuery(query, ea, path, width);
-    log.info("query:{}", query);
+    query=createQuery(query, ea, path, width);
     return query.get();
   }
 

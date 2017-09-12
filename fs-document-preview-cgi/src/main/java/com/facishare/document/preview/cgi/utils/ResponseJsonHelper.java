@@ -14,14 +14,13 @@ import java.util.Map;
  */
 @UtilityClass
 public class ResponseJsonHelper {
-  public String getPreviewInfoResult(int pageCount, List<String> sheetNames, String path, String securityGroup,int direction) {
+  public String getPreviewInfoResult(int pageCount, List<String> sheetNames, String path, String securityGroup) {
     Map<String, Object> map = new HashMap<>();
     map.put("canPreview", true);
     map.put("pageCount", pageCount);
     map.put("path", path);
     map.put("sg", securityGroup);
     map.put("sheets", sheetNames);
-    map.put("direction",direction);
     return JSONObject.toJSONString(map);
   }
 

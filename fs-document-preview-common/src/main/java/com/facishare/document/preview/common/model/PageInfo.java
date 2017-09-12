@@ -10,6 +10,5 @@ public class PageInfo {
     private String errorMsg;
     private int pageCount;
     private List<String> sheetNames;
-    private int direction;
 
 }

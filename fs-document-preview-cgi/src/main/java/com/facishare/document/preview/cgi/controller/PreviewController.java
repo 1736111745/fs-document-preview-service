@@ -110,7 +110,7 @@ public class PreviewController {
       if (previewInfo == null || previewInfo.getPageCount() == 0) {
         return ResponseJsonHelper.getPreviewInfoResult(defaultErrMsg);
       } else {
-        return ResponseJsonHelper.getPreviewInfoResult(previewInfo.getPageCount(), previewInfo.getSheetNames(), path, securityGroup,previewInfo.getDirection());
+        return ResponseJsonHelper.getPreviewInfoResult(previewInfo.getPageCount(), previewInfo.getSheetNames(), path, securityGroup);
       }
     } else {
       String errMsg = Strings.isNullOrEmpty(previewInfoEx.getErrorMsg()) ? defaultErrMsg : previewInfoEx.getErrorMsg();

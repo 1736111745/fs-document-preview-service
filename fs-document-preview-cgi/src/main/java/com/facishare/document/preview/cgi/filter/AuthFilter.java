@@ -50,6 +50,7 @@ public class AuthFilter extends OncePerRequestFilter {
       ShareTokenParamInfo shareTokenParamInfo;
       if (!Strings.isNullOrEmpty(shareToken)) {
         shareTokenParamInfo = ShareTokenUtil.convertToken2ParamInfo(shareToken);
+        log.info("find shareToken arg,convertToken2ParamInfo result:{}",shareTokenParamInfo);
         if (shareTokenParamInfo != null) {
           employeeInfo=new EmployeeInfo();
           employeeInfo.setEa(shareTokenParamInfo.getEa());

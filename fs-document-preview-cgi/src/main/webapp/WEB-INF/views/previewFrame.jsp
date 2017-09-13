@@ -27,8 +27,8 @@
       text-align: center;
       width: 1000px;
       margin: 5px auto;
-      background-color: #ffffff;
-      box-shadow: 0 2px 14px 0 rgba(0, 0, 0, 0.15);
+      /*background-color: #ffffff;*/
+      /*box-shadow: 0 2px 14px 0 rgba(0, 0, 0, 0.15);*/
     }
   </style>
   <title>文档预览</title>

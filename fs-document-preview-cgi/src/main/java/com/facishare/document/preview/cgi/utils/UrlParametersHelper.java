@@ -20,9 +20,9 @@ public class UrlParametersHelper {
     String result = "";
     Enumeration<String> params = request.getParameterNames();
     while (params.hasMoreElements()) {
-      String value = params.nextElement();
-      if (paramName.equalsIgnoreCase(value)) {
-        result = value;
+      String key = params.nextElement();
+      if (paramName.equalsIgnoreCase(key)) {
+        result = request.getParameter(key);
         break;
       }
     }

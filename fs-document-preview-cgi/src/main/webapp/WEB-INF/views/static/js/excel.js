@@ -5,12 +5,13 @@ var page = getQueryStringByName("page");
 var pageCount = getQueryStringByName("pageCount");
 var path = getQueryStringByName("path");
 var sg = getQueryStringByName("sg");
+var sharetoken = getQueryStringByName("shareToken");
 function loadSheetNames() {
     $.ajax({
         type: 'get',
         dataType: 'json',
         async: false,
-        url: window.contextPath + '/preview/getSheetNames?path=' + path+"&sg="+sg,
+        url: window.contextPath + '/preview/getSheetNames?path=' + path+"&sg="+sg+"&sharetoken="+sharetoken,
         success: function (data) {
             if (data.success) {
                 var sheets = data.sheets;
@@ -48,7 +49,7 @@ function loadSheet(i) {
         timeout: 1800000,
         dataType: 'json',
         async: true,
-        url: window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg+"&ver=2.0",
+        url: window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg+"&sharetoken="+sharetoken+"&ver=2.0",
         beforeSend: function () {
             $('#divLoading').show();
         },

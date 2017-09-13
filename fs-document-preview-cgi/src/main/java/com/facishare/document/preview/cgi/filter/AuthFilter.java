@@ -40,7 +40,7 @@ public class AuthFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request,
                                   HttpServletResponse response,
                                   FilterChain filterChain) throws ServletException, IOException {
-    request.setAttribute("sv", "v5.3.2");
+    request.setAttribute("sv", "v5.3.3");
     String requestUri = request.getRequestURI().toLowerCase();
     if (ignoreAuth(request)) {
       filterChain.doFilter(request, response);
@@ -50,7 +50,7 @@ public class AuthFilter extends OncePerRequestFilter {
       ShareTokenParamInfo shareTokenParamInfo;
       if (!Strings.isNullOrEmpty(shareToken)) {
         shareTokenParamInfo = ShareTokenUtil.convertToken2ParamInfo(shareToken);
-        log.info("find shareToken arg,convertToken2ParamInfo result:{}",shareTokenParamInfo);
+        log.info("find shareToken arg:{},convertToken2ParamInfo result:{}",shareTokenParamInfo);
         if (shareTokenParamInfo != null) {
           employeeInfo=new EmployeeInfo();
           employeeInfo.setEa(shareTokenParamInfo.getEa());

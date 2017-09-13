@@ -33,7 +33,7 @@
   </style>
   <title>文档预览</title>
 </head>
-<body style="background-color: #ccc">
+<body>
 <div id="main" class="border">
 </div>
 </body>

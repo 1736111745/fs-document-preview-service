@@ -3,6 +3,7 @@ package com.facishare.document.preview.cgi.utils;
 import com.google.common.base.Strings;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
 
 /**
  * Created by liuq on 2017/4/6.
@@ -10,8 +11,22 @@ import javax.servlet.http.HttpServletRequest;
 
 public class UrlParametersHelper {
   public static String safeGetRequestParameter(HttpServletRequest request, String paramName) {
-    String value = request.getParameter(paramName) == null ? "" : request.getParameter(paramName).trim();
+    String value = getParameter(request, paramName).trim();
     return value;
+  }
+
+
+  private static String getParameter(HttpServletRequest request, String paramName) {
+    String result = "";
+    Enumeration<String> params = request.getParameterNames();
+    while (params.hasMoreElements()) {
+      String value = params.nextElement();
+      if (paramName.equalsIgnoreCase(value)) {
+        result = value;
+        break;
+      }
+    }
+    return result;
   }
 
   public static boolean isValidPath(String path) {

@@ -59,6 +59,10 @@ public class FileOutPutor {
         String fileName = FilenameUtils.getName(filePath);
         fileName = fileName.toLowerCase();
         String ext = FilenameUtils.getExtension(fileName);
+        if(ext.equalsIgnoreCase("web"))
+        {
+            ext="jpg";
+        }
         String mime = MimeTypeHelper.getMimeType(ext);
         response.setContentType(mime);
         if (filePath.toLowerCase().contains(".txt") || filePath.toLowerCase().contains(".csv")) {

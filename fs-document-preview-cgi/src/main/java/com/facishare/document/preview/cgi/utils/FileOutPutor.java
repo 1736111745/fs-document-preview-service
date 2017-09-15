@@ -67,7 +67,7 @@ public class FileOutPutor {
         response.setContentType(mime);
         if (filePath.toLowerCase().contains(".txt") || filePath.toLowerCase().contains(".csv")) {
             String encode = EncodingDetect.getJavaEncode(filePath);
-            log.info("encode:{}", encode);
+            //log.info("encode:{}", encode);
             response.setCharacterEncoding(encode);
         }
         return FileUtils.readFileToByteArray(new File(filePath));

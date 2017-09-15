@@ -59,7 +59,7 @@ public class FileOutPutor {
         String fileName = FilenameUtils.getName(filePath);
         fileName = fileName.toLowerCase();
         String ext = FilenameUtils.getExtension(fileName);
-        if(ext.equalsIgnoreCase("web"))
+        if(ext.equalsIgnoreCase("webp"))
         {
             ext="jpg";
         }

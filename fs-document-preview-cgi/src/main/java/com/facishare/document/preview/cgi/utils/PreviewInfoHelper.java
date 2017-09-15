@@ -73,7 +73,7 @@ public class PreviewInfoHelper {
               String filePath = FilenameUtils.concat(dataDir, fileName);
               FileUtils.writeByteArrayToFile(new File(filePath), bytes);
               log.info("save file to {},npath:{}", filePath, npath);
-              if (extension.equals("txt") || extension.equals("csv") || extension.equals("svg")) {
+              if (extension.equals("txt") || extension.equals("csv") || extension.equals("svg")||extension.equalsIgnoreCase("webp")) {
                 pageInfo.setSuccess(true);
                 pageInfo.setPageCount(1);
               } else {

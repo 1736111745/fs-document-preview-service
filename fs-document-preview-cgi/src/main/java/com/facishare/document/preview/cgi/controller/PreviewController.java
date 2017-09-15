@@ -66,7 +66,7 @@ public class PreviewController {
   @Autowired
   PreviewService previewService;
   @ReloadableProperty("allowPreviewExtension")
-  private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf|txt|csv";
+  private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf|txt|csv|webp";
   @ReloadableProperty("htmlWidthList")
   private String htmlWidthList = "1000|640";
 
@@ -202,8 +202,8 @@ public class PreviewController {
 
 
   @ResponseBody
-  @RequestMapping(value = "/preview/getTxtPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-  public String getTxtPreviewInfo(HttpServletRequest request) throws Exception {
+  @RequestMapping(value = "/preview/getOriginalPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+  public String getOriginalPreviewInfo(HttpServletRequest request) throws Exception {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
     String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
     EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");

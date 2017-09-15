@@ -14,7 +14,7 @@ function getPreviewInfo() {
     type: 'get',
     dataType: 'json',
     async: false,
-    url: window.contextPath + '/preview/getPreviewInfo?path=' + path + '&token=' + token + "&width=" + width+"&sharetoken="+sharetoken,
+    url: window.contextPath + '/preview/getPreviewInfo?path=' + path + '&token=' + token + "&width=" + width + "&sharetoken=" + sharetoken,
     success: function (data) {
       if (data.canPreview) {
         pageCount = data.pageCount;
@@ -41,20 +41,23 @@ function getPreviewInfo() {
 
 
 function doPreview() {
-  if (path.toLowerCase().indexOf("txt") >= 0 || path.toLowerCase().indexOf("csv") >= 0 || path.toLowerCase().indexOf("svg") >= 0) {
-    doPreviewTxt();
+  if (path.toLowerCase().indexOf("txt") >= 0
+    || path.toLowerCase().indexOf("csv") >= 0
+    || path.toLowerCase().indexOf("svg") >= 0
+    || path.toLowerCase().indexOf("webp")) {
+    doPreviewOriginal();
   }
   else {
     doPreviewOffice();
   }
 }
 
-function doPreviewTxt() {
+function doPreviewOriginal() {
   $.ajax({
     type: 'get',
     dataType: 'json',
     async: false,
-    url: window.contextPath + '/preview/getTxtPreviewInfo?path=' + path + "&sg=" + sg+"&sharetoken="+sharetoken,
+    url: window.contextPath + '/preview/getOriginalPreviewInfo?path=' + path + "&sg=" + sg + "&sharetoken=" + sharetoken,
     success: function (data) {
       var dirName = data.dirName;
       var fileName = data.fileName;
@@ -72,7 +75,7 @@ function doPreviewOffice() {
   else
     route = "pdf2html";
   console.log("route:" + route);
-  var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg + "&width=" + width +"&sharetoken="+sharetoken+ "&rnd=1.0.1";
+  var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg + "&width=" + width + "&sharetoken=" + sharetoken + "&rnd=1.0.1";
   location.href = url;
 }
 

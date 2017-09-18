@@ -57,12 +57,11 @@ public class PreviewInfoHelper {
         log.info("preview info is null!path:{}", npath);
         byte[] bytes = fileStorageProxy.GetBytesByPath(npath, ea, employeeId, securityGroup);
         if (bytes != null && bytes.length > 0) {
-          if(extension.contains("xls")&&bytes.length > 1024 * 1024 * 20) {
+          if (extension.contains("xls") && bytes.length > 1024 * 1024 * 20) {
             previewInfoEx.setSuccess(false);
             previewInfoEx.setPreviewInfo(null);
             previewInfoEx.setErrorMsg("excel文件大于20M，不支持预览！");
-          }
-          else {
+          } else {
             if (bytes.length > 1024 * 1024 * 100) {
               previewInfoEx.setSuccess(false);
               previewInfoEx.setPreviewInfo(null);
@@ -73,7 +72,11 @@ public class PreviewInfoHelper {
               String filePath = FilenameUtils.concat(dataDir, fileName);
               FileUtils.writeByteArrayToFile(new File(filePath), bytes);
               log.info("save file to {},npath:{}", filePath, npath);
-              if (extension.equals("txt") || extension.equals("csv") || extension.equals("svg")||extension.equalsIgnoreCase("webp")) {
+              if (extension.equalsIgnoreCase("txt") || extension.equalsIgnoreCase("csv") ||
+                extension.equalsIgnoreCase("svg") || extension.equalsIgnoreCase("webp") ||
+                extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("png") ||
+                extension.equalsIgnoreCase("bmp") || extension.equalsIgnoreCase("gif") ||
+                extension.equalsIgnoreCase("jpeg")) {
                 pageInfo.setSuccess(true);
                 pageInfo.setPageCount(1);
               } else {

@@ -50,9 +50,9 @@ public class AuthFilter extends OncePerRequestFilter {
       ShareTokenParamInfo shareTokenParamInfo;
       if (!Strings.isNullOrEmpty(shareToken)) {
         shareTokenParamInfo = ShareTokenUtil.convertToken2ParamInfo(shareToken);
-        log.info("find shareToken arg:{},convertToken2ParamInfo result:{}",shareTokenParamInfo);
+        log.info("find shareToken arg:{},convertToken2ParamInfo result:{}", shareTokenParamInfo);
         if (shareTokenParamInfo != null) {
-          employeeInfo=new EmployeeInfo();
+          employeeInfo = new EmployeeInfo();
           employeeInfo.setEa(shareTokenParamInfo.getEa());
           employeeInfo.setEmployeeId(shareTokenParamInfo.getEmployeeId());
         }
@@ -84,18 +84,9 @@ public class AuthFilter extends OncePerRequestFilter {
               return;
             }
           } else {
-            log.warn("can't get auth_temp!", requestUri);
-            String profile = System.getProperty("spring.profiles.active");
-            if (!profile.equals("foneshare")) {
-              employeeInfo = new EmployeeInfo();
-              employeeInfo.setEa("2");
-              employeeInfo.setEmployeeId(1000);
-              request.setAttribute("Auth", employeeInfo);
-            } else {
-              log.warn("requestUri:{},is invalid auth", requestUri);
-              response.setStatus(403);
-              return;
-            }
+            log.warn("requestUri:{},is invalid auth", requestUri);
+            response.setStatus(403);
+            return;
           }
         }
       }

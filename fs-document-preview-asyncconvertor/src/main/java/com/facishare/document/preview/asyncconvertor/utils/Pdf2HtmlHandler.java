@@ -161,6 +161,7 @@ public class Pdf2HtmlHandler {
         File fontDescFile = new File(fontDescFilePath);
         if (fontDescFile.exists()) {
           String fontDesc = FileUtils.readFileToString(fontDescFile);
+          log.info("fontDesc:{}",fontDesc);
           if (fontDesc.indexOf("DFKai-SB") > -1) {
             flag = true;
           }
@@ -194,6 +195,7 @@ public class Pdf2HtmlHandler {
     String newCssFileName = page + ".css";
     String cssFileFilePath = FilenameUtils.concat(outPutDir, cssFileName);
     String cssHtml = FileUtils.readFileToString(new File(cssFileFilePath));
+    //动态判断字体
     String regex = "url\\(f\\d\\.woff\\)";
     Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
     Matcher matcher = pattern.matcher(cssHtml);

@@ -219,7 +219,7 @@ public class Pdf2HtmlHandler {
           break;
         } else {
           if (fontDesc.indexOf("黑体") > -1) {
-            String newHeiti = "font_" + page + "_heiti";
+            String newHeiti = "font_" + page + "_heiti.woff";
             String newFontFilePath = FilenameUtils.concat(baseDir, newHeiti);
             File newFontFile = new File(newFontFilePath);
             InputStream inputStream = Pdf2HtmlHandler.class.getResourceAsStream("/fonts/simhei.woff");

@@ -153,6 +153,7 @@ public class Pdf2HtmlHandler {
     args.add("-t");
     args.add("name");
     args.add(fontFile);
+    log.info("args:{}",args);
     try {
       ProcessResult processResult = new ProcessExecutor().command(args)
                                                          .readOutput(true)
@@ -181,6 +182,7 @@ public class Pdf2HtmlHandler {
   }
 
   private String handleResult(int page, String filePath, String outPutDir, int type) throws IOException {
+    log.info("begin handle html");
     String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
     String dataFileName = FilenameUtils.getBaseName(filePath) + ".html";
     String dataFilePath = FilenameUtils.concat(outPutDir, dataFileName);
@@ -342,5 +344,15 @@ public class Pdf2HtmlHandler {
       log.error("thumb fail!", e);
     }
     return success;
+  }
+
+  public static void main(String[] args) {
+     String css="@font-face{font-family:ff1;src:url(font_1_f1.woff)format(\"woff\");}.ff1{font-family:ff1;line-height:0.937500;font-style:normal;font-weight:normal;visibility:visible;}\n" +
+       "@font-face{font-family:ff2;src:url(font_1_f2.woff)format(\"woff\");}.ff2{font-family:ff2;line-height:1.011998;font-style:normal;font-weight:normal;visibility:visible;}\n" +
+       ".m0{transform:matrix(0.419974,0.000000,0.000000,0.419974,0,0);-ms-transform:matrix(0.419974,0.000000,0.000000,0.419974,0,0);-webkit-transform:matrix(0.419974,0.000000,0.000000,0.419974,0,0);}";
+    String regex = "url\\(f\\d\\.woff\\)";
+    Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+    Matcher matcher = pattern.matcher(css);
+
   }
 }

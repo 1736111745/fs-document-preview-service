@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Component;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
@@ -25,6 +26,7 @@ import org.zeroturnaround.process.SystemProcess;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -140,12 +142,12 @@ public class Pdf2HtmlHandler {
     args.add("--dest-dir");//输出目录
     args.add(outPutDir);
     args.add(filePath);
-    log.info("args:{}",args);
+    log.info("args:{}", args);
     return args;
   }
 
-  private boolean isIgnoreFont(String fontFile) {
-    boolean flag = false;
+  private String getFontDesc(String fontFile) {
+    String fontDesc = "";
     List<String> args = Lists.newArrayList();
     args.add("ttx");
     args.add("-t");
@@ -160,11 +162,10 @@ public class Pdf2HtmlHandler {
         String fontDescFilePath = fontFile.replace("woff", "ttx");
         File fontDescFile = new File(fontDescFilePath);
         if (fontDescFile.exists()) {
-          String fontDesc = FileUtils.readFileToString(fontDescFile);
-          log.info("fontDesc:{}",fontDesc);
-          if (fontDesc.indexOf("DFKai-SB") > -1) {
-            flag = true;
-          }
+          fontDesc = FileUtils.readFileToString(fontDescFile);
+          log.info("fontDesc:{}", fontDesc);
+        } else {
+          log.info("fontDesc file doesn't exists!", fontDesc);
         }
       } else {
         log.error("get font name fail,exit value:{}", processResult.getExitValue());
@@ -176,7 +177,7 @@ public class Pdf2HtmlHandler {
     } catch (TimeoutException e) {
       log.error("do get font name happened TimeoutException!font file:{}", fontFile);
     }
-    return flag;
+    return fontDesc;
   }
 
   private String handleResult(int page, String filePath, String outPutDir, int type) throws IOException {
@@ -206,8 +207,8 @@ public class Pdf2HtmlHandler {
       String fontFilePath = FilenameUtils.concat(outPutDir, fontName);
       File fontFile = new File(fontFilePath);
       if (fontFile.exists()) {
-        boolean flag = isIgnoreFont(fontFilePath);
-        if (flag) {
+        String fontDesc = getFontDesc(fontFilePath);
+        if (fontDesc.indexOf(" DFKai-SB") > -1) {
           String regexFontFace = "@font-face.*format\\(\"woff\"\\);}";
           cssHtml = cssHtml.replaceAll(regexFontFace, "");//取消webfont，减少用户流量和提高页面加载速度。
           String regexCommonFont = "font-family:ff\\d";
@@ -215,17 +216,28 @@ public class Pdf2HtmlHandler {
           cssHtml = cssHtml.replaceAll(regexCommonFont, securityFontFamily);//采用通用字体渲染网页
           break;
         } else {
-          String newFontName = "font_" + page + "_" + fontName;
-          String newFontFilePath = FilenameUtils.concat(baseDir, newFontName);
-          File newFontFile = new File(newFontFilePath);
-          fontFile.renameTo(newFontFile);
-          String newFontStyle = "url(" + newFontName + ")";
-          cssHtml = cssHtml.replace(fontStyle, newFontStyle);
+          if (fontDesc.indexOf("黑体") > -1) {
+            String newHeiti = "font_" + page + "_heiti";
+            String newFontFilePath = FilenameUtils.concat(baseDir, newHeiti);
+            File newFontFile = new File(newFontFilePath);
+            InputStream inputStream = Pdf2HtmlHandler.class.getResourceAsStream("/fonts/simhei.woff");
+            byte[] fontBytes = IOUtils.toByteArray(inputStream);
+            FileUtils.writeByteArrayToFile(newFontFile, fontBytes);
+            String newFontStyle = "url(" + newHeiti + ")";
+            cssHtml = cssHtml.replace(fontStyle, newFontStyle);
+          } else {
+            String newFontName = "font_" + page + "_" + fontName;
+            String newFontFilePath = FilenameUtils.concat(baseDir, newFontName);
+            File newFontFile = new File(newFontFilePath);
+            fontFile.renameTo(newFontFile);
+            String newFontStyle = "url(" + newFontName + ")";
+            cssHtml = cssHtml.replace(fontStyle, newFontStyle);
+          }
         }
       }
     }
     //替换代码
-    cssHtml=cssHtml.replace("visibility:hidden","visibility:visible");
+    cssHtml = cssHtml.replace("visibility:hidden", "visibility:visible");
     String newCssFilePath = FilenameUtils.concat(baseDir, newCssFileName);
     FileUtils.writeByteArrayToFile(new File(newCssFilePath), cssHtml.getBytes());
     //处理背景图片
@@ -246,7 +258,7 @@ public class Pdf2HtmlHandler {
         SimpleImageInfo simpleImageInfo = new SimpleImageInfo(new File(newBgFilePath));
         int width = simpleImageInfo.getWidth();
         int height = simpleImageInfo.getHeight();
-        if(width>1000&&height>1000) {
+        if (width > 1000 && height > 1000) {
           int newWidth, newHeight;
           if (width > height) {
             newHeight = 1000;
@@ -258,9 +270,7 @@ public class Pdf2HtmlHandler {
           log.info("width:{},height:{},newWidth:{},newHeight:{}", width, height, newWidth, newHeight);
           doThumbnail(FileUtils.readFileToByteArray(new File(newBgFilePath)), newWidth, newHeight, new File(newBgFilePath));
         }
-      }
-      catch (Exception ex)
-      {
+      } catch (Exception ex) {
 
       }
 

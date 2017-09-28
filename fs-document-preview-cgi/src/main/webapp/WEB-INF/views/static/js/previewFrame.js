@@ -60,13 +60,11 @@ function loadViewPort() {
     scale = screenWidth * 0.96 / width;
   var viewport = document.querySelector("meta[name=viewport]");
   viewport.content = 'width=' + deviceWidth + ',initial-scale=' + scale;
-  var newH=parseInt(height*scale);
-  alert(newH+":"+screenHeight);
-  if(newH<screenHeight) {
-    var maginTop = (screenHeight - newH) / 2;
-    alert("magintop:"+maginTop)
-    $("body").css("margin-top", maginTop + "px");
-  }
+  var topMargin = (screenHeight - document.body.offsetHeight * scale) * 0.5;
+  topMargin = topMargin < 0 ? 0 : topMargin / scale;
+  topMargin = topMargin + 'px';
+  alert(topMargin);
+  $("body").css("margin-top", topMargin);
 }
 
 

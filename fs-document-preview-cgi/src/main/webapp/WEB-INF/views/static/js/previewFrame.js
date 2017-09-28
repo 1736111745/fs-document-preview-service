@@ -63,8 +63,13 @@ function loadViewPort() {
   var topMargin = (screenHeight - document.body.offsetHeight * scale) * 0.5;
   topMargin = topMargin < 0 ? 0 : topMargin / scale;
   topMargin = topMargin + 'px';
-  alert(topMargin);
-  $("body").css("margin-top", topMargin);
+  var oldTopMargin = window.getComputedStyle(document.body, null);
+  if (window.orientation != 0 && path.toLowerCase().indexOf("ppt") >= 0) {
+    $("body").css("margin-top", oldTopMargin);
+  }
+  else {
+    $("body").css("margin-top", topMargin);
+  }
 }
 
 

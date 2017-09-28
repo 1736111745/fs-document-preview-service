@@ -64,6 +64,7 @@ function loadViewPort() {
   topMargin = topMargin < 0 ? 0 : topMargin / scale;
   topMargin = topMargin + 'px';
   var oldTopMargin = window.getComputedStyle(document.body, null);
+  alert("m1:"+topMargin+",m2:"+oldTopMargin)
   if (window.orientation != 0 && path.toLowerCase().indexOf("ppt") >= 0) {
     $("body").css("margin-top", oldTopMargin);
   }

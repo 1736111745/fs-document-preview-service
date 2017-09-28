@@ -60,6 +60,13 @@ function loadViewPort() {
     scale = screenWidth * 0.96 / width;
   var viewport = document.querySelector("meta[name=viewport]");
   viewport.content = 'width=' + deviceWidth + ',initial-scale=' + scale;
+  var newH=parseInt(height*scale);
+  alert(newH+":"+screenHeight);
+  if(newH<screenHeight) {
+    var maginTop = (screenHeight - newH) / 2;
+    alert("magintop:"+maginTop)
+    $("body").css("margin-top", maginTop + "px");
+  }
 }
 
 
@@ -67,6 +74,8 @@ function loadData(i) {
   var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&width=" + width + "&sg=" + sg + "&ver=2.1";
   var iframe = "<iframe id='framePage' src='" + url + "' onload='resize(this)' onresize='resize(this)' scrolling='no' frameborder='0' width='100%'></iframe>";
   $('#main').html(iframe);
+  // $("body").css("margin-top","500px");
+
 }
 
 function resize(obj) {

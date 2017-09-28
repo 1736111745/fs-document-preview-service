@@ -17,9 +17,9 @@
   <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery.lazy.min.js"></script>
   <script type="text/javascript"
           src="<%=request.getContextPath()%>/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
-  <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/previewFrame.js?v=<%=request.getAttribute("sv")%>"></script>
+  <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/previewFrame.js?t= + new Date().getTime()"></script>
   <script>
-    window.contextPath = "<%=request.getContextPath()%>";
+    window.contextPath = "<%=request.getContextPath()%>"
   </script>
   <style type="text/css">
 

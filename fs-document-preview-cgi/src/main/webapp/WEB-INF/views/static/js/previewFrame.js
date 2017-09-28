@@ -1,5 +1,5 @@
 /**
- * Created by liuq on 2017/7/27.
+ * Created by liuq on 2017/7/27
  */
 var sg = getQueryStringByName("sg");
 var pageCount = getQueryStringByName("pageCount");

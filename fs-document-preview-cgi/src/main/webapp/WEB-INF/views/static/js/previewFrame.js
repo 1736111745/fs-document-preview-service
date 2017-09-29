@@ -7,8 +7,6 @@ var path = getQueryStringByName("path");
 var page = getQueryStringByName("page");
 var screenWidth = window.screen.availWidth;//屏幕宽度
 var screenHeight = window.screen.availHeight;//屏幕高度；
-var ua = navigator.userAgent;
-var isIOS = /iphone|ipod|ipad/ig.test(ua);
 var width = 1000;
 $(function () {
   loadData(page);
@@ -22,20 +20,15 @@ $(function () {
   }
   window.addEventListener("orientationchange", function () {
     //alert("isIOS:"+isIOS);
-    if (isIOS) {
-      if (window.orientation != 0) {//横屏 宽度取大的值
-        screenWidth = Math.max(window.screen.width, window.screen.height);
-        screenHeight = Math.min(window.screen.width, window.screen.height);
-      }
-      else {//竖屏 宽度取小得值
-        screenWidth = Math.min(window.screen.width, window.screen.height);
-        screenHeight = Math.max(window.screen.width, window.screen.height);
-      }
+    if (window.orientation != 0) {//横屏 宽度取大的值
+      screenWidth = Math.max(window.screen.width, window.screen.height);
+      screenHeight = Math.min(window.screen.width, window.screen.height);
     }
-    else {
-      screenWidth = $(window).width();
-      screenHeight = $(window).height();
+    else {//竖屏 宽度取小得值
+      screenWidth = Math.min(window.screen.width, window.screen.height);
+      screenHeight = Math.max(window.screen.width, window.screen.height);
     }
+    alert(window.orientation+":"+screenWidth)
     window.setTimeout(function () {
       loadViewPort();
     }, 200);
@@ -63,6 +56,7 @@ function loadViewPort() {
   var topMargin = (screenHeight - document.body.offsetHeight * scale) * 0.5;
   topMargin = topMargin < 0 ? 0 : topMargin / scale;
   topMargin = topMargin + 'px';
+  alert(window.orientation+":"+topMargin)
   if (window.orientation != 0 && path.toLowerCase().indexOf("ppt") >= 0) {
     $("body").css("margin-top", "8px");
   }

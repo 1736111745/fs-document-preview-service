@@ -28,7 +28,6 @@ $(function () {
       screenWidth = Math.min(window.screen.width, window.screen.height);
       screenHeight = Math.max(window.screen.width, window.screen.height);
     }
-    alert(window.orientation+":"+screenWidth)
     window.setTimeout(function () {
       loadViewPort();
     }, 200);
@@ -56,7 +55,6 @@ function loadViewPort() {
   var topMargin = (screenHeight - document.body.offsetHeight * scale) * 0.5;
   topMargin = topMargin < 0 ? 0 : topMargin / scale;
   topMargin = topMargin + 'px';
-  alert(window.orientation+":"+topMargin)
   if (window.orientation != 0 && path.toLowerCase().indexOf("ppt") >= 0) {
     $("body").css("margin-top", "8px");
   }

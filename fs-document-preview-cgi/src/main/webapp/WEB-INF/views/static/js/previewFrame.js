@@ -30,7 +30,7 @@ $(function () {
     }
     window.setTimeout(function () {
       loadViewPort();
-    }, 200);
+    }, 10);
   }, true);
 });
 

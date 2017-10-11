@@ -9,20 +9,6 @@ var screenWidth = window.screen.availWidth;//屏幕宽度
 var screenHeight = window.screen.availHeight;//屏幕高度；
 var width = 1000;
 var deviceWidth = screenWidth;
-var height = $("#framePage").height();
-var scale = 1.0;
-if (window.orientation != 0 && path.toLowerCase().indexOf("ppt") >= 0) { //横屏
-  if (height > screenHeight) {
-    deviceWidth = width * screenHeight / height;
-    scale = deviceWidth * 0.96 / width;
-  }
-  else {
-    scale = screenWidth * 0.96 / width;
-    deviceWidth = screenWidth;
-  }
-}
-else
-  scale = screenWidth * 0.96 / width;
 $(function () {
   loadData(page);
   calcScreenRealSize();

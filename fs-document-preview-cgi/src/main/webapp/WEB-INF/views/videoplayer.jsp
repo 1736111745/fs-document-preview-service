@@ -32,9 +32,21 @@
       });
     });
   </script>
+  <style>
+    html,body{
+      margin:0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .video-js{
+      width: 100%;
+      height: 100%;
+    }
+  </style>
 </head>
 <body>
-<video id="my-player" class="video-js" width="500" height="500" controls="true">
+<video id="my-player" class="video-js" controls="true">
   <source id="source" src="" type="video/mp4">
 </video>
 </body>

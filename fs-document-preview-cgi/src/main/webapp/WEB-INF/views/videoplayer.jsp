@@ -21,10 +21,10 @@
       var domain = document.domain;
       var protocol=location.protocol;
       if (path != "") {
-        $("#source").attr("src", protocol+"//" + domain + "/FSC/EM/File/DownloadByPath?path=" + path);
+        $("#source").attr("src", protocol+"//" + domain + "/FSC/EM/File/RangeDownloadByStream?path=" + path);
       }
       else if (token != "") {
-        $("#source").attr("src", protocol+"//" + domain + "/FSC/EM/File/DownloadByToken?FileToken=" + token);
+        $("#source").attr("src", protocol+"//" + domain + "/FSC/EM/File/RangeDownloadByStream?FileToken=" + token);
       }
       videojs('my-player', {
         controls: true,

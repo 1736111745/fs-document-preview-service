@@ -27,7 +27,7 @@
       }
       videojs('my-player', {
         controls: true,
-        autoplay: true,
+        autoplay: false,
         preload: 'auto'
       });
     });
@@ -46,7 +46,7 @@
   </style>
 </head>
 <body>
-<video id="my-player" class="video-js" controls="true">
+<video id="my-player" class="video-js vjs-big-play-centered" controls="true">
   <source id="source" src="" type="video/mp4">
 </video>
 </body>

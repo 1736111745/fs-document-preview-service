@@ -56,5 +56,10 @@ public class ViewController {
     return "previewFrame";
   }
 
+  @RequestMapping(value = {"/preview/videoplayer"}, method = RequestMethod.GET)
+  public String videoplayer() {
+    return "videoplayer";
+  }
+
 
 }

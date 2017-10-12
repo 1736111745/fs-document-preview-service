@@ -37,10 +37,11 @@ function isLandscape() {
   return (window.orientation != 0 || window.orientation != 180)
 }
 
-function calcScale() {
+function calcScale(islandscape) {
+  var landscape = typeof islandscape == "undefined" ? isLandscape() : islandscape;
   var height = $("#framePage").height();
   var scale = 1.0;
-  if (isLandscape() && path.toLowerCase().indexOf("ppt") >= 0) { //横屏
+  if (landscape && path.toLowerCase().indexOf("ppt") >= 0) { //横屏
     if (height > screenHeight) {
       deviceWidth = width * screenHeight / height;
       scale = deviceWidth * 0.96 / width;

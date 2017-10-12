@@ -103,8 +103,8 @@ public class PreviewController {
     String defaultErrMsg = "该文件不可以预览!";
     String docType = DocTypeHelper.getDocType(path).getName();
     counterService.inc("docType." + docType);
-    PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup,width);
-    log.info("previewInfo:{}",previewInfoEx);
+    PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup, width);
+    log.info("previewInfo:{}", previewInfoEx);
     if (previewInfoEx.isSuccess()) {
       PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
       if (previewInfo == null || previewInfo.getPageCount() == 0) {
@@ -117,8 +117,6 @@ public class PreviewController {
       return ResponseJsonHelper.getPreviewInfoResult(errMsg);
     }
   }
-
-
 
   @RequestMapping(value = "/preview/getFilePath")
   public void getFilePath(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -133,7 +131,7 @@ public class PreviewController {
     try {
       int pageIndex = page.isEmpty() ? 0 : Integer.parseInt(page);
       EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup,width);
+      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup, width);
       if (!previewInfoEx.isSuccess()) {
         log.warn("can't resolve path:{},page:{},reason:can't get preview info", path, page);
         response.setStatus(404);
@@ -159,7 +157,7 @@ public class PreviewController {
                 dataFilePath = FilenameUtils.getFullPathNoEndSeparator(originalFilePath) + "/" + page + ".html";
                 HandlerHtml.process(dataFilePath, pageIndex);
                 log.info("dataFilePath:{}", dataFilePath);
-                previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath,width);
+                previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath, width);
                 fileOutPutor.outPut(response, dataFilePath, false);
               } else {
                 log.warn("can't resolve path:{},page:{}", path, page);
@@ -186,8 +184,8 @@ public class PreviewController {
       map.put("success", false);
       map.put("errorMsg", "参数错误!");
     } else {
-      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup,1000);
-      log.info("previewInfoEx:{}",previewInfoEx);
+      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup, 1000);
+      log.info("previewInfoEx:{}", previewInfoEx);
       if (previewInfoEx != null && previewInfoEx.getPreviewInfo() != null) {
         map.put("success", true);
         map.put("sheets", previewInfoEx.getPreviewInfo().getSheetNames());
@@ -198,7 +196,6 @@ public class PreviewController {
     }
     return JSONObject.toJSONString(map);
   }
-
 
 
   @ResponseBody
@@ -212,7 +209,7 @@ public class PreviewController {
       map.put("success", false);
       map.put("errorMsg", "参数错误!");
     } else {
-      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup,1000);
+      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup, 1000);
       if (previewInfoEx != null && previewInfoEx.getPreviewInfo() != null) {
         map.put("success", true);
         map.put("dirName", previewInfoEx.getPreviewInfo().getDirName());
@@ -241,7 +238,7 @@ public class PreviewController {
     if (allowPreviewExtension.indexOf(extension) == -1) {
       return ResponseJsonHelper.getDocPreviewInfoResult(path, pageCount);
     }
-    PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, "",1000);
+    PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, "", 1000);
     if (previewInfoEx.isSuccess()) {
       PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
       if (previewInfo != null) {
@@ -308,7 +305,7 @@ public class PreviewController {
     }
     try {
       EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup,width);
+      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, securityGroup, width);
       if (!previewInfoEx.isSuccess()) {
         return "";
       } else {
@@ -347,25 +344,21 @@ public class PreviewController {
       return "";
     }
   }
+
   @ResponseBody
   @RequestMapping(value = "/share/preview/parseShareToken", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
   public String parseShareToken(HttpServletRequest request) throws Exception {
     String shareToken = UrlParametersHelper.safeGetRequestParameter(request, "shareToken");
     Map<String, Object> map = new HashMap<>();
-    if(Strings.isNullOrEmpty(shareToken))
-    {
+    if (Strings.isNullOrEmpty(shareToken)) {
       map.put("success", false);
       map.put("errorMsg", "参数错误!");
-    }
-    else {
+    } else {
       ShareTokenParamInfo shareTokenParamInfo = ShareTokenUtil.convertToken2ParamInfo(shareToken);
-      if(shareTokenParamInfo!=null)
-      {
+      if (shareTokenParamInfo != null) {
         map.put("success", true);
-        map.put("data",shareTokenParamInfo);
-      }
-      else
-      {
+        map.put("data", shareTokenParamInfo);
+      } else {
         map.put("success", false);
         map.put("errorMsg", "参数错误!");
       }

@@ -39,6 +39,9 @@ function isLandscape() {
 
 function calcScale(islandscape) {
   var landscape = typeof islandscape == "undefined" ? isLandscape() : islandscape;
+  if(typeof islandscape != "undefined") {
+    calcScreenRealSize();
+  }
   var height = $("#framePage").height();
   var scale = 1.0;
   if (landscape && path.toLowerCase().indexOf("ppt") >= 0) { //横屏

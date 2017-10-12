@@ -10,9 +10,9 @@
 <html>
 <head>
   <title>Video.js Test Suite</title>
-  <link href="//vjs.zencdn.net/4.10/video-js.css" rel="stylesheet">
-  <script src="//vjs.zencdn.net/4.10/video.js"></script>
-  <script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.js"></script>
+  <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery-1.11.1.min.js"></script>
+  <link href="<%=request.getContextPath()%>/static/common/video-js.css" rel="stylesheet">
+  <script src="<%=request.getContextPath()%>/static/common/video.js"></script>
   <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
   <script>
     $(function () {

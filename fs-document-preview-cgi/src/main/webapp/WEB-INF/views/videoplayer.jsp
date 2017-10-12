@@ -20,10 +20,10 @@
       var token = getQueryStringByName("token");
       var domain = document.domain;
       if (path != "") {
-        $("#source").src("https://" + domain + "/FSC/EM/File/RangeDownloadByStream?path=" + path);
+        $("#source").attr("src", "https://" + domain + "/FSC/EM/File/RangeDownloadByStream?path=" + path);
       }
       else if (token != "") {
-        $("#source").src("https://" + domain + "/FSC/EM/File/RangeDownloadByStream?FileToken=" + token);
+        $("#source").attr("src", "https://" + domain + "/FSC/EM/File/RangeDownloadByStream?FileToken=" + token);
       }
       videojs('my-player', {
         controls: true,

@@ -127,7 +127,7 @@ $(document).ready(function () {
   }
   else {
     if (path.toLowerCase().indexOf("mp4") >= 0) {
-      location.href = "/preview/videoplayer?path=" + path + "&token=" + token;
+      location.href = window.contextPath + "/preview/videoplayer?path=" + path + "&token=" + token;
     }
     else {
       getPreviewInfo();

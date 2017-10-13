@@ -27,7 +27,7 @@ $(function () {
       loadViewPort();
     }
   }, true);
-}
+});
 
 //计算屏幕真实高宽
 function calcScreenRealSize(islandscape) {

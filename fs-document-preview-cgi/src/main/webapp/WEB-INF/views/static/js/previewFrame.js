@@ -8,14 +8,26 @@ var page = getQueryStringByName("page");
 var screenWidth = window.screen.availWidth;//屏幕宽度
 var screenHeight = window.screen.availHeight;//屏幕高度；
 var width = 1000;
+var u = navigator.userAgent;
+var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
 var deviceWidth = screenWidth;
 $(function () {
   loadData(page);
   window.addEventListener("orientationchange", function () {
-    //alert("loadViewPort by orientationchange!");
-    loadViewPort();
+    if (isAndroid) {
+      var delay = 1000;
+      if (window.DocMeasure.isCurrentFocus(page)) {
+        loadViewPort();
+      } else {
+        window.setTimeout(function () {
+          loadViewPort();
+        }, delay);
+      }
+    } else {
+      loadViewPort();
+    }
   }, true);
-});
+}
 
 //计算屏幕真实高宽
 function calcScreenRealSize(islandscape) {

@@ -11,9 +11,7 @@ var width = 1000;
 var deviceWidth = screenWidth;
 $(function () {
   loadData(page);
-  calcScreenRealSize();
   window.addEventListener("orientationchange", function () {
-    calcScreenRealSize();
     window.setTimeout(function () {
       loadViewPort();
     }, 200);
@@ -21,8 +19,9 @@ $(function () {
 });
 
 //计算屏幕真实高宽
-function calcScreenRealSize() {
-  if (isLandscape()) {//横屏 宽度取大的值
+function calcScreenRealSize(islandscape) {
+  var landscape = typeof islandscape == "undefined" ? isLandscape() : islandscape;
+  if (landscape) {//横屏 宽度取大的值
     screenWidth = Math.max(window.screen.width, window.screen.height);
     screenHeight = Math.min(window.screen.width, window.screen.height);
   }
@@ -34,14 +33,12 @@ function calcScreenRealSize() {
 
 //是否横屏
 function isLandscape() {
-  return (window.orientation != 0 || window.orientation != 180)
+  return (window.orientation != 0 && window.orientation != 180)
 }
 
 function calcScale(islandscape) {
   var landscape = typeof islandscape == "undefined" ? isLandscape() : islandscape;
-  if(typeof islandscape != "undefined") {
-    calcScreenRealSize();
-  }
+  calcScreenRealSize(landscape);
   var height = $("#framePage").height();
   var scale = 1.0;
   if (landscape && path.toLowerCase().indexOf("ppt") >= 0) { //横屏

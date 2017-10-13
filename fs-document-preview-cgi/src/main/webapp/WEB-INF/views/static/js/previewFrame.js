@@ -1,5 +1,5 @@
 /**
- * Created by liuq on 2017/7/27
+ * Created by liuq on 2017/7/27 v1
  */
 var sg = getQueryStringByName("sg");
 var pageCount = getQueryStringByName("pageCount");
@@ -12,9 +12,8 @@ var deviceWidth = screenWidth;
 $(function () {
   loadData(page);
   window.addEventListener("orientationchange", function () {
-    window.setTimeout(function () {
-      loadViewPort();
-    }, 200);
+    //alert("loadViewPort by orientationchange!");
+    loadViewPort();
   }, true);
 });
 
@@ -74,7 +73,7 @@ function loadViewPort() {
 
 function loadData(i) {
   var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&width=" + width + "&sg=" + sg + "&ver=2.1";
-  var iframe = "<iframe id='framePage' src='" + url + "' onload='resize(this)' onresize='resize(this)' scrolling='no' frameborder='0' width='100%'></iframe>";
+  var iframe = "<iframe id='framePage' src='" + url + "' onload='resize(this)'  scrolling='no' frameborder='0' width='100%'></iframe>";
   $('#main').html(iframe);
 }
 
@@ -82,5 +81,6 @@ function resize(obj) {
   var height = $(obj.contentWindow.document).find("div[id='page-container']").height()
   $(obj).height(height);
   $(obj.parentElement).removeClass("lazy");
+  //alert("loadViewPort by resize!height:"+height);
   loadViewPort();
 }

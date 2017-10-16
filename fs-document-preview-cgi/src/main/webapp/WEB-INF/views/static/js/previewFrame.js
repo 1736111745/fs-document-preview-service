@@ -55,10 +55,10 @@ function calcScale(islandscape) {
   if (landscape && path.toLowerCase().indexOf("ppt") >= 0) { //横屏
     if (height > screenHeight) {
       deviceWidth = width * screenHeight / height;
-      scale = deviceWidth * 0.96 / width;
+      scale = deviceWidth * 0.99 / width;
     }
     else {
-      scale = screenWidth * 0.96 / width;
+      scale = screenWidth * 0.99 / width;
       deviceWidth = screenWidth;
     }
   }

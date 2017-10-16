@@ -63,7 +63,7 @@ function calcScale(islandscape) {
     }
   }
   else
-    scale = screenWidth * 0.96 / width;
+    scale = screenWidth * 0.99 / width;
   return scale;
 }
 

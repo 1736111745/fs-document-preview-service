@@ -34,7 +34,7 @@
   <title>文档预览</title>
 </head>
 <body bgcolor="#807F7F">
-<div id="main" class="border">
+<div id="main" class="border" style="margin:auto auto">
 </div>
 </body>
 </html>

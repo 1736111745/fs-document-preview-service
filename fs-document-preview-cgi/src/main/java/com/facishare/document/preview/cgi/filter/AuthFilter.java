@@ -40,7 +40,7 @@ public class AuthFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request,
                                   HttpServletResponse response,
                                   FilterChain filterChain) throws ServletException, IOException {
-    request.setAttribute("sv", "v5.3.18");
+    request.setAttribute("sv", "v5.3.19");
     String requestUri = request.getRequestURI().toLowerCase();
     if (ignoreAuth(request)) {
       filterChain.doFilter(request, response);

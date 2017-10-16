@@ -75,7 +75,7 @@ function loadViewPort() {
   topMargin = topMargin < 0 ? 0 : topMargin / scale;
   topMargin = topMargin + 'px';
   if (isLandscape() && path.toLowerCase().indexOf("ppt") >= 0) {
-    $("body").css("margin-top", "8px");
+    $("body").css("margin-top", "0px");
   }
   else {
     $("body").css("margin-top", topMargin);

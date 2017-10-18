@@ -6,13 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.mozilla.intl.chardet.nsDetector;
-import org.mozilla.intl.chardet.nsICharsetDetectionObserver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Created by liuq on 2016/12/17.
@@ -59,7 +59,7 @@ public class FileOutPutor {
         String fileName = FilenameUtils.getName(filePath);
         fileName = fileName.toLowerCase();
         String ext = FilenameUtils.getExtension(fileName);
-        if(ext.equalsIgnoreCase("webp"))
+        if("webp".equalsIgnoreCase(ext))
         {
             ext="jpg";
         }
@@ -67,7 +67,6 @@ public class FileOutPutor {
         response.setContentType(mime);
         if (filePath.toLowerCase().contains(".txt") || filePath.toLowerCase().contains(".csv")) {
             String encode = EncodingDetect.getJavaEncode(filePath);
-            //log.info("encode:{}", encode);
             response.setCharacterEncoding(encode);
         }
         return FileUtils.readFileToByteArray(new File(filePath));

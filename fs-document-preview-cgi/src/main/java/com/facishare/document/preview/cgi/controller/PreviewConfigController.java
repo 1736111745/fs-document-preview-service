@@ -53,8 +53,9 @@ public class PreviewConfigController {
             String byPathUrl = "/dps/preview/bypath?path={0}&name={1}";
             entity.setPreviewByPathUrlFormat(byPathUrl);
             entity.setPreviewByTokenUrlFormat(byTokenUrl);
-        } else
-            entity.setWay(0);
+        } else {
+          entity.setWay(0);
+        }
         String json = JSON.toJSONString(entity);
         return json;
     }

@@ -36,8 +36,9 @@ public class ResourceController {
         if (!Strings.isNullOrEmpty(baseDir)) {
             String filePath = baseDir + "/js/" + fileName;
             fileOutPutor.outPut(response, filePath, false);
-        } else
-            response.setStatus(404);
+        } else {
+          response.setStatus(404);
+        }
     }
 
     @RequestMapping("/preview/{folder}/{fileName:.+}")

@@ -26,7 +26,7 @@ public class AuthHelper {
 
     public EmployeeInfo getAuthInfo(HttpServletRequest request) {
         String cookieValue = getCookie(request);
-        if (cookieValue.equals("")) {
+        if ("".equals(cookieValue)) {
             return null;
         }
         CookieToAuth.Argument arg = new CookieToAuth.Argument();
@@ -47,14 +47,19 @@ public class AuthHelper {
             TraceContext.get().setUid(uid);
             MDC.put("userId", uid);
             return employeeInfo;
-        } else
-            return null;
+        } else {
+          return null;
+        }
     }
 
     public static String getCookie(HttpServletRequest request) {
         Cookie cookie = WebUtil.getCookie(request, "FSAuthXC");
-        if (cookie == null) cookie = WebUtil.getCookie(request, "FSAuthX");
-        if (cookie != null) return cookie.getValue();
+        if (cookie == null) {
+          cookie = WebUtil.getCookie(request, "FSAuthX");
+        }
+        if (cookie != null) {
+          return cookie.getValue();
+        }
         //log.warn("[authorizeByCookieValue] [fail] [can't find FSAuthX/FsAuthXC cookie] [cookie:{}] [cookieInHeader:{}]", Arrays.toString(request.getCookies()), request.getHeader("cookie"));
         return "";
     }

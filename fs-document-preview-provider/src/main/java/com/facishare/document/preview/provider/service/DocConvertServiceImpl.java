@@ -37,6 +37,7 @@ public class DocConvertServiceImpl implements DocConvertService {
         return GetPageCountResult.builder().pageCount(pageCount).build();
     }
 
+    @Override
     public ConvertDocResult convertDoc(ConvertDocArg arg) throws Exception {
         log.info("begin convert doc,arg:{}", arg);
         String path = arg.getPath();

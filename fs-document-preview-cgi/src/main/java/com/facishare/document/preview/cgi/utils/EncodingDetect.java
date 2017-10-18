@@ -167,8 +167,9 @@ class BytesEncodingDetect extends Encoding {
         scores[OTHER] = 0;
         // Tabulate Scores
         for (index = 0; index < TOTALTYPES; index++) {
-            if (debug)
-                System.err.println("Encoding " + nicename[index] + " score " + scores[index]);
+            if (debug) {
+              System.err.println("Encoding " + nicename[index] + " score " + scores[index]);
+            }
             if (scores[index] > maxscore) {
                 encoding_guess = index;
                 maxscore = scores[index];

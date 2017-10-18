@@ -47,8 +47,9 @@ public class ShareTokenUtil {
       shareTokenParamInfo.setPath(path);
       shareTokenParamInfo.setSecurityGroup(securityGroup);
       return shareTokenParamInfo;
-    } else
+    } else {
       return null;
+    }
   }
 
   public static void main(String[] args) {

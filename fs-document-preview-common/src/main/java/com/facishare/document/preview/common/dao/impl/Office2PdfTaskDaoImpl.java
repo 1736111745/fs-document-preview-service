@@ -52,7 +52,8 @@ public class Office2PdfTaskDaoImpl implements Office2PdfTaskDao {
     }
 
 
-    public void beginExecute(String ea, String path,int width) {
+    @Override
+    public void beginExecute(String ea, String path, int width) {
         modifyTaskStatus(ea, path, 1,width);
     }
 

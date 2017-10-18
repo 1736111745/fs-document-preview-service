@@ -94,7 +94,7 @@ function loadData(i) {
 
 function resize(obj) {
   var height = $(obj.contentWindow.document).find("div[id='page-container']").height()
-  $(obj.contentWindow.document).find("body").css("bgColor","#FFFFFF");
+  $(obj.contentWindow.document).find("body").css("background-color","#FFFFFF");
   $(obj).height(height);
   $(obj.parentElement).removeClass("lazy");
   //alert("loadViewPort by resize!height:"+height);

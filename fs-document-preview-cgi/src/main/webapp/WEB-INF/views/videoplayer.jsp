@@ -32,8 +32,8 @@
         autoplay: false,
         preload: 'auto'
       },function () {
-        $("#my-player").css("visibility","visible")
-        $("video").css("visibility","visible")
+        $("#my-player").css("visibility","visible");
+        $("video").css("visibility","visible");
       });
     });
   </script>

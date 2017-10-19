@@ -9,7 +9,8 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>Video.js Test Suite</title>
+  <title>视频播放</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
   <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery-1.11.1.min.js"></script>
   <link href="<%=request.getContextPath()%>/static/common/video-js.css" rel="stylesheet">
   <script src="<%=request.getContextPath()%>/static/common/video.js"></script>

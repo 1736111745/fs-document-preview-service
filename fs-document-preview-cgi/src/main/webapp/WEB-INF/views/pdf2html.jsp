@@ -34,6 +34,7 @@
       margin: 5px auto;
       background-color: #ffffff;
       box-shadow: 0 2px 14px 0 rgba(0, 0, 0, 0.15);
+      overflow: hidden;
     }
 
 

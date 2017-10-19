@@ -31,6 +31,9 @@
         controls: true,
         autoplay: false,
         preload: 'auto'
+      },function () {
+        $("#my-player").css("visibility","visible")
+        $("video").css("visibility","visible")
       });
     });
   </script>
@@ -48,7 +51,7 @@
   </style>
 </head>
 <body>
-<video id="my-player" class="video-js vjs-big-play-centered" controls="true">
+<video id="my-player" class="video-js vjs-big-play-centered" controls="true" style="visibility: hidden">
   <source id="source" src="" type="video/mp4">
 </video>
 </body>

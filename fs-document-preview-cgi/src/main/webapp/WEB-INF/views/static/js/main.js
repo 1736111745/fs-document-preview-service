@@ -51,9 +51,12 @@ function doPreview() {
     || path.toLowerCase().indexOf("jpg") >= 0
     || path.toLowerCase().indexOf("png") >= 0
     || path.toLowerCase().indexOf("bmp") >= 0
-    || path.toLowerCase().indexOf("gif") >= 0
-    || path.toLowerCase().indexOf("mp4")>=0) {
+    || path.toLowerCase().indexOf("gif") >= 0) {
     doPreviewOriginal();
+  }
+  else if(path.toLowerCase().indexOf("mp4")>=0)
+  {
+    location.href = window.contextPath + "/preview/videoplayer?path=" + path + "&token=" + token;
   }
   else {
     doPreviewOffice();

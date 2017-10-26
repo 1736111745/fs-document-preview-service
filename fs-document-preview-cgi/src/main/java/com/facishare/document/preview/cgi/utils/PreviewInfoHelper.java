@@ -76,7 +76,7 @@ public class PreviewInfoHelper {
                 extension.equalsIgnoreCase("svg") || extension.equalsIgnoreCase("webp") ||
                 extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("png") ||
                 extension.equalsIgnoreCase("bmp") || extension.equalsIgnoreCase("gif") ||
-                extension.equalsIgnoreCase("jpeg")) {
+                extension.equalsIgnoreCase("jpeg")||extension.equalsIgnoreCase("mp4")) {
                 pageInfo.setSuccess(true);
                 pageInfo.setPageCount(1);
               } else {

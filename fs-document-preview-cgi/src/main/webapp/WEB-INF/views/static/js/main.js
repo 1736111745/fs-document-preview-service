@@ -127,9 +127,11 @@ function checkShareToken() {
 //入口
 $(document).ready(function () {
   //兼容path不带扩展名，取name的扩展名
-  var ext=getFileExt(path);
-  if(ext==null) {
-    path = path + getFileExt(name);
+  if(path!="") {
+    var ext = getFileExt(path);
+    if (ext == null) {
+      path = path + getFileExt(name);
+    }
   }
   $("#main").hide();
   if (location.href.indexOf("bysharetoken") > -1) {

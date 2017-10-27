@@ -19,3 +19,8 @@ String.prototype.endWith = function (str) {
     return false;
   return true;
 }
+
+function getFileExt(file_name){
+  var result =/\.[^\.]+/.exec(file_name);
+  return result;
+}

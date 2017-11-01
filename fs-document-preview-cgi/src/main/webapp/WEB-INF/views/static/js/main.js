@@ -138,7 +138,7 @@ $(document).ready(function () {
     checkShareToken();
   }
   else {
-    if (path.toLowerCase().indexOf("mp4") >= 0) {
+    if (path.toLowerCase().indexOf("mp4") >= 0||name.toLowerCase().indexOf("mp4")>=0) {
       location.href = window.contextPath + "/preview/videoplayer?path=" + path + "&token=" + token;
     }
     else {

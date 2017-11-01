@@ -27,7 +27,7 @@ public class ConvertOffice2PdfEnqueueUtil {
   ConvertorQueueProvider convertorQueueProvider;
 
   public void enqueue(String ea, String path, int width) {
-    if(width==0) {
+    if (width == 0) {
       width = 1000;
     }
     log.info("enqueue args,ea:{},path:{},width:{}", ea, path, width);
@@ -37,7 +37,8 @@ public class ConvertOffice2PdfEnqueueUtil {
       return;
     }
     List<String> dataFilePathList = previewInfo.getFilePathList();
-    if (dataFilePathList != null && dataFilePathList.size() == previewInfo.getPageCount()) {
+    if (dataFilePathList != null &&
+      dataFilePathList.stream().filter(a -> a.contains(".htm")).count() == previewInfo.getPageCount()) {
       return;
     }
     int status = office2PdfTaskDao.getTaskStatus(ea, path, width);

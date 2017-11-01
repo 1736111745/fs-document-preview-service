@@ -361,13 +361,7 @@
       <dependency>
         <groupId>com.github.colin-lee</groupId>
         <artifactId>rpc-trace</artifactId>
-        <version>1.4.2</version>
-          <exclusions>
-              <exclusion>
-                  <artifactId>config-core</artifactId>
-                  <groupId>com.github.colin-lee</groupId>
-              </exclusion>
-          </exclusions>
+        <version>1.4.3</version>
       </dependency>
     </dependencies>
     <build>

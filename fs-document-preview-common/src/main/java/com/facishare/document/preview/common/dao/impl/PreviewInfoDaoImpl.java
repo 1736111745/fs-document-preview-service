@@ -62,7 +62,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
         query.and(query.criteria("path").equal(path).criteria("ea").equal(ea)).and(query.or(query.criteria("width").equal(width)));
       }
     }
-    log.info("query:{}", query);
+    //log.info("query:{}", query);
     return query;
   }
 

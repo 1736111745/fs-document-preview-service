@@ -140,7 +140,7 @@ public class Pdf2HtmlHandler {
     args.add("--dest-dir");//输出目录
     args.add(outPutDir);
     args.add(filePath);
-    log.info("args:{}", args);
+    //log.info("args:{}", args);
     return args;
   }
 

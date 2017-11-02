@@ -140,7 +140,7 @@ public class Pdf2HtmlHandler {
     args.add("--dest-dir");//输出目录
     args.add(outPutDir);
     args.add(filePath);
-    log.info("args:{}",args);
+    log.info("args:{}", args);
     return args;
   }
 
@@ -205,26 +205,16 @@ public class Pdf2HtmlHandler {
       String fontFilePath = FilenameUtils.concat(outPutDir, fontName);
       File fontFile = new File(fontFilePath);
       if (fontFile.exists()) {
-        boolean flag = isIgnoreFont(fontFilePath);
-        if (flag) {
-          String regexFontFace = "@font-face.*format\\(\"woff\"\\);}";
-          cssHtml = cssHtml.replaceAll(regexFontFace, "");//取消webfont，减少用户流量和提高页面加载速度。
-          String regexCommonFont = "font-family:ff\\d";
-          String securityFontFamily = " font-family:Helvetica,monospace,sans-self";
-          cssHtml = cssHtml.replaceAll(regexCommonFont, securityFontFamily);//采用通用字体渲染网页
-          break;
-        } else {
-          String newFontName = "font_" + page + "_" + fontName;
-          String newFontFilePath = FilenameUtils.concat(baseDir, newFontName);
-          File newFontFile = new File(newFontFilePath);
-          fontFile.renameTo(newFontFile);
-          String newFontStyle = "url(" + newFontName + ")";
-          cssHtml = cssHtml.replace(fontStyle, newFontStyle);
-        }
+        String newFontName = "font_" + page + "_" + fontName;
+        String newFontFilePath = FilenameUtils.concat(baseDir, newFontName);
+        File newFontFile = new File(newFontFilePath);
+        fontFile.renameTo(newFontFile);
+        String newFontStyle = "url(" + newFontName + ")";
+        cssHtml = cssHtml.replace(fontStyle, newFontStyle);
       }
     }
     //替换代码
-    cssHtml=cssHtml.replace("visibility:hidden","visibility:visible");
+    cssHtml = cssHtml.replace("visibility:hidden", "visibility:visible");
     String newCssFilePath = FilenameUtils.concat(baseDir, newCssFileName);
     FileUtils.writeByteArrayToFile(new File(newCssFilePath), cssHtml.getBytes());
     //处理背景图片
@@ -245,7 +235,7 @@ public class Pdf2HtmlHandler {
         SimpleImageInfo simpleImageInfo = new SimpleImageInfo(new File(newBgFilePath));
         int width = simpleImageInfo.getWidth();
         int height = simpleImageInfo.getHeight();
-        if(width>1000&&height>1000) {
+        if (width > 1000 && height > 1000) {
           int newWidth, newHeight;
           if (width > height) {
             newHeight = 1000;
@@ -257,10 +247,8 @@ public class Pdf2HtmlHandler {
           log.info("width:{},height:{},newWidth:{},newHeight:{}", width, height, newWidth, newHeight);
           doThumbnail(FileUtils.readFileToByteArray(new File(newBgFilePath)), newWidth, newHeight, new File(newBgFilePath));
         }
-      }
-      catch (Exception ex)
-      {
-
+      } catch (Exception ex) {
+         log.error("doThumbnail happened error!path:{}",newBgFilePath);
       }
 
     }

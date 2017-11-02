@@ -235,7 +235,7 @@ public class Pdf2HtmlHandler {
         SimpleImageInfo simpleImageInfo = new SimpleImageInfo(new File(newBgFilePath));
         int width = simpleImageInfo.getWidth();
         int height = simpleImageInfo.getHeight();
-        if (width > 1000 && height > 1000) {
+        if (width > 2000 && height > 2000) {
           int newWidth, newHeight;
           if (width > height) {
             newHeight = 1000;

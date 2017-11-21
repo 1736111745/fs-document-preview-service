@@ -66,8 +66,12 @@ public class Pdf2HtmlHandler {
     StartedProcess startedProcess = new ProcessExecutor().command(args).readOutput(false).start();
     Process pdf2htmlProcess = startedProcess.getProcess();
     try {
-      Future<ProcessResult> future = startedProcess.getFuture();
-      ProcessResult result = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
+      //Future<ProcessResult> future = startedProcess.getFuture();
+      //ProcessResult result = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
+      ProcessResult result = new ProcessExecutor().command(args)
+                                                  .readOutput(false)
+                                                  .timeout(pdf2HtmlTimeout, TimeUnit.SECONDS)
+                                                  .execute();
       if (result.getExitValue() == 0) {
         log.info("pdf2html finished,begin handle result!");
         dataFilePath = handleResult(page, filePath, outPutDir, type);
@@ -80,8 +84,6 @@ public class Pdf2HtmlHandler {
       log.error("do convert happened InterruptedException!", e);
     } catch (TimeoutException e) {
       log.error("do convert happened TimeoutException!filePath:{},page:{}", filePath, page, e);
-    } catch (ExecutionException e) {
-      e.printStackTrace();
     } finally {
       if (pdf2htmlProcess != null) {
         SystemProcess process = Processes.newStandardProcess(pdf2htmlProcess);
@@ -248,7 +250,7 @@ public class Pdf2HtmlHandler {
           doThumbnail(FileUtils.readFileToByteArray(new File(newBgFilePath)), newWidth, newHeight, new File(newBgFilePath));
         }
       } catch (Exception ex) {
-         log.error("doThumbnail happened error!path:{}",newBgFilePath);
+        log.error("doThumbnail happened error!path:{}", newBgFilePath);
       }
 
     }

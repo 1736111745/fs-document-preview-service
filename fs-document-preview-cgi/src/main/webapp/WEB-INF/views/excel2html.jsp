@@ -13,20 +13,20 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta Name="viewport" content="width=device-width, initial-scale=0.6">
   <title>文档</title>
-  <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery-1.11.1.min.js"></script>
+  <script type="text/javascript" src="http://a9.fspage.com/FSR/fs-dps/static/common/jquery-1.11.1.min.js"></script>
   <script>
     window.contextPath = "<%=request.getContextPath()%>";
   </script>
-  <link href="<%=request.getContextPath()%>/static/common/bootstrap.min.css" rel="stylesheet">
-  <link href="<%=request.getContextPath()%>/static/common/bootstrap-responsive.min.css" rel="stylesheet">
-  <link href="<%=request.getContextPath()%>/static/common/style.css" rel="stylesheet">
-  <link href="<%=request.getContextPath()%>/static/css/excel.css?v=<%=request.getAttribute("sv")%>"
+  <link href="http://a9.fspage.com/FSR/fs-dps/static/common/bootstrap.min.css" rel="stylesheet">
+  <link href="http://a9.fspage.com/FSR/fs-dps/static/common/bootstrap-responsive.min.css" rel="stylesheet">
+  <link href="http://a9.fspage.com/FSR/fs-dps/static/common/style.css" rel="stylesheet">
+  <link href="http://a9.fspage.com/FSR/fs-dps/static/css/excel.css?v=<%=request.getAttribute("sv")%>"
         rel="stylesheet">
-  <script type="application/javascript" src="<%=request.getContextPath()%>/static/common/bootstrap.min.js"></script>
+  <script type="application/javascript" src="http://a9.fspage.com/FSR/fs-dps/static/common/bootstrap.min.js"></script>
   <script type="text/javascript"
-          src="<%=request.getContextPath()%>/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
+          src="http://a9.fspage.com/FSR/fs-dps/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
   <script type="application/javascript"
-          src="<%=request.getContextPath()%>/static/js/excel.js?v=<%=request.getAttribute("sv")%>"></script>
+          src="http://a9.fspage.com/FSR/fs-dps/static/js/excel.js?v=<%=request.getAttribute("sv")%>"></script>
 </head>
 <body>
 <div class="navbar navbar-inverse navbar-fixed-top">

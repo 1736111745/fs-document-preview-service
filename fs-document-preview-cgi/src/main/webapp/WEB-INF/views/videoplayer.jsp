@@ -11,10 +11,10 @@
 <head>
   <title>视频播放</title>
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
-  <script type="text/javascript" src="<%=request.getContextPath()%>/static/common/jquery-1.11.1.min.js"></script>
-  <link href="<%=request.getContextPath()%>/static/common/video-js.css" rel="stylesheet">
-  <script src="<%=request.getContextPath()%>/static/common/video.js"></script>
-  <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
+  <script type="text/javascript" src="http://a9.fspage.com/FSR/fs-dps/static/common/jquery-1.11.1.min.js"></script>
+  <link href="http://a9.fspage.com/FSR/fs-dps/static/common/video-js.css" rel="stylesheet">
+  <script src="http://a9.fspage.com/FSR/fs-dps/static/common/video.js"></script>
+  <script type="text/javascript" src="http://a9.fspage.com/FSR/fs-dps/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
   <script>
     $(function () {
       var path = getQueryStringByName("path");

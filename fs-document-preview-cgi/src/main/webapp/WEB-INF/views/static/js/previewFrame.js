@@ -90,15 +90,13 @@ function loadData(i) {
   var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&width=" + width + "&sg=" + sg + "&ver=2.1";
   var iframe = "<iframe id='framePage' src='" + url + "' onload='resize(this)'  scrolling='no' frameborder='0' width='100%'></iframe>";
   $('#main').html(iframe);
+  loadViewPort();
 }
 
 function resize(obj) {
   var height = $(obj.contentWindow.document).find("div[id='page-container']").height()
-  $(obj.contentWindow.document).find("body").css("background-color","#FFFFFF");
+  $(obj.contentWindow.document).find("body").css("background-color", "#FFFFFF");
   $(obj).height(height);
   $(obj.parentElement).removeClass("lazy");
-  if(!loadedViewPort) {
-    loadedViewPort = true;
-    loadViewPort();
-  }
+
 }

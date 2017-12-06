@@ -17,7 +17,7 @@
   <script type="text/javascript" src="https://a9.fspage.com/FSR/fs-dps/static/common/jquery.lazy.min.js"></script>
   <script type="text/javascript"
           src="https://a9.fspage.com/FSR/fs-dps/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
-  <script type="text/javascript" src="https://a9.fspage.com/FSR/fs-dps/static/js/previewFrame.js?v=<%=request.getAttribute("sv")%>")></script>
+  <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/previewFrame.js?v=<%=request.getAttribute("sv")%>")></script>
   <script>
     window.contextPath = "<%=request.getContextPath()%>"
   </script>

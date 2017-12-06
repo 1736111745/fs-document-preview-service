@@ -11,6 +11,7 @@ var width = 1000;
 var u = navigator.userAgent;
 var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
 var deviceWidth = screenWidth;
+var loadedViewPort= false;
 $(function () {
   loadData(page);
   window.addEventListener("orientationchange", function () {
@@ -85,7 +86,6 @@ function loadViewPort() {
   }
 }
 
-
 function loadData(i) {
   var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&width=" + width + "&sg=" + sg + "&ver=2.1";
   var iframe = "<iframe id='framePage' src='" + url + "' onload='resize(this)'  scrolling='no' frameborder='0' width='100%'></iframe>";
@@ -97,6 +97,8 @@ function resize(obj) {
   $(obj.contentWindow.document).find("body").css("background-color","#FFFFFF");
   $(obj).height(height);
   $(obj.parentElement).removeClass("lazy");
-  //alert("loadViewPort by resize!height:"+height);
-  loadViewPort();
+  if(!loadedViewPort) {
+    loadedViewPort = true;
+    loadViewPort();
+  }
 }

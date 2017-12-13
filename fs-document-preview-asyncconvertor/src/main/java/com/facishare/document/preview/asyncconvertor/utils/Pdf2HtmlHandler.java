@@ -31,8 +31,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -124,7 +122,7 @@ public class Pdf2HtmlHandler {
     args.add("--embed-image");
     args.add("0");
     args.add("--embed-font");
-    args.add("0");
+    args.add("1");
     args.add("--bg-format");
     args.add("jpg");
     args.add("--no-drm");
@@ -144,39 +142,7 @@ public class Pdf2HtmlHandler {
     return args;
   }
 
-  private boolean isIgnoreFont(String fontFile) {
-    boolean flag = false;
-    List<String> args = Lists.newArrayList();
-    args.add("ttx");
-    args.add("-t");
-    args.add("name");
-    args.add(fontFile);
-    try {
-      ProcessResult processResult = new ProcessExecutor().command(args)
-                                                         .readOutput(true)
-                                                         .timeout(1, TimeUnit.SECONDS)
-                                                         .execute();
-      if (processResult.getExitValue() == 0) {
-        String fontDescFilePath = fontFile.replace("woff", "ttx");
-        File fontDescFile = new File(fontDescFilePath);
-        if (fontDescFile.exists()) {
-          String fontDesc = FileUtils.readFileToString(fontDescFile);
-          if (fontDesc.indexOf("DFKai-SB") > -1) {
-            flag = true;
-          }
-        }
-      } else {
-        log.error("get font name fail,exit value:{}", processResult.getExitValue());
-      }
-    } catch (IOException e) {
-      log.error("do get font name  happened IOException!", e);
-    } catch (InterruptedException e) {
-      log.error("do get font name happened  InterruptedException!", e);
-    } catch (TimeoutException e) {
-      log.error("do get font name happened TimeoutException!font file:{}", fontFile);
-    }
-    return flag;
-  }
+
 
   private String handleResult(int page, String filePath, String outPutDir, int type) throws IOException {
     String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
@@ -194,25 +160,25 @@ public class Pdf2HtmlHandler {
     String newCssFileName = page + ".css";
     String cssFileFilePath = FilenameUtils.concat(outPutDir, cssFileName);
     String cssHtml = FileUtils.readFileToString(new File(cssFileFilePath));
-    //动态判断字体
-    String regex = "url\\(f\\d\\.woff\\)";
-    Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
-    Matcher matcher = pattern.matcher(cssHtml);
-    while (matcher.find()) {
-      String fontStyle = matcher.group();
-      String fontName = fontStyle.replace("url(", "").replace(")", "");
-      //找到字体
-      String fontFilePath = FilenameUtils.concat(outPutDir, fontName);
-      File fontFile = new File(fontFilePath);
-      if (fontFile.exists()) {
-        String newFontName = "font_" + page + "_" + fontName;
-        String newFontFilePath = FilenameUtils.concat(baseDir, newFontName);
-        File newFontFile = new File(newFontFilePath);
-        fontFile.renameTo(newFontFile);
-        String newFontStyle = "url(" + newFontName + ")";
-        cssHtml = cssHtml.replace(fontStyle, newFontStyle);
-      }
-    }
+//    //动态判断字体
+//    String regex = "url\\(f\\d\\.woff\\)";
+//    Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+//    Matcher matcher = pattern.matcher(cssHtml);
+//    while (matcher.find()) {
+//      String fontStyle = matcher.group();
+//      String fontName = fontStyle.replace("url(", "").replace(")", "");
+//      //找到字体
+//      String fontFilePath = FilenameUtils.concat(outPutDir, fontName);
+//      File fontFile = new File(fontFilePath);
+//      if (fontFile.exists()) {
+//        String newFontName = "font_" + page + "_" + fontName;
+//        String newFontFilePath = FilenameUtils.concat(baseDir, newFontName);
+//        File newFontFile = new File(newFontFilePath);
+//        fontFile.renameTo(newFontFile);
+//        String newFontStyle = "url(" + newFontName + ")";
+//        cssHtml = cssHtml.replace(fontStyle, newFontStyle);
+//      }
+//    }
     //替换代码
     cssHtml = cssHtml.replace("visibility:hidden", "visibility:visible");
     String newCssFilePath = FilenameUtils.concat(baseDir, newCssFileName);

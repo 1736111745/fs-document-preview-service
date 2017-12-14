@@ -29,6 +29,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
@@ -62,12 +64,8 @@ public class Pdf2HtmlHandler {
     StartedProcess startedProcess = new ProcessExecutor().command(args).readOutput(false).start();
     Process pdf2htmlProcess = startedProcess.getProcess();
     try {
-      //Future<ProcessResult> future = startedProcess.getFuture();
-      //ProcessResult result = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
-      ProcessResult result = new ProcessExecutor().command(args)
-                                                  .readOutput(false)
-                                                  .timeout(pdf2HtmlTimeout, TimeUnit.SECONDS)
-                                                  .execute();
+      Future<ProcessResult> future = startedProcess.getFuture();
+      ProcessResult result = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
       if (result.getExitValue() == 0) {
         log.info("pdf2html finished,begin handle result!");
         dataFilePath = handleResult(page, filePath, outPutDir, type);
@@ -80,6 +78,8 @@ public class Pdf2HtmlHandler {
       log.error("do convert happened InterruptedException!", e);
     } catch (TimeoutException e) {
       log.error("do convert happened TimeoutException!filePath:{},page:{}", filePath, page, e);
+    } catch (ExecutionException e) {
+      log.error("happened!ExecutionException", e);
     } finally {
       if (pdf2htmlProcess != null) {
         SystemProcess process = Processes.newStandardProcess(pdf2htmlProcess);

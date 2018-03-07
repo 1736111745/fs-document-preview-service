@@ -32,15 +32,19 @@ public class AuthFilter extends OncePerRequestFilter {
   AuthHelper authHelper;
   @ReloadableProperty("authTempKey")
   private String authTempKey = "~]Ec5SrXX<.557uf";
+  @ReloadableProperty("staticFileVersion")
+  private String staticFileVersion="v5.3.30";
 
   private @Context
   HttpServletRequest request;
+
+
 
   @Override
   protected void doFilterInternal(HttpServletRequest request,
                                   HttpServletResponse response,
                                   FilterChain filterChain) throws ServletException, IOException {
-    request.setAttribute("sv", "v5.3.29");
+    request.setAttribute("sv", staticFileVersion);
     String requestUri = request.getRequestURI().toLowerCase();
     if (ignoreAuth(request)) {
       filterChain.doFilter(request, response);

@@ -3,7 +3,6 @@ package com.facishare.document.preview.cgi.utils;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -25,7 +24,7 @@ public class HandlerHtml {
       File htmlFile = new File(filePath);
       long fileSize = htmlFile.length();
       log.info("begin handle html,filePath:{},page:{},file size:{}", filePath, page, fileSize);
-      if (fileSize > 1024 * 1024 * 10) {
+      if (fileSize > 1024 * 1024 * 30) {
         //如果生成的html大于10m，就不给个错误提示
         String html = "<h3>该工作表数据异常，请检查工作表的行数或者列数是否过大！</h3>";
         FileUtils.writeByteArrayToFile(htmlFile, html.getBytes(encoding), false);

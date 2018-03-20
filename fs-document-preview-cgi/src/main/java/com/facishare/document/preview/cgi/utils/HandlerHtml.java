@@ -23,10 +23,10 @@ public class HandlerHtml {
       String encoding = "UTF-8";
       File htmlFile = new File(filePath);
       try {
-        File originalFile=new File(filePath+".copy");
-        FileUtils.copyFile(htmlFile,originalFile);
+        File originalFile = new File(filePath + ".copy");
+        FileUtils.copyFile(htmlFile, originalFile);
+      } catch (Exception e) {
       }
-      catch (Exception e){}
       long fileSize = htmlFile.length();
       log.info("begin handle html,filePath:{},page:{},file size:{}", filePath, page, fileSize);
       if (fileSize > 1024 * 1024 * 30) {
@@ -46,7 +46,9 @@ public class HandlerHtml {
           image.remove();
         }
       }
-      FileUtils.writeByteArrayToFile(htmlFile, document.html().getBytes(encoding), false);
+      String html = document.html()
+                            .replace("Evaluation Only. Created with Aspose.Cells for .NET.Copyright 2003 - 2017 Aspose Pty Ltd.", "");
+      FileUtils.writeByteArrayToFile(htmlFile, html.getBytes(encoding), false);
     } catch (Exception e) {
       log.info("handle html happened error!", e);
     }

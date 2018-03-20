@@ -22,11 +22,6 @@ public class HandlerHtml {
     try {
       String encoding = "UTF-8";
       File htmlFile = new File(filePath);
-      try {
-        File originalFile = new File(filePath + ".copy");
-        FileUtils.copyFile(htmlFile, originalFile);
-      } catch (Exception e) {
-      }
       long fileSize = htmlFile.length();
       log.info("begin handle html,filePath:{},page:{},file size:{}", filePath, page, fileSize);
       if (fileSize > 1024 * 1024 * 30) {

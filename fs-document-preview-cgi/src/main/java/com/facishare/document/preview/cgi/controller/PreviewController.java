@@ -75,9 +75,10 @@ public class PreviewController {
   public String getPreviewInfo(HttpServletRequest request) throws Exception {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
     String token = UrlParametersHelper.safeGetRequestParameter(request, "token");
+
     EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
     int width = NumberUtils.toInt(UrlParametersHelper.safeGetRequestParameter(request, "width"), 1000);
-    String securityGroup = "";
+    String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
     if (path.equals("") && token.equals("")) {
       return ResponseJsonHelper.getPreviewInfoResult("参数错误!");
     }

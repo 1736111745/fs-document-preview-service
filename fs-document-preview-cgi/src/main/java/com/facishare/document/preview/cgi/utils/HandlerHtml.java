@@ -42,8 +42,8 @@ public class HandlerHtml {
         }
       }
       //去掉javascript
-      Elements js=body.getElementsByTag("script");
-      js.remove();
+      //Elements js=body.getElementsByTag("script");
+      //js.remove();
       String html = document.html()
                             .replace("Evaluation Only. Created with Aspose.Cells for .NET.Copyright 2003 - 2017 Aspose Pty Ltd.", "");
       FileUtils.writeByteArrayToFile(htmlFile, html.getBytes(encoding), false);

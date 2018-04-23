@@ -60,7 +60,6 @@ public class AuthHelper {
         if (cookie != null) {
           return cookie.getValue();
         }
-        //log.warn("[authorizeByCookieValue] [fail] [can't find FSAuthX/FsAuthXC cookie] [cookie:{}] [cookieInHeader:{}]", Arrays.toString(request.getCookies()), request.getHeader("cookie"));
         return "";
     }
 }

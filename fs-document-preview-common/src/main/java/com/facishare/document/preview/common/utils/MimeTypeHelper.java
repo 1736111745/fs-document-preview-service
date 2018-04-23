@@ -77,6 +77,7 @@ public class MimeTypeHelper {
         s_mapMimeTypes.put("jpeg", "image/jpeg");
         s_mapMimeTypes.put("jpe", "image/jpeg");
         s_mapMimeTypes.put("jpg", "image/jpeg");
+        s_mapMimeTypes.put("bmp", "image/bmp");
         s_mapMimeTypes.put("js", "application/x-javascript");
         s_mapMimeTypes.put("jsp", "text/plain");
         s_mapMimeTypes.put("kar", "audio/midi");
@@ -188,7 +189,7 @@ public class MimeTypeHelper {
         s_mapMimeTypes.put("xyz", "chemical/x-xyz");
         s_mapMimeTypes.put("z", "application/compress");
         s_mapMimeTypes.put("zip", "application/zip");
-        s_mapMimeTypes.put("woff","application/x-font-woff");
+        s_mapMimeTypes.put("woff", "application/x-font-woff");
     }
 
     // Constructors /////////////////////////////////////////////////////////////
@@ -211,7 +212,7 @@ public class MimeTypeHelper {
      */
     public static String getMimeType(String strKey) {
         String strMimeType;
-        strMimeType = s_mapMimeTypes.get(strKey).toString();
+        strMimeType = s_mapMimeTypes.getOrDefault(strKey,"").toString();
         if ((strMimeType == null) || (strMimeType.trim().length() == 0)) {
             strMimeType = s_strDefaultMimeType;
         }

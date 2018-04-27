@@ -36,7 +36,7 @@ public class PreviewService {
     log.info("begin get doc page,employeeInfo:{},path:{},pageIndex:{}", com.alibaba.fastjson.JSON.toJSON(employeeInfo), path, pageIndex);
     DocPageResult result = new DocPageResult();
     try {
-      PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, "",1000);
+      PreviewInfoEx previewInfoEx = previewService.getPreviewInfo(employeeInfo, path, "", 1000);
       log.info("path:{},previewInfoEx:{}", path, com.alibaba.fastjson.JSON.toJSON(previewInfoEx));
       if (!previewInfoEx.isSuccess()) {
         log.warn("can't get previewInfo,path:{},pageIndex:{}", path, pageIndex);
@@ -67,7 +67,7 @@ public class PreviewService {
                 dataFilePath =
                   FilenameUtils.getFullPathNoEndSeparator(originalFilePath) + "/" + (pageIndex + 1) + ".png";
                 log.info("dataFilePath:{}", dataFilePath);
-                previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath,1000);
+                previewInfoDao.savePreviewInfo(employeeInfo.getEa(), path, dataFilePath, 1000);
                 result.setCode(200);
                 result.setDataFilePath(dataFilePath);
               } else {

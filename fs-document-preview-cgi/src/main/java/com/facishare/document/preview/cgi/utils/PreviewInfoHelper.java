@@ -9,6 +9,7 @@ import com.facishare.document.preview.common.model.PreviewInfo;
 import com.facishare.document.preview.common.utils.OfficeApiHelper;
 import com.facishare.document.preview.common.utils.PathHelper;
 import com.facishare.document.preview.common.utils.SampleUUID;
+import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -30,6 +31,8 @@ public class PreviewInfoHelper {
   PreviewInfoDao previewInfoDao;
   @Autowired
   OfficeApiHelper officeApiHelper;
+  @ReloadableProperty("redirectPreviewExtension")
+  private String redirectPreviewExtension = "txt|sql|js|css|json|csv|svg|webp|jpg|png|bmp|gif|jpeg|mp4";
 
   /**
    * 手机预览
@@ -72,11 +75,7 @@ public class PreviewInfoHelper {
               String filePath = FilenameUtils.concat(dataDir, fileName);
               FileUtils.writeByteArrayToFile(new File(filePath), bytes);
               log.info("save file to {},npath:{}", filePath, npath);
-              if (extension.equalsIgnoreCase("txt") || extension.equalsIgnoreCase("csv") ||
-                extension.equalsIgnoreCase("svg") || extension.equalsIgnoreCase("webp") ||
-                extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("png") ||
-                extension.equalsIgnoreCase("bmp") || extension.equalsIgnoreCase("gif") ||
-                extension.equalsIgnoreCase("jpeg")||extension.equalsIgnoreCase("mp4")) {
+              if (redirectPreviewExtension.indexOf(extension) > -1) {
                 pageInfo.setSuccess(true);
                 pageInfo.setPageCount(1);
               } else {

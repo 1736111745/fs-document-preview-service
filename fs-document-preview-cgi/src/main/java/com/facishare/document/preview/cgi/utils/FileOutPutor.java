@@ -2,6 +2,7 @@ package com.facishare.document.preview.cgi.utils;
 
 import com.facishare.document.preview.common.utils.MimeTypeHelper;
 import com.fxiaoke.common.image.SimpleImageInfo;
+import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.FileUtils;
@@ -22,6 +23,9 @@ import java.io.OutputStream;
 public class FileOutPutor {
     @Autowired
     ThumbnailHelper thumbnailHelper;
+
+    @ReloadableProperty("txtPlainExtension")
+    private String txtPlainExtension = "txt|sql|js|css|json|csv";
 
     public void outPut(HttpServletResponse response, String filePath, boolean needThumbnail) throws IOException {
         outPut(response, filePath, 0, needThumbnail);
@@ -65,7 +69,7 @@ public class FileOutPutor {
         }
         String mime = MimeTypeHelper.getMimeType(ext);
         response.setContentType(mime);
-        if (filePath.toLowerCase().contains(".txt") || filePath.toLowerCase().contains(".csv")) {
+        if (txtPlainExtension.indexOf(ext)>-1) {
             String encode = EncodingDetect.detectCharset(filePath);
             response.setCharacterEncoding(encode);
         }

@@ -25,38 +25,39 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 @RequestMapping("/")
 public class PreviewConfigController {
-    private FsGrayReleaseBiz gray = FsGrayRelease.getInstance("dps");
-    @ReloadableProperty("allowPreviewExtension")
-    private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf|txt";
+  private FsGrayReleaseBiz gray = FsGrayRelease.getInstance("dps");
+  @ReloadableProperty("allowPreviewExtension")
+  private String allowPreviewExtension = "doc|docx|xls|xlsx|ppt|pptx|pdf|txt";
 
-    @ResponseBody
-    @RequestMapping(value = "/preview/getPreviewConfig", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getPreviewWay(HttpServletRequest request) {
-        EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
-        String client = UrlParametersHelper.safeGetRequestParameter(request, "client");
-        boolean isIOS = client.toLowerCase().equals("ios");
-        String grayConfig = isIOS ? "newway_iOS" : "newway_android";
-        PreviewWayEntity entity = new PreviewWayEntity();
-        String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
-        boolean newway = gray.isAllow(grayConfig, user);
-        String name = UrlParametersHelper.safeGetRequestParameter(request, "name");
-        boolean useNewWay = true;
-        if (!Strings.isNullOrEmpty(name)) {
-            String extension = FilenameUtils.getExtension(name).toLowerCase();
-            if (allowPreviewExtension.indexOf(extension) == -1) {
-                useNewWay = false;
-            }
-        }
-        if (newway && useNewWay) {
-            entity.setWay(1);
-            String byTokenUrl = "/dps/preview/bytoken?token={0}&name={1}";
-            String byPathUrl = "/dps/preview/bypath?path={0}&name={1}";
-            entity.setPreviewByPathUrlFormat(byPathUrl);
-            entity.setPreviewByTokenUrlFormat(byTokenUrl);
-        } else {
-          entity.setWay(0);
-        }
-        String json = JSON.toJSONString(entity);
-        return json;
+
+  @ResponseBody
+  @RequestMapping(value = "/preview/getPreviewConfig", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+  public String getPreviewWay(HttpServletRequest request) {
+    EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
+    String client = UrlParametersHelper.safeGetRequestParameter(request, "client");
+    boolean isIOS = client.toLowerCase().equals("ios");
+    String grayConfig = isIOS ? "newway_iOS" : "newway_android";
+    PreviewWayEntity entity = new PreviewWayEntity();
+    String user = "E." + employeeInfo.getEa() + "." + employeeInfo.getEmployeeId();
+    boolean newway = gray.isAllow(grayConfig, user);
+    String name = UrlParametersHelper.safeGetRequestParameter(request, "name");
+    boolean useNewWay = true;
+    if (!Strings.isNullOrEmpty(name)) {
+      String extension = FilenameUtils.getExtension(name).toLowerCase();
+      if (allowPreviewExtension.indexOf(extension) == -1) {
+        useNewWay = false;
+      }
     }
+    if (newway && useNewWay) {
+      entity.setWay(1);
+      String byTokenUrl = "/dps/preview/bytoken?token={0}&name={1}";
+      String byPathUrl = "/dps/preview/bypath?path={0}&name={1}";
+      entity.setPreviewByPathUrlFormat(byPathUrl);
+      entity.setPreviewByTokenUrlFormat(byTokenUrl);
+    } else {
+      entity.setWay(0);
+    }
+    String json = JSON.toJSONString(entity);
+    return json;
+  }
 }

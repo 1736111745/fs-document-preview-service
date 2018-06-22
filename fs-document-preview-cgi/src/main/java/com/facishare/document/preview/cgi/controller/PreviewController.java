@@ -296,7 +296,7 @@ public class PreviewController {
 
   @ResponseBody
   @RequestMapping(value = "/preview/queryPdf2HtmlStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-  public String queryPdf2HtmlStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public String queryPdf2HtmlStatus(HttpServletRequest request, HttpServletResponse response) {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
     String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
     int width = NumberUtils.toInt(UrlParametersHelper.safeGetRequestParameter(request, "width"), 1000);
@@ -348,7 +348,7 @@ public class PreviewController {
 
   @ResponseBody
   @RequestMapping(value = "/share/preview/parseShareToken", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-  public String parseShareToken(HttpServletRequest request) throws Exception {
+  public String parseShareToken(HttpServletRequest request) {
     String shareToken = UrlParametersHelper.safeGetRequestParameter(request, "shareToken");
     Map<String, Object> map = new HashMap<>();
     if (Strings.isNullOrEmpty(shareToken)) {

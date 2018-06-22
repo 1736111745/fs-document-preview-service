@@ -14,10 +14,10 @@ import java.security.SecureRandom;
 public class AES256Utils {
     public static final String aesKey = "nirtHUNF/Ct8J7sf40VaIQui0N5r8gcbxGXKxRhu1C4=";
     public static final String aesIv = "jwNz4Ia8OHVpPyEXIQjJ2g==";
-    private static byte[] keyBytes = null;
-    private static byte[] ivBytes = null;
-    public static Cipher decrypt_c = null;
-    public static Cipher encrypt_c = null;
+    private static byte[] keyBytes;
+    private static byte[] ivBytes;
+    public static Cipher decrypt_c;
+    public static Cipher encrypt_c;
 
     static {
         try {

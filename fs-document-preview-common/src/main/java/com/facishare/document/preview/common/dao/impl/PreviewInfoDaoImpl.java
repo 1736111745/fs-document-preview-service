@@ -118,6 +118,8 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
           }
           break;
         }
+        default: {
+        }
       }
     }
     if (!Strings.isNullOrEmpty(dataFileName)) {

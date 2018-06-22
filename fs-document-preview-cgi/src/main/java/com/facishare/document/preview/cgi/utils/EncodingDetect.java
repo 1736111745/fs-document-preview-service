@@ -13,6 +13,7 @@ import java.io.IOException;
  */
 public class EncodingDetect {
   public static void main(String[] args) throws IOException {
+
     String file = "/Users/liuq/Downloads/encode.txt";
     String encode = detectCharset(file);
     System.out.println(encode);
@@ -45,6 +46,7 @@ public class EncodingDetect {
       }
     }
     detector.DataEnd();
+    impBufferedInputStream.close();
     return result[0];
   }
 

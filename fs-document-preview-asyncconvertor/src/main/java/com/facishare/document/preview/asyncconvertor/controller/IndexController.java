@@ -5,8 +5,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.io.IOException;
-
 /**
  * Created by liuq on 2016/10/24.
  */
@@ -16,7 +14,7 @@ import java.io.IOException;
 public class IndexController {
 
     @RequestMapping(method = RequestMethod.GET)
-    public String index() throws IOException {
+    public String index() {
         return "index";
     }
 }

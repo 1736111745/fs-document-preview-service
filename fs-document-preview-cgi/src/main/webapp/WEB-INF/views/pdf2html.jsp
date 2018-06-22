@@ -95,7 +95,7 @@
 <div id="main">
 </div>
 <div id="sure-wrapper" class="sure-wrapper">
-  <a href="javascript:;"
+  <a href="javascript:;" id="jumpUrl"
      class="weui-btn weui-btn_primary sure-button">已完成对账</a>
 </div>
 

@@ -119,6 +119,8 @@ public class Pdf2HtmlHandler {
       args.add("--css-filename");
       args.add("css" + page + ".css");
     }
+    args.add("--process-annotation");
+    args.add("1");
     args.add("--embed-image");
     args.add("0");
     args.add("--embed-font");

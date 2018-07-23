@@ -41,8 +41,10 @@ public class PreviewInfoHelper {
 
   @PostConstruct
   public void init() {
+
     ConfigFactory.getInstance().getConfig("fs-dps-config", config -> {
-      pdf2ImageMd5List = Splitter.on('|').trimResults().omitEmptyStrings().splitToList(config.getString());
+      String pdf2ImageMd5s = config.get("pdf2ImageMd5s");
+      pdf2ImageMd5List = Splitter.on('|').trimResults().omitEmptyStrings().splitToList(pdf2ImageMd5s);
     });
   }
 

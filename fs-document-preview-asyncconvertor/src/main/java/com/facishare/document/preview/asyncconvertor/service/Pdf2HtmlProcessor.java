@@ -6,6 +6,7 @@ import com.alibaba.rocketmq.client.consumer.listener.MessageListenerConcurrently
 import com.alibaba.rocketmq.common.message.MessageExt;
 import com.facishare.common.rocketmq.AutoConfRocketMQProcessor;
 import com.facishare.document.preview.asyncconvertor.utils.Pdf2HtmlHandler;
+import com.facishare.document.preview.asyncconvertor.utils.Pdf2ImageHandler;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.ConvertPdf2HtmlMessage;
 import com.fxiaoke.metrics.CounterService;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.WildcardType;
 
 /**
  * Created by liuq on 2017/3/9.
@@ -30,6 +30,8 @@ import java.lang.reflect.WildcardType;
 public class Pdf2HtmlProcessor {
   @Autowired
   Pdf2HtmlHandler pdf2HtmlHandler;
+  @Autowired
+  Pdf2ImageHandler pdf2ImageHandler;
   @Autowired
   PreviewInfoDao previewInfoDao;
   @Autowired
@@ -58,7 +60,7 @@ public class Pdf2HtmlProcessor {
     autoConfRocketMQProcessor.init();
   }
 
-  private void doConvert(ConvertPdf2HtmlMessage convertorMessage) throws InterruptedException, IOException {
+  private void doConvert(ConvertPdf2HtmlMessage convertorMessage) throws IOException {
     StopWatch stopWatch = new StopWatch();
     stopWatch.start();
     log.info("begin do convert,params:{}", JSON.toJSONString(convertorMessage));
@@ -67,15 +69,21 @@ public class Pdf2HtmlProcessor {
     String filePath = convertorMessage.getFilePath();
     int page = convertorMessage.getPage();
     String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
-    String htmlFilePath = basedDir + "/" + page + ".html";
-    if (new File(htmlFilePath).exists()) {
-      log.info("data file:{} exists!not need convert!", htmlFilePath);
+    String resultFilePath = basedDir + "/" + page + ".html";
+    if (convertorMessage.getPdfConvertType() == 1) {
+      resultFilePath = basedDir + "/" + (page + 1) + ".png";
+
+    }
+    if (new File(resultFilePath).exists()) {
+      log.info("data file:{} exists!not need convert!", resultFilePath);
       return;
     }
-    String dataFilePath = pdf2HtmlHandler.doConvert(convertorMessage);
+    String dataFilePath = convertorMessage.getPdfConvertType() == 0 ?
+      pdf2HtmlHandler.doConvert(convertorMessage) :
+      pdf2ImageHandler.doConvert(convertorMessage);
     if (!Strings.isNullOrEmpty(dataFilePath)) {
       counterService.inc("convert-pdf2html-ok");
-      previewInfoDao.savePreviewInfo(ea, path, dataFilePath,convertorMessage.getPageWidth());
+      previewInfoDao.savePreviewInfo(ea, path, dataFilePath, convertorMessage.getPageWidth());
     } else {
       counterService.inc("convert-pdf2html-fail");
     }

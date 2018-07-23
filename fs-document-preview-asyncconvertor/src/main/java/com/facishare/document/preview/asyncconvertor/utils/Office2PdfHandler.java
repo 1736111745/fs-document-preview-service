@@ -42,24 +42,25 @@ public class Office2PdfHandler {
                                                                   .build();
   private final ExecutorService executorService = Executors.newCachedThreadPool(factory);
 
-  public void convertOffice2Pdf(String ea, String path, String filePath, int width) throws Exception {
+  public void convertOffice2Pdf(String ea, String path, String filePath, int width) {
     String ext = FilenameUtils.getExtension(filePath).toLowerCase();
-    PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path,width);
+    PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path, width);
     int pageCount = previewInfo.getPageCount();
     List<String> dataFilePathList = previewInfo.getFilePathList();
     if (dataFilePathList == null) {
       dataFilePathList = Lists.newArrayList();
     }
+    String queryExtension = previewInfo.getPdfConvertType() == 0 ? ".html" : ".png";
     List<Integer> hasNotConvertPageList = Lists.newArrayList();
     for (int i = 1; i < pageCount + 1; i++) {
-      if (!dataFilePathList.contains(i + ".html")) {
+      if (!dataFilePathList.contains(i + queryExtension)) {
         {
           hasNotConvertPageList.add(i);
         }
       }
     }
     if (ext.equals("pdf")) {
-      enqueueMultiPagePdf(ea, path, filePath, hasNotConvertPageList, width);
+      enqueueMultiPagePdf(ea, path, filePath, hasNotConvertPageList, width, previewInfo.getPdfConvertType());
     } else if (ext.contains("ppt")) {
       int hasNotConvertPageCount = hasNotConvertPageList.size();
       if (hasNotConvertPageCount <= pptMaxPage) {
@@ -73,7 +74,7 @@ public class Office2PdfHandler {
               if (flag) {
                 counterService.inc("ppt2pdf-success!");
                 String pdfPageFilePath = filePath + "." + page + ".pdf";
-                enqueue(ea, path, pdfPageFilePath, page, 1, width);
+                enqueue(ea, path, pdfPageFilePath, page, 1, width, previewInfo.getPdfConvertType());
               } else {
                 counterService.inc("ppt2pdf-fail!");
               }
@@ -92,7 +93,7 @@ public class Office2PdfHandler {
             if (flag) {
               counterService.inc("ppt2pdf-success!");
               String pdfPageFilePath = filePath + ".pdf";
-              enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList, width);
+              enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList, width,previewInfo.getPdfConvertType());
             } else {
               counterService.inc("ppt2pdf-fail!");
             }
@@ -111,7 +112,7 @@ public class Office2PdfHandler {
           if (flag) {
             counterService.inc("word2pdf-success!");
             String pdfPageFilePath = filePath + ".pdf";
-            enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList, width);
+            enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList, width, previewInfo.getPdfConvertType());
           } else {
             counterService.inc("word2pdf-fail!");
           }
@@ -126,14 +127,15 @@ public class Office2PdfHandler {
                                    String path,
                                    String filePath,
                                    List<Integer> hasNotConvertPageList,
-                                   int width) {
+                                   int width,
+                                   int pdfConvertType) {
     for (int i = 0; i < hasNotConvertPageList.size(); i++) {
       int page = hasNotConvertPageList.get(i);
-      enqueue(ea, path, filePath, page, 2, width);
+      enqueue(ea, path, filePath, page, 2, width, pdfConvertType);
     }
   }
 
-  private void enqueue(String ea, String path, String filePath, int page, int type, int width) {
+  private void enqueue(String ea, String path, String filePath, int page, int type, int width, int pdfConvertType) {
     ConvertPdf2HtmlMessage message = new ConvertPdf2HtmlMessage();
     message.setNpath(path);
     message.setFilePath(filePath);
@@ -141,6 +143,7 @@ public class Office2PdfHandler {
     message.setPage(page);
     message.setType(type);
     message.setPageWidth(width);
+    message.setPdfConvertType(pdfConvertType);
     pdf2HtmlProvider.pdf2html(message);
   }
 

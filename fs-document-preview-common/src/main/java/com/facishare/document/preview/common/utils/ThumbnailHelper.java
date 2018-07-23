@@ -1,4 +1,4 @@
-package com.facishare.document.preview.cgi.utils;
+package com.facishare.document.preview.common.utils;
 
 import com.fxiaoke.common.http.handler.SyncCallback;
 import com.fxiaoke.common.http.spring.OkHttpSupport;

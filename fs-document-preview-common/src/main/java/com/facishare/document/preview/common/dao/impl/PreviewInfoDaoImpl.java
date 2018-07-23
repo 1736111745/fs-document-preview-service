@@ -147,7 +147,8 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
                                      long docSize,
                                      int pageCount,
                                      List<String> sheetNames,
-                                     int width) {
+                                     int width,
+                                     int pdfConvertType) {
     PreviewInfo previewInfo = new PreviewInfo();
     previewInfo.setDocSize(docSize);
     previewInfo.setDirName(FilenameUtils.getBaseName(dataDir));
@@ -162,6 +163,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     previewInfo.setPageCount(pageCount);
     previewInfo.setWidth(width);
     previewInfo.setOriginalFilePath(originalFilePath);
+    previewInfo.setPdfConvertType(pdfConvertType);
     List<String> filePathList = new ArrayList<>();
     previewInfo.setFilePathList(filePathList);
     dpsDataStore.insert("PreviewInfo", previewInfo);

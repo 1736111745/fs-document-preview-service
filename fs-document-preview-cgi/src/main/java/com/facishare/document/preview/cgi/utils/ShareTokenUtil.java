@@ -12,10 +12,12 @@ import org.apache.commons.lang3.math.NumberUtils;
  */
 public class ShareTokenUtil {
   private static long sharedTokenExpMills = 3600000;
+
   static {
     ConfigFactory.getInstance()
-                 .getConfig("fs-fsc-cgi-config", config -> sharedTokenExpMills = config.getInt("shared_token_exp_mills",3600000));
+                 .getConfig("fs-fsc-cgi-config", config -> sharedTokenExpMills = config.getInt("shared_token_exp_mills", 3600000));
   }
+
   public static ShareTokenParamInfo convertToken2ParamInfo(String shareToken) {
     boolean isValidToken = true;
     if (Strings.isNullOrEmpty(shareToken)) {

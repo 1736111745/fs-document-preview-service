@@ -72,7 +72,7 @@ public class PreviewController {
 
   @ResponseBody
   @RequestMapping(value = "/preview/getPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-  public String getPreviewInfo(HttpServletRequest request) throws Exception {
+  public String getPreviewInfo(HttpServletRequest request) {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
     String token = UrlParametersHelper.safeGetRequestParameter(request, "token");
 
@@ -272,7 +272,7 @@ public class PreviewController {
 
   @ResponseBody
   @RequestMapping(value = "/preview/checkPdf2HtmlStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-  public void checkPdf2HtmlStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public void checkPdf2HtmlStatus(HttpServletRequest request, HttpServletResponse response) {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
     if (!UrlParametersHelper.isValidPath(path)) {
       response.setStatus(400);
@@ -318,7 +318,8 @@ public class PreviewController {
           if (dataFilePathList == null) {
             dataFilePathList = Lists.newArrayList();
           } else {
-            dataFilePathList = dataFilePathList.stream().filter(f -> f.endsWith(".html")).
+            String queryExtension = previewInfo.getPdfConvertType() == 0 ? ".html" : ".png";
+            dataFilePathList = dataFilePathList.stream().filter(f -> f.endsWith(queryExtension)).
               sorted(Comparator.comparingInt(o -> NumberUtils.toInt(FilenameUtils.getBaseName(o)))).
                                                  collect(Collectors.toList());
           }

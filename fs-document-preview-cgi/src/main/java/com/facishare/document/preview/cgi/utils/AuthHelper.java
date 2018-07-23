@@ -21,45 +21,45 @@ import java.util.Arrays;
  */
 @Slf4j
 public class AuthHelper {
-    @Autowired
-    ActiveSessionAuthorizeService assService;
+  @Autowired
+  ActiveSessionAuthorizeService assService;
 
-    public EmployeeInfo getAuthInfo(HttpServletRequest request) {
-        String cookieValue = getCookie(request);
-        if ("".equals(cookieValue)) {
-            return null;
-        }
-        CookieToAuth.Argument arg = new CookieToAuth.Argument();
-        arg.setCookie(cookieValue);
-        String realIp = request.getHeader("X-Real-IP");
-        arg.setIp(realIp);
-        CookieToAuth.Result<AuthXC> result = assService.cookieToAuthXC(arg);
-        if (result != null && result.getBody() != null) {
-            AuthXC authXC = result.getBody();
-            EmployeeInfo employeeInfo = new EmployeeInfo();
-            employeeInfo.setEa(authXC.getEnterpriseAccount());
-            employeeInfo.setEi(authXC.getEmployeeId());
-            employeeInfo.setEmployeeAccount(authXC.getAccount());
-            employeeInfo.setEmployeeFullName(authXC.getFullName());
-            employeeInfo.setEmployeeId(authXC.getEmployeeId());
-            employeeInfo.setEmployeeName(authXC.getName());
-            String uid = authXC.getEnterpriseAccount() + '.' + authXC.getEmployeeId();
-            TraceContext.get().setUid(uid);
-            MDC.put("userId", uid);
-            return employeeInfo;
-        } else {
-          return null;
-        }
+  public EmployeeInfo getAuthInfo(HttpServletRequest request) {
+    String cookieValue = getCookie(request);
+    if ("".equals(cookieValue)) {
+      return null;
     }
+    CookieToAuth.Argument arg = new CookieToAuth.Argument();
+    arg.setCookie(cookieValue);
+    String realIp = request.getHeader("X-Real-IP");
+    arg.setIp(realIp);
+    CookieToAuth.Result<AuthXC> result = assService.cookieToAuthXC(arg);
+    if (result != null && result.getBody() != null) {
+      AuthXC authXC = result.getBody();
+      EmployeeInfo employeeInfo = new EmployeeInfo();
+      employeeInfo.setEa(authXC.getEnterpriseAccount());
+      employeeInfo.setEi(authXC.getEmployeeId());
+      employeeInfo.setEmployeeAccount(authXC.getAccount());
+      employeeInfo.setEmployeeFullName(authXC.getFullName());
+      employeeInfo.setEmployeeId(authXC.getEmployeeId());
+      employeeInfo.setEmployeeName(authXC.getName());
+      String uid = authXC.getEnterpriseAccount() + '.' + authXC.getEmployeeId();
+      TraceContext.get().setUid(uid);
+      MDC.put("userId", uid);
+      return employeeInfo;
+    } else {
+      return null;
+    }
+  }
 
-    public static String getCookie(HttpServletRequest request) {
-        Cookie cookie = WebUtil.getCookie(request, "FSAuthXC");
-        if (cookie == null) {
-          cookie = WebUtil.getCookie(request, "FSAuthX");
-        }
-        if (cookie != null) {
-          return cookie.getValue();
-        }
-        return "";
+  public static String getCookie(HttpServletRequest request) {
+    Cookie cookie = WebUtil.getCookie(request, "FSAuthXC");
+    if (cookie == null) {
+      cookie = WebUtil.getCookie(request, "FSAuthX");
     }
+    if (cookie != null) {
+      return cookie.getValue();
+    }
+    return "";
+  }
 }

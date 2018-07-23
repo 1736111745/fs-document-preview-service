@@ -9,13 +9,17 @@ import com.facishare.document.preview.common.model.PreviewInfo;
 import com.facishare.document.preview.common.utils.OfficeApiHelper;
 import com.facishare.document.preview.common.utils.PathHelper;
 import com.facishare.document.preview.common.utils.SampleUUID;
+import com.github.autoconf.ConfigFactory;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.List;
 
@@ -33,6 +37,14 @@ public class PreviewInfoHelper {
   OfficeApiHelper officeApiHelper;
   @ReloadableProperty("redirectPreviewExtension")
   private String redirectPreviewExtension = "txt|sql|js|css|json|csv|svg|webp|jpg|png|bmp|gif|jpeg|mp4";
+  private List<String> pdf2ImageMd5List = Lists.newArrayList();
+
+  @PostConstruct
+  public void init() {
+    ConfigFactory.getInstance().getConfig("fs-dps-config", config -> {
+      pdf2ImageMd5List = Splitter.on('|').trimResults().omitEmptyStrings().splitToList(config.getString());
+    });
+  }
 
   /**
    * 手机预览
@@ -41,12 +53,8 @@ public class PreviewInfoHelper {
    * @param npath
    * @param securityGroup
    * @return
-   * @throws Exception
    */
-  public PreviewInfoEx getPreviewInfo(EmployeeInfo employeeInfo,
-                                      String npath,
-                                      String securityGroup,
-                                      int width) throws Exception {
+  public PreviewInfoEx getPreviewInfo(EmployeeInfo employeeInfo, String npath, String securityGroup, int width) {
     String ea = employeeInfo.getEa();
     int employeeId = employeeInfo.getEmployeeId();
     PreviewInfoEx previewInfoEx = new PreviewInfoEx();
@@ -79,7 +87,7 @@ public class PreviewInfoHelper {
                 pageInfo.setSuccess(true);
                 pageInfo.setPageCount(1);
               } else {
-                //旧版本office格式e转换为新版本office格式
+                //旧版本office格式先转换为新版本office格式
                 if (extension.equals("xls") || extension.equals("doc") || extension.equals("ppt")) {
                   ConvertOldOfficeVersionResult result = officeApiHelper.convertFile(filePath);
                   if (result != null && result.isSuccess()) {
@@ -96,7 +104,14 @@ public class PreviewInfoHelper {
                 if (pageInfo.isSuccess()) {
                   pageCount = pageInfo.getPageCount();
                   sheetNames = pageInfo.getSheetNames();
-                  previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, npath, filePath, dataDir, bytes.length, pageCount, sheetNames, width);
+                  int pdfConvertType = 0;
+                  if (extension.equals("pdf")) {
+                    String fileMd5 = MD5Helper.getMd5ByFile(new File(filePath));
+                    if (pdf2ImageMd5List.size() > 0 && pdf2ImageMd5List.contains(fileMd5)) {
+                      pdfConvertType = 1;
+                    }
+                  }
+                  previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, npath, filePath, dataDir, bytes.length, pageCount, sheetNames, width, pdfConvertType);
                   previewInfoEx.setSuccess(true);
                   previewInfoEx.setPreviewInfo(previewInfo);
                 } else {
@@ -122,5 +137,4 @@ public class PreviewInfoHelper {
     }
     return previewInfoEx;
   }
-
 }

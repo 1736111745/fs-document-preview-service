@@ -1,6 +1,7 @@
 package com.facishare.document.preview.cgi.utils;
 
 import com.facishare.document.preview.common.utils.MimeTypeHelper;
+import com.facishare.document.preview.common.utils.ThumbnailHelper;
 import com.fxiaoke.common.image.SimpleImageInfo;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ import java.io.OutputStream;
 @Component
 public class FileOutPutor {
     @Autowired
-    ThumbnailHelper thumbnailHelper;
+    ThumbnailHelper thumbHelper;
 
     @ReloadableProperty("txtPlainExtension")
     private String txtPlainExtension = "txt|sql|js|css|json|csv";
@@ -98,7 +99,7 @@ public class FileOutPutor {
         File thumbPngFile = new File(thumbPngFilePath);
         if (!thumbPngFile.exists()) {
             byte[] data = FileUtils.readFileToByteArray(new File(filePath));
-            boolean success = thumbnailHelper.doThumbnail(data, aimWidth, aimHeight, thumbPngFile);
+            boolean success = thumbHelper.doThumbnail(data, aimWidth, aimHeight, thumbPngFile);
             if (!success) {
                 log.info("do thumbnail with local method!");
                 Thumbnails.of(filePath).forceSize(aimWidth, aimHeight).outputQuality(0.8).outputFormat("png").toFile(thumbPngFile);

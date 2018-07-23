@@ -10,13 +10,13 @@ import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import sun.net.www.http.HttpClient;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.util.List;
-
-import static com.facishare.document.preview.common.model.FileTokenFields.filePath;
 
 @RestController
 @RequestMapping("/restful")
@@ -43,7 +43,7 @@ public class RestfulController {
       Preconditions.checkNotNull(ea, "ea is null");
       Preconditions.checkNotNull(employeeId, "employeeId is null");
       EmployeeInfo employeeInfo = EmployeeHelper.createEmployeeInfo(ea, employeeId);
-      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, filePath, "",1000);
+      PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, filePath, "", 1000);
       Preconditions.checkNotNull(previewInfoEx.getPreviewInfo(), "document can't found!");
       ret = String.format("{\"pageCount\":%d}", previewInfoEx.getPreviewInfo().getPageCount());
     } catch (Exception e) {

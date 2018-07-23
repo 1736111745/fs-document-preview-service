@@ -20,31 +20,35 @@ import java.io.IOException;
 @RequestMapping("/")
 @Slf4j
 public class ResourceController {
-    @Autowired
-    PreviewInfoDao previewInfoDao;
-    @Autowired
-    FileOutPutor fileOutPutor;
+  @Autowired
+  PreviewInfoDao previewInfoDao;
+  @Autowired
+  FileOutPutor fileOutPutor;
 
-    @RequestMapping("/preview/js/{fileName:.+}")
-    public String getStatic(@PathVariable String fileName) throws IOException {
-        return "redirect:/static/common/" + fileName;
-    }
+  @RequestMapping("/preview/js/{fileName:.+}")
+  public String getStatic(@PathVariable String fileName) {
+    return "redirect:/static/common/" + fileName;
+  }
 
-    @RequestMapping("/preview/{folder}/js/{fileName:.+}")
-    public void getPreviewStaticContent(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
-        String baseDir = previewInfoDao.getBaseDir(folder);
-        if (!Strings.isNullOrEmpty(baseDir)) {
-            String filePath = baseDir + "/js/" + fileName;
-            fileOutPutor.outPut(response, filePath, false);
-        } else {
-          response.setStatus(404);
-        }
+  @RequestMapping("/preview/{folder}/js/{fileName:.+}")
+  public void getPreviewStaticContent(@PathVariable String folder,
+                                      @PathVariable String fileName,
+                                      HttpServletResponse response) throws IOException {
+    String baseDir = previewInfoDao.getBaseDir(folder);
+    if (!Strings.isNullOrEmpty(baseDir)) {
+      String filePath = baseDir + "/js/" + fileName;
+      fileOutPutor.outPut(response, filePath, false);
+    } else {
+      response.setStatus(404);
     }
+  }
 
-    @RequestMapping("/preview/{folder}/{fileName:.+}")
-    public void getStaticContent(@PathVariable String folder, @PathVariable String fileName, HttpServletResponse response) throws IOException {
-        String baseDir = previewInfoDao.getBaseDir(folder);
-        String filePath = baseDir + "/" + fileName;
-        fileOutPutor.outPut(response, filePath, false);
-    }
+  @RequestMapping("/preview/{folder}/{fileName:.+}")
+  public void getStaticContent(@PathVariable String folder,
+                               @PathVariable String fileName,
+                               HttpServletResponse response) throws IOException {
+    String baseDir = previewInfoDao.getBaseDir(folder);
+    String filePath = baseDir + "/" + fileName;
+    fileOutPutor.outPut(response, filePath, false);
+  }
 }

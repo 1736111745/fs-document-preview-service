@@ -68,7 +68,7 @@ public class NoAuthController {
     if (employeeInfo == null) {
       return ResponseJsonHelper.getDocPreviewInfoResult(path, pageCount);
     }
-    PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, "",width);
+    PreviewInfoEx previewInfoEx = previewInfoHelper.getPreviewInfo(employeeInfo, path, "", width);
     if (previewInfoEx.isSuccess()) {
       PreviewInfo previewInfo = previewInfoEx.getPreviewInfo();
       if (previewInfo != null) {
@@ -103,9 +103,9 @@ public class NoAuthController {
     }
     int width = NumberUtils.toInt(UrlParametersHelper.safeGetRequestParameter(request, "width"), 1024);
     width = width > 1920 ? 1920 : width;
-    log.info("preview in no auth condition,path:{},employeeInfo:{},pageIndex:{}",path,com.alibaba.fastjson.JSON.toJSON(employeeInfo),pageIndex);
+    log.info("preview in no auth condition,path:{},employeeInfo:{},pageIndex:{}", path, com.alibaba.fastjson.JSON.toJSON(employeeInfo), pageIndex);
     DocPageResult result = previewService.getDocPage(employeeInfo, path, pageIndex);
-    log.info("result:{}",com.alibaba.fastjson.JSON.toJSON(result));
+    log.info("result:{}", com.alibaba.fastjson.JSON.toJSON(result));
     if (result.getCode() == 200) {
       fileOutPutor.outPut(response, result.getDataFilePath(), width, true);
     } else {
@@ -123,9 +123,6 @@ public class NoAuthController {
       return "";
     }
   }
-
-
-
 
 
   private EmployeeInfo getEmployeeInfo(String token) {

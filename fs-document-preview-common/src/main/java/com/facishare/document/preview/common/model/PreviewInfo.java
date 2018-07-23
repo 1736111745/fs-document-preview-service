@@ -33,4 +33,5 @@ public class PreviewInfo {
     private String originalFilePath;//原始文件
     private List<String> filePathList;
     private int width;//文档页码宽度
+    private int pdfConvertType;//0表示html 1表示image
 }

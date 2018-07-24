@@ -147,7 +147,8 @@ public class PreviewController {
             response.setStatus(400);
           } else {
             String filePath = previewInfo.getOriginalFilePath();
-            String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), filePath, 1, previewInfo
+            int type=previewInfo.getPdfConvertType()==0?1:2;
+            String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), filePath, type, previewInfo
               .getFilePathList());
             if (!Strings.isNullOrEmpty(dataFilePath)) {
               fileOutPutor.outPut(response, dataFilePath, false);

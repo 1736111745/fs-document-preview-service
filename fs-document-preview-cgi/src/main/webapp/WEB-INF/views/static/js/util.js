@@ -20,7 +20,8 @@ String.prototype.endWith = function (str) {
   return true;
 }
 
-function getFileExt(file_name){
-  var result =/\.[^\.]+/.exec(file_name);
-  return result;
+function getFileExt(file_name) {
+  var index1 = file_name.lastIndexOf(".");
+  var index2 = file_name.length;
+  return file_name.substring(index1, index2);//
 }

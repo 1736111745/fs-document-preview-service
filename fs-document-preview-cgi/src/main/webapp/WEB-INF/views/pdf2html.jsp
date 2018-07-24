@@ -18,7 +18,9 @@
   <script type="text/javascript"
           src="https://a9.fspage.com/FSR/fs-dps/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
   <script type="text/javascript"
-          src="https://a9.fspage.com/FSR/fs-dps/static/js/pdf2html.js?v=<%=request.getAttribute("sv")%>"></script>
+          src="<%=request.getContextPath()%>/static/js/pdf2html.js?v=<%=request.getAttribute("sv")%>"></script>
+  <%--<script type="text/javascript"--%>
+          <%--src="https://a9.fspage.com/FSR/fs-dps/static/js/pdf2html.js?v=<%=request.getAttribute("sv")%>"></script>--%>
   <script>
     window.contextPath = "<%=request.getContextPath()%>";
   </script>
@@ -37,20 +39,22 @@
       overflow: hidden;
     }
 
-
     div.center {
       text-align: center;
       font-size: 1em;
       margin-bottom: 10px;
       margin-top: 10px;
     }
+
     .sure-wrapper {
       width: 1000px;
       margin: 20px auto;
     }
+
     .sure-button {
       margin: 10px;
     }
+
     .weui-btn {
       position: relative;
       display: block;
@@ -68,6 +72,7 @@
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
       overflow: hidden;
     }
+
     .weui-btn_primary {
       background-color: #1AAD19;
     }
@@ -95,9 +100,7 @@
 <div id="main">
 </div>
 <div id="sure-wrapper" class="sure-wrapper">
-  <a href="javascript:;" id="jumpUrl"
-     class="weui-btn weui-btn_primary sure-button">确认对账</a>
+  <a href="javascript:;" id="jumpUrl" class="weui-btn weui-btn_primary sure-button">确认对账</a>
 </div>
-
 </body>
 </html>

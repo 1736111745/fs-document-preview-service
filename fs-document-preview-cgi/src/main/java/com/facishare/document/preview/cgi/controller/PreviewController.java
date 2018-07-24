@@ -111,7 +111,7 @@ public class PreviewController {
       if (previewInfo == null || previewInfo.getPageCount() == 0) {
         return ResponseJsonHelper.getPreviewInfoResult(defaultErrMsg);
       } else {
-        return ResponseJsonHelper.getPreviewInfoResult(previewInfo.getPageCount(), previewInfo.getSheetNames(), path, securityGroup);
+        return ResponseJsonHelper.getPreviewInfoResult(previewInfo.getPageCount(), previewInfo.getSheetNames(), path, securityGroup,previewInfo.getPdfConvertType());
       }
     } else {
       String errMsg = Strings.isNullOrEmpty(previewInfoEx.getErrorMsg()) ? defaultErrMsg : previewInfoEx.getErrorMsg();
@@ -120,7 +120,7 @@ public class PreviewController {
   }
 
   @RequestMapping(value = "/preview/getFilePath")
-  public void getFilePath(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  public void getFilePath(HttpServletRequest request, HttpServletResponse response) {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
     String page = UrlParametersHelper.safeGetRequestParameter(request, "page");
     String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
@@ -201,7 +201,7 @@ public class PreviewController {
 
   @ResponseBody
   @RequestMapping(value = "/preview/getOriginalPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-  public String getOriginalPreviewInfo(HttpServletRequest request) throws Exception {
+  public String getOriginalPreviewInfo(HttpServletRequest request) {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
     String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
     EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");

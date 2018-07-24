@@ -1,6 +1,8 @@
 var sg = getQueryStringByName("sg");
 var pageCount = getQueryStringByName("pageCount");
 var path = getQueryStringByName("path");
+var jumpUrl = getQueryStringByName("jumpUrl");
+var pdfConvertType = getQueryStringByName("pdfConvertType");
 var filePathList = [];//已经转换完毕的页码.html
 var loadedList = [];//用户已经滑动过的页码
 var pageLoadedList = [];//用户已经加载的页码
@@ -12,6 +14,14 @@ var screenHeight = window.screen.height;//屏幕高度；
 var ua = navigator.userAgent;
 var isIOS = /iphone|ipod|ipad/ig.test(ua);
 $(function () {
+  if (jumpUrl != '') {
+    jumpUrl = decodeURIComponent(jumpUrl);
+    $("#jumpUrl").attr("href", jumpUrl);
+    $("#sure-wrapper").show();
+  }
+  else {
+    $("#sure-wrapper").hide();
+  }
   checkConvertTimeout();
   checkPdf2HtmlStatus();
   loadAllPages();
@@ -36,7 +46,7 @@ $(function () {
     }
     window.setTimeout(function () {
       loadViewPort();
-    },200);
+    }, 200);
   }, true);
 });
 
@@ -75,6 +85,7 @@ function loadPageLoader() {
 }
 
 var idChkPageLoaded;
+
 //定时检查用户滑动过的页码，如果用户页码都加载完毕了就停止检查
 function checkPageLoaded() {
   idChkPageLoaded = setInterval(function () {
@@ -91,8 +102,10 @@ function checkPageLoaded() {
 
 function loadData(i) {
   var htmlName = (i + 1) + ".html";
-  if ($.inArray(htmlName, filePathList) >= 0) {
-    var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg + "&width="+width+"&sharetoken="+sharetoken+"&ver=2.1";
+  var imageName = (i + 1) + ".png";
+  var resultName=pdfConvertType==0?htmlName:imageName;
+  if ($.inArray(resultName, filePathList) >= 0) {
+    var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg + "&width=" + width + "&sharetoken=" + sharetoken + "&ver=2.1";
     var iframeId = 'frame' + i;
     var divPageId = 'divPage' + i;
     var element = $('#' + divPageId);
@@ -113,6 +126,7 @@ function resize(obj) {
 }
 
 var idChkConvertStatus;
+
 //定时监测转换状态，当全部转换完毕停止检测
 function checkConvertStatus() {
   idChkConvertStatus = setInterval(function () {
@@ -123,13 +137,13 @@ function checkConvertStatus() {
 }
 
 function checkPdf2HtmlStatus() {
-  var url = window.contextPath + '/preview/checkPdf2HtmlStatus?path=' + path + "&sg=" + sg + "&width=" + width+"&sharetoken="+sharetoken;
+  var url = window.contextPath + '/preview/checkPdf2HtmlStatus?path=' + path + "&sg=" + sg + "&width=" + width + "&sharetoken=" + sharetoken;
   $.get(url);
 }
 
 function queryPdf2HtmlStatus() {
   var flag = false;//是否转换完毕
-  var url = window.contextPath + '/preview/queryPdf2HtmlStatus?path=' + path + "&sg=" + sg+"&width="+width+"&sharetoken="+sharetoken;
+  var url = window.contextPath + '/preview/queryPdf2HtmlStatus?path=' + path + "&sg=" + sg + "&width=" + width + "&sharetoken=" + sharetoken;
   $.ajax({
     type: 'get',
     dataType: 'json',
@@ -149,7 +163,9 @@ function checkConvertTimeout() {
     clearInterval(idChkConvertStatus);
     for (var i = 0; i < pageCount; i++) {
       var htmlName = (i + 1) + ".html";
-      if ($.inArray(htmlName, filePathList) == -1) {
+      var imageName = (i + 1) + ".png";
+      var resultName=pdfConvertType==0?htmlName:imageName;
+      if ($.inArray(resultName, filePathList) == -1) {
         var iframeId = 'frame' + i;
         var divPageId = 'divPage' + i;
         var element = $('#' + divPageId);

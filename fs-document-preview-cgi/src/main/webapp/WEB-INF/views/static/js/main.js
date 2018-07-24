@@ -5,9 +5,12 @@ var path = getQueryStringByName("path");
 var token = getQueryStringByName("token");
 var name = getQueryStringByName("name");
 var sharetoken = getQueryStringByName("shareToken");
+var jumpUrl = getQueryStringByName("jumpUrl");
 var pageCount = 0;
-var sg = "";//安全组
+var sg = ""//安全组
 var width = getQueryStringByName("width");
+var pdfConvertType = 0;
+var txtAndImageExt = ".sql|.txt|.js|.css|.json|.csv|.svg|.webp|.jpeg|.jpg|.png|.bmp|.gif";
 width = width == "" ? 1000 : width;
 
 
@@ -17,12 +20,13 @@ function getPreviewInfo() {
     type: 'get',
     dataType: 'json',
     async: false,
-    url: window.contextPath + '/preview/getPreviewInfo?path=' + path + '&token=' + token + "&width=" + width + "&sharetoken=" + sharetoken,
+    url: window.contextPath + '/preview/getPreviewInfo?path=' + path + '&token=' + token + "&width=" + width + "&sharetoken=" + sharetoken + "&sg=" + sg,
     success: function (data) {
       if (data.canPreview) {
         pageCount = data.pageCount;
         path = data.path;
         sg = data.sg;
+        pdfConvertType = data.pdfConvertType;
         doPreview();
       }
       else {
@@ -44,19 +48,11 @@ function getPreviewInfo() {
 
 
 function doPreview() {
-  if (path.toLowerCase().indexOf("txt") >= 0
-    || path.toLowerCase().indexOf("csv") >= 0
-    || path.toLowerCase().indexOf("svg") >= 0
-    || path.toLowerCase().indexOf("webp") >= 0
-    || path.toLowerCase().indexOf("jpeg") >= 0
-    || path.toLowerCase().indexOf("jpg") >= 0
-    || path.toLowerCase().indexOf("png") >= 0
-    || path.toLowerCase().indexOf("bmp") >= 0
-    || path.toLowerCase().indexOf("gif") >= 0) {
+  var ext = getFileExt(path.toLowerCase());
+  if (txtAndImageExt.indexOf(ext) >= 0) {
     doPreviewOriginal();
   }
-  else if(path.toLowerCase().indexOf("mp4")>=0)
-  {
+  else if (path.toLowerCase().indexOf("mp4") >= 0) {
     location.href = window.contextPath + "/preview/videoplayer?path=" + path + "&token=" + token;
   }
   else {
@@ -87,7 +83,7 @@ function doPreviewOffice() {
   else
     route = "pdf2html";
   console.log("route:" + route);
-  var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&sg=" + sg + "&width=" + width + "&sharetoken=" + sharetoken + "&rnd=1.0.1";
+  var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "pdfConvertType=" + pdfConvertType + "&sg=" + sg + "&width=" + width + "&sharetoken=" + sharetoken + "&jumpUrl=" + jumpUrl;
   location.href = url;
 }
 
@@ -127,7 +123,7 @@ function checkShareToken() {
 //入口
 $(document).ready(function () {
   //兼容path不带扩展名，取name的扩展名
-  if(path!="") {
+  if (path != "") {
     var ext = getFileExt(path);
     if (ext == null) {
       path = path + getFileExt(name);
@@ -138,7 +134,7 @@ $(document).ready(function () {
     checkShareToken();
   }
   else {
-    if (path.toLowerCase().indexOf("mp4") >= 0||name.toLowerCase().indexOf("mp4")>=0) {
+    if (path.toLowerCase().indexOf("mp4") >= 0 || name.toLowerCase().indexOf("mp4") >= 0) {
       location.href = window.contextPath + "/preview/videoplayer?path=" + path + "&token=" + token;
     }
     else {

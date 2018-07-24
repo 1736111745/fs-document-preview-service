@@ -103,7 +103,7 @@ function checkPageLoaded() {
 function loadData(i) {
   var htmlName = (i + 1) + ".html";
   var imageName = (i + 1) + ".png";
-  var resultName=pdfConvertType==0?htmlName:imageName;
+  var resultName = pdfConvertType == 0 ? htmlName : imageName;
   if ($.inArray(resultName, filePathList) >= 0) {
     var url = window.contextPath + '/preview/getFilePath?path=' + path + '&page=' + i + "&pageCount=" + pageCount + "&sg=" + sg + "&width=" + width + "&sharetoken=" + sharetoken + "&ver=2.1";
     var iframeId = 'frame' + i;
@@ -120,10 +120,11 @@ function loadData(i) {
 }
 
 function resize(obj) {
-  if(pdfConvertType==0) {
-    var height = $(obj.contentWindow.document).find("div[id='page-container']").height()
-    $(obj).height(height);
+  var height = $(obj.contentWindow.document).find("div[id='page-container']").height()
+  if (pdfConvertType == 1) {
+    height = $(obj.contentWindow.document).find("img").height();
   }
+  $(obj).height(height);
   $(obj.parentElement).removeClass("lazy");
 }
 
@@ -166,7 +167,7 @@ function checkConvertTimeout() {
     for (var i = 0; i < pageCount; i++) {
       var htmlName = (i + 1) + ".html";
       var imageName = (i + 1) + ".png";
-      var resultName=pdfConvertType==0?htmlName:imageName;
+      var resultName = pdfConvertType == 0 ? htmlName : imageName;
       if ($.inArray(resultName, filePathList) == -1) {
         var iframeId = 'frame' + i;
         var divPageId = 'divPage' + i;

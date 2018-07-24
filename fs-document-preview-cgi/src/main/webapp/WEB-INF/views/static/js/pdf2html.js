@@ -120,8 +120,10 @@ function loadData(i) {
 }
 
 function resize(obj) {
-  var height = $(obj.contentWindow.document).find("div[id='page-container']").height()
-  $(obj).height(height);
+  if(pdfConvertType==0) {
+    var height = $(obj.contentWindow.document).find("div[id='page-container']").height()
+    $(obj).height(height);
+  }
   $(obj.parentElement).removeClass("lazy");
 }
 

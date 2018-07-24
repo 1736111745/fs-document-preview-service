@@ -83,7 +83,7 @@ function doPreviewOffice() {
   else
     route = "pdf2html";
   console.log("route:" + route);
-  var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "pdfConvertType=" + pdfConvertType + "&sg=" + sg + "&width=" + width + "&sharetoken=" + sharetoken + "&jumpUrl=" + jumpUrl;
+  var url = window.contextPath + '/preview/' + route + '?path=' + path + '&pageCount=' + pageCount + "&pdfConvertType=" + pdfConvertType + "&sg=" + sg + "&width=" + width + "&sharetoken=" + sharetoken + "&jumpUrl=" + jumpUrl;
   location.href = url;
 }
 

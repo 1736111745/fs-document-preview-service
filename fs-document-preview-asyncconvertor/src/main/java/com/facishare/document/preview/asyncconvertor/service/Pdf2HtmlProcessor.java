@@ -71,7 +71,7 @@ public class Pdf2HtmlProcessor {
     String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
     String resultFilePath = basedDir + "/" + page + ".html";
     if (convertorMessage.getPdfConvertType() == 1) {
-      resultFilePath = basedDir + "/" + (page + 1) + ".png";
+      resultFilePath = basedDir + "/" + page + ".png";
 
     }
     if (new File(resultFilePath).exists()) {
@@ -91,7 +91,7 @@ public class Pdf2HtmlProcessor {
     log.info("end do convert,params:{},cost:{}ms", JSON.toJSONString(convertorMessage), stopWatch.getTime());
   }
 
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) {
 
 
   }

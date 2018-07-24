@@ -93,7 +93,7 @@ public class Office2PdfHandler {
             if (flag) {
               counterService.inc("ppt2pdf-success!");
               String pdfPageFilePath = filePath + ".pdf";
-              enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList, width,previewInfo.getPdfConvertType());
+              enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList, width, previewInfo.getPdfConvertType());
             } else {
               counterService.inc("ppt2pdf-fail!");
             }

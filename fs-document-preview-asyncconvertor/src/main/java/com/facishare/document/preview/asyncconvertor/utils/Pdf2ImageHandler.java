@@ -17,7 +17,7 @@ public class Pdf2ImageHandler {
 
   public String doConvert(ConvertPdf2HtmlMessage message) throws IOException {
     String filePath = message.getFilePath();
-    int page = message.getPage();
+    int page = message.getPage()-1;
     officeApiHelper.convertOffice2Png(filePath, page);
     return FilenameUtils.getFullPathNoEndSeparator(filePath) + "/" + (page + 1) + ".png";
   }

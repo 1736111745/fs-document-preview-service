@@ -27,14 +27,14 @@ public class Pdf2ImageHandler {
     officeApiHelper.convertOffice2Png(filePath, page);
     int width = message.getPageWidth();
     String imageFilePath = FilenameUtils.getFullPathNoEndSeparator(filePath) + "/" + (page + 1) + ".png";
-    SimpleImageInfo simpleImageInfo = new SimpleImageInfo(new File(filePath));
+    File imageFile = new File(imageFilePath);
+    SimpleImageInfo simpleImageInfo = new SimpleImageInfo(imageFile);
     int defaultWidth = 750;//手机文档预览使用
     int aimWidth = defaultWidth;
     if (width > 0) {
       aimWidth = width;
     }
-    File imageFile = new File(imageFilePath);
-    int aimHeight = aimWidth * simpleImageInfo.getHeight() / simpleImageInfo.getWidth();
+    int aimHeight = (aimWidth * simpleImageInfo.getHeight()) / simpleImageInfo.getWidth();
     byte[] data = FileUtils.readFileToByteArray(imageFile);
     thumbnailHelper.doThumbnail(data, aimWidth, aimHeight, imageFile);
     return imageFilePath;

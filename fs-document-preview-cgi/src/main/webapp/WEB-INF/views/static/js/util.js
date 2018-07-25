@@ -22,6 +22,9 @@ String.prototype.endWith = function (str) {
 
 function getFileExt(file_name) {
   var index1 = file_name.lastIndexOf(".");
+  if (index1 == -1) {
+    return null;
+  }
   var index2 = file_name.length;
   return file_name.substring(index1, index2);//
 }

@@ -42,6 +42,7 @@ public class OfficeApiHelper {
   }
 
 
+
   public PageInfo getPageInfo(String path, String filePath) throws IOException {
     PageInfo pageInfo;
     String params = "path=" + filePath;
@@ -100,6 +101,7 @@ public class OfficeApiHelper {
     }
   }
 
+
   public boolean convertOffice2Png(String filePath, int page) throws IOException {
     String params = "path=" + filePath + "&page=" + page;
     byte[] data = FileUtils.readFileToByteArray(new File(filePath));
@@ -118,6 +120,18 @@ public class OfficeApiHelper {
     }
   }
 
+  public byte[] convertOffice2Png(String npath,byte[] data) {
+    String params = "path=" + npath;
+    Object obj = callApi(officeConvertorServerUrl, "ConvertOffice2PngByStream", params, data);
+    if (obj instanceof String) {
+      return null;
+    } else {
+      byte[] bytes = (byte[]) obj;
+      return bytes;
+    }
+  }
+
+
   public boolean convertOffice2Pdf(String filePath, int page) throws IOException {
     String params = "path=" + filePath + "&page=" + page;
     byte[] data = FileUtils.readFileToByteArray(new File(filePath));
@@ -135,6 +149,7 @@ public class OfficeApiHelper {
       return true;
     }
   }
+
 
 
   public boolean convertOffice2Pdf(String filePath) throws IOException {

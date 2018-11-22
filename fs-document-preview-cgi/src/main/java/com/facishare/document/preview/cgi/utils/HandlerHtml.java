@@ -82,6 +82,7 @@ public class HandlerHtml {
             div.text().contains("Created with Aspose.Slides for .NET 4.0 16.11.0.0.") ||
             div.text().contains("Copyright 2004-2016Aspose Pty Ltd.")) {
             div.remove();
+            log.info("remove licence:{}", div.text());
           }
         }
       }

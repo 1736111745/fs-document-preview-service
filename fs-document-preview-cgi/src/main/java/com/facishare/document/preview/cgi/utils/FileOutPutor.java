@@ -28,6 +28,9 @@ public class FileOutPutor {
   @ReloadableProperty("txtPlainExtension")
   private String txtPlainExtension = "txt|sql|js|css|json|csv";
 
+  @ReloadableProperty("removeLicence")
+  private String removeLicence = "0";
+
   public void outPut(HttpServletResponse response, String filePath, boolean needThumbnail) throws IOException {
     outPut(response, filePath, 0, needThumbnail);
   }
@@ -76,12 +79,15 @@ public class FileOutPutor {
       String encode = EncodingDetect.detectCharset(filePath);
       response.setCharacterEncoding(encode);
     }
-//    if (ext.toLowerCase().contains("html"))
-//      return HandlerHtml.removeLicenceStr(filePath);
-//    else {
-//      return FileUtils.readFileToByteArray(new File(filePath));
-//    }
-    return FileUtils.readFileToByteArray(new File(filePath));
+    if (removeLicence == "1") {
+      if (ext.toLowerCase().contains("html")) {
+        return HandlerHtml.removeLicenceStr(filePath);
+      } else {
+        return FileUtils.readFileToByteArray(new File(filePath));
+      }
+    } else {
+      return FileUtils.readFileToByteArray(new File(filePath));
+    }
   }
 
 

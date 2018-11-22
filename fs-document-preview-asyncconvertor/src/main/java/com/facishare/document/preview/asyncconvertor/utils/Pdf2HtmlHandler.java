@@ -235,6 +235,9 @@ public class Pdf2HtmlHandler {
       html = html.replace("<div id=\"sidebar\">\n" + "<div id=\"outline\">\n" + "</div>\n" + "</div>", "");
       html = html.replace("<div class=\"loading-indicator\">", "");
       html = html.replace("<img alt=\"\" src=\"pdf2htmlEX-64x64.png\"/>", "");
+      html = html.replace("Evaluation only.", "")
+                 .replace("Created with Aspose.Slides for .NET 4.0 16.11.0.0.", "")
+                 .replace("Copyright 2004-2016Aspose Pty Ltd.", "");
       if (!Strings.isNullOrEmpty(bgName)) {
         html = html.replace(bgName, "./" + dirName + "/" + newBgName);
       }

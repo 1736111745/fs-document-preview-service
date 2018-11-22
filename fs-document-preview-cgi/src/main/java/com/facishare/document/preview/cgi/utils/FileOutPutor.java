@@ -76,11 +76,12 @@ public class FileOutPutor {
       String encode = EncodingDetect.detectCharset(filePath);
       response.setCharacterEncoding(encode);
     }
-    if (ext.toLowerCase().contains("html"))
-      return HandlerHtml.removeLicenceStr(filePath);
-    else {
-      return FileUtils.readFileToByteArray(new File(filePath));
-    }
+//    if (ext.toLowerCase().contains("html"))
+//      return HandlerHtml.removeLicenceStr(filePath);
+//    else {
+//      return FileUtils.readFileToByteArray(new File(filePath));
+//    }
+    return FileUtils.readFileToByteArray(new File(filePath));
   }
 
 

@@ -71,23 +71,11 @@ public class HandlerHtml {
   public static byte[] removeLicenceStr(String filePath) throws IOException {
     File htmlFile = new File(filePath);
     try {
-      String encoding = "UTF-8";
-      Document document = Jsoup.parse(htmlFile, encoding);
-      Element body = document.body();
-      Elements divs = body.getElementsByTag("div");
-      for (int i = 0; i < divs.size(); i++) {
-        Element div = divs.get(i);
-        if (div.childNodes().size() == 1 && div.childNodes().get(0).nodeName().equals("#text")) {
-          if (div.text().contains("Evaluation only.") ||
-            div.text().contains("Created with Aspose.Slides for .NET 4.0 16.11.0.0.") ||
-            div.text().contains("Copyright 2004-2016Aspose Pty Ltd.")) {
-            div.remove();
-            log.info("remove licence:{}", div.text());
-          }
-        }
-      }
-      String html = document.html();
-      return html.getBytes(encoding);
+      String html = FileUtils.readFileToString(htmlFile);
+      html = html.replace("Evaluation only.", "")
+                 .replace("Created with Aspose.Slides for .NET 4.0 16.11.0.0.", "")
+                 .replace("Copyright 2004-2016Aspose Pty Ltd.", "");
+      return html.getBytes();
     } catch (Exception e) {
       return FileUtils.readFileToByteArray(htmlFile);
     }

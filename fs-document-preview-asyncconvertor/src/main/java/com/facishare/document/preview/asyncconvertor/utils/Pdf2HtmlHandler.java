@@ -134,7 +134,6 @@ public class Pdf2HtmlHandler {
   }
 
 
-
   private String handleResult(int page, String filePath, String outPutDir, int type) throws IOException {
     String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
     String dataFileName = FilenameUtils.getBaseName(filePath) + ".html";
@@ -151,25 +150,25 @@ public class Pdf2HtmlHandler {
     String newCssFileName = page + ".css";
     String cssFileFilePath = FilenameUtils.concat(outPutDir, cssFileName);
     String cssHtml = FileUtils.readFileToString(new File(cssFileFilePath));
-//    //动态判断字体
-//    String regex = "url\\(f\\d\\.woff\\)";
-//    Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
-//    Matcher matcher = pattern.matcher(cssHtml);
-//    while (matcher.find()) {
-//      String fontStyle = matcher.group();
-//      String fontName = fontStyle.replace("url(", "").replace(")", "");
-//      //找到字体
-//      String fontFilePath = FilenameUtils.concat(outPutDir, fontName);
-//      File fontFile = new File(fontFilePath);
-//      if (fontFile.exists()) {
-//        String newFontName = "font_" + page + "_" + fontName;
-//        String newFontFilePath = FilenameUtils.concat(baseDir, newFontName);
-//        File newFontFile = new File(newFontFilePath);
-//        fontFile.renameTo(newFontFile);
-//        String newFontStyle = "url(" + newFontName + ")";
-//        cssHtml = cssHtml.replace(fontStyle, newFontStyle);
-//      }
-//    }
+    //    //动态判断字体
+    //    String regex = "url\\(f\\d\\.woff\\)";
+    //    Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+    //    Matcher matcher = pattern.matcher(cssHtml);
+    //    while (matcher.find()) {
+    //      String fontStyle = matcher.group();
+    //      String fontName = fontStyle.replace("url(", "").replace(")", "");
+    //      //找到字体
+    //      String fontFilePath = FilenameUtils.concat(outPutDir, fontName);
+    //      File fontFile = new File(fontFilePath);
+    //      if (fontFile.exists()) {
+    //        String newFontName = "font_" + page + "_" + fontName;
+    //        String newFontFilePath = FilenameUtils.concat(baseDir, newFontName);
+    //        File newFontFile = new File(newFontFilePath);
+    //        fontFile.renameTo(newFontFile);
+    //        String newFontStyle = "url(" + newFontName + ")";
+    //        cssHtml = cssHtml.replace(fontStyle, newFontStyle);
+    //      }
+    //    }
     //替换代码
     cssHtml = cssHtml.replace("visibility:hidden", "visibility:visible");
     String newCssFilePath = FilenameUtils.concat(baseDir, newCssFileName);

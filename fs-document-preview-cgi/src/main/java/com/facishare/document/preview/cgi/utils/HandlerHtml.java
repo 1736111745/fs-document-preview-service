@@ -73,10 +73,16 @@ public class HandlerHtml {
     try {
       String encoding = "UTF-8";
       Document document = Jsoup.parse(htmlFile, encoding);
-      String html = document.html()
-                            .replace("Evaluation only.", "")
-                            .replace("Created with Aspose.Slides for .NET 4.0 16.11.0.0.", "")
-                            .replace("Copyright 2004-2016Aspose Pty Ltd.", "");
+      Element body = document.body();
+      Elements images = body.getElementsByTag("div");
+      for (int i = 0; i < images.size(); i++) {
+        Element div = images.get(i);
+        if (div.text() == "Evaluation only." || div.text() == "Created with Aspose.Slides for .NET 4.0 16.11.0.0." ||
+          div.text() == "Copyright 2004-2016Aspose Pty Ltd.") {
+          div.remove();
+        }
+      }
+      String html = document.html();
       return html.getBytes(encoding);
     } catch (Exception e) {
       return FileUtils.readFileToByteArray(htmlFile);

@@ -29,7 +29,7 @@ public class FileOutPutor {
   private String txtPlainExtension = "txt|sql|js|css|json|csv";
 
   @ReloadableProperty("removeLicence")
-  private String removeLicence = "0";
+  private int removeLicence = 0;
 
   public void outPut(HttpServletResponse response, String filePath, boolean needThumbnail) throws IOException {
     outPut(response, filePath, 0, needThumbnail);
@@ -79,7 +79,7 @@ public class FileOutPutor {
       String encode = EncodingDetect.detectCharset(filePath);
       response.setCharacterEncoding(encode);
     }
-    if (removeLicence == "1") {
+    if (removeLicence == 1) {
       if (ext.toLowerCase().contains("html")) {
         return HandlerHtml.removeLicenceStr(filePath);
       } else {

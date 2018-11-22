@@ -74,12 +74,15 @@ public class HandlerHtml {
       String encoding = "UTF-8";
       Document document = Jsoup.parse(htmlFile, encoding);
       Element body = document.body();
-      Elements images = body.getElementsByTag("div");
-      for (int i = 0; i < images.size(); i++) {
-        Element div = images.get(i);
-        if (div.text() == "Evaluation only." || div.text() == "Created with Aspose.Slides for .NET 4.0 16.11.0.0." ||
-          div.text() == "Copyright 2004-2016Aspose Pty Ltd.") {
-          div.remove();
+      Elements divs = body.getElementsByTag("div");
+      for (int i = 0; i < divs.size(); i++) {
+        Element div = divs.get(i);
+        if (div.childNodes().size() == 1 && div.childNodes().get(0).nodeName().equals("#text")) {
+          if (div.text().contains("Evaluation only.") ||
+            div.text().contains("Created with Aspose.Slides for .NET 4.0 16.11.0.0.") ||
+            div.text().contains("Copyright 2004-2016Aspose Pty Ltd.")) {
+            div.remove();
+          }
         }
       }
       String html = document.html();
@@ -90,5 +93,7 @@ public class HandlerHtml {
   }
 
   public static void main(String[] args) throws Exception {
+
+    removeLicenceStr("/Users/liuq/Documents/a.html");
   }
 }

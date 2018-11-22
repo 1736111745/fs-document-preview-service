@@ -67,6 +67,22 @@ public class HandlerHtml {
     return flag;
   }
 
+
+  public static byte[] removeLicenceStr(String filePath) throws IOException {
+    File htmlFile = new File(filePath);
+    try {
+      String encoding = "UTF-8";
+      Document document = Jsoup.parse(htmlFile, encoding);
+      String html = document.html()
+                            .replace("Evaluation only.", "")
+                            .replace("Created with Aspose.Slides for .NET 4.0 16.11.0.0.", "")
+                            .replace("Copyright 2004-2016Aspose Pty Ltd.", "");
+      return html.getBytes(encoding);
+    } catch (Exception e) {
+      return FileUtils.readFileToByteArray(htmlFile);
+    }
+  }
+
   public static void main(String[] args) throws Exception {
   }
 }

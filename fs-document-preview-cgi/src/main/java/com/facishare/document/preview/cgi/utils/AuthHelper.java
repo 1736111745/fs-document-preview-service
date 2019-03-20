@@ -34,10 +34,10 @@ public class AuthHelper {
   EIEAConverter eieaConverter;
 
   public EmployeeInfo getAuthInfo(HttpServletRequest request) {
-    String appId = request.getHeader("fs-out-appId");
     EmployeeInfo employeeInfo = null;
-    if (!Strings.isNullOrEmpty(appId)) {
-      employeeInfo = getAuthInfoForOpen(request, appId);
+    String outappid = UrlParametersHelper.safeGetRequestParameter(request, "outappid");
+    if (!Strings.isNullOrEmpty(outappid)) {
+      employeeInfo = getAuthInfoForOpen(request, outappid);
     }
     if (employeeInfo != null) {
       return employeeInfo;

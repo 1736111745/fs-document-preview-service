@@ -11,7 +11,6 @@ var width = 1000;
 var u = navigator.userAgent;
 var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
 var deviceWidth = screenWidth;
-var loadedViewPort= false;
 $(function () {
   loadData(page);
   window.addEventListener("orientationchange", function () {

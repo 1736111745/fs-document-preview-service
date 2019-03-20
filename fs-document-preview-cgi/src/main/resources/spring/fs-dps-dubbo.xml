@@ -9,4 +9,6 @@
     <dubbo:reference id="assService" interface="com.facishare.asm.api.service.ActiveSessionAuthorizeService"
                      protocol="dubbo" retries="0" timeout="40000"/>
     <dubbo:consumer filter="tracerpc"/>
+    <dubbo:reference id="authService" interface="org.fs.enterprise.relation.outapi.service.AuthService"
+                     version="1.0.0" retries="0" timeout="15000" lazy="true" check="false"/>
 </beans>

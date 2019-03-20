@@ -24,6 +24,7 @@
     <import resource="classpath:spring/spring-scheduler.xml"/>
     <import resource="fs-fileproxy.xml"/>
     <import resource="classpath:spring/fs-dps-dubbo.xml"/>
+    <import resource="classpath*:spring/ei-ea-converter.xml"/>
 
     <bean class="com.fxiaoke.metrics.MetricsConfiguration"/>
     <bean id="fileProxy" class="com.facishare.document.preview.cgi.utils.FileStorageProxy"/>

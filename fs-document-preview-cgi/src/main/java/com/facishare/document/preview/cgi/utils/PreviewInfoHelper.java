@@ -37,6 +37,8 @@ public class PreviewInfoHelper {
   OfficeApiHelper officeApiHelper;
   @ReloadableProperty("redirectPreviewExtension")
   private String redirectPreviewExtension = "txt|sql|js|css|json|csv|svg|webp|jpg|png|bmp|gif|jpeg|mp4";
+  @ReloadableProperty("previewMaxPagCount")
+  private int previewMaxPagCount=100;
   private List<String> pdf2ImageMd5List = Lists.newArrayList();
 
   @PostConstruct
@@ -98,10 +100,10 @@ public class PreviewInfoHelper {
                 }
                 pageInfo = officeApiHelper.getPageInfo(npath, filePath);
               }
-              if (pageInfo.getPageCount() > 500) {
+              if (pageInfo.getPageCount() > previewMaxPagCount) {
                 previewInfoEx.setSuccess(false);
                 previewInfoEx.setPreviewInfo(null);
-                previewInfoEx.setErrorMsg("当前文件页码数超过500页，不支持预览！");
+                previewInfoEx.setErrorMsg("当前文件页码数超过"+previewMaxPagCount+"页，不支持预览！");
               } else {
                 if (pageInfo.isSuccess()) {
                   pageCount = pageInfo.getPageCount();

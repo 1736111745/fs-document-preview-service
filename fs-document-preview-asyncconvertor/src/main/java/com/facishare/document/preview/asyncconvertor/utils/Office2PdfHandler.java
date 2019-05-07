@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -42,9 +43,9 @@ public class Office2PdfHandler {
   @ReloadableProperty("pptMaxPage")
   private int pptMaxPage = 20;
   private final ThreadFactory factory = new ThreadFactoryBuilder().setDaemon(true).setNameFormat("office-to-pdf-%d").build();
-  private final ExecutorService executorService = Executors.newCachedThreadPool(factory);
+  private final ExecutorService executorService = Executors.newFixedThreadPool(50, factory);
 
-  public void convertOffice2Pdf(String ea, String path, String filePath, int width) {
+  public void convertOffice2Pdf(String ea, String path, String filePath, int width) throws InterruptedException {
     String ext = FilenameUtils.getExtension(filePath).toLowerCase();
     PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, path, width);
     int pageCount = previewInfo.getPageCount();
@@ -61,27 +62,39 @@ public class Office2PdfHandler {
         }
       }
     }
+    int hasNotConvertPageCount = hasNotConvertPageList.size();
+    long startTime = System.currentTimeMillis();
     if (ext.equals("pdf")) {
+      AuditLogDTO dto = AuditLogDTO.builder()
+        .appName("document-preview")
+        .createTime(startTime)
+        .ea(ea)
+        .extra(path)
+        .action("pdf-split")
+        .status("success")
+        .num(hasNotConvertPageCount)
+        .cost(System.currentTimeMillis() - startTime)
+        .build();
+      BizLogClient.send("biz-audit-log", Pojo2Protobuf.toMessage(dto, AuditLog.class).toByteArray());
       enqueueMultiPagePdf(ea, path, filePath, hasNotConvertPageList, width, previewInfo.getPdfConvertType());
     } else if (ext.contains("ppt")) {
-      int hasNotConvertPageCount = hasNotConvertPageList.size();
       if (hasNotConvertPageCount <= pptMaxPage) {
         log.info("convert ppt to  pdf page by page!");
-        for (int i = 0; i < hasNotConvertPageList.size(); i++) {
-          final int page = hasNotConvertPageList.get(i);
+        AuditLogDTO.AuditLogDTOBuilder builder = AuditLogDTO.builder()
+          .appName("document-preview")
+          .createTime(startTime)
+          .action("ppt2pdf-split")
+          .status("success")
+          .ea(ea)
+          .extra(path)
+          .num(hasNotConvertPageCount);
+        CountDownLatch latch = new CountDownLatch(hasNotConvertPageCount);
+        for (final int page : hasNotConvertPageList) {
           executorService.submit(() -> {
             boolean flag;
-            long startTime = System.currentTimeMillis();
-            AuditLogDTO.AuditLogDTOBuilder builder = AuditLogDTO.builder()
-              .appName("document-preview")
-              .createTime(startTime)
-              .objectIds(String.valueOf(page))
-              .extra(path)
-              .num(hasNotConvertPageCount);
             try {
               flag = officeApiHelper.convertOffice2Pdf(filePath, page);
               if (flag) {
-                builder.status("success");
                 counterService.inc("ppt2pdf-success!");
                 String pdfPageFilePath = filePath + "." + page + ".pdf";
                 enqueue(ea, path, pdfPageFilePath, page, 1, width, previewInfo.getPdfConvertType());
@@ -92,26 +105,29 @@ public class Office2PdfHandler {
             } catch (IOException e) {
               builder.status("fail").error(e.getMessage());
               counterService.inc("ppt2pdf-fail!");
+            } finally {
+              latch.countDown();
             }
-            AuditLogDTO dto = builder.action("ppt2pdf").ea(ea).cost(System.currentTimeMillis() - startTime).build();
-            BizLogClient.send("biz-audit-log", Pojo2Protobuf.toMessage(dto, AuditLog.class).toByteArray());
           });
         }
+        latch.await();
+        AuditLogDTO dto = builder.cost(System.currentTimeMillis() - startTime).build();
+        BizLogClient.send("biz-audit-log", Pojo2Protobuf.toMessage(dto, AuditLog.class).toByteArray());
       } else {
         log.info("convert ppt to  pdf once time!");
         executorService.submit(() -> {
           boolean flag;
-          long startTime = System.currentTimeMillis();
           AuditLogDTO.AuditLogDTOBuilder builder = AuditLogDTO.builder()
             .appName("document-preview")
             .createTime(startTime)
-            .objectIds(String.valueOf(hasNotConvertPageCount))
+            .action("ppt2pdf-all")
+            .status("success")
+            .ea(ea)
             .extra(path)
             .num(hasNotConvertPageCount);
           try {
             flag = officeApiHelper.convertPPT2Pdf(filePath);
             if (flag) {
-              builder.status("success");
               counterService.inc("ppt2pdf-success!");
               String pdfPageFilePath = filePath + ".pdf";
               enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList, width, previewInfo.getPdfConvertType());
@@ -123,7 +139,7 @@ public class Office2PdfHandler {
             builder.status("fail").error(e.getMessage());
             counterService.inc("ppt2pdf-fail!");
           }
-          AuditLogDTO dto = builder.action("ppt2pdf").ea(ea).cost(System.currentTimeMillis() - startTime).build();
+          AuditLogDTO dto = builder.cost(System.currentTimeMillis() - startTime).build();
           BizLogClient.send("biz-audit-log", Pojo2Protobuf.toMessage(dto, AuditLog.class).toByteArray());
         });
 
@@ -131,17 +147,17 @@ public class Office2PdfHandler {
     } else if (ext.contains("doc")) {
       executorService.submit(() -> {
         boolean flag;
-        long startTime = System.currentTimeMillis();
         AuditLogDTO.AuditLogDTOBuilder builder = AuditLogDTO.builder()
           .appName("document-preview")
           .createTime(startTime)
-          .objectIds(String.valueOf(hasNotConvertPageList.size()))
+          .status("success")
+          .action("word2pdf")
+          .ea(ea)
           .extra(path)
-          .num(hasNotConvertPageList.size());
+          .num(hasNotConvertPageCount);
         try {
           flag = officeApiHelper.convertOffice2Pdf(filePath);
           if (flag) {
-            builder.status("success");
             counterService.inc("word2pdf-success!");
             String pdfPageFilePath = filePath + ".pdf";
             enqueueMultiPagePdf(ea, path, pdfPageFilePath, hasNotConvertPageList, width, previewInfo.getPdfConvertType());
@@ -153,7 +169,7 @@ public class Office2PdfHandler {
           builder.status("fail").error(e.getMessage());
           counterService.inc("word2pdf-fail!");
         }
-        AuditLogDTO dto = builder.action("word2pdf").ea(ea).cost(System.currentTimeMillis() - startTime).build();
+        AuditLogDTO dto = builder.cost(System.currentTimeMillis() - startTime).build();
         BizLogClient.send("biz-audit-log", Pojo2Protobuf.toMessage(dto, AuditLog.class).toByteArray());
       });
     }

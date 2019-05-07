@@ -229,15 +229,13 @@ public class Pdf2HtmlHandler {
       html = html.replace(cssName, "./" + dirName + "/" + newCssName);
       html = html.replace("<script src=\"compatibility.min.js\"></script>", "");
       html = html.replace("<script src=\"pdf2htmlEX.min.js\"></script>", "");
-      html = html.replace(
-        "<script>\n" + "try{\n" + "pdf2htmlEX.defaultViewer = new pdf2htmlEX.Viewer({});\n" + "}catch(e){}\n" +
-          "</script>", "");
+      html = html.replace("<script>\n" + "try{\n" + "pdf2htmlEX.defaultViewer = new pdf2htmlEX.Viewer({});\n" + "}catch(e){}\n" + "</script>", "");
       html = html.replace("<div id=\"sidebar\">\n" + "<div id=\"outline\">\n" + "</div>\n" + "</div>", "");
       html = html.replace("<div class=\"loading-indicator\">", "");
       html = html.replace("<img alt=\"\" src=\"pdf2htmlEX-64x64.png\"/>", "");
       html = html.replace("Evaluation only.", "")
-                 .replace("Created with Aspose.Slides for .NET 4.0 16.11.0.0.", "")
-                 .replace("Copyright 2004-2016Aspose Pty Ltd.", "");
+        .replace("Created with Aspose.Slides for .NET 4.0 16.11.0.0.", "")
+        .replace("Copyright 2004-2016Aspose Pty Ltd.", "");
       if (!Strings.isNullOrEmpty(bgName)) {
         html = html.replace(bgName, "./" + dirName + "/" + newBgName);
       }

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Semaphore;
 
 /**
  * Created by liuq on 2017/3/9.
@@ -42,6 +43,7 @@ public class Pdf2HtmlProcessor {
   private static final String KEY_TOPICS = "TOPICS";
   @ReloadableProperty("pdf2html_mq_config_name")
   private String configName = "fs-dps-mq-pdf2html";
+  private Semaphore limiter = new Semaphore(5);
 
   public void init() {
     log.info("begin consumer pdf2html queue!");
@@ -52,7 +54,7 @@ public class Pdf2HtmlProcessor {
         try {
           doConvert(message);
         } catch (Exception ex) {
-          log.error("do convert happened exception,params:{}", ex, JSON.toJSONString(message));
+          log.error("do convert happened exception, params:{}, ", JSON.toJSONString(message), ex);
         }
       });
       return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
@@ -60,7 +62,7 @@ public class Pdf2HtmlProcessor {
     autoConfRocketMQProcessor.init();
   }
 
-  private void doConvert(ConvertPdf2HtmlMessage convertorMessage) throws IOException {
+  private void doConvert(ConvertPdf2HtmlMessage convertorMessage) throws IOException, InterruptedException {
     StopWatch stopWatch = new StopWatch();
     stopWatch.start();
     log.info("begin do convert,params:{}", JSON.toJSONString(convertorMessage));
@@ -72,15 +74,20 @@ public class Pdf2HtmlProcessor {
     String resultFilePath = basedDir + "/" + page + ".html";
     if (convertorMessage.getPdfConvertType() == 1) {
       resultFilePath = basedDir + "/" + page + ".png";
-
     }
     if (new File(resultFilePath).exists()) {
       log.info("data file:{} exists!not need convert!", resultFilePath);
       return;
     }
-    String dataFilePath = convertorMessage.getPdfConvertType() == 0 ?
-      pdf2HtmlHandler.doConvert(convertorMessage) :
-      pdf2ImageHandler.doConvert(convertorMessage);
+    String dataFilePath;
+    try {
+      limiter.acquire();
+      dataFilePath = convertorMessage.getPdfConvertType() == 0 ?
+        pdf2HtmlHandler.doConvert(convertorMessage) :
+        pdf2ImageHandler.doConvert(convertorMessage);
+    } finally {
+      limiter.release();
+    }
     if (!Strings.isNullOrEmpty(dataFilePath)) {
       counterService.inc("convert-pdf2html-ok");
       previewInfoDao.savePreviewInfo(ea, path, dataFilePath, convertorMessage.getPageWidth());

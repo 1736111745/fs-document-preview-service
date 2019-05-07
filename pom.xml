@@ -14,7 +14,6 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>fs-document-preview-cgi</module>
-        <module>fs-document-preview-provider</module>
         <module>fs-document-preview-api</module>
         <module>fs-document-preview-common</module>
         <module>fs-document-preview-asyncconvertor</module>

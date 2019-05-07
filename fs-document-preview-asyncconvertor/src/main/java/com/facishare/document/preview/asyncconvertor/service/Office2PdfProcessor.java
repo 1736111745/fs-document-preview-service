@@ -42,7 +42,7 @@ public class Office2PdfProcessor {
         try {
           office2Pdf(convertorMessage);
         } catch (Exception ex) {
-          log.error("do convert happened exception,params:{}", ex, JSON.toJSONString(convertorMessage));
+          log.error("do convert happened exception,params:{}, ", JSON.toJSONString(convertorMessage), ex);
         }
       });
       return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;

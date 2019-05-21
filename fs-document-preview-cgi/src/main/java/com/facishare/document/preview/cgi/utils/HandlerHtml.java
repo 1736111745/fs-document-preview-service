@@ -81,6 +81,21 @@ public class HandlerHtml {
     }
   }
 
+  public static byte[] removeScript(String filePath) throws IOException {
+    File htmlFile = new File(filePath);
+    try {
+      String html = FileUtils.readFileToString(htmlFile);
+      Document document = Jsoup.parse(html);
+      Element body = document.body();
+      Elements js = body.getElementsByTag("script");
+      js.remove();
+      String newSvgHtml = document.html();
+      return newSvgHtml.getBytes();
+    } catch (Exception e) {
+      return FileUtils.readFileToByteArray(htmlFile);
+    }
+  }
+
   public static void main(String[] args) throws Exception {
 
     removeLicenceStr("/Users/liuq/Documents/a.html");

@@ -4,6 +4,7 @@ import com.facishare.document.preview.common.utils.MimeTypeHelper;
 import com.facishare.document.preview.common.utils.ThumbnailHelper;
 import com.fxiaoke.common.image.SimpleImageInfo;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.FileUtils;
@@ -78,6 +79,9 @@ public class FileOutPutor {
     if (txtPlainExtension.indexOf(ext) > -1) {
       String encode = EncodingDetect.detectCharset(filePath);
       response.setCharacterEncoding(encode);
+    }
+    if(!Strings.isNullOrEmpty(mime)&&mime.contains("svg")) {
+      return HandlerHtml.removeScript(filePath);
     }
     if (removeLicence == 1) {
       if (ext.toLowerCase().contains("html")) {

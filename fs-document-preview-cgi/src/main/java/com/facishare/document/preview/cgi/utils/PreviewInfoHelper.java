@@ -10,7 +10,6 @@ import com.facishare.document.preview.common.utils.OfficeApiHelper;
 import com.facishare.document.preview.common.utils.PathHelper;
 import com.facishare.document.preview.common.utils.SampleUUID;
 import com.github.autoconf.ConfigFactory;
-import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -35,18 +34,17 @@ public class PreviewInfoHelper {
   PreviewInfoDao previewInfoDao;
   @Autowired
   OfficeApiHelper officeApiHelper;
-  @ReloadableProperty("redirectPreviewExtension")
   private String redirectPreviewExtension = "txt|sql|js|css|json|csv|svg|webp|jpg|png|bmp|gif|jpeg|mp4";
-  @ReloadableProperty("previewMaxPagCount")
-  private int previewMaxPagCount=200;
+  private int previewMaxPagCount = 200;
   private List<String> pdf2ImageMd5List = Lists.newArrayList();
 
   @PostConstruct
   public void init() {
-
     ConfigFactory.getInstance().getConfig("fs-dps-config", config -> {
       String pdf2ImageMd5s = config.get("pdf2ImageMd5s");
       pdf2ImageMd5List = Splitter.on('|').trimResults().omitEmptyStrings().splitToList(pdf2ImageMd5s);
+      previewMaxPagCount = config.getInt("previewMaxPagCount");
+      redirectPreviewExtension = config.get("redirectPreviewExtension");
     });
   }
 
@@ -103,7 +101,7 @@ public class PreviewInfoHelper {
               if (pageInfo.getPageCount() > previewMaxPagCount) {
                 previewInfoEx.setSuccess(false);
                 previewInfoEx.setPreviewInfo(null);
-                previewInfoEx.setErrorMsg("当前文件页码数超过"+previewMaxPagCount+"页，不支持预览！");
+                previewInfoEx.setErrorMsg("当前文件页码数超过" + previewMaxPagCount + "页，不支持预览！");
               } else {
                 if (pageInfo.isSuccess()) {
                   pageCount = pageInfo.getPageCount();

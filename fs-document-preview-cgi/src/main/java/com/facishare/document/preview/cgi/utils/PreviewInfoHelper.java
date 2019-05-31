@@ -38,7 +38,7 @@ public class PreviewInfoHelper {
   @ReloadableProperty("redirectPreviewExtension")
   private String redirectPreviewExtension = "txt|sql|js|css|json|csv|svg|webp|jpg|png|bmp|gif|jpeg|mp4";
   @ReloadableProperty("previewMaxPagCount")
-  private int previewMaxPagCount=100;
+  private int previewMaxPagCount=200;
   private List<String> pdf2ImageMd5List = Lists.newArrayList();
 
   @PostConstruct

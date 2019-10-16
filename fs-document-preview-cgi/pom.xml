@@ -371,14 +371,14 @@
 
         <dependency>
             <groupId>com.facishare</groupId>
-            <artifactId>fs-enterprise-relation-outapi</artifactId>
-            <version>1.0.4-SNAPSHOT</version>
+            <artifactId>fs-enterprise-id-account-converter</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
-            <groupId>com.facishare</groupId>
-            <artifactId>fs-enterprise-id-account-converter</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>com.fxiaoke</groupId>
+            <artifactId>fs-enterpriserelation-rest-api</artifactId>
+            <version>1.2.5-SNAPSHOT</version>
         </dependency>
 
     </dependencies>

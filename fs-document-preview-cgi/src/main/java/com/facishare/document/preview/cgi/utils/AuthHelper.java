@@ -7,13 +7,14 @@ import com.facishare.asm.api.service.ActiveSessionAuthorizeService;
 import com.facishare.common.web.util.WebUtil;
 import com.facishare.converter.EIEAConverter;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
-import com.facishare.enterprise.common.constant.LinkType;
-import com.facishare.enterprise.common.result.Result;
+import com.fxiaoke.enterpriserelation.arg.AuthWithoutEaArg;
+import com.fxiaoke.enterpriserelation.common.HeaderObj;
+import com.fxiaoke.enterpriserelation.common.RestResult;
+import com.fxiaoke.enterpriserelation.result.AuthUserResult;
+import com.fxiaoke.enterpriserelation.service.AuthService;
 import com.github.trace.TraceContext;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.fs.enterprise.relation.outapi.service.AuthService;
-import org.fs.enterprise.relation.outapi.vo.Identifier;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -69,7 +70,6 @@ public class AuthHelper {
       }
     }
   }
-
   public static String getCookie(HttpServletRequest request) {
     Cookie cookie = WebUtil.getCookie(request, "FSAuthXC");
     if (cookie == null) {
@@ -81,30 +81,36 @@ public class AuthHelper {
     return "";
   }
 
+
+  public EmployeeInfo getOAuthInfo(String cookie, String appId) {
+    AuthWithoutEaArg arg = new AuthWithoutEaArg();
+    arg.setErInfo(cookie);
+    arg.setLinkAppId(appId);
+    RestResult<AuthUserResult> result = authService.authWithoutEa(HeaderObj.newInstance(appId, null, null, null), arg);
+    if (!result.isSuccess()) {
+      log.warn("get the auth message error,appId :{}", appId);
+      return null;
+    }
+    EmployeeInfo employeeInfo = new EmployeeInfo();
+    String ea = result.getData().getUpstreamEa();
+    int employeeId = 1000;
+    employeeInfo.setEa(ea);
+    employeeInfo.setEmployeeId(employeeId);
+    return employeeInfo;
+  }
+
   //下游的企业换成上游的企业
   public EmployeeInfo getAuthInfoForOpen(HttpServletRequest request, String appid) {
     EmployeeInfo employeeInfo = null;
     String erInfo = WebUtil.getCookie(request, "ERInfo") == null ? "" : WebUtil.getCookie(request, "ERInfo").getValue();
     String crInfo = WebUtil.getCookie(request, "CRInfo") == null ? "" : WebUtil.getCookie(request, "CRInfo").getValue();
     if (!Strings.isNullOrEmpty(erInfo) || !Strings.isNullOrEmpty(crInfo)) {
-      Integer type = LinkType.ER.getType();
       String cookie = erInfo;
       if (Strings.isNullOrEmpty(erInfo)) {
-        type = LinkType.CR.getType();
         cookie = crInfo;
       }
-      Result<Identifier> result = authService.getIdentifier(type, cookie, appid, "fsc-uploadforopen");
-      if (result != null && result.isSuccess()) {
-        int ei = result.getData().getUpstreamEi();
-        long employeeId = result.getData().getOwnerId();
-        String ea = eieaConverter.enterpriseIdToAccount(ei);
-        employeeInfo = new EmployeeInfo();
-        employeeInfo.setEa(ea);
-        employeeInfo.setEi(ei);
-        employeeInfo.setEmployeeId((int) employeeId);
-      }
+      employeeInfo = getOAuthInfo(cookie, appid);
     }
     return employeeInfo;
   }
-
 }

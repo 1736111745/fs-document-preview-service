@@ -7,38 +7,45 @@
         http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
-    <description>SpringApplicationContext</description>
-    <context:annotation-config/>
-    <context:component-scan base-package="com.facishare.document.preview.cgi"/>
-    <mvc:annotation-driven/>
-    <aop:aspectj-autoproxy/>
-    <mvc:resources mapping="/static/**" location="WEB-INF/views/static/" cache-period="31556926"/>
-    <aop:aspectj-autoproxy/>
-    <bean id="serviceProfiler" class="com.github.trace.aop.ServiceProfiler"/>
-    <aop:config proxy-target-class="true">
-        <aop:aspect ref="serviceProfiler">
-            <aop:around method="profile" pointcut="execution(* com.facishare.document.preview.cgi..*(..))"/>
-        </aop:aspect>
-    </aop:config>
-    <import resource="classpath:spring/spring-cms.xml"/>
-    <import resource="classpath:spring/spring-scheduler.xml"/>
-    <import resource="fs-fileproxy.xml"/>
-    <import resource="classpath:spring/fs-dps-dubbo.xml"/>
-    <import resource="classpath*:spring/ei-ea-converter.xml"/>
+  <description>SpringApplicationContext</description>
+  <context:annotation-config/>
+  <context:component-scan base-package="com.facishare.document.preview.cgi"/>
+  <mvc:annotation-driven/>
+  <aop:aspectj-autoproxy/>
+  <mvc:resources mapping="/static/**" location="WEB-INF/views/static/" cache-period="31556926"/>
+  <aop:aspectj-autoproxy/>
+  <bean id="serviceProfiler" class="com.github.trace.aop.ServiceProfiler"/>
+  <aop:config proxy-target-class="true">
+    <aop:aspect ref="serviceProfiler">
+      <aop:around method="profile" pointcut="execution(* com.facishare.document.preview.cgi..*(..))"/>
+    </aop:aspect>
+  </aop:config>
+  <import resource="classpath:spring/spring-cms.xml"/>
+  <import resource="classpath:spring/spring-scheduler.xml"/>
+  <import resource="fs-fileproxy.xml"/>
+  <import resource="classpath:spring/fs-dps-dubbo.xml"/>
+  <import resource="classpath*:spring/ei-ea-converter.xml"/>
 
-    <bean class="com.fxiaoke.metrics.MetricsConfiguration"/>
-    <bean id="fileProxy" class="com.facishare.document.preview.cgi.utils.FileStorageProxy"/>
-    <bean id="previewInfoDao" class="com.facishare.document.preview.common.dao.impl.PreviewInfoDaoImpl"/>
-    <bean id="office2PdfTaskDao" class="com.facishare.document.preview.common.dao.impl.Office2PdfTaskDaoImpl"/>
-    <bean id="fileTokenDao" class="com.facishare.document.preview.common.dao.impl.FileTokenDaoImpl"/>
-    <bean id="authFilter" class="com.facishare.document.preview.cgi.filter.AuthFilter"/>
-    <bean id="authHelper" class="com.facishare.document.preview.cgi.utils.AuthHelper"/>
-    <bean id="httpClientSupport" class="com.fxiaoke.common.http.spring.HttpSupportFactoryBean"/>
-    <bean id="office2PdfApiHelper" class="com.facishare.document.preview.common.utils.OfficeApiHelper"/>
-    <bean id="office2pdfProvider" class="com.facishare.document.preview.common.mq.ConvertorQueueProvider"
-          init-method="init" p:configName="${office2pdf_mq_config_name}"/>
-    <bean id="convertPdf2HtmlEnqueueUtil"
-          class="com.facishare.document.preview.common.utils.ConvertOffice2PdfEnqueueUtil"/>
-    <bean id="thumbHelper" class="com.facishare.document.preview.common.utils.ThumbnailHelper"/>
-
+  <bean class="com.fxiaoke.metrics.MetricsConfiguration"/>
+  <bean id="fileProxy" class="com.facishare.document.preview.cgi.utils.FileStorageProxy"/>
+  <bean id="previewInfoDao" class="com.facishare.document.preview.common.dao.impl.PreviewInfoDaoImpl"/>
+  <bean id="office2PdfTaskDao" class="com.facishare.document.preview.common.dao.impl.Office2PdfTaskDaoImpl"/>
+  <bean id="fileTokenDao" class="com.facishare.document.preview.common.dao.impl.FileTokenDaoImpl"/>
+  <bean id="authFilter" class="com.facishare.document.preview.cgi.filter.AuthFilter"/>
+  <bean id="authHelper" class="com.facishare.document.preview.cgi.utils.AuthHelper"/>
+  <bean id="httpClientSupport" class="com.fxiaoke.common.http.spring.HttpSupportFactoryBean"/>
+  <bean id="office2PdfApiHelper" class="com.facishare.document.preview.common.utils.OfficeApiHelper"/>
+  <bean id="office2pdfProvider" class="com.facishare.document.preview.common.mq.ConvertorQueueProvider"
+        init-method="init" p:configName="${office2pdf_mq_config_name}"/>
+  <bean id="convertPdf2HtmlEnqueueUtil"
+        class="com.facishare.document.preview.common.utils.ConvertOffice2PdfEnqueueUtil"/>
+  <bean id="thumbHelper" class="com.facishare.document.preview.common.utils.ThumbnailHelper"/>
+  <bean id="retrofitFactory" class="com.github.zhxing.retrofitspring.fxiaoke.ConfigRetrofitSpringFactory" p:configNames="fs-enterpriserelation-rest-api" init-method="init">
+    <property name="headers">
+      <map>
+        <entry key="x-eip-appid" value="x_file_server"/>
+      </map>
+    </property>
+  </bean>
+  <bean class="com.github.zhxing.retrofitspring.RetrofitSpringFactoryBean" p:type="com.fxiaoke.enterpriserelation.service.AuthService" p:factory-ref="retrofitFactory"/>
 </beans>

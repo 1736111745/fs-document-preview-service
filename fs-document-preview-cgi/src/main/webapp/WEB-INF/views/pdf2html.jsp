@@ -18,11 +18,11 @@
   <script type="text/javascript"
           src="https://a9.fspage.com/FSR/fs-dps/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
   <%--<script type="text/javascript"--%>
-          <%--src="<%=request.getContextPath()%>/static/js/pdf2html.js?v=<%=request.getAttribute("sv")%>"></script>--%>
+          <%--src="/dps/static/js/pdf2html.js?v=<%=request.getAttribute("sv")%>"></script>--%>
   <script type="text/javascript"
           src="https://a9.fspage.com/FSR/fs-dps/static/js/pdf2html.js?v=<%=request.getAttribute("sv")%>"></script>
   <script>
-    window.contextPath = "<%=request.getContextPath()%>";
+    window.contextPath = "/dps";
   </script>
   <style type="text/css">
     div.lazy {

@@ -12,12 +12,12 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <script>
-    window.contextPath = "<%=request.getContextPath()%>";
+    window.contextPath = "/dps";
   </script>
   <script type="text/javascript" src="https://a9.fspage.com/FSR/fs-dps/static/common/jquery-1.11.1.min.js"></script>
   <script type="text/javascript" src="https://a9.fspage.com/FSR/fs-dps/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
   <%--<script type="text/javascript"--%>
-          <%--src="<%=request.getContextPath()%>/static/js/main.js?v=<%=request.getAttribute("sv")%>"></script>--%>
+          <%--src="/dps/static/js/main.js?v=<%=request.getAttribute("sv")%>"></script>--%>
   <script type="text/javascript" src="https://a9.fspage.com/FSR/fs-dps/static/js/main.js?v=<%=request.getAttribute("sv")%>"></script>
   <link href="https://a9.fspage.com/FSR/fs-dps/static/css/main.css?v=<%=request.getAttribute("sv")%>" rel="stylesheet">
   <style>

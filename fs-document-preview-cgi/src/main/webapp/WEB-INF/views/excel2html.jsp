@@ -15,7 +15,7 @@
   <title>文档</title>
   <script type="text/javascript" src="https://a9.fspage.com/FSR/fs-dps/static/common/jquery-1.11.1.min.js"></script>
   <script>
-    window.contextPath = "<%=request.getContextPath()%>";
+    window.contextPath = "/dps";
   </script>
   <link href="https://a9.fspage.com/FSR/fs-dps/static/common/bootstrap.min.css" rel="stylesheet">
   <link href="https://a9.fspage.com/FSR/fs-dps/static/common/bootstrap-responsive.min.css" rel="stylesheet">

@@ -36,7 +36,7 @@ public class AuthHelper {
 
   public EmployeeInfo getAuthInfo(HttpServletRequest request) {
     EmployeeInfo employeeInfo = null;
-    String outappid = UrlParametersHelper.safeGetRequestParameter(request, "outappid");
+    String outappid =getOutAppId(request);
     if (!Strings.isNullOrEmpty(outappid)) {
       employeeInfo = getAuthInfoForOpen(request, outappid);
     }

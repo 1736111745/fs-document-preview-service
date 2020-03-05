@@ -113,4 +113,12 @@ public class AuthHelper {
     }
     return employeeInfo;
   }
+
+  private   String getOutAppId(HttpServletRequest request) {
+    String outappid = UrlParametersHelper.safeGetRequestParameter(request, "outappid");
+    if (Strings.isNullOrEmpty(outappid)) {
+      outappid = request.getHeader("fs-out-appid");
+    }
+    return outappid;
+  }
 }

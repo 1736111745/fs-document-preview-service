@@ -98,7 +98,7 @@ public class AuthFilter extends OncePerRequestFilter {
               //设置下cookie
               //String authCookieStr="FSAuthX=0G60A8NRRG400012qn7OLB6uLrqNwPyFvqaIbS7hPSz5bEUo2JrvReHzbzL1xzKoxWY2odJxfy8060ILdxEFfVlqzbhjz4RS3bzdyltFmviyrJLWdcuj6z2lscxq2QKzycZwAM8jDxjxkOS7paFZ85CbJy7eeiorJfCgjwdp9nboGWIhGFZIW7jKeaAqeILjv0azXdklRbRUH6cNCHDFvSr2MP8bY7p90hpWHzT";
               Cookie  authCookie=new Cookie("FSAuthX","0G60A8NRRG400012qn7OLB6uLrqNwPyFvqaIbS7hPSz5bEUo2JrvReHzbzL1xzKoxWY2odJxfy8060ILdxEFfVlqzbhjz4RS3bzdyltFmviyrJLWdcuj6z2lscxq2QKzycZwAM8jDxjxkOS7paFZ85CbJy7eeiorJfCgjwdp9nboGWIhGFZIW7jKeaAqeILjv0azXdklRbRUH6cNCHDFvSr2MP8bY7p90hpWHzT");
-              authCookie.setDomain(".ceshi112.com");
+              authCookie.setDomain("ceshi112.com");
               authCookie.setPath("/");
               response.addCookie(authCookie);
             } else {

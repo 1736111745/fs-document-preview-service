@@ -48,6 +48,7 @@ public class AuthFilter extends OncePerRequestFilter {
     String requestUri = request.getRequestURI().toLowerCase();
     if (ignoreAuth(request)) {
       filterChain.doFilter(request, response);
+      return;
     } else {
       EmployeeInfo employeeInfo = null;
       String shareToken = UrlParametersHelper.safeGetRequestParameter(request, "shareToken");

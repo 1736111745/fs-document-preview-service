@@ -408,6 +408,10 @@
                     <artifactId>rpc-trace</artifactId>
                     <groupId>com.github.colin-lee</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>config-core</artifactId>
+                    <groupId>com.github.colin-lee</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
 

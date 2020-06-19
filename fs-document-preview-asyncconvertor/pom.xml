@@ -135,7 +135,7 @@
         <dependency>
             <groupId>com.github.colin-lee</groupId>
             <artifactId>spring-support</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
+            <version>3.0.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <artifactId>java-utils</artifactId>
@@ -385,7 +385,7 @@
         <dependency>
             <groupId>com.fxiaoke.common</groupId>
             <artifactId>metrics-oss</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
+            <version>4.0.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <artifactId>jackson-annotations</artifactId>
@@ -423,7 +423,7 @@
         <dependency>
             <groupId>com.github.colin-lee</groupId>
             <artifactId>rpc-trace</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
+            <version>4.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.facishare</groupId>
@@ -433,6 +433,18 @@
                 <exclusion>
                     <artifactId>fastjson</artifactId>
                     <groupId>com.alibaba</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>config-core</artifactId>
+                    <groupId>com.github.colin-lee</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-support</artifactId>
+                    <groupId>com.github.colin-lee</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>rpc-trace</artifactId>
+                    <groupId>com.github.colin-lee</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -455,6 +467,12 @@
             <groupId>com.fxiaoke.common</groupId>
             <artifactId>http-spring-support</artifactId>
             <version>1.0.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>rpc-trace</artifactId>
+                    <groupId>com.github.colin-lee</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.zeroturnaround</groupId>

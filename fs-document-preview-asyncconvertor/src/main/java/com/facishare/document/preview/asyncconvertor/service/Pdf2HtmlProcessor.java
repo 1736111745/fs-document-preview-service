@@ -95,9 +95,11 @@ public class Pdf2HtmlProcessor {
     String dataFilePath = message.getPdfConvertType() == 0 ? pdf2HtmlHandler.doConvert(message) : pdf2ImageHandler.doConvert(message);
     if (!Strings.isNullOrEmpty(dataFilePath)) {
       counterService.inc("convert-pdf2html-ok");
+      log.info("convert-pdf2html-ok,dataFilePath:{}",dataFilePath);
       previewInfoDao.savePreviewInfo(ea, path, dataFilePath, message.getPageWidth());
     } else {
       counterService.inc("convert-pdf2html-fail");
+      log.info("convert-pdf2html-fail");
     }
     stopWatch.stop();
     log.info("end do convert,params:{},cost:{}ms", JSON.toJSONString(message), stopWatch.getTime());

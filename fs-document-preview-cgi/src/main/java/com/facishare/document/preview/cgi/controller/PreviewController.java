@@ -85,7 +85,7 @@ public class PreviewController {
     if (!token.equals("")) {
       log.info("getTokenInfo,ea:{},token:{},sourceUser:{}", employeeInfo.getEa(), token, employeeInfo.getSourceUser());
       DownloadFileTokens fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
-      if (fileToken != null && fileToken.getFileType().toLowerCase().equals("preview")) {
+      if (fileToken != null && ("preview".equalsIgnoreCase(fileToken.getFileType())||"Single".equalsIgnoreCase(fileToken.getFileType()))) {
         {
           path = Strings.isNullOrEmpty(fileToken.getFilePath()) ? "" : fileToken.getFilePath().trim();
           securityGroup = Strings.isNullOrEmpty(fileToken.getDownloadSecurityGroup()) ?

@@ -2,33 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-    <bean id="fsiServiceProxyFactory" class="com.facishare.fsi.proxy.FsiServiceProxyFactory" init-method="init">
-        <property name="configKey" value="${fsc_fsi_proxy_config}"/>
-    </bean>
-
-    <bean id="fsiWarehouseProxyFactory" class="com.facishare.fsi.proxy.FsiWarehouseProxyFactory" init-method="init">
-        <property name="configKey" value="${fsc_fsi_proxy_config}"/>
-        <property name="globalConfigService" ref="globalConfigService"/>
-    </bean>
-
-    <bean id="globalConfigService" class="com.facishare.fsi.proxy.FsiServiceProxyFactoryBean">
-        <property name="factory" ref="fsiServiceProxyFactory"/>
-        <property name="type" value="com.facishare.fsi.proxy.service.GlobalConfigService"/>
-    </bean>
-
-    <bean id="nFileStorageService" class="com.facishare.fsi.proxy.FsiServiceProxyFactoryBean">
-        <property name="factory" ref="fsiWarehouseProxyFactory"/>
-        <property name="type" value="com.facishare.fsi.proxy.service.NFileStorageService"/>
-    </bean>
-
-    <bean id="gFileStorageService" class="com.facishare.fsi.proxy.FsiServiceProxyFactoryBean">
-        <property name="factory" ref="fsiServiceProxyFactory"/>
-        <property name="type" value="com.facishare.fsi.proxy.service.GFileStorageService"/>
-    </bean>
-
-    <bean id="aFileStorageService" class="com.facishare.fsi.proxy.FsiServiceProxyFactoryBean">
-        <property name="factory" ref="fsiWarehouseProxyFactory"/>
-        <property name="type" value="com.facishare.fsi.proxy.service.AFileStorageService"/>
-    </bean>
+    <import resource="classpath:META-INF/spring/fs-fsi-proxy-service.xml"/>
+    <import resource="classpath:META-INF/spring/fs-fsi-proxy-service-forstone.xml"/>
 
 </beans>

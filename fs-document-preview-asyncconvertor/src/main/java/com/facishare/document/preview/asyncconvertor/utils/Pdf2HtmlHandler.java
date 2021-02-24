@@ -242,7 +242,7 @@ public class Pdf2HtmlHandler {
       html = html.replace("\n", "");
       FileUtils.writeByteArrayToFile(pageFile, html.getBytes());
     } catch (Exception ex) {
-      log.error("handelHtml happened exception", ex);
+      log.error("handleHtml happened exception", ex);
     } finally {
       FileUtils.deleteQuietly(new File(outPutDir));
     }

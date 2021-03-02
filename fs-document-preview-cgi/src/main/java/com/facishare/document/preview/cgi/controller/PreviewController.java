@@ -74,6 +74,10 @@ public class PreviewController {
   @RequestMapping(value = "/preview/getPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
   public String getPreviewInfo(HttpServletRequest request) {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
+    if(path.contains(":")) {
+      String[] appIdAndNpath = path.split(":");
+      path=appIdAndNpath[1];
+    }
     String token = UrlParametersHelper.safeGetRequestParameter(request, "token");
 
     EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
@@ -122,6 +126,10 @@ public class PreviewController {
   @RequestMapping(value = "/preview/getFilePath")
   public void getFilePath(HttpServletRequest request, HttpServletResponse response) {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
+    if(path.contains(":")) {
+      String[] appIdAndNpath = path.split(":");
+      path = appIdAndNpath[1];
+    }
     String page = UrlParametersHelper.safeGetRequestParameter(request, "page");
     String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
     int width = NumberUtils.toInt(UrlParametersHelper.safeGetRequestParameter(request, "width"), 1000);
@@ -179,6 +187,10 @@ public class PreviewController {
   @RequestMapping(value = "/preview/getSheetNames", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
   public String getSheetNames(HttpServletRequest request) throws Exception {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
+    if(path.contains(":")) {
+      String[] appIdAndNpath = path.split(":");
+      path = appIdAndNpath[1];
+    }
     String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
     EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
     Map<String, Object> map = new HashMap<>();
@@ -204,6 +216,10 @@ public class PreviewController {
   @RequestMapping(value = "/preview/getOriginalPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
   public String getOriginalPreviewInfo(HttpServletRequest request) {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
+    if(path.contains(":")) {
+      String[] appIdAndNpath = path.split(":");
+      path = appIdAndNpath[1];
+    }
     String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
     EmployeeInfo employeeInfo = (EmployeeInfo) request.getAttribute("Auth");
     Map<String, Object> map = new HashMap<>();
@@ -233,6 +249,10 @@ public class PreviewController {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "npath") == "" ?
       UrlParametersHelper.safeGetRequestParameter(request, "path") :
       UrlParametersHelper.safeGetRequestParameter(request, "path");
+    if(path.contains(":")) {
+      String[] appIdAndNpath = path.split(":");
+      path = appIdAndNpath[1];
+    }
     if (!UrlParametersHelper.isValidPath(path)) {
       return ResponseJsonHelper.getDocPreviewInfoResult(path, pageCount);
     }
@@ -253,9 +273,14 @@ public class PreviewController {
   @ResponseBody
   @RequestMapping(value = "/preview/DocPageByPath", method = RequestMethod.GET)
   public void docPageByPath(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
     String path = UrlParametersHelper.safeGetRequestParameter(request, "npath") == "" ?
       UrlParametersHelper.safeGetRequestParameter(request, "path") :
       UrlParametersHelper.safeGetRequestParameter(request, "npath");
+    if(path.contains(":")) {
+      String[] appIdAndNpath = path.split(":");
+      path = appIdAndNpath[1];
+    }
     int pageIndex = NumberUtils.toInt(UrlParametersHelper.safeGetRequestParameter(request, "pageIndex"), 0);
     if (!UrlParametersHelper.isValidPath(path)) {
       response.setStatus(400);
@@ -275,6 +300,10 @@ public class PreviewController {
   @RequestMapping(value = "/preview/checkPdf2HtmlStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
   public void checkPdf2HtmlStatus(HttpServletRequest request, HttpServletResponse response) {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
+    if(path.contains(":")) {
+      String[] appIdAndNpath = path.split(":");
+      path = appIdAndNpath[1];
+    }
     if (!UrlParametersHelper.isValidPath(path)) {
       response.setStatus(400);
     }
@@ -299,6 +328,10 @@ public class PreviewController {
   @RequestMapping(value = "/preview/queryPdf2HtmlStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
   public String queryPdf2HtmlStatus(HttpServletRequest request, HttpServletResponse response) {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
+    if(path.contains(":")) {
+      String[] appIdAndNpath = path.split(":");
+      path = appIdAndNpath[1];
+    }
     String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");
     int width = NumberUtils.toInt(UrlParametersHelper.safeGetRequestParameter(request, "width"), 1000);
     if (!UrlParametersHelper.isValidPath(path)) {

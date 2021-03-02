@@ -115,9 +115,19 @@ public class AuthHelper {
   }
 
   private   String getOutAppId(HttpServletRequest request) {
+
     String outappid = UrlParametersHelper.safeGetRequestParameter(request, "outappid");
     if (Strings.isNullOrEmpty(outappid)) {
       outappid = request.getHeader("fs-out-appid");
+      if(Strings.isNullOrEmpty(outappid))
+      {
+        String npath=UrlParametersHelper.safeGetRequestParameter(request,"path");
+        if(npath.contains(":")) {
+          String[] appIdAndNpath = npath.split(":");
+          outappid = appIdAndNpath[0];
+        }
+      }
+
     }
     return outappid;
   }

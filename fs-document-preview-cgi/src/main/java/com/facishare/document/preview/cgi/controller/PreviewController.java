@@ -15,11 +15,11 @@ import com.facishare.document.preview.common.utils.ConvertOffice2PdfEnqueueUtil;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.facishare.document.preview.common.utils.OfficeApiHelper;
 import com.fxiaoke.metrics.CounterService;
+import com.github.autoconf.ConfigFactory;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.file.Files;
@@ -78,7 +79,6 @@ public class PreviewController {
     if(path.contains(":")) {
       String[] appIdAndNpath = path.split(":");
       path=appIdAndNpath[1];
-      appId=appIdAndNpath[0];
     }
     String token = UrlParametersHelper.safeGetRequestParameter(request, "token");
 
@@ -131,8 +131,8 @@ public class PreviewController {
   public void getFilePath(HttpServletRequest request, HttpServletResponse response) {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
     if(path.contains(":")) {
-      String[] appIdAndNpath = path.split(":");
-      path = appIdAndNpath[1];
+      String[] encryptEiAndNpath = path.split(":");
+      path = encryptEiAndNpath[1];
     }
     String page = UrlParametersHelper.safeGetRequestParameter(request, "page");
     String securityGroup = UrlParametersHelper.safeGetRequestParameter(request, "sg");

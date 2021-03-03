@@ -75,9 +75,10 @@ public class PreviewController {
   @RequestMapping(value = "/preview/getPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
   public String getPreviewInfo(HttpServletRequest request) {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
-    String appId="";
+    String encryptEi="";
     if(path.contains(":")) {
       String[] appIdAndNpath = path.split(":");
+      encryptEi=appIdAndNpath[0];
       path=appIdAndNpath[1];
     }
     String token = UrlParametersHelper.safeGetRequestParameter(request, "token");
@@ -117,7 +118,7 @@ public class PreviewController {
       if (previewInfo == null || previewInfo.getPageCount() == 0) {
         return ResponseJsonHelper.getPreviewInfoResult(defaultErrMsg);
       } else {
-        path = Strings.isNullOrEmpty(appId) ? path : appId + ":" + path;
+        path = Strings.isNullOrEmpty(encryptEi) ? path : encryptEi + ":" + path;
         return ResponseJsonHelper.getPreviewInfoResult(previewInfo.getPageCount(), previewInfo.getSheetNames(), path, securityGroup, previewInfo
           .getPdfConvertType());
       }

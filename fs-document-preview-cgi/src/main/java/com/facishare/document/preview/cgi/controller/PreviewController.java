@@ -15,11 +15,11 @@ import com.facishare.document.preview.common.utils.ConvertOffice2PdfEnqueueUtil;
 import com.facishare.document.preview.common.utils.DocTypeHelper;
 import com.facishare.document.preview.common.utils.OfficeApiHelper;
 import com.fxiaoke.metrics.CounterService;
-import com.github.autoconf.ConfigFactory;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.file.Files;
@@ -75,11 +74,11 @@ public class PreviewController {
   @RequestMapping(value = "/preview/getPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
   public String getPreviewInfo(HttpServletRequest request) {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
-    String encryptEi="";
-    if(path.contains(":")) {
+    String encryptEi = "";
+    if (path.contains(":")) {
       String[] appIdAndNpath = path.split(":");
-      encryptEi=appIdAndNpath[0];
-      path=appIdAndNpath[1];
+      encryptEi = appIdAndNpath[0];
+      path = appIdAndNpath[1];
     }
     String token = UrlParametersHelper.safeGetRequestParameter(request, "token");
 
@@ -92,7 +91,8 @@ public class PreviewController {
     if (!token.equals("")) {
       log.info("getTokenInfo,ea:{},token:{},sourceUser:{}", employeeInfo.getEa(), token, employeeInfo.getSourceUser());
       DownloadFileTokens fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
-      if (fileToken != null && ("preview".equalsIgnoreCase(fileToken.getFileType())||"Single".equalsIgnoreCase(fileToken.getFileType()))) {
+      if (fileToken != null &&
+        ("preview".equalsIgnoreCase(fileToken.getFileType()) || "Single".equalsIgnoreCase(fileToken.getFileType()))) {
         {
           path = Strings.isNullOrEmpty(fileToken.getFilePath()) ? "" : fileToken.getFilePath().trim();
           securityGroup = Strings.isNullOrEmpty(fileToken.getDownloadSecurityGroup()) ?
@@ -131,7 +131,7 @@ public class PreviewController {
   @RequestMapping(value = "/preview/getFilePath")
   public void getFilePath(HttpServletRequest request, HttpServletResponse response) {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
-    if(path.contains(":")) {
+    if (path.contains(":")) {
       String[] encryptEiAndNpath = path.split(":");
       path = encryptEiAndNpath[1];
     }
@@ -160,7 +160,7 @@ public class PreviewController {
             response.setStatus(400);
           } else {
             String filePath = previewInfo.getOriginalFilePath();
-            int type=previewInfo.getPdfConvertType()==0?1:2;
+            int type = previewInfo.getPdfConvertType() == 0 ? 1 : 2;
             String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), filePath, type, previewInfo
               .getFilePathList());
             if (!Strings.isNullOrEmpty(dataFilePath)) {
@@ -192,7 +192,7 @@ public class PreviewController {
   @RequestMapping(value = "/preview/getSheetNames", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
   public String getSheetNames(HttpServletRequest request) throws Exception {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
-    if(path.contains(":")) {
+    if (path.contains(":")) {
       String[] appIdAndNpath = path.split(":");
       path = appIdAndNpath[1];
     }
@@ -221,7 +221,7 @@ public class PreviewController {
   @RequestMapping(value = "/preview/getOriginalPreviewInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
   public String getOriginalPreviewInfo(HttpServletRequest request) {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
-    if(path.contains(":")) {
+    if (path.contains(":")) {
       String[] appIdAndNpath = path.split(":");
       path = appIdAndNpath[1];
     }
@@ -254,7 +254,7 @@ public class PreviewController {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "npath") == "" ?
       UrlParametersHelper.safeGetRequestParameter(request, "path") :
       UrlParametersHelper.safeGetRequestParameter(request, "path");
-    if(path.contains(":")) {
+    if (path.contains(":")) {
       String[] appIdAndNpath = path.split(":");
       path = appIdAndNpath[1];
     }
@@ -282,7 +282,7 @@ public class PreviewController {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "npath") == "" ?
       UrlParametersHelper.safeGetRequestParameter(request, "path") :
       UrlParametersHelper.safeGetRequestParameter(request, "npath");
-    if(path.contains(":")) {
+    if (path.contains(":")) {
       String[] appIdAndNpath = path.split(":");
       path = appIdAndNpath[1];
     }
@@ -305,7 +305,7 @@ public class PreviewController {
   @RequestMapping(value = "/preview/checkPdf2HtmlStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
   public void checkPdf2HtmlStatus(HttpServletRequest request, HttpServletResponse response) {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
-    if(path.contains(":")) {
+    if (path.contains(":")) {
       String[] appIdAndNpath = path.split(":");
       path = appIdAndNpath[1];
     }
@@ -333,7 +333,7 @@ public class PreviewController {
   @RequestMapping(value = "/preview/queryPdf2HtmlStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
   public String queryPdf2HtmlStatus(HttpServletRequest request, HttpServletResponse response) {
     String path = UrlParametersHelper.safeGetRequestParameter(request, "path");
-    if(path.contains(":")) {
+    if (path.contains(":")) {
       String[] appIdAndNpath = path.split(":");
       path = appIdAndNpath[1];
     }
@@ -372,9 +372,9 @@ public class PreviewController {
             })) {
               pathList = stream.collect(Collectors.toList());
             }
-//            if (pathList != null) {
-//              pathList.forEach(path1 -> FileUtils.deleteQuietly(path1.toFile()));
-//            }
+            if (pathList != null) {
+              pathList.forEach(path1 -> FileUtils.deleteQuietly(path1.toFile()));
+            }
           }
           Map<String, Object> map = new HashMap<>();
           map.put("list", dataFilePathList);

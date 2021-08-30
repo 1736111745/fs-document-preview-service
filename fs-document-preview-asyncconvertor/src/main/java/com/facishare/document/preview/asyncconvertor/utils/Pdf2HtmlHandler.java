@@ -50,7 +50,7 @@ public class Pdf2HtmlHandler {
     String basedDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
     String outPutDir = FilenameUtils.concat(basedDir, "p" + page);
     List<String> args = createProcessArgs(filePath, outPutDir, page, type, width);
-    StartedProcess startedProcess = new ProcessExecutor().command(args).readOutput(false).start();
+    StartedProcess startedProcess = new ProcessExecutor().command(args).readOutput(true).start();
     Process pdf2htmlProcess = startedProcess.getProcess();
     try {
       Future<ProcessResult> future = startedProcess.getFuture();
@@ -59,7 +59,7 @@ public class Pdf2HtmlHandler {
         log.info("pdf2html finished,begin handle result!");
         dataFilePath = handleResult(page, filePath, outPutDir, type);
       } else {
-        log.error("do convert fail!exit value:{}", result.getExitValue());
+        log.error("do convert fail!exit value:{}, output: {}", result.getExitValue(), result.outputUTF8());
       }
     } catch (IOException e) {
       log.error("do convert happened IOException!", e);

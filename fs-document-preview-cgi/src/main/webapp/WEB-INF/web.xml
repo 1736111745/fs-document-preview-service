@@ -54,4 +54,43 @@
     <servlet-name>spring</servlet-name>
     <url-pattern>/</url-pattern>
   </servlet-mapping>
+
+  <!-- 需要获取授权信息，因此定义需要放到AuthFilter后面 -->
+  <filter>
+    <filter-name>ProxyFilter</filter-name>
+    <filter-class>com.facishare.document.preview.cgi.filter.ProxyFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>ProxyFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <servlet>
+    <servlet-name>proxy2k8s</servlet-name>
+    <servlet-class>org.mitre.dsmiley.httpproxy.ProxyServlet</servlet-class>
+    <init-param>
+      <param-name>targetUri</param-name>
+      <param-value>http://172.31.101.247:11069/fs-k8s-tomcat-test-biz</param-value>
+    </init-param>
+    <init-param>
+      <param-name>log</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>forwardip</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>preserveHost</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>preserveCookies</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>proxy2k8s</servlet-name>
+    <url-pattern>/proxy2k8s/*</url-pattern>
+  </servlet-mapping>
 </web-app>

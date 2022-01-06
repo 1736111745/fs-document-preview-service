@@ -67,7 +67,7 @@ public class PreviewInfoHelper {
       List<String> sheetNames;
       String extension = FilenameUtils.getExtension(npath).toLowerCase();
       PageInfo pageInfo = new PageInfo();
-      if (previewInfo == null || FileUtil.exists(previewInfo)) {
+      if (previewInfo == null || !FileUtil.exists(previewInfo)) {
         log.info("preview info is null or file not exist! path:{}", npath);
         if (previewInfo != null) {
           previewInfoDao.patchClean(ea, Lists.newArrayList(npath));

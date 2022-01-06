@@ -15,10 +15,13 @@ import java.util.Set;
 @Slf4j
 public class ProxyFilter implements Filter {
     private Set<String> eas = new HashSet<>();
+    private boolean proxyEnable = false;
 
     public void init(FilterConfig config) throws ServletException {
         ConfigFactory.getConfig("fs-dps-config", conf -> {
+            proxyEnable = conf.getBool("proxy.enable");
             String eaList = conf.get("proxy.ea.list");
+            log.info("proxy.enable: {}",proxyEnable);
             log.info("proxy.ea.list: {}",eaList);
             eas = new HashSet<>(Splitter.on(',').trimResults().omitEmptyStrings().splitToList(eaList));
         });
@@ -26,7 +29,7 @@ public class ProxyFilter implements Filter {
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws java.io.IOException, ServletException {
         EmployeeInfo employee = getEmployee(request);
-        if (employee != null && eas.contains(employee.getEa())) {
+        if (proxyEnable && employee != null && eas.contains(employee.getEa())) {
                 HttpServletRequest httpReq = (HttpServletRequest) request;
                 String path = httpReq.getRequestURI().substring(httpReq.getContextPath().length());
             try {

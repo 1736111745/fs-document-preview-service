@@ -29,6 +29,9 @@ public class ProxyFilter implements Filter {
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws java.io.IOException, ServletException {
         EmployeeInfo employee = getEmployee(request);
+        if (employee == null) {
+            log.info("can't found auth info");
+        }
         if (proxyEnable && employee != null && eas.contains(employee.getEa())) {
                 HttpServletRequest httpReq = (HttpServletRequest) request;
                 String path = httpReq.getRequestURI().substring(httpReq.getContextPath().length());
@@ -36,10 +39,10 @@ public class ProxyFilter implements Filter {
                 long startTime = System.currentTimeMillis();
                 request.getRequestDispatcher("/proxy2k8s" + path).forward(request, response);
                 long tc = System.currentTimeMillis() - startTime;
-                log.info("proxy to k8s service success, path: {}, status:{}, ea: {}, time cost: {} ms",
+                log.info("proxy2k8s success, path: {}, status:{}, ea: {}, time cost: {} ms",
                         path,((HttpServletResponse)response).getStatus(), employee.getEa(),tc);
             }catch (Exception e) {
-                log.error("proxy to k8s service fail, path: {}, ea: {}",path, employee.getEa(),e);
+                log.error("proxy2k8s service fail, path: {}, ea: {}",path, employee.getEa(),e);
                 throw e;
             }
             return;

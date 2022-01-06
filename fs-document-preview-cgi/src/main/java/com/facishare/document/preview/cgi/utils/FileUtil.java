@@ -13,6 +13,6 @@ import java.io.File;
 public class FileUtil {
 
   public boolean exists(PreviewInfo previewInfo) {
-    return new File(previewInfo.getDataDir()).exists() && new File(previewInfo.getOriginalFilePath()).exists();
+    return new File(previewInfo.getDataDir()).exists();
   }
 }

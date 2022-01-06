@@ -29,9 +29,6 @@ public class ProxyFilter implements Filter {
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws java.io.IOException, ServletException {
         EmployeeInfo employee = getEmployee(request);
-        if (employee == null) {
-            log.info("can't found auth info");
-        }
         if (proxyEnable && employee != null && eas.contains(employee.getEa())) {
                 HttpServletRequest httpReq = (HttpServletRequest) request;
                 String path = httpReq.getRequestURI().substring(httpReq.getContextPath().length());
@@ -46,6 +43,8 @@ public class ProxyFilter implements Filter {
                 throw e;
             }
             return;
+        }else {
+            log.info("proxy2k8s skipped, employee: {}", employee == null ? null: employee.getEa() + "." + employee.getEmployeeId());
         }
         chain.doFilter(request, response);
     }

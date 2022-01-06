@@ -24,7 +24,7 @@ public class HandlerHtml {
       File htmlFile = new File(filePath);
       long fileSize = htmlFile.length();
       log.info("begin handle html,filePath:{},page:{},file size:{}", filePath, page, fileSize);
-      if (fileSize > 1024 * 1024 * 30) {
+      if (fileSize > 1024 * 1024 * 35) {
         //如果生成的html大于10m，就不给个错误提示
         String html = "<h3>该工作表数据异常，请检查工作表的行数或者列数是否过大！</h3>";
         FileUtils.writeByteArrayToFile(htmlFile, html.getBytes(encoding), false);

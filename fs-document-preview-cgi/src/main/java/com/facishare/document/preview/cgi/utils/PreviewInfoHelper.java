@@ -2,6 +2,7 @@ package com.facishare.document.preview.cgi.utils;
 
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfoEx;
+import com.facishare.document.preview.cgi.utils.FileUtil;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.ConvertOldOfficeVersionResult;
 import com.facishare.document.preview.common.model.PageInfo;
@@ -66,8 +67,11 @@ public class PreviewInfoHelper {
       List<String> sheetNames;
       String extension = FilenameUtils.getExtension(npath).toLowerCase();
       PageInfo pageInfo = new PageInfo();
-      if (previewInfo == null) {
-        log.info("preview info is null!path:{}", npath);
+      if (previewInfo == null || FileUtil.exists(previewInfo)) {
+        log.info("preview info is null or file not exist! path:{}", npath);
+        if (previewInfo != null) {
+          previewInfoDao.patchClean(ea, Lists.newArrayList(npath));
+        }
         byte[] bytes = fileStorageProxy.GetBytesByPath(npath, ea, employeeId, securityGroup);
         if (bytes != null && bytes.length > 0) {
           if (extension.contains("xls") && bytes.length > 1024 * 1024 * 20) {
@@ -113,7 +117,16 @@ public class PreviewInfoHelper {
                       pdfConvertType = 1;
                     }
                   }
-                  previewInfo = previewInfoDao.initPreviewInfo(ea, employeeId, npath, filePath, dataDir, bytes.length, pageCount, sheetNames, width, pdfConvertType);
+                  previewInfo = previewInfoDao.initPreviewInfo(ea,
+                    employeeId,
+                    npath,
+                    filePath,
+                    dataDir,
+                    bytes.length,
+                    pageCount,
+                    sheetNames,
+                    width,
+                    pdfConvertType);
                   previewInfoEx.setSuccess(true);
                   previewInfoEx.setPreviewInfo(previewInfo);
                 } else {

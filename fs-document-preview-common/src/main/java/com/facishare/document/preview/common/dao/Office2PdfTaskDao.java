@@ -15,4 +15,6 @@ public interface Office2PdfTaskDao {
 
     void   addTask(String ea,String path,int width);
 
+    void deleteTaskInfo(String ea,String path);
+
 }

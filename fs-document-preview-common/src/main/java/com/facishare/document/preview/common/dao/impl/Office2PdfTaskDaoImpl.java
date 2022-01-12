@@ -5,11 +5,13 @@ import com.facishare.document.preview.common.model.Office2PdfTask;
 import com.facishare.document.preview.common.model.PreviewInfo;
 import com.github.mongo.support.DatastoreExt;
 import lombok.extern.slf4j.Slf4j;
+import org.mongodb.morphia.query.CriteriaContainer;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by liuq on 2017/3/19.
@@ -78,6 +80,13 @@ public class Office2PdfTaskDaoImpl implements Office2PdfTaskDao {
         convertTask.setStatus(0);
         dpsDataStore.insert(convertTask);
         dpsDataStore.ensureIndexes();
+    }
+
+    @Override
+    public void deleteTaskInfo(String ea, String path) {
+        Query<Office2PdfTask> query = dpsDataStore.createQuery(Office2PdfTask.class);
+        query.criteria("path").equal(path).criteria("ea").equal(ea);
+        dpsDataStore.delete(query);
     }
 
 

@@ -3,6 +3,7 @@ package com.facishare.document.preview.cgi.utils;
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
 import com.facishare.document.preview.cgi.model.PreviewInfoEx;
 import com.facishare.document.preview.cgi.utils.FileUtil;
+import com.facishare.document.preview.common.dao.Office2PdfTaskDao;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.ConvertOldOfficeVersionResult;
 import com.facishare.document.preview.common.model.PageInfo;
@@ -33,6 +34,8 @@ public class PreviewInfoHelper {
   FileStorageProxy fileStorageProxy;
   @Autowired
   PreviewInfoDao previewInfoDao;
+  @Autowired
+  Office2PdfTaskDao office2PdfTaskDao;
   @Autowired
   OfficeApiHelper officeApiHelper;
   private String redirectPreviewExtension = "txt|sql|js|css|json|csv|svg|webp|jpg|png|bmp|gif|jpeg|mp4";
@@ -71,6 +74,7 @@ public class PreviewInfoHelper {
         log.info("preview info is null or file not exist! path:{}", npath);
         if (previewInfo != null) {
           previewInfoDao.patchClean(ea, Lists.newArrayList(npath));
+          office2PdfTaskDao.deleteTaskInfo(ea, npath);
         }
         byte[] bytes = fileStorageProxy.GetBytesByPath(npath, ea, employeeId, securityGroup);
         if (bytes != null && bytes.length > 0) {

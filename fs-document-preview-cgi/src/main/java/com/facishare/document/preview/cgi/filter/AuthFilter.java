@@ -117,8 +117,10 @@ public class AuthFilter extends OncePerRequestFilter {
   private static boolean ignoreAuth(HttpServletRequest request) {
     String requestUri = request.getRequestURI().toLowerCase();
     String ctx = request.getContextPath();
-    if (requestUri.startsWith(ctx + "/open/") || requestUri.startsWith(ctx + "/restful/") || requestUri.startsWith(ctx + "/share/") ||
-      requestUri.equals(ctx + "/") || requestUri.contains("ping")) {
+    if (requestUri.startsWith(ctx + "/open/") || requestUri.startsWith(ctx + "/restful/") ||
+            requestUri.startsWith(ctx + "/share/") || requestUri.equals(ctx + "/") || requestUri.contains(".js") ||
+            requestUri.contains(".svg") || requestUri.contains(".png") || requestUri.contains(".css") ||
+            requestUri.contains(".jpg") || requestUri.contains(".htm") || requestUri.contains("ping")) {
       return true;
     } else {
       return false;

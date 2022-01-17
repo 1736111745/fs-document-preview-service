@@ -117,10 +117,18 @@ public class AuthFilter extends OncePerRequestFilter {
   private static boolean ignoreAuth(HttpServletRequest request) {
     String requestUri = request.getRequestURI().toLowerCase();
     String ctx = request.getContextPath();
-    if (requestUri.startsWith(ctx + "/open/") || requestUri.startsWith(ctx + "/restful/") ||
-            requestUri.startsWith(ctx + "/share/") || requestUri.equals(ctx + "/") || requestUri.contains(".js") ||
-            requestUri.contains(".svg") || requestUri.contains(".png") || requestUri.contains(".css") ||
-            requestUri.contains(".jpg") || requestUri.contains(".htm") || requestUri.contains("ping")) {
+    if (requestUri.contains(".js") || requestUri.contains(".svg") || requestUri.contains(".png") || requestUri.contains(".css") ||
+      requestUri.contains(".jpg") || requestUri.contains(".htm")) {
+      String ea = request.getParameter("ea");
+      if (!Strings.isNullOrEmpty(ea)) {
+        log.info("static resource ea:{}",ea);
+        EmployeeInfo employeeInfo = new EmployeeInfo();
+        employeeInfo.setEa(ea);
+        request.setAttribute("Auth", employeeInfo);
+      }
+    }
+    if (requestUri.startsWith(ctx + "/open/") || requestUri.startsWith(ctx + "/restful/") || requestUri.startsWith(ctx + "/share/") ||
+      requestUri.equals(ctx + "/") || requestUri.contains("ping")) {
       return true;
     } else {
       return false;

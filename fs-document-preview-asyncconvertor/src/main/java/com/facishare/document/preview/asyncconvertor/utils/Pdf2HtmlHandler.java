@@ -57,7 +57,7 @@ public class Pdf2HtmlHandler {
       ProcessResult result = future.get(pdf2HtmlTimeout, TimeUnit.SECONDS);
       if (result.getExitValue() == 0) {
         log.info("pdf2html finished,begin handle result!");
-        dataFilePath = handleResult(page, filePath, outPutDir, type);
+        dataFilePath = handleResult(message.getEa(), page, filePath, outPutDir, type);
       } else {
         log.error("do convert fail!exit value:{}, output: {}", result.getExitValue(), result.outputUTF8());
       }
@@ -134,7 +134,7 @@ public class Pdf2HtmlHandler {
   }
 
 
-  private String handleResult(int page, String filePath, String outPutDir, int type) throws IOException {
+  private String handleResult(String ea,int page, String filePath, String outPutDir, int type) throws IOException {
     String baseDir = FilenameUtils.getFullPathNoEndSeparator(filePath);
     String dataFileName = FilenameUtils.getBaseName(filePath) + ".html";
     String dataFilePath = FilenameUtils.concat(outPutDir, dataFileName);
@@ -208,11 +208,12 @@ public class Pdf2HtmlHandler {
       }
 
     }
-    handleHtml(outPutDir, dataFile, pageFile, dirName, cssFileName, newCssFileName, bgName, newBgName);
+    handleHtml(ea,outPutDir, dataFile, pageFile, dirName, cssFileName, newCssFileName, bgName, newBgName);
     return pagePath;
   }
 
-  private void handleHtml(String outPutDir,
+  private void handleHtml(String ea,
+                          String outPutDir,
                           File dataFile,
                           File pageFile,
                           String dirName,
@@ -226,7 +227,7 @@ public class Pdf2HtmlHandler {
       html = html.replace("Evaluation Warning : The document was created with  Spire.Presentation for .NET", "");
       html = html.replace("base.min.css", "../static/css/base.min.css");
       html = html.replace("<link rel=\"stylesheet\" href=\"fancy.min.css\"/>", "");
-      html = html.replace(cssName, "./" + dirName + "/" + newCssName);
+      html = html.replace(cssName, "./" + dirName + "/" + newCssName + "?" + "ea=" + ea);
       html = html.replace("<script src=\"compatibility.min.js\"></script>", "");
       html = html.replace("<script src=\"pdf2htmlEX.min.js\"></script>", "");
       html = html.replace("<script>\n" + "try{\n" + "pdf2htmlEX.defaultViewer = new pdf2htmlEX.Viewer({});\n" + "}catch(e){}\n" + "</script>", "");
@@ -237,7 +238,7 @@ public class Pdf2HtmlHandler {
         .replace("Created with Aspose.Slides for .NET 4.0 16.11.0.0.", "")
         .replace("Copyright 2004-2016Aspose Pty Ltd.", "");
       if (!Strings.isNullOrEmpty(bgName)) {
-        html = html.replace(bgName, "./" + dirName + "/" + newBgName);
+        html = html.replace(bgName, "./" + dirName + "/" + newBgName + "?" + "ea=" + ea);
       }
       html = html.replace("\n", "");
       FileUtils.writeByteArrayToFile(pageFile, html.getBytes());

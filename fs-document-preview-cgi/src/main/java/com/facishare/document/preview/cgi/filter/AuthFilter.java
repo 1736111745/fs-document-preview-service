@@ -126,6 +126,7 @@ public class AuthFilter extends OncePerRequestFilter {
         employeeInfo.setEa(ea);
         request.setAttribute("Auth", employeeInfo);
       }
+      return true;
     }
     if (requestUri.startsWith(ctx + "/open/") || requestUri.startsWith(ctx + "/restful/") || requestUri.startsWith(ctx + "/share/") ||
       requestUri.equals(ctx + "/") || requestUri.contains("ping")) {

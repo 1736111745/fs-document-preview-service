@@ -91,13 +91,10 @@ public class PreviewController {
     if (!token.equals("")) {
       log.info("getTokenInfo,ea:{},token:{},sourceUser:{}", employeeInfo.getEa(), token, employeeInfo.getSourceUser());
       DownloadFileTokens fileToken = fileTokenDao.getInfo(employeeInfo.getEa(), token, employeeInfo.getSourceUser());
-      if (fileToken != null &&
-        ("preview".equalsIgnoreCase(fileToken.getFileType()) || "Single".equalsIgnoreCase(fileToken.getFileType()))) {
+      if (fileToken != null && ("preview".equalsIgnoreCase(fileToken.getFileType()) || "Single".equalsIgnoreCase(fileToken.getFileType()))) {
         {
           path = Strings.isNullOrEmpty(fileToken.getFilePath()) ? "" : fileToken.getFilePath().trim();
-          securityGroup = Strings.isNullOrEmpty(fileToken.getDownloadSecurityGroup()) ?
-            "" :
-            fileToken.getDownloadSecurityGroup().trim();
+          securityGroup = Strings.isNullOrEmpty(fileToken.getDownloadSecurityGroup()) ? "" : fileToken.getDownloadSecurityGroup().trim();
         }
       }
     }
@@ -119,8 +116,11 @@ public class PreviewController {
         return ResponseJsonHelper.getPreviewInfoResult(defaultErrMsg);
       } else {
         path = Strings.isNullOrEmpty(encryptEi) ? path : encryptEi + ":" + path;
-        return ResponseJsonHelper.getPreviewInfoResult(previewInfo.getPageCount(), previewInfo.getSheetNames(), path, securityGroup, previewInfo
-          .getPdfConvertType());
+        return ResponseJsonHelper.getPreviewInfoResult(previewInfo.getPageCount(),
+          previewInfo.getSheetNames(),
+          path,
+          securityGroup,
+          previewInfo.getPdfConvertType());
       }
     } else {
       String errMsg = Strings.isNullOrEmpty(previewInfoEx.getErrorMsg()) ? defaultErrMsg : previewInfoEx.getErrorMsg();
@@ -161,8 +161,7 @@ public class PreviewController {
           } else {
             String filePath = previewInfo.getOriginalFilePath();
             int type = previewInfo.getPdfConvertType() == 0 ? 1 : 2;
-            String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), filePath, type, previewInfo
-              .getFilePathList());
+            String dataFilePath = previewInfoDao.getDataFilePath(path, pageIndex, previewInfo.getDataDir(), filePath, type, previewInfo.getFilePathList());
             if (!Strings.isNullOrEmpty(dataFilePath)) {
               fileOutPutor.outPut(response, dataFilePath, false);
             } else {
@@ -236,6 +235,7 @@ public class PreviewController {
       if (previewInfoEx != null && previewInfoEx.getPreviewInfo() != null) {
         map.put("success", true);
         map.put("dirName", previewInfoEx.getPreviewInfo().getDirName());
+        map.put("ea",previewInfoEx.getPreviewInfo().getEa());
         map.put("fileName", FilenameUtils.getName(previewInfoEx.getPreviewInfo().getOriginalFilePath()));
       } else {
         map.put("success", false);
@@ -360,7 +360,7 @@ public class PreviewController {
             String queryExtension = previewInfo.getPdfConvertType() == 0 ? ".html" : ".png";
             dataFilePathList = dataFilePathList.stream().filter(f -> f.endsWith(queryExtension)).
               sorted(Comparator.comparingInt(o -> NumberUtils.toInt(FilenameUtils.getBaseName(o)))).
-                                                 collect(Collectors.toList());
+              collect(Collectors.toList());
           }
           //转换完毕后清理原始文件
           List<Path> pathList;

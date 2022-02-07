@@ -16,9 +16,9 @@
   </script>
   <script type="text/javascript" src="https://a9.fspage.com/FSR/fs-dps/static/common/jquery-1.11.1.min.js"></script>
   <script type="text/javascript" src="https://a9.fspage.com/FSR/fs-dps/static/js/util.js?v=<%=request.getAttribute("sv")%>"></script>
-  <%--<script type="text/javascript"--%>
-          <%--src="/dps/static/js/main.js?v=<%=request.getAttribute("sv")%>"></script>--%>
-  <script type="text/javascript" src="https://a9.fspage.com/FSR/fs-dps/static/js/main.js?v=<%=request.getAttribute("sv")%>"></script>
+  <script type="text/javascript"
+          src="/dps/static/js/main.js?v=<%=request.getAttribute("sv")%>"></script>
+<%--  <script type="text/javascript" src="https://a9.fspage.com/FSR/fs-dps/static/js/main.js?v=<%=request.getAttribute("sv")%>"></script>--%>
   <link href="https://a9.fspage.com/FSR/fs-dps/static/css/main.css?v=<%=request.getAttribute("sv")%>" rel="stylesheet">
   <style>
     html, body {

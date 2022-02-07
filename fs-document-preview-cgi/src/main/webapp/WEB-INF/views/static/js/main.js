@@ -70,7 +70,7 @@ function doPreviewOriginal() {
       var dirName = data.dirName;
       var fileName = data.fileName;
       var ea = data.ea;
-      var url = window.contextPath + '/preview/' + dirName + "/" + fileName + "?sharetoken=" + sharetoken;
+      var url = window.contextPath + '/preview/' + dirName + "/" + fileName + "?sharetoken=" + sharetoken + "?ea=" + ea;
       location.href = url;
     }
   });

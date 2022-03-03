@@ -19,10 +19,11 @@
     $(function () {
       var path = getQueryStringByName("path");
       var token = getQueryStringByName("token");
+      var appid= getQueryStringByName("outappid");
       var domain = document.domain;
       var protocol=location.protocol;
       if (path != "") {
-        $("#source").attr("src", protocol+"//" + domain + "/FSC/EM/File/RangeDownloadByStream?path=" + path);
+        $("#source").attr("src", protocol+"//" + domain + "/FSC/EM/File/RangeDownloadByStream?path=" + path + "&appid=" + appid);
       }
       else if (token != "") {
         $("#source").attr("src", protocol+"//" + domain + "/FSC/EM/File/RangeDownloadByStream?FileToken=" + token);

@@ -51,7 +51,7 @@ function doPreview() {
     if (txtAndImageExt.indexOf(ext) >= 0) {
         doPreviewOriginal();
     } else if (path.toLowerCase().indexOf("mp4") >= 0) {
-        location.href = window.contextPath + "/preview/videoplayer?path=" + path + "&token=" + token;
+        location.href = window.contextPath + "/preview/videoplayer?path=" + path + "&token=" + token + "&outappid=" + outappid;
     } else {
         doPreviewOffice();
     }

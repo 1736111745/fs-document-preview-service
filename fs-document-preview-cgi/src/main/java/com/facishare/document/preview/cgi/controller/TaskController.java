@@ -7,6 +7,7 @@ import com.facishare.document.preview.common.model.PreviewInfo;
 import com.github.autoconf.ConfigFactory;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.openxml4j.opc.internal.FileHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -45,10 +46,12 @@ public class TaskController {
       List<PreviewInfo> infos = previewInfoDao.getPreviewInfoByPage(skip, limit);
       size = infos.size();
       List<PreviewInfo> canDeleteInfos = infos.stream().filter(i -> canDelete(i.getCreateTime().getTime())).collect(Collectors.toList());
-      //gc smb
-      canDeleteInfos.forEach(info -> FileUtil.delete(info.getDataDir()));
-      //gc meta元数据
-      previewInfoDao.clean(canDeleteInfos.stream().map(i -> i.getPath()).collect(Collectors.toList()));
+      if(CollectionUtils.isNotEmpty(canDeleteInfos)){
+        //gc smb
+        canDeleteInfos.forEach(info -> FileUtil.delete(info.getDataDir()));
+        //gc meta元数据
+        previewInfoDao.clean(canDeleteInfos.stream().map(i -> i.getPath()).collect(Collectors.toList()));
+      }
       skip = skip + infos.size();
     } while (size == limit);
   }

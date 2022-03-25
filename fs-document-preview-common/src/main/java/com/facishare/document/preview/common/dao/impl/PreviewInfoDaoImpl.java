@@ -192,6 +192,7 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
     query.criteria("path").in(pathList);
     dpsDataStore.delete(query);
+    log.info("paths:{}",pathList);
   }
 
   //查询预览文档

@@ -44,11 +44,11 @@ public class TaskController {
     do {
       List<PreviewInfo> infos = previewInfoDao.getPreviewInfoByPage(skip, limit);
       size = infos.size();
-      Stream<PreviewInfo> previewInfoStream = infos.stream().filter(i -> canDelete(i.getCreateTime().getTime()));
+      List<PreviewInfo> canDeleteInfos = infos.stream().filter(i -> canDelete(i.getCreateTime().getTime())).collect(Collectors.toList());
       //gc smb
-      previewInfoStream.forEach(info -> FileUtil.delete(info.getDataDir()));
+      canDeleteInfos.forEach(info -> FileUtil.delete(info.getDataDir()));
       //gc meta元数据
-      previewInfoDao.clean(previewInfoStream.map(i -> i.getPath()).collect(Collectors.toList()));
+      previewInfoDao.clean(canDeleteInfos.stream().map(i -> i.getPath()).collect(Collectors.toList()));
       skip = skip + infos.size();
     } while (size == limit);
   }

@@ -129,7 +129,7 @@ public class AuthFilter extends OncePerRequestFilter {
       return true;
     }
     if (requestUri.startsWith(ctx + "/open/") || requestUri.startsWith(ctx + "/restful/") || requestUri.startsWith(ctx + "/share/") ||
-      requestUri.equals(ctx + "/") || requestUri.contains("ping")) {
+      requestUri.equals(ctx + "/") || requestUri.contains("ping") || requestUri.contains("/task/")) {
       return true;
     } else {
       return false;

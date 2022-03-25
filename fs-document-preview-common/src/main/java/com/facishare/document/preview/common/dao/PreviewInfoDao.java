@@ -22,6 +22,10 @@ public interface PreviewInfoDao {
     PreviewInfo getInfoByPath(String ea, String path,int width);
     //批量删除预览文档
     void  patchClean(String ea,List<String> pathList);
+
+    void clean(List<String> pathList);
     //查询预览文档
     List<PreviewInfo> getInfoByPathList(String ea,List<String> pathList);
+
+    List<PreviewInfo> getPreviewInfoByPage(int skip,int limit);
 }

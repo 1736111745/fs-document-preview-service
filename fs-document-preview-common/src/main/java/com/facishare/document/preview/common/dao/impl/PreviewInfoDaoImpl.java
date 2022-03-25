@@ -11,6 +11,7 @@ import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.mongodb.morphia.query.Criteria;
+import org.mongodb.morphia.query.FindOptions;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -184,7 +185,13 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
     query.criteria("ea").equal(ea).criteria("path").in(pathList);
     dpsDataStore.delete(query);
+  }
 
+  @Override
+  public void clean(List<String> pathList) {
+    Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+    query.criteria("path").in(pathList);
+    dpsDataStore.delete(query);
   }
 
   //查询预览文档
@@ -199,5 +206,12 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
     }
     q.or(criterias.toArray(new Criteria[criterias.size()]));
     return q.asList();
+  }
+
+  @Override
+  public List<PreviewInfo> getPreviewInfoByPage(int skip, int limit) {
+    Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+    FindOptions options = new FindOptions();
+    return query.asList(options.limit(limit).skip(skip));
   }
 }

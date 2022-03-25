@@ -45,4 +45,8 @@ public class PathHelper {
     }
     return dirPath;
   }
+
+  public String getParentDir(){
+    return this.dataDir + "/dps" ;
+  }
 }

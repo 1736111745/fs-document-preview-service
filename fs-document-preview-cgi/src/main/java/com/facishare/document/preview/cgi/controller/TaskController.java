@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.facishare.document.preview.cgi.utils.FileUtil;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.PreviewInfo;
+import com.facishare.document.preview.common.utils.PathHelper;
 import com.github.autoconf.ConfigFactory;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -54,10 +55,13 @@ public class TaskController {
       }
       skip = skip + infos.size();
     } while (size == limit);
+    FileUtil.deleteEmptyDir(new PathHelper().getParentDir());
   }
 
   private boolean canDelete(long stamp) {
     long allowGcMill = allowGcDay * 24 * 3600 * 1000;
     return System.currentTimeMillis() - stamp > allowGcMill;
   }
+
+
 }

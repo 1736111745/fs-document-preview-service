@@ -17,14 +17,32 @@ public class FileUtil {
     return new File(previewInfo.getDataDir()).exists();
   }
 
-  public void delete(String dir){
+  public void delete(String dir) {
     File file = new File(dir);
-    if(file.exists()){
+    if (file.exists()) {
       FileUtils.deleteQuietly(file);
     }
   }
 
+  public void deleteEmptyDir(String dirName) {
+    File dir = new File(dirName);
+    File[] files = dir.listFiles();
+    for (File file : files) {
+      if (file.isDirectory()) {
+        if (file.list().length == 0) {
+          file.delete();
+        } else {
+          deleteEmptyDir(file.getPath());
+          if (file.list().length == 0) {
+            file.delete();
+          }
+        }
+      }
+    }
+  }
+
+
   public static void main(String[] args) {
-    delete("/Users/liuquan/Desktop/test_files");
+    deleteEmptyDir("/Users/liuquan/Desktop/123");
   }
 }

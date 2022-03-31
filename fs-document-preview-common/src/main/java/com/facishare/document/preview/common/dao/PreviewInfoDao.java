@@ -23,6 +23,8 @@ public interface PreviewInfoDao {
     //批量删除预览文档
     void  patchClean(String ea,List<String> pathList);
 
+    void  patchClean(String ea);
+
     void clean(List<String> pathList);
     //查询预览文档
     List<PreviewInfo> getInfoByPathList(String ea,List<String> pathList);

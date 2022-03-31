@@ -188,6 +188,13 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
   }
 
   @Override
+  public void patchClean(String ea) {
+    Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
+    query.criteria("ea").equal(ea);
+    dpsDataStore.delete(query);
+  }
+
+  @Override
   public void clean(List<String> pathList) {
     Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
     query.criteria("path").in(pathList);

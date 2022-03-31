@@ -41,6 +41,7 @@ public class PreviewInfoHelper {
   private String redirectPreviewExtension = "txt|sql|js|css|json|csv|svg|webp|jpg|png|bmp|gif|jpeg|mp4";
   private int previewMaxPagCount = 200;
   private List<String> pdf2ImageMd5List = Lists.newArrayList();
+  private List<String> pdf2ImageMs4Enterprise = Lists.newArrayList();
 
   @PostConstruct
   public void init() {
@@ -49,6 +50,7 @@ public class PreviewInfoHelper {
       pdf2ImageMd5List = Splitter.on('|').trimResults().omitEmptyStrings().splitToList(pdf2ImageMd5s);
       previewMaxPagCount = config.getInt("previewMaxPagCount");
       redirectPreviewExtension = config.get("redirectPreviewExtension");
+      pdf2ImageMs4Enterprise = Splitter.on("|").trimResults().omitEmptyStrings().splitToList(config.get("pdf2ImageMd5Enterprise"));
     });
   }
 
@@ -117,7 +119,7 @@ public class PreviewInfoHelper {
                   int pdfConvertType = 0;
                   if (extension.equals("pdf")) {
                     String fileMd5 = MD5Helper.getMd5ByFile(new File(filePath));
-                    if (pdf2ImageMd5List.size() > 0 && pdf2ImageMd5List.contains(fileMd5)) {
+                    if (canConvertMd5(ea, fileMd5)) {
                       pdfConvertType = 1;
                     }
                   }
@@ -155,5 +157,9 @@ public class PreviewInfoHelper {
       log.error("getPreviewInfo happened exception!,npath:{}", npath, e);
     }
     return previewInfoEx;
+  }
+
+  public boolean canConvertMd5(String ea, String fileMd5) {
+    return (pdf2ImageMd5List.size() > 0 && pdf2ImageMd5List.contains(fileMd5)) || (pdf2ImageMs4Enterprise != null && pdf2ImageMs4Enterprise.contains(ea));
   }
 }

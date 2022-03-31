@@ -34,7 +34,7 @@ public class MD5Helper {
   }
 
   public static void main(String[] args) throws FileNotFoundException {
-    System.out.println(getMd5ByFile(new File("/Users/liuquan/Desktop/aaa.doc")));
+    System.out.println(getMd5ByFile(new File("/Users/liuquan/Downloads/N_202203_31_4a8ea8b2d8754dac879f99a554a78b57.pdf")));
   }
 
 }

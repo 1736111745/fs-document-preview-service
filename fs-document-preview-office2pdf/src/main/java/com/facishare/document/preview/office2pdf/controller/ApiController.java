@@ -191,7 +191,7 @@ public class ApiController {
     switch (fileSuffix) {
       case ".doc":
       case ".docx":
-       converResultInfo= ConvertHelper.Word2Png(bytes, page);
+       converResultInfo= ConvertHelper.Word2Png(bytes);
         break;
       case ".ppt":
       case ".pptx":

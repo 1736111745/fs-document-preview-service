@@ -14,9 +14,12 @@ import com.facishare.document.preview.office2pdf.model.ConverResultInfo;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author : [Andy]
@@ -356,6 +359,35 @@ public class ConvertHelper {
     return converResultInfo;
   }
 
+  public static ConverResultInfo Word2Png(byte[] data) {
+    ByteArrayInputStream fileInputStream=new ByteArrayInputStream(data);
+    ByteArrayOutputStream fileOutputStream=new ByteArrayOutputStream();
+
+    //获取用户当前临时文件夹路径
+    String sysTempPath=System.getProperty("java.io.tmpdir")+ File.separator;
+    String office2pngTempPath= String.valueOf(Paths.get(sysTempPath,"dps","office2png", String.valueOf(UUID.randomUUID())));
+    String office2pngzipTempPath= String.valueOf(Paths.get(sysTempPath,"dps","office2pngzip", String.valueOf(UUID.randomUUID())));
+    try {
+      Document doc=new Document();
+      int pageCount=doc.getPageCount();
+      for (int i=0;i<pageCount;i++){
+        String fileName=office2pngTempPath+"\\"+i+".png";
+        ImageSaveOptions imageOptions=new com.aspose.words.ImageSaveOptions(SaveFormat.PNG);
+        imageOptions.setUseHighQualityRendering(true);
+        imageOptions.setPageSet(new PageSet(i));
+        doc.save(fileName,imageOptions);
+      }
+      String zipFileName=office2pngzipTempPath+"\\"+UUID.randomUUID()+".zip";
+      File zipFile=new File(zipFileName);
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
+
   public static ConverResultInfo Word2Png(byte[] data, int page) {
     ConverResultInfo converResultInfo = new ConverResultInfo();
     ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
@@ -387,7 +419,10 @@ public class ConvertHelper {
     return converResultInfo;
   }
 
-  public static ConverResultInfo Ppt2Png(byte[] bytes, int page) {
+  public static ConverResultInfo Ppt2Png(byte[] data, int page) {
+    ByteArrayInputStream fileInputStream=new ByteArrayInputStream(data);
+    ByteArrayOutputStream fileOutputStream=new ByteArrayOutputStream();
+
     return null;
   }
 

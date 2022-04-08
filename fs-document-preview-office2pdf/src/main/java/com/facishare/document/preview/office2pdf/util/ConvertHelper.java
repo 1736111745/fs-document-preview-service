@@ -1,18 +1,21 @@
 package com.facishare.document.preview.office2pdf.util;
 
-import com.aspose.cells.*;
 import com.aspose.cells.HtmlSaveOptions;
+import com.aspose.cells.Workbook;
+import com.aspose.cells.Worksheet;
+import com.aspose.cells.WorksheetCollection;
 import com.aspose.slides.Presentation;
-import com.aspose.words.*;
+import com.aspose.words.Document;
 import com.aspose.words.ImageSaveOptions;
+import com.aspose.words.PageSet;
 import com.aspose.words.SaveFormat;
 import com.facishare.document.preview.common.model.PageInfo;
 import com.facishare.document.preview.office2pdf.model.ConverResultInfo;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -87,7 +90,13 @@ public class ConvertHelper {
       pageInfo.setPageCount(0);
       pageInfo.setErrorMsg("FILE_DAMAGE_ERROR_MSG");
     } finally {
-      fileInputStream.close();
+      try {
+        fileInputStream.close();
+      } catch (IOException e) {
+        pageInfo.setSuccess(false);
+        pageInfo.setPageCount(0);
+        pageInfo.setErrorMsg("流关闭异常");
+      }
     }
     return pageInfo;
   }
@@ -120,12 +129,18 @@ public class ConvertHelper {
       pageInfo.setPageCount(0);
       pageInfo.setErrorMsg("FILE_DAMAGE_ERROR_MSG");
     } finally {
-      fileInputStream.close();
+      try {
+        fileInputStream.close();
+      } catch (IOException e) {
+        pageInfo.setSuccess(false);
+        pageInfo.setPageCount(0);
+        pageInfo.setErrorMsg("流关闭异常");
+      }
     }
     return pageInfo;
   }
 
-  private static PageInfo GetPdfPageInfo(byte[] data, String filePath) throws IOException {
+  private static PageInfo GetPdfPageInfo(byte[] data, String filePath) {
 
     PageInfo pageInfo = new PageInfo();
     ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
@@ -149,12 +164,18 @@ public class ConvertHelper {
       pageInfo.setPageCount(0);
       pageInfo.setErrorMsg("FILE_ENCRYPT_ERROR_MSG");
     } finally {
-      fileInputStream.close();
+      try {
+        fileInputStream.close();
+      } catch (IOException e) {
+        pageInfo.setSuccess(false);
+        pageInfo.setPageCount(0);
+        pageInfo.setErrorMsg("流关闭异常");
+      }
     }
     return pageInfo;
   }
 
-  private static PageInfo GetExcellPageInfo(byte[] data, String filePath) throws IOException {
+  private static PageInfo GetExcellPageInfo(byte[] data, String filePath) {
     PageInfo pageInfo = new PageInfo();
     ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
     try {
@@ -195,20 +216,25 @@ public class ConvertHelper {
       pageInfo.setPageCount(0);
       pageInfo.setErrorMsg("FILE_DAMAGE_ERROR_MSG");
     } finally {
-      fileInputStream.close();
+      try {
+        fileInputStream.close();
+      } catch (IOException e) {
+        pageInfo.setSuccess(false);
+        pageInfo.setPageCount(0);
+        pageInfo.setErrorMsg("流关闭异常");
+      }
     }
     return pageInfo;
   }
 
   public static ConverResultInfo Excel2Html(byte[] data, int page) {
     ConverResultInfo converResultInfo = new ConverResultInfo();
-    String file = Arrays.toString(data);
+    ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
+    ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream();
     try {
-      Workbook workbook = new Workbook(file);
+      Workbook workbook = new Workbook(fileInputStream);
       WorksheetCollection worksheetCollection = workbook.getWorksheets();
-
       Worksheet worksheet = worksheetCollection.get(page);
-
       int pageCount = worksheetCollection.getCount();
 
       if (page >= pageCount || page < 0) {
@@ -262,57 +288,80 @@ public class ConvertHelper {
           saveOptions.setEnableHTTPCompression(true);
           saveOptions.setExportActiveWorksheetOnly(true);
           // 将文件输出流与定义的HTML文件格式绑定
-          workbook.save(file, saveOptions);
+          workbook.save(fileOutputStream, saveOptions);
           workbook.dispose();
           converResultInfo.setSuccess(true);
-          converResultInfo.setBytes(file.getBytes());
+          converResultInfo.setBytes(fileOutputStream.toByteArray());
         }
       }
     } catch (Exception e) {
       converResultInfo.setErrorMsg(e.toString());
     } finally {
+      try {
+        fileInputStream.close();
+        fileOutputStream.close();
+      } catch (IOException e) {
+        converResultInfo.setErrorMsg(e.toString());
+      }
     }
     return converResultInfo;
   }
 
 
-  public static ConverResultInfo Word2Pdf(byte[] bytes) {
+  public static ConverResultInfo Word2Pdf(byte[] data) {
     ConverResultInfo converResultInfo = new ConverResultInfo();
-    String fileString = Arrays.toString(bytes);
+    ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
+    ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream();
     Document doc = null;
     try {
-      doc = new com.aspose.words.Document(fileString);
-      doc.save(fileString, com.aspose.words.SaveFormat.PDF);
+      doc = new com.aspose.words.Document(fileInputStream);
+      doc.save(fileOutputStream, com.aspose.words.SaveFormat.PDF);
       converResultInfo.setErrorMsg("");
-      converResultInfo.setBytes(fileString.getBytes());
+      converResultInfo.setBytes(fileOutputStream.toByteArray());
       converResultInfo.setSuccess(true);
     } catch (Exception e) {
       converResultInfo.setErrorMsg(e.toString());
+    } finally {
+      try {
+        fileInputStream.close();
+        fileOutputStream.close();
+      } catch (IOException e) {
+        converResultInfo.setErrorMsg(e.toString());
+      }
     }
     return converResultInfo;
   }
 
-  public static ConverResultInfo Ppt2Pdf(byte[] bytes) {
+  public static ConverResultInfo Ppt2Pdf(byte[] data) {
     ConverResultInfo converResultInfo = new ConverResultInfo();
-    String fileString = Arrays.toString(bytes);
+    ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
+    ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream();
     try {
-      Presentation ppt = new com.aspose.slides.Presentation(fileString);
-      ppt.save(fileString, com.aspose.slides.SaveFormat.Pdf);
-      converResultInfo.setBytes(fileString.getBytes());
+      Presentation ppt = new com.aspose.slides.Presentation(fileInputStream);
+      ppt.save(fileOutputStream, com.aspose.slides.SaveFormat.Pdf);
+      converResultInfo.setBytes(fileOutputStream.toByteArray());
       converResultInfo.setSuccess(true);
       converResultInfo.setErrorMsg("");
     } catch (Exception e) {
       converResultInfo.setSuccess(false);
       converResultInfo.setErrorMsg("ppt转PDF处理异常");
+    } finally {
+      try {
+        fileInputStream.close();
+        fileOutputStream.close();
+      } catch (IOException e) {
+        converResultInfo.setErrorMsg(e.toString());
+      }
     }
     return converResultInfo;
   }
 
-  public static ConverResultInfo Word2Png(byte[] bytes, int page) {
+  public static ConverResultInfo Word2Png(byte[] data, int page) {
     ConverResultInfo converResultInfo = new ConverResultInfo();
-    String fileString = bytes.toString();
+    ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
+    ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream();
     try {
-      com.aspose.words.Document doc = new com.aspose.words.Document(fileString);
+      com.aspose.words.Document doc = new com.aspose.words.Document(fileInputStream);
       if (page >= doc.getPageCount() || page < 0) {
         converResultInfo.setSuccess(false);
         converResultInfo.setErrorMsg("页码参数错误");
@@ -321,18 +370,29 @@ public class ConvertHelper {
         ImageSaveOptions imageOptions = new com.aspose.words.ImageSaveOptions(SaveFormat.PNG);
         imageOptions.setUseHighQualityRendering(true);
         imageOptions.setPageSet(new PageSet(page));
-        doc.save(fileString, imageOptions);
+        doc.save(fileOutputStream, imageOptions);
+        converResultInfo.setSuccess(true);
+        converResultInfo.setBytes(fileOutputStream.toByteArray());
       }
     } catch (Exception e) {
-      converResultInfo.setErrorMsg("Word2Png方法，初始化Document对象错误");
+      converResultInfo.setErrorMsg("Word2Png方法，初始化Document对象失败");
+    } finally {
+      try {
+        fileInputStream.close();
+        fileOutputStream.close();
+      } catch (IOException e) {
+        converResultInfo.setErrorMsg("流关闭异常");
+      }
     }
     return converResultInfo;
   }
 
-  public static void Ppt2Png(byte[] bytes, int page) {
+  public static ConverResultInfo Ppt2Png(byte[] bytes, int page) {
+    return null;
   }
 
-  public static void Pdf2Png(byte[] bytes, int page) {
+  public static ConverResultInfo Pdf2Png(byte[] bytes, int page) {
+    return null;
   }
 }
 

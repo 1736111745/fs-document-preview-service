@@ -4,6 +4,9 @@ import com.aspose.cells.Workbook;
 import com.aspose.slides.Presentation;
 import com.aspose.words.SaveFormat;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
 public class OfficeConversion {
     public static byte[] DoConvertWithAspose(byte[] bytes, String path) {
         try {
@@ -24,40 +27,43 @@ public class OfficeConversion {
         return bytes;
     }
 
-    private static byte[] ConvertXls2Xlsx(byte[] bytes, String path)  {
-        String fileString=bytes.toString();
+    private static byte[] ConvertXls2Xlsx(byte[] data, String path)  {
+        ByteArrayInputStream fileInputStream=new ByteArrayInputStream(data);
+        ByteArrayOutputStream fileOutputStrem=new ByteArrayOutputStream();
         try {
-            Workbook workBook = new Workbook(fileString);
-            workBook.save(fileString,com.aspose.cells.SaveFormat.XLSX);
+            Workbook workBook = new Workbook(fileInputStream);
+            workBook.save(fileOutputStrem,com.aspose.cells.SaveFormat.XLSX);
             workBook.dispose();
-            return fileString.getBytes();
+            return fileOutputStrem.toByteArray();
         } catch (Exception e) {
             //打日志
-            return bytes;
+            return fileOutputStrem.toByteArray();
         }
     }
 
-    private static byte[] ConvertPpt2Pptx(byte[] bytes, String path) {
-        String fileString=bytes.toString();
+    private static byte[] ConvertPpt2Pptx(byte[] data, String path) {
+        ByteArrayInputStream fileInputStream=new ByteArrayInputStream(data);
+        ByteArrayOutputStream fileOutputStrem=new ByteArrayOutputStream();
         try {
-            Presentation ppt = new com.aspose.slides.Presentation(fileString);
-            ppt.save(fileString, com.aspose.slides.SaveFormat.Pptx);
-            return fileString.getBytes();
+            Presentation ppt = new com.aspose.slides.Presentation(fileInputStream);
+            ppt.save(fileOutputStrem, com.aspose.slides.SaveFormat.Pptx);
+            return fileOutputStrem.toByteArray();
         }catch (Exception e){
             //打日志
-            return bytes;
+            return fileOutputStrem.toByteArray();
         }
     }
 
-    private static byte[] ConvertDoc2Docx(byte[] bytes, String path) {
-        String fileString=bytes.toString();
+    private static byte[] ConvertDoc2Docx(byte[] data, String path) {
+        ByteArrayInputStream fileInputStream=new ByteArrayInputStream(data);
+        ByteArrayOutputStream fileOutputStrem=new ByteArrayOutputStream();
         try {
-            com.aspose.words.Document doc=new com.aspose.words.Document(fileString);
-            doc.save(fileString, SaveFormat.DOCX);
-            return fileString.getBytes();
+            com.aspose.words.Document doc=new com.aspose.words.Document(fileInputStream);
+            doc.save(fileOutputStrem, SaveFormat.DOCX);
+            return fileOutputStrem.toByteArray();
         } catch (Exception e) {
             //打印日志
-            return bytes;
+            return fileOutputStrem.toByteArray();
         }
     }
 }

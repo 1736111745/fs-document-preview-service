@@ -55,5 +55,6 @@
     <logger name="com.fxiaoke.j4log.J4LogFactory" level="ERROR"/>
     <root level="info">
         <appender-ref ref="ASYNC"/>
+        <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

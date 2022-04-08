@@ -1,6 +1,7 @@
 package com.facishare.document.preview.office2pdf.util;
 
 import com.aspose.cells.*;
+import com.aspose.cells.HtmlSaveOptions;
 import com.aspose.slides.Presentation;
 import com.aspose.words.*;
 import com.aspose.words.ImageSaveOptions;
@@ -25,45 +26,56 @@ import java.util.List;
  */
 public class ConvertHelper {
 
-  public static PageInfo GetDocPageInfo(byte[] data,String filePath) throws Exception {
+  public static PageInfo GetDocPageInfo(byte[] data, String filePath) throws Exception {
 
     //打印日志
-    PageInfo pageInfo=new PageInfo();
+    PageInfo pageInfo = new PageInfo();
     /*
      * 获取文件后缀名字
      * 根据文件路径，获得最后一个 . 分割符的索引位置从索引位置截取一个子字符串 并转换为小写。
      * */
-    String fileSuffix=filePath.substring(filePath.lastIndexOf(".")).toLowerCase();
-    if (fileSuffix!=null){
-      switch (fileSuffix){
+    String fileSuffix = filePath.substring(filePath.lastIndexOf(".")).toLowerCase();
+    if (fileSuffix != null) {
+      switch (fileSuffix) {
         case ".doc":
-        case ".docx": pageInfo=GetWordPageInfo(data,filePath);break;
+        case ".docx":
+          pageInfo = GetWordPageInfo(data, filePath);
+          break;
         case ".xls":
-        case ".et":pageInfo=GetExcellPageInfo(data,filePath);break;
+        case ".et":
+          pageInfo = GetExcellPageInfo(data, filePath);
+          break;
         case ".ppt":
-        case ".pptx":pageInfo=GetPptPageInfo(data,filePath);break;
-        case ".pdf":pageInfo=GetPdfPageInfo(data,filePath);break;
-        default:pageInfo.setPageCount(0);pageInfo.setSuccess(false);pageInfo.setErrorMsg("不支持的文件类型");
+        case ".pptx":
+          pageInfo = GetPptPageInfo(data, filePath);
+          break;
+        case ".pdf":
+          pageInfo = GetPdfPageInfo(data, filePath);
+          break;
+        default:
+          pageInfo.setPageCount(0);
+          pageInfo.setSuccess(false);
+          pageInfo.setErrorMsg("不支持的文件类型");
       }
-    }else {
+    } else {
       throw new Exception("file extension can not be null");
     }
-    System.out.println("打印信息："+pageInfo.getPageCount());
+    System.out.println("打印信息：" + pageInfo.getPageCount());
     return pageInfo;
   }
 
   private static PageInfo GetWordPageInfo(byte[] data, String filePath) throws IOException {
-    PageInfo pageInfo=new PageInfo();
-    ByteArrayInputStream fileInputStream=new ByteArrayInputStream(data);
+    PageInfo pageInfo = new PageInfo();
+    ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
     try {
-      if(!FileEncryptChecker.checkIsEncrypt(data,filePath)){
+      if (!FileEncryptChecker.checkIsEncrypt(data, filePath)) {
         // 根据传来的文件，创建文档对象
-        com.aspose.words.Document doc=new Document(fileInputStream);
+        com.aspose.words.Document doc = new Document(fileInputStream);
         // 通过文件对象获得页码
         int pageCount = doc.getPageCount();
         pageInfo.setSuccess(true);
         pageInfo.setPageCount(pageCount);
-      }else{
+      } else {
         //    FSTraceFinder.TraceMsgAsInfo("get pageConut error!path:{0}");
         pageInfo.setSuccess(false);
         pageInfo.setPageCount(0);
@@ -74,29 +86,29 @@ public class ConvertHelper {
       pageInfo.setSuccess(false);
       pageInfo.setPageCount(0);
       pageInfo.setErrorMsg("FILE_DAMAGE_ERROR_MSG");
-    }finally {
+    } finally {
       fileInputStream.close();
     }
     return pageInfo;
   }
 
   private static PageInfo GetPptPageInfo(byte[] data, String filePath) throws IOException {
-    PageInfo pageInfo=new PageInfo();
-    ByteArrayInputStream fileInputStream=new ByteArrayInputStream(data);
+    PageInfo pageInfo = new PageInfo();
+    ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
     try {
-      if(!FileEncryptChecker.checkIsEncrypt(data,filePath)){
+      if (!FileEncryptChecker.checkIsEncrypt(data, filePath)) {
         // 获得PPT总页码
-        int pageCount=PowerPointHelper.GetPptxPageCount(data);
-        if(pageCount==0){
+        int pageCount = PowerPointHelper.GetPptxPageCount(data);
+        if (pageCount == 0) {
           //    FSTraceFinder.TraceMsgAsInfo("get pageConut error!path:{0}");
           pageInfo.setSuccess(false);
           pageInfo.setPageCount(0);
           pageInfo.setErrorMsg("FILE_DAMAGE_ERROR_MSG");
-        }else {
+        } else {
           pageInfo.setSuccess(true);
           pageInfo.setPageCount(pageCount);
         }
-      }else {
+      } else {
         //    FSTraceFinder.TraceMsgAsInfo("get pageConut error!path:{0}");
         pageInfo.setSuccess(false);
         pageInfo.setPageCount(0);
@@ -107,7 +119,7 @@ public class ConvertHelper {
       pageInfo.setSuccess(false);
       pageInfo.setPageCount(0);
       pageInfo.setErrorMsg("FILE_DAMAGE_ERROR_MSG");
-    }finally {
+    } finally {
       fileInputStream.close();
     }
     return pageInfo;
@@ -115,17 +127,17 @@ public class ConvertHelper {
 
   private static PageInfo GetPdfPageInfo(byte[] data, String filePath) throws IOException {
 
-    PageInfo pageInfo=new PageInfo();
-    ByteArrayInputStream fileInputStream=new ByteArrayInputStream(data);
+    PageInfo pageInfo = new PageInfo();
+    ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
     try {
-      if(!FileEncryptChecker.checkIsEncrypt(data,filePath)){
-        int pageCount=0;
+      if (!FileEncryptChecker.checkIsEncrypt(data, filePath)) {
+        int pageCount = 0;
         com.aspose.pdf.Document pdf = new com.aspose.pdf.Document(data);
-        pageCount=pdf.getPages().size();
+        pageCount = pdf.getPages().size();
         pageInfo.setSuccess(true);
         pageInfo.setPageCount(pageCount);
         pdf.close();
-      }else {
+      } else {
         //    FSTraceFinder.TraceMsgAsInfo("get pageConut error!path:{0}");
         pageInfo.setSuccess(false);
         pageInfo.setPageCount(0);
@@ -136,38 +148,37 @@ public class ConvertHelper {
       pageInfo.setSuccess(false);
       pageInfo.setPageCount(0);
       pageInfo.setErrorMsg("FILE_ENCRYPT_ERROR_MSG");
-    }
-    finally {
+    } finally {
       fileInputStream.close();
     }
     return pageInfo;
   }
 
   private static PageInfo GetExcellPageInfo(byte[] data, String filePath) throws IOException {
-    PageInfo pageInfo=new PageInfo();
-    ByteArrayInputStream fileInputStream=new ByteArrayInputStream(data);
+    PageInfo pageInfo = new PageInfo();
+    ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
     try {
-      if(!FileEncryptChecker.checkIsEncrypt(data,filePath)){
+      if (!FileEncryptChecker.checkIsEncrypt(data, filePath)) {
         //Workbook对象代表 Excel整个工作簿
-        Workbook workbook=new com.aspose.cells.Workbook(fileInputStream);
+        Workbook workbook = new com.aspose.cells.Workbook(fileInputStream);
         List<String> sheetNames = new ArrayList<String>();
         // WorksheetCollection对象代表 Excel工作表的集合
-        WorksheetCollection worksheetCollection=workbook.getWorksheets();
-        for(int i=0;i<worksheetCollection.getCount();i++){
+        WorksheetCollection worksheetCollection = workbook.getWorksheets();
+        for (int i = 0; i < worksheetCollection.getCount(); i++) {
           // Worksheet对象代表其中一个工作表
-          Worksheet worksheet=worksheetCollection.get(i);
+          Worksheet worksheet = worksheetCollection.get(i);
           //获得当前工作表的名称
-          String sheetName=worksheet.getName();
+          String sheetName = worksheet.getName();
           //判断当前工作表是否可见 可见返回true 这里boolean值取反
           boolean isHidden = !worksheet.isVisible();
           // 工作表可见 取_$h0$ 工作表不可见取_$h1$
-          String hiddenFlag=isHidden?"_$h1$":"_$h0$";
+          String hiddenFlag = isHidden ? "_$h1$" : "_$h0$";
           //判断当前活动的表的索引是否与遍历到的索引相一致 一致返回true
-          boolean isActive=worksheetCollection.getActiveSheetIndex()==i;
+          boolean isActive = worksheetCollection.getActiveSheetIndex() == i;
           // 如果当前遍历的表就是活动的表，取_$a1$ 否则取_$a0$
-          String activeFlag=isActive?"_$a1$":"_$a0$";
+          String activeFlag = isActive ? "_$a1$" : "_$a0$";
           //
-          sheetName=sheetName+hiddenFlag+activeFlag;
+          sheetName = sheetName + hiddenFlag + activeFlag;
           sheetNames.add(sheetName);
         }
         pageInfo.setSuccess(true);
@@ -183,65 +194,65 @@ public class ConvertHelper {
       pageInfo.setSuccess(false);
       pageInfo.setPageCount(0);
       pageInfo.setErrorMsg("FILE_DAMAGE_ERROR_MSG");
-    }finally {
+    } finally {
       fileInputStream.close();
     }
     return pageInfo;
   }
 
   public static ConverResultInfo Excel2Html(byte[] data, int page) {
-    ConverResultInfo converResultInfo=new ConverResultInfo();
-    String file= Arrays.toString(data);
+    ConverResultInfo converResultInfo = new ConverResultInfo();
+    String file = Arrays.toString(data);
     try {
-      Workbook workbook=new Workbook(file);
-      WorksheetCollection worksheetCollection=workbook.getWorksheets();
+      Workbook workbook = new Workbook(file);
+      WorksheetCollection worksheetCollection = workbook.getWorksheets();
 
-      Worksheet worksheet=worksheetCollection.get(page);
+      Worksheet worksheet = worksheetCollection.get(page);
 
-      int pageCount =worksheetCollection.getCount();
+      int pageCount = worksheetCollection.getCount();
 
-      if (page>=pageCount||page<0){
+      if (page >= pageCount || page < 0) {
         converResultInfo.setErrorMsg("页码参数错误");
-      }else {
+      } else {
         //获取最大行数
-        int rows=worksheet.getCells().getMaxRow();
+        int rows = worksheet.getCells().getMaxRow();
         //获取有数据的行数 并+10
-        int validRows=worksheet.getCells().getMaxDataRow()+10;
+        int validRows = worksheet.getCells().getMaxDataRow() + 10;
         // 有数据行数与最大行数比较，取较小的值
-        validRows= Math.min(validRows, rows);
+        validRows = Math.min(validRows, rows);
         // 有数据行数与5000相比较，取较小的值
-        validRows= Math.min(validRows, 5000);
-        if(validRows>0){
-          int blankRowStart =validRows+1;
-          blankRowStart= Math.max(blankRowStart, 0);
-          int blankRowEnd=rows-blankRowStart;
-          blankRowEnd= Math.max(blankRowEnd, 0);
-          if (blankRowEnd>0){
+        validRows = Math.min(validRows, 5000);
+        if (validRows > 0) {
+          int blankRowStart = validRows + 1;
+          blankRowStart = Math.max(blankRowStart, 0);
+          int blankRowEnd = rows - blankRowStart;
+          blankRowEnd = Math.max(blankRowEnd, 0);
+          if (blankRowEnd > 0) {
             // 删除表中多行 blankRowsStart要删除的第一行索引 blankRowEnd要删除的行数
-            worksheet.getCells().deleteRows(blankRowStart,blankRowEnd,true);
+            worksheet.getCells().deleteRows(blankRowStart, blankRowEnd, true);
           }
           // 总列数
-          int columns =worksheet.getCells().getMaxDisplayRange().getColumnCount();
+          int columns = worksheet.getCells().getMaxDisplayRange().getColumnCount();
           // 有效列数
-          int validColumns=worksheet.getCells().getMaxDataColumn();
-          validColumns=validColumns>1000?1000:validColumns;
-          if (validColumns>0&&worksheet.getCells().getMaxColumn()<16382){
-            int blankColumStart=validColumns+1;
-            blankColumStart=blankRowStart<0?0:blankColumStart;
-            int blankColumEnd=columns-blankColumStart;
-            blankColumEnd=blankColumEnd<0?0:blankRowEnd;
+          int validColumns = worksheet.getCells().getMaxDataColumn();
+          validColumns = validColumns > 1000 ? 1000 : validColumns;
+          if (validColumns > 0 && worksheet.getCells().getMaxColumn() < 16382) {
+            int blankColumStart = validColumns + 1;
+            blankColumStart = blankRowStart < 0 ? 0 : blankColumStart;
+            int blankColumEnd = columns - blankColumStart;
+            blankColumEnd = blankColumEnd < 0 ? 0 : blankRowEnd;
           }
-          if(blankRowEnd>0){
-            worksheet.getCells().deleteColumns(blankRowStart,blankRowEnd,true);
+          if (blankRowEnd > 0) {
+            worksheet.getCells().deleteColumns(blankRowStart, blankRowEnd, true);
           }
-          com.aspose.cells.Cells cells=worksheet.getCells();
-          for(int col=0;col<validColumns;col++){
+          com.aspose.cells.Cells cells = worksheet.getCells();
+          for (int col = 0; col < validColumns; col++) {
             //cells.getColumnWidthPixel()获取单元格列的像素
-            cells.setColumnWidthPixel(col, (int) (cells.getColumnWidthPixel(col)*2f));
+            cells.setColumnWidthPixel(col, (int) (cells.getColumnWidthPixel(col) * 2f));
           }
           // 设置当前活动单元格的索引
           worksheetCollection.setActiveSheetIndex(page);
-          HtmlSaveOptions saveOptions=new com.aspose.cells.HtmlSaveOptions();
+          HtmlSaveOptions saveOptions = new com.aspose.cells.HtmlSaveOptions();
           // 默认为 hidden 隐藏 即 this.p=0
           saveOptions.setHiddenColDisplayType(0);
           saveOptions.setHiddenRowDisplayType(0);
@@ -251,7 +262,7 @@ public class ConvertHelper {
           saveOptions.setEnableHTTPCompression(true);
           saveOptions.setExportActiveWorksheetOnly(true);
           // 将文件输出流与定义的HTML文件格式绑定
-          workbook.save(file,saveOptions);
+          workbook.save(file, saveOptions);
           workbook.dispose();
           converResultInfo.setSuccess(true);
           converResultInfo.setBytes(file.getBytes());
@@ -259,19 +270,19 @@ public class ConvertHelper {
       }
     } catch (Exception e) {
       converResultInfo.setErrorMsg(e.toString());
-    }finally {
+    } finally {
     }
     return converResultInfo;
   }
 
 
   public static ConverResultInfo Word2Pdf(byte[] bytes) {
-    ConverResultInfo converResultInfo=new ConverResultInfo();
-    String fileString= Arrays.toString(bytes);
-    Document doc=null;
+    ConverResultInfo converResultInfo = new ConverResultInfo();
+    String fileString = Arrays.toString(bytes);
+    Document doc = null;
     try {
       doc = new com.aspose.words.Document(fileString);
-      doc.save(fileString,com.aspose.words.SaveFormat.PDF);
+      doc.save(fileString, com.aspose.words.SaveFormat.PDF);
       converResultInfo.setErrorMsg("");
       converResultInfo.setBytes(fileString.getBytes());
       converResultInfo.setSuccess(true);
@@ -282,15 +293,15 @@ public class ConvertHelper {
   }
 
   public static ConverResultInfo Ppt2Pdf(byte[] bytes) {
-    ConverResultInfo converResultInfo=new ConverResultInfo();
-    String fileString= Arrays.toString(bytes);
-    try{
-      Presentation ppt=new com.aspose.slides.Presentation(fileString);
-      ppt.save(fileString,com.aspose.slides.SaveFormat.Pdf);
+    ConverResultInfo converResultInfo = new ConverResultInfo();
+    String fileString = Arrays.toString(bytes);
+    try {
+      Presentation ppt = new com.aspose.slides.Presentation(fileString);
+      ppt.save(fileString, com.aspose.slides.SaveFormat.Pdf);
       converResultInfo.setBytes(fileString.getBytes());
       converResultInfo.setSuccess(true);
       converResultInfo.setErrorMsg("");
-    }catch (Exception e){
+    } catch (Exception e) {
       converResultInfo.setSuccess(false);
       converResultInfo.setErrorMsg("ppt转PDF处理异常");
     }
@@ -298,19 +309,19 @@ public class ConvertHelper {
   }
 
   public static ConverResultInfo Word2Png(byte[] bytes, int page) {
-    ConverResultInfo converResultInfo=new ConverResultInfo();
-    String fileString=bytes.toString();
+    ConverResultInfo converResultInfo = new ConverResultInfo();
+    String fileString = bytes.toString();
     try {
-      com.aspose.words.Document doc=new com.aspose.words.Document(fileString);
-      if (page>=doc.getPageCount()||page<0){
+      com.aspose.words.Document doc = new com.aspose.words.Document(fileString);
+      if (page >= doc.getPageCount() || page < 0) {
         converResultInfo.setSuccess(false);
         converResultInfo.setErrorMsg("页码参数错误");
         return converResultInfo;
-      }else {
-        ImageSaveOptions imageOptions=new com.aspose.words.ImageSaveOptions(SaveFormat.PNG);
+      } else {
+        ImageSaveOptions imageOptions = new com.aspose.words.ImageSaveOptions(SaveFormat.PNG);
         imageOptions.setUseHighQualityRendering(true);
         imageOptions.setPageSet(new PageSet(page));
-        doc.save(fileString,imageOptions);
+        doc.save(fileString, imageOptions);
       }
     } catch (Exception e) {
       converResultInfo.setErrorMsg("Word2Png方法，初始化Document对象错误");

@@ -42,6 +42,7 @@ public class TaskController {
     int limit = 100;
     int skip = 0;
     int size = 0;
+    log.info("gc 开始");
     do {
       List<PreviewInfo> infos = previewInfoDao.getPreviewInfoByPage(limit, new Date(System.currentTimeMillis() - allowGcDay * 24 * 3600 * 1000));
       size = infos.size();
@@ -53,6 +54,7 @@ public class TaskController {
       }
       skip = skip + infos.size();
     } while (size == limit);
+    log.info("gc 结束！");
     FileUtil.deleteEmptyDir(new PathHelper().getParentDir());
   }
 

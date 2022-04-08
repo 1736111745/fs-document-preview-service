@@ -1,6 +1,5 @@
 package com.facishare.document.preview.cgi.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.facishare.document.preview.cgi.utils.FileUtil;
 import com.facishare.document.preview.common.dao.PreviewInfoDao;
 import com.facishare.document.preview.common.model.PreviewInfo;
@@ -9,7 +8,6 @@ import com.github.autoconf.ConfigFactory;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.poi.openxml4j.opc.internal.FileHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +39,7 @@ public class TaskController {
 
   @RequestMapping("/gc")
   public void gc() {
-    int limit = 5;
+    int limit = 100;
     int skip = 0;
     int size = 0;
     do {
@@ -58,11 +56,6 @@ public class TaskController {
     FileUtil.deleteEmptyDir(new PathHelper().getParentDir());
   }
 
-  private boolean canDelete(long stamp) {
-    long allowGcMill = allowGcDay * 24 * 3600 * 1000;
-    return System.currentTimeMillis() - stamp > allowGcMill;
-  }
-
   @RequestMapping("/gcPath")
   public void gcPath(@RequestParam("path") String path) {
     previewInfoDao.clean(Lists.newArrayList(path));
@@ -72,6 +65,4 @@ public class TaskController {
   public void gcEnterprise(@RequestParam("ea") String ea) {
     previewInfoDao.patchClean(ea);
   }
-
-
 }

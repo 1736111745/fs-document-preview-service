@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.PostConstruct;
 import java.util.Date;
@@ -38,7 +39,8 @@ public class TaskController {
   }
 
   @RequestMapping("/gc")
-  public void gc() {
+  @ResponseBody
+  public String gc() {
     int limit = 100;
     int skip = 0;
     int size = 0;
@@ -56,6 +58,7 @@ public class TaskController {
     } while (size == limit);
     log.info("gc 结束！");
     FileUtil.deleteEmptyDir(new PathHelper().getParentDir());
+    return "ok";
   }
 
   @RequestMapping("/gcPath")

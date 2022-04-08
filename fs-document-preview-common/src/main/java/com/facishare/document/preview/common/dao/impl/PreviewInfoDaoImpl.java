@@ -217,9 +217,10 @@ public class PreviewInfoDaoImpl implements PreviewInfoDao {
   }
 
   @Override
-  public List<PreviewInfo> getPreviewInfoByPage(int skip, int limit) {
+  public List<PreviewInfo> getPreviewInfoByPage(int limit ,Date maxDate) {
     Query<PreviewInfo> query = dpsDataStore.createQuery(PreviewInfo.class);
     FindOptions options = new FindOptions();
-    return query.asList(options.limit(limit).skip(skip));
+    query.criteria("createTime").lessThan(maxDate);
+    return query.asList(options.limit(limit));
   }
 }

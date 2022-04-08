@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.PostConstruct;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,18 +41,17 @@ public class TaskController {
 
   @RequestMapping("/gc")
   public void gc() {
-    int limit = 200;
+    int limit = 5;
     int skip = 0;
     int size = 0;
     do {
-      List<PreviewInfo> infos = previewInfoDao.getPreviewInfoByPage(skip, limit);
+      List<PreviewInfo> infos = previewInfoDao.getPreviewInfoByPage(limit, new Date(System.currentTimeMillis() - allowGcDay * 24 * 3600 * 1000));
       size = infos.size();
-      List<PreviewInfo> canDeleteInfos = infos.stream().filter(i -> canDelete(i.getCreateTime().getTime())).collect(Collectors.toList());
-      if(CollectionUtils.isNotEmpty(canDeleteInfos)){
+      if (CollectionUtils.isNotEmpty(infos)) {
         //gc smb
-        canDeleteInfos.forEach(info -> FileUtil.delete(info.getDataDir()));
+        infos.forEach(info -> FileUtil.delete(info.getDataDir()));
         //gc meta元数据
-        previewInfoDao.clean(canDeleteInfos.stream().map(i -> i.getPath()).collect(Collectors.toList()));
+        previewInfoDao.clean(infos.stream().map(i -> i.getPath()).collect(Collectors.toList()));
       }
       skip = skip + infos.size();
     } while (size == limit);
@@ -64,12 +64,12 @@ public class TaskController {
   }
 
   @RequestMapping("/gcPath")
-  public void gcPath(@RequestParam("path") String path){
+  public void gcPath(@RequestParam("path") String path) {
     previewInfoDao.clean(Lists.newArrayList(path));
   }
 
   @RequestMapping("/gcEnterprise")
-  public void gcEnterprise(@RequestParam("ea") String ea){
+  public void gcEnterprise(@RequestParam("ea") String ea) {
     previewInfoDao.patchClean(ea);
   }
 

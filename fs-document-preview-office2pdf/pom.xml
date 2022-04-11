@@ -108,5 +108,14 @@
       <artifactId>aspose.cells</artifactId>
       <version>21.11</version>
     </dependency>
+    <!--引入Hutool工具类 用于压缩图片文件夹-->
+    <dependency>
+      <groupId>cn.hutool</groupId>
+      <artifactId>hutool-core</artifactId>
+      <version>5.7.16</version>
+    </dependency>
   </dependencies>
+
+
+
 </project>

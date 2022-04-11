@@ -1,5 +1,6 @@
 package com.facishare.document.preview.office2pdf.util;
 
+import cn.hutool.core.util.ZipUtil;
 import com.aspose.cells.HtmlSaveOptions;
 import com.aspose.cells.Workbook;
 import com.aspose.cells.Worksheet;
@@ -15,7 +16,9 @@ import com.facishare.document.preview.office2pdf.model.ConverResultInfo;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -361,30 +364,47 @@ public class ConvertHelper {
 
   public static ConverResultInfo Word2Png(byte[] data) {
     ByteArrayInputStream fileInputStream=new ByteArrayInputStream(data);
-    ByteArrayOutputStream fileOutputStream=new ByteArrayOutputStream();
-
+    ConverResultInfo converResultInfo = new ConverResultInfo();
     //获取用户当前临时文件夹路径
     String sysTempPath=System.getProperty("java.io.tmpdir")+ File.separator;
     String office2pngTempPath= String.valueOf(Paths.get(sysTempPath,"dps","office2png", String.valueOf(UUID.randomUUID())));
     String office2pngzipTempPath= String.valueOf(Paths.get(sysTempPath,"dps","office2pngzip", String.valueOf(UUID.randomUUID())));
+
     try {
-      Document doc=new Document();
-      int pageCount=doc.getPageCount();
-      for (int i=0;i<pageCount;i++){
-        String fileName=office2pngTempPath+"\\"+i+".png";
-        ImageSaveOptions imageOptions=new com.aspose.words.ImageSaveOptions(SaveFormat.PNG);
+      Document doc = new com.aspose.words.Document(fileInputStream);
+      int pageCount = doc.getPageCount();
+      //将文档分别转换为单张图片，并存放在office2pngTempPath 指定的路径
+      for (int i = 0; i < pageCount; i++) {
+        String fileName = office2pngTempPath + "\\" + i + ".png";
+        ImageSaveOptions imageOptions = new com.aspose.words.ImageSaveOptions(SaveFormat.PNG);
         imageOptions.setUseHighQualityRendering(true);
         imageOptions.setPageSet(new PageSet(i));
-        doc.save(fileName,imageOptions);
+        doc.save(fileName, imageOptions);
       }
-      String zipFileName=office2pngzipTempPath+"\\"+UUID.randomUUID()+".zip";
-      File zipFile=new File(zipFileName);
-
-    } catch (Exception e) {
-      e.printStackTrace();
+      File directory = new File(office2pngzipTempPath);
+      if (directory.mkdirs()) {
+        String zipFileName = office2pngzipTempPath + "\\" + UUID.randomUUID() + ".zip";
+        InputStream in = new FileInputStream(ZipUtil.zip(office2pngTempPath, zipFileName));
+        converResultInfo.setSuccess(true);
+        converResultInfo.setBytes(toByteArray(in));
+      }
+    }catch (Exception e){
+      System.out.println("这里出错了");
+      converResultInfo.setErrorMsg(e.toString());
+      converResultInfo.setSuccess(false);
+      return converResultInfo;
     }
+    return  converResultInfo;
+  }
 
-    return null;
+  private static byte[] toByteArray(InputStream in) throws IOException {
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    byte[] buffer = new byte[1024 * 4];
+    int n = 0;
+    while ((n = in.read(buffer)) != -1) {
+      out.write(buffer, 0, n);
+    }
+    return out.toByteArray();
   }
 
 

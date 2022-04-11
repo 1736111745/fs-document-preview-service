@@ -387,9 +387,12 @@ public class ConvertHelper {
         InputStream in = new FileInputStream(ZipUtil.zip(office2pngTempPath, zipFileName));
         converResultInfo.setSuccess(true);
         converResultInfo.setBytes(toByteArray(in));
+        in.close();
+        //递归删除临时生成的图片文件夹以及压缩包所在的文件夹
+        deleteTempDirectory(new File(office2pngTempPath));
+        deleteTempDirectory(new File(office2pngzipTempPath));
       }
     }catch (Exception e){
-      System.out.println("这里出错了");
       converResultInfo.setErrorMsg(e.toString());
       converResultInfo.setSuccess(false);
       return converResultInfo;
@@ -397,16 +400,29 @@ public class ConvertHelper {
     return  converResultInfo;
   }
 
-  private static byte[] toByteArray(InputStream in) throws IOException {
+  private static byte[] toByteArray(InputStream in){
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     byte[] buffer = new byte[1024 * 4];
     int n = 0;
-    while ((n = in.read(buffer)) != -1) {
-      out.write(buffer, 0, n);
+    try {
+      while ((n = in.read(buffer)) != -1) {
+        out.write(buffer, 0, n);
+      }
+    }catch (IOException e){
+
     }
     return out.toByteArray();
   }
 
+  private static void deleteTempDirectory(File file) {
+    File[] listFile = file.listFiles();
+    if (listFile != null) {
+      for (File temp : listFile) {
+        deleteTempDirectory(temp);
+      }
+    }
+    file.delete();
+  }
 
   public static ConverResultInfo Word2Png(byte[] data, int page) {
     ConverResultInfo converResultInfo = new ConverResultInfo();

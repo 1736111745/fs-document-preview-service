@@ -1,4 +1,4 @@
-package com.facishare.document.preview.office2pdf.controller;
+package com.facishare.document.preview.convert.office.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

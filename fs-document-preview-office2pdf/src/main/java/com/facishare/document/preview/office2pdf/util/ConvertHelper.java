@@ -21,6 +21,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
@@ -367,12 +369,12 @@ public class ConvertHelper {
   }
 
   public static ConverResultInfo Word2Png(byte[] data) {
-    ByteArrayInputStream fileInputStream=new ByteArrayInputStream(data);
+    ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
     ConverResultInfo converResultInfo = new ConverResultInfo();
     //获取用户当前临时文件夹路径
-    String sysTempPath=System.getProperty("java.io.tmpdir")+ File.separator;
-    String office2pngTempPath= String.valueOf(Paths.get(sysTempPath,"dps","office2png", String.valueOf(UUID.randomUUID())));
-    String office2pngzipTempPath= String.valueOf(Paths.get(sysTempPath,"dps","office2pngzip", String.valueOf(UUID.randomUUID())));
+    String sysTempPath = System.getProperty("java.io.tmpdir") + File.separator;
+    String office2pngTempPath = String.valueOf(Paths.get(sysTempPath, "dps", "office2png", String.valueOf(UUID.randomUUID())));
+    String office2pngzipTempPath = String.valueOf(Paths.get(sysTempPath, "dps", "office2pngzip", String.valueOf(UUID.randomUUID())));
 
     try {
       Document doc = new com.aspose.words.Document(fileInputStream);
@@ -393,18 +395,18 @@ public class ConvertHelper {
         converResultInfo.setBytes(toByteArray(in));
         in.close();
       }
-    }catch (Exception e){
+    } catch (Exception e) {
       converResultInfo.setErrorMsg(e.toString());
       converResultInfo.setSuccess(false);
-    }finally {
+    } finally {
       //递归删除临时生成的图片文件夹以及压缩包所在的文件夹
       deleteTempDirectory(new File(office2pngTempPath));
       deleteTempDirectory(new File(office2pngzipTempPath));
     }
-    return  converResultInfo;
+    return converResultInfo;
   }
 
-  private static byte[] toByteArray(InputStream in){
+  private static byte[] toByteArray(InputStream in) {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     byte[] buffer = new byte[1024 * 4];
     int n = 0;
@@ -412,7 +414,7 @@ public class ConvertHelper {
       while ((n = in.read(buffer)) != -1) {
         out.write(buffer, 0, n);
       }
-    }catch (IOException e){
+    } catch (IOException e) {
 
     }
     return out.toByteArray();
@@ -471,9 +473,9 @@ public class ConvertHelper {
     try {
       com.aspose.slides.Presentation ppt = new com.aspose.slides.Presentation(fileInputStream);
       int pageCount = ppt.getSlides().size();
-      if (new File(office2pngTempPath).mkdirs()){
+      if (new File(office2pngTempPath).mkdirs()) {
         for (ISlide slide : ppt.getSlides()) {
-          Dimension size=new Dimension(1280,720);
+          Dimension size = new Dimension(1280, 720);
           //设置生成图片的大小
           BufferedImage bufferedImage = slide.getThumbnail(size);
           File outputFile = new File(office2pngTempPath + "\\" + slide.getSlideNumber() + ".png");
@@ -498,19 +500,21 @@ public class ConvertHelper {
     }
     return converResultInfo;
   }
-  public static ConverResultInfo Ppt2Png(byte[] data,int page) {
+
+  public static ConverResultInfo Ppt2Png(byte[] data, int page) {
+    //下标从0开始，也就是说，传入3，返回的是第4页PPT
     ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
-    ByteArrayOutputStream fileOutputStream=new ByteArrayOutputStream();
+    ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream();
     ConverResultInfo converResultInfo = new ConverResultInfo();
     com.aspose.slides.Presentation ppt = new com.aspose.slides.Presentation(fileInputStream);
     //设置要转换的图片的格式
-    Dimension size=new Dimension(1280,720);
+    Dimension size = new Dimension(1280, 720);
     //获得指定页码的幻灯片
-    ISlide slide=ppt.getSlides().get_Item(page);
+    ISlide slide = ppt.getSlides().get_Item(page);
     //转换为图片流格式
-    BufferedImage bufferedImage=slide.getThumbnail(size);
+    BufferedImage bufferedImage = slide.getThumbnail(size);
     try {
-      ImageIO.write(bufferedImage,"PNG",fileOutputStream);
+      ImageIO.write(bufferedImage, "PNG", fileOutputStream);
     } catch (IOException e) {
       converResultInfo.setSuccess(false);
       converResultInfo.setErrorMsg(e.toString());
@@ -521,10 +525,76 @@ public class ConvertHelper {
     return converResultInfo;
   }
 
-  public static ConverResultInfo Pdf2Png(byte[] bytes, int page) {
-    return null;
+  public static ConverResultInfo Pdf2Png(byte[] data) {
+    ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
+    ConverResultInfo converResultInfo = new ConverResultInfo();
+    //获取用户当前临时文件夹路径
+    String sysTempPath = System.getProperty("java.io.tmpdir") + File.separator;
+    String office2pngTempPath = String.valueOf(Paths.get(sysTempPath, "dps", "office2png", String.valueOf(UUID.randomUUID())));
+    String office2pngzipTempPath = String.valueOf(Paths.get(sysTempPath, "dps", "office2pngzip", String.valueOf(UUID.randomUUID())));
+    String zipFileName = office2pngzipTempPath + "\\" + UUID.randomUUID() + ".zip";
+    // devices 包负责将PDF转为图像  Resolution对象负责转为图像的分辨率设置
+    try {
+      com.aspose.pdf.Document pdf = new com.aspose.pdf.Document(fileInputStream);
+      int pageCount = pdf.getPages().size();
+      com.aspose.pdf.devices.Resolution imageResolution = new com.aspose.pdf.devices.Resolution(200);
+      com.aspose.pdf.devices.PngDevice rendererPng = new com.aspose.pdf.devices.PngDevice(imageResolution);
+      if (new File(office2pngTempPath).mkdirs()) {
+        //pdf 下标从1开始
+        for (int i = 1; i < pageCount; i++) {
+          rendererPng.process(pdf.getPages().get_Item(i), new FileOutputStream(office2pngTempPath + "\\" + i + ".png"));
+        }
+      }
+      //释放资源
+      pdf.close();
+      File zipDirectory = new File(office2pngzipTempPath);
+      if (zipDirectory.mkdirs()) {
+        InputStream in = new FileInputStream(ZipUtil.zip(office2pngTempPath, zipFileName));
+        converResultInfo.setSuccess(true);
+        converResultInfo.setBytes(toByteArray(in));
+        in.close();
+      }
+    } catch (FileNotFoundException e) {
+      converResultInfo.setSuccess(false);
+      converResultInfo.setErrorMsg(e.toString());
+      return converResultInfo;
+    } catch (IOException e) {
+      converResultInfo.setSuccess(false);
+      converResultInfo.setErrorMsg(e.toString());
+      return converResultInfo;
+    } finally {
+      deleteTempDirectory(new File(office2pngTempPath));
+      deleteTempDirectory(new File(office2pngzipTempPath));
+    }
+    return converResultInfo;
   }
-}
+
+    public static ConverResultInfo Pdf2Png(byte[] data,int page){
+      ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
+      ByteArrayOutputStream fileOutputStream=new ByteArrayOutputStream();
+      ConverResultInfo converResultInfo = new ConverResultInfo();
+
+      com.aspose.pdf.Document pdf=new com.aspose.pdf.Document(fileInputStream);
+      if (page>=pdf.getPages().size()||page<0){
+        converResultInfo.setErrorMsg("页码错误");
+        converResultInfo.setSuccess(false);
+        return converResultInfo;
+      }
+      com.aspose.pdf.devices.Resolution imageResolution=new com.aspose.pdf.devices.Resolution(128);
+      com.aspose.pdf.devices.PngDevice rendererPng = new com.aspose.pdf.devices.PngDevice(imageResolution);
+      rendererPng.process(pdf.getPages().get_Item(page),fileOutputStream);
+      //释放资源
+      pdf.close();
+      converResultInfo.setSuccess(true);
+      converResultInfo.setBytes(fileOutputStream.toByteArray());
+      try {
+        fileOutputStream.close();
+      } catch (IOException e) {
+        converResultInfo.setErrorMsg(e.toString());
+      }
+      return converResultInfo;
+    }
+  }
 
 
 

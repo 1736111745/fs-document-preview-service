@@ -195,6 +195,49 @@ public class ApiController {
         break;
       case ".ppt":
       case ".pptx":
+        converResultInfo=ConvertHelper.Ppt2Png(bytes);
+        break;
+      case ".pdf":
+        converResultInfo=ConvertHelper.Pdf2Png(bytes);
+        break;
+      default: {
+        response = ConvertResultHelper.getFalseResponse();
+        return JSON.toJSONString(ConvertResultHelper.getFalseConverResult("parems error,need doc or ppt or pdf,but now" + fileSuffix));
+      }
+    }
+    try {
+      IOUtils.copy(new ByteArrayInputStream(converResultInfo.getBytes()), response.getOutputStream());
+    } catch (IOException e) {
+      response = ConvertResultHelper.getFalseResponse();
+      return JSON.toJSONString(ConvertResultHelper.getFalseConverResult(e.toString()));
+    }
+    response=ConvertResultHelper.getTrueResponse();
+    return null;
+  }
+
+  @ResponseBody
+  @RequestMapping(value = "/ConvertOnePageOffice2PdfByStream", method = RequestMethod.POST)
+  public String ConvertOnePageOffice2PdfByStream(String path, int page, @RequestParam("file") MultipartFile file, HttpServletResponse response){
+    byte[] bytes;
+    try {
+      bytes = file.getBytes();
+    } catch (IOException e) {
+      response = ConvertResultHelper.getFalseResponse();
+      return JSON.toJSONString(ConvertResultHelper.getFalseConverResult(e.toString()));
+    }
+    if (path.isEmpty()) {
+      response = ConvertResultHelper.getFalseResponse();
+      return JSON.toJSONString(ConvertResultHelper.getFalseConverResult("Office2PngByStream 方法文件路径参数为空"));
+    }
+    ConverResultInfo converResultInfo;
+    String fileSuffix = path.substring(path.lastIndexOf(".")).toLowerCase();
+    switch (fileSuffix) {
+      case ".doc":
+      case ".docx":
+        converResultInfo= ConvertHelper.Word2Png(bytes,page);
+        break;
+      case ".ppt":
+      case ".pptx":
         converResultInfo=ConvertHelper.Ppt2Png(bytes, page);
         break;
       case ".pdf":
@@ -205,7 +248,13 @@ public class ApiController {
         return JSON.toJSONString(ConvertResultHelper.getFalseConverResult("parems error,need doc or ppt or pdf,but now" + fileSuffix));
       }
     }
-    response=ConvertResultHelper.getTrueResponse();
+    try {
+      IOUtils.copy(new ByteArrayInputStream(converResultInfo.getBytes()), response.getOutputStream());
+      response=ConvertResultHelper.getTrueResponse();
+    } catch (IOException e) {
+      response = ConvertResultHelper.getFalseResponse();
+      return JSON.toJSONString(ConvertResultHelper.getFalseConverResult(e.toString()));
+    }
     return null;
   }
 

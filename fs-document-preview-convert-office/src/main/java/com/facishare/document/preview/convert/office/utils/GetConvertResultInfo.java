@@ -1,6 +1,7 @@
 package com.facishare.document.preview.convert.office.utils;
 
 import com.facishare.document.preview.convert.office.model.ConvertResultInfo;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
@@ -8,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 /**
  * @author Andy
  */
+@Component
 public class GetConvertResultInfo {
 
   @Resource

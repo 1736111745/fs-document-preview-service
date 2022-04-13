@@ -1,6 +1,6 @@
 package com.facishare.document.preview.convert.office.utils;
 
-import com.facishare.document.preview.common.model.PageInfo;
+import com.facishare.document.preview.convert.office.model.PageInfo;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

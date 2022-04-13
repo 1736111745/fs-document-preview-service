@@ -17,9 +17,6 @@ import javax.annotation.Resource;
 public class GetUtilObject {
 
   @Resource
-  private GetPageInfo pageInfo;
-
-  @Resource
   private GetResponse response;
 
   @Resource
@@ -27,5 +24,8 @@ public class GetUtilObject {
 
   @Resource
   private ParameterCalibration parameterCalibration;
+
+  @Resource
+  private GetPageInfo getPageInfo;
 
 }

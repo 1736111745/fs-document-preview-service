@@ -5,7 +5,7 @@ import com.aspose.cells.Workbook;
 import com.aspose.cells.WorksheetCollection;
 import com.aspose.slides.Presentation;
 import com.aspose.words.Document;
-import com.facishare.document.preview.common.model.PageInfo;
+import com.facishare.document.preview.convert.office.model.PageInfo;
 import com.facishare.document.preview.convert.office.utils.GetDocumentObject;
 import com.facishare.document.preview.convert.office.utils.GetPageInfo;
 import com.facishare.document.preview.convert.office.utils.ParameterCalibration;

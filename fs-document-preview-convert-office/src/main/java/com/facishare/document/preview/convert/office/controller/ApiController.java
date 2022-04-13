@@ -41,15 +41,15 @@ public class ApiController {
 
   @ResponseBody
   @RequestMapping(value = "/GetPageInfoByStream", method = RequestMethod.POST)
-  public String GetPageInfoByStream(String path, @RequestParam("file") MultipartFile file) {
+  public String GetPageInfoByStream(@RequestParam("path") String path, @RequestParam("file") MultipartFile file) {
     try {
       byte[] bytes = file.getBytes();
       if (getUtilObject.getParameterCalibration().isEmpty(path, bytes)) {
-        return JSON.toJSONString(getUtilObject.getPageInfo().getFalsePageInfo("params is Empty"));
+        return JSON.toJSONString(getUtilObject.getGetPageInfo().getFalsePageInfo("params is Empty"));
       }
       return JSON.toJSONString(pageInfoService.getPageInfo(bytes, path));
     } catch (IOException e) {
-      return JSON.toJSONString(getUtilObject.getPageInfo().getFalsePageInfo(e.toString()));
+      return JSON.toJSONString(getUtilObject.getGetPageInfo().getFalsePageInfo(e.toString()));
     }
   }
 

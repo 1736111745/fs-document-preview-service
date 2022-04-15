@@ -5,8 +5,8 @@ import com.facishare.document.preview.cgi.utils.AES256Utils;
 import com.facishare.fsi.proxy.model.warehouse.n.fileupload.NUploadFileDirect;
 import com.facishare.fsi.proxy.service.NFileStorageService;
 import com.google.common.base.Joiner;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.CharEncoding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,6 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 import java.net.InetAddress;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +33,7 @@ import java.util.Properties;
  * Created by liuq on 16/8/5.
  */
 @Controller
+@Slf4j
 @RequestMapping("/")
 public class IndexController {
     private static final Logger LOG = LoggerFactory.getLogger(PreviewController.class);
@@ -72,6 +72,7 @@ public class IndexController {
     public String demo() {
         return "demo";
     }
+
 
     @Autowired
     NFileStorageService nFileStorageService;

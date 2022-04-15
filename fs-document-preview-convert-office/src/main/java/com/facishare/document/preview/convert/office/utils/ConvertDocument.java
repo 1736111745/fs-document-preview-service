@@ -11,11 +11,10 @@ import com.aspose.slides.SaveFormat;
 import com.aspose.words.Document;
 import com.aspose.words.ImageSaveOptions;
 import com.aspose.words.PageSet;
+import com.aspose.words.PdfSaveOptions;
 import com.facishare.document.preview.convert.office.model.ConvertResultInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -34,13 +33,7 @@ import java.util.UUID;
  * @author Andy
  */
 @Slf4j
-@Component
 public class ConvertDocument {
-
-  @Resource
-  private GetDocumentObject getDocumentObject;
-  @Resource
-  private GetConvertResultInfo getConvertResultInfo;
 
   private static byte[] toByteArray(InputStream in) {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -66,7 +59,8 @@ public class ConvertDocument {
     file.delete();
   }
 
-  public ConvertResultInfo getHtml(byte[] data, int page) {
+  public ConvertResultInfo getHtml(byte[] data, int filepage) {
+    int page=filepage-1;
     ConvertResultInfo convertResultInfo = new ConvertResultInfo();
     ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
     ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream();
@@ -147,54 +141,54 @@ public class ConvertDocument {
   }
 
   public ConvertResultInfo convertWordToPdf(byte[] data) {
-    Document doc = getDocumentObject.getWord(data);
+    Document doc = new GetWordsDocumentObject().getWord(data);
     ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream();
     try {
       doc.save(fileOutputStream, com.aspose.words.SaveFormat.PDF);
     } catch (Exception e) {
-      return getConvertResultInfo.getFalseConvertResultInfo(e.toString());
+      return new GetConvertResultInfo().getFalseConvertResultInfo(e.toString());
     }
-    return getConvertResultInfo.getTrueConvertResultInfo(fileOutputStream);
+    return new GetConvertResultInfo().getTrueConvertResultInfo(fileOutputStream);
   }
 
   public ConvertResultInfo convertPptToPdf(byte[] data) {
-    Presentation ppt = getDocumentObject.getPpt(data);
+    Presentation ppt = new GetPptDocumentObject().getPpt(data);
     ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream();
     ppt.save(fileOutputStream, com.aspose.slides.SaveFormat.Pdf);
-    return getConvertResultInfo.getTrueConvertResultInfo(fileOutputStream);
+    return new GetConvertResultInfo().getTrueConvertResultInfo(fileOutputStream);
   }
 
   public ConvertResultInfo convertDocToDocx(byte[] data) {
     ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream();
-    Document doc = getDocumentObject.getWord(data);
+    Document doc = new GetWordsDocumentObject().getWord(data);
     try {
       doc.save(fileOutputStream, com.aspose.words.SaveFormat.DOCX);
     } catch (Exception e) {
       log.error(e.toString());
-      return getConvertResultInfo.getTrueConvertResultInfo(data);
+      return new GetConvertResultInfo().getTrueConvertResultInfo(data);
     }
-    return getConvertResultInfo.getTrueConvertResultInfo(fileOutputStream);
+    return new GetConvertResultInfo().getTrueConvertResultInfo(fileOutputStream);
   }
 
   public ConvertResultInfo convertPptToPptx(byte[] data) {
     ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream();
-    Presentation ppt = getDocumentObject.getPpt(data);
+    Presentation ppt = new GetPptDocumentObject().getPpt(data);
     ppt.save(fileOutputStream, SaveFormat.Pptx);
-    return getConvertResultInfo.getTrueConvertResultInfo(fileOutputStream);
+    return new GetConvertResultInfo().getTrueConvertResultInfo(fileOutputStream);
   }
 
   public ConvertResultInfo convertXlsToXlsx(byte[] data) {
     ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream();
-    Workbook workbook = getDocumentObject.getWorkBook(data);
+    Workbook workbook = new GetExcelDocumentObject().getWorkBook(data);
     try {
       workbook.save(fileOutputStream, com.aspose.cells.SaveFormat.XLSX);
     } catch (Exception e) {
       log.info(e.toString());
-      return getConvertResultInfo.getTrueConvertResultInfo(data);
+      return new GetConvertResultInfo().getTrueConvertResultInfo(data);
     } finally {
       workbook.dispose();
     }
-    return getConvertResultInfo.getTrueConvertResultInfo(fileOutputStream);
+    return new GetConvertResultInfo().getTrueConvertResultInfo(fileOutputStream);
   }
 
   public ConvertResultInfo convertWordAllPageToPng(byte[] data) {
@@ -203,7 +197,7 @@ public class ConvertDocument {
     String sysTempPath = System.getProperty("java.io.tmpdir") + File.separator;
     String office2pngTempPath = String.valueOf(Paths.get(sysTempPath, "dps", "office2png", String.valueOf(UUID.randomUUID())));
     String office2pngzipTempPath = String.valueOf(Paths.get(sysTempPath, "dps", "office2pngzip", String.valueOf(UUID.randomUUID())));
-    Document doc = getDocumentObject.getWord(data);
+    Document doc = new GetWordsDocumentObject().getWord(data);
     try {
       int pageCount = doc.getPageCount();
       //将文档分别转换为单张图片，并存放在office2pngTempPath 指定的路径
@@ -224,7 +218,7 @@ public class ConvertDocument {
       }
     } catch (Exception e) {
       log.error(e.toString());
-      return getConvertResultInfo.getFalseConvertResultInfo(e.toString());
+      return new GetConvertResultInfo().getFalseConvertResultInfo(e.toString());
     } finally {
       //递归删除临时生成的图片文件夹以及压缩包所在的文件夹
       deleteTempDirectory(new File(office2pngTempPath));
@@ -241,7 +235,7 @@ public class ConvertDocument {
     String office2pngzipTempPath = String.valueOf(Paths.get(sysTempPath, "dps", "office2pngzip", String.valueOf(UUID.randomUUID())));
     String zipFileName = office2pngzipTempPath + "\\" + UUID.randomUUID() + ".zip";
     try {
-      Presentation ppt = getDocumentObject.getPpt(data);
+      Presentation ppt = new GetPptDocumentObject().getPpt(data);
       if (new File(office2pngTempPath).mkdirs()) {
         for (ISlide slide : ppt.getSlides()) {
           Dimension size = new Dimension(1280, 720);
@@ -279,7 +273,7 @@ public class ConvertDocument {
     String zipFileName = office2pngzipTempPath + "\\" + UUID.randomUUID() + ".zip";
     // devices 包负责将PDF转为图像  Resolution对象负责转为图像的分辨率设置
     try {
-      com.aspose.pdf.Document pdf = getDocumentObject.getPdf(data);
+      com.aspose.pdf.Document pdf = new GetPdfDocumentObject().getPdf(data);
       int pageCount = pdf.getPages().size();
       com.aspose.pdf.devices.Resolution imageResolution = new com.aspose.pdf.devices.Resolution(200);
       com.aspose.pdf.devices.PngDevice rendererPng = new com.aspose.pdf.devices.PngDevice(imageResolution);
@@ -316,26 +310,26 @@ public class ConvertDocument {
   public ConvertResultInfo convertWordOnePageToPng(byte[] data, int page) {
     ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream();
     try {
-      com.aspose.words.Document doc = getDocumentObject.getWord(data);
+      com.aspose.words.Document doc = new GetWordsDocumentObject().getWord(data);
       if (page >= doc.getPageCount() || page < 0) {
-        return getConvertResultInfo.getFalseConvertResultInfo("页码参数错误");
+        return new GetConvertResultInfo().getFalseConvertResultInfo("页码参数错误");
       } else {
         ImageSaveOptions imageOptions = new com.aspose.words.ImageSaveOptions(com.aspose.words.SaveFormat.PNG);
         imageOptions.setUseHighQualityRendering(true);
         imageOptions.setPageSet(new PageSet(page));
         doc.save(fileOutputStream, imageOptions);
-        return getConvertResultInfo.getTrueConvertResultInfo(fileOutputStream);
+        return new GetConvertResultInfo().getTrueConvertResultInfo(fileOutputStream);
       }
     } catch (Exception e) {
       log.error(e.toString());
-      return getConvertResultInfo.getFalseConvertResultInfo("页码参数错误");
+      return new GetConvertResultInfo().getFalseConvertResultInfo("页码参数错误");
     }
   }
 
   public ConvertResultInfo convertPptOnePageToPng(byte[] data, int page) {
     //下标从0开始，也就是说，传入3，返回的是第4页PPT
     ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream();
-    com.aspose.slides.Presentation ppt = getDocumentObject.getPpt(data);
+    com.aspose.slides.Presentation ppt = new GetPptDocumentObject().getPpt(data);
     //设置要转换的图片的格式
     Dimension size = new Dimension(1280, 720);
     //获得指定页码的幻灯片
@@ -346,25 +340,63 @@ public class ConvertDocument {
       ImageIO.write(bufferedImage, "PNG", fileOutputStream);
     } catch (IOException e) {
       log.error(e.toString());
-      return getConvertResultInfo.getFalseConvertResultInfo(e.toString());
+      return new GetConvertResultInfo().getFalseConvertResultInfo(e.toString());
+    } finally {
+      if (ppt != null) {
+        ppt.dispose();
+      }
     }
-    return getConvertResultInfo.getTrueConvertResultInfo(fileOutputStream);
+    return new GetConvertResultInfo().getTrueConvertResultInfo(fileOutputStream);
   }
 
   public ConvertResultInfo convertPdfOnePageToPng(byte[] data, int page) {
     ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream();
-    ConvertResultInfo convertResultInfo = new ConvertResultInfo();
 
-    com.aspose.pdf.Document pdf = getDocumentObject.getPdf(data);
+    com.aspose.pdf.Document pdf = new GetPdfDocumentObject().getPdf(data);
     if (page >= pdf.getPages().size() || page < 0) {
-
-      return getConvertResultInfo.getFalseConvertResultInfo("页码错误");
+      return new GetConvertResultInfo().getFalseConvertResultInfo("页码错误");
     }
     com.aspose.pdf.devices.Resolution imageResolution = new com.aspose.pdf.devices.Resolution(128);
     com.aspose.pdf.devices.PngDevice rendererPng = new com.aspose.pdf.devices.PngDevice(imageResolution);
     rendererPng.process(pdf.getPages().get_Item(page), fileOutputStream);
     //释放资源
     pdf.close();
-    return getConvertResultInfo.getTrueConvertResultInfo(fileOutputStream);
+    return new GetConvertResultInfo().getTrueConvertResultInfo(fileOutputStream);
+  }
+
+  public ConvertResultInfo convertWordOnePageToPdf(byte[] data, int page) {
+    ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream();
+    try {
+      Document doc = new GetWordsDocumentObject().getWord(data);
+      if (page >= doc.getPageCount() || page < 0) {
+        return new GetConvertResultInfo().getFalseConvertResultInfo("页码参数错误");
+      } else {
+        PdfSaveOptions pdfSaveOptions = new com.aspose.words.PdfSaveOptions();
+        pdfSaveOptions.setPageSet(new PageSet(page));
+        //0 嵌入所有字体 1 嵌入了除标准Windows字体Arial和Times New Roman之外的所有字体  2 不嵌入任何字体。
+        pdfSaveOptions.setFontEmbeddingMode(0);
+        //0 文档的显示方式留给 PDF 查看器。通常，查看器会显示适合页面宽度的文档。 1 使用指定的缩放系数显示页面。 2 显示页面，使其完全可见。 3 适合页面的宽度。 4 适合页面的高度。 5 适合边界框（包含页面上所有可见元素的矩形）。
+        pdfSaveOptions.setZoomBehavior(0);
+        doc.save(fileOutputStream, pdfSaveOptions);
+        return new GetConvertResultInfo().getTrueConvertResultInfo(fileOutputStream);
+      }
+    } catch (Exception e) {
+      log.error(e.toString());
+      return new GetConvertResultInfo().getFalseConvertResultInfo(e.toString());
+    }
+  }
+
+  public ConvertResultInfo convertPptOnePageToPdf(byte[] data, int page) {
+    ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream();
+    com.aspose.slides.Presentation ppt = new GetPptDocumentObject().getPpt(data);
+    try {
+      int[] page2 = {page};
+      ppt.save(fileOutputStream, page2,com.aspose.slides.SaveFormat.Pdf);
+    } finally {
+      if (ppt != null) {
+        ppt.dispose();
+      }
+    }
+    return new GetConvertResultInfo().getTrueConvertResultInfo(fileOutputStream);
   }
 }

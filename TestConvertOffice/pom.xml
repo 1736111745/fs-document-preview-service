@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>fs-document-preview</artifactId>
     <groupId>com.facishare</groupId>
     <version>1.0-SNAPSHOT</version>
   </parent>
+
   <packaging>war</packaging>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>fs-document-preview-convert-office</artifactId>
+  <artifactId>TestConvertOffice</artifactId>
 
   <dependencies>
     <dependency>
@@ -109,11 +110,9 @@
       <version>5.7.16</version>
     </dependency>
     <dependency>
-    <groupId>com.fxiaoke.common</groupId>
-    <artifactId>http-spring-support</artifactId>
+      <groupId>com.fxiaoke.common</groupId>
+      <artifactId>http-spring-support</artifactId>
     </dependency>
   </dependencies>
-
-
 
 </project>

@@ -1,21 +1,16 @@
 package com.facishare.document.preview.convert.office.utils;
 
 import com.facishare.document.preview.convert.office.model.ConvertResultInfo;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
 
 /**
  * @author Andy
  */
-@Component
 public class GetConvertResultInfo {
 
-  @Resource
-  private ConvertResultInfo convertResultInfo;
-
   public ConvertResultInfo getTrueConvertResultInfo(ByteArrayOutputStream fileOutputStream){
+    ConvertResultInfo convertResultInfo=new ConvertResultInfo();
     convertResultInfo.setErrorMsg("");
     convertResultInfo.setBytes(fileOutputStream.toByteArray());
     convertResultInfo.setSuccess(true);
@@ -23,6 +18,7 @@ public class GetConvertResultInfo {
   }
 
   public ConvertResultInfo getTrueConvertResultInfo(byte[] data){
+    ConvertResultInfo convertResultInfo=new ConvertResultInfo();
     convertResultInfo.setErrorMsg("格式未能转换成功，请检查文档是否加锁、加密或损坏");
     convertResultInfo.setBytes(data);
     convertResultInfo.setSuccess(true);
@@ -30,6 +26,7 @@ public class GetConvertResultInfo {
   }
 
   public ConvertResultInfo getFalseConvertResultInfo(String errorMsg){
+    ConvertResultInfo convertResultInfo=new ConvertResultInfo();
     convertResultInfo.setErrorMsg(errorMsg);
     convertResultInfo.setSuccess(false);
     return convertResultInfo;

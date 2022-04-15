@@ -18,5 +18,6 @@
         <module>fs-document-preview-common</module>
         <module>fs-document-preview-asyncconvertor</module>
       <module>fs-document-preview-convert-office</module>
+        <module>TestConvertOffice</module>
     </modules>
 </project>

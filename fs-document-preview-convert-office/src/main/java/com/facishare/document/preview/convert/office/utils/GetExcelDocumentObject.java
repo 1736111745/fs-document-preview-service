@@ -1,54 +1,40 @@
 package com.facishare.document.preview.convert.office.utils;
 
-
+import com.aspose.cells.License;
 import com.aspose.cells.Workbook;
 import com.aspose.cells.Worksheet;
 import com.aspose.cells.WorksheetCollection;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author AnDy
+ * @author Andy
  */
 @Slf4j
-@Component
-public class GetDocumentObject {
-
-  public com.aspose.words.Document getWord(byte[] data) {
-    ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
-    com.aspose.words.Document doc = null;
-    try {
-      doc = new com.aspose.words.Document(fileInputStream);
-    } catch (Exception e) {
-      log.error("获得Word-Document对象异常：" + e);
-    }
-    return doc;
-  }
-
-  public com.aspose.slides.Presentation getPpt(byte[] data) {
-    ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
-    com.aspose.slides.Presentation ppt;
-    ppt = new com.aspose.slides.Presentation(fileInputStream);
-    return ppt;
-  }
-
-  public com.aspose.pdf.Document getPdf(byte[] data) {
-    ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
-    com.aspose.pdf.Document pdf;
-    pdf = new com.aspose.pdf.Document(fileInputStream);
-    return pdf;
-  }
+public class GetExcelDocumentObject {
 
   public com.aspose.cells.WorksheetCollection getWorksheetCollection(byte[] data) {
+    getExcelLicense();
     Workbook workbook=getWorkBook(data);
     return workbook.getWorksheets();
   }
 
+  public void getExcelLicense() {
+    try {
+      InputStream is = GetExcelDocumentObject.class.getClassLoader().getResourceAsStream("license.xml");
+      License license = new License();
+      license.setLicense(is);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
   public com.aspose.cells.Workbook getWorkBook(byte[] data) {
+    getExcelLicense();
     ByteArrayInputStream fileInputStream = new ByteArrayInputStream(data);
     com.aspose.cells.Workbook workBook = new Workbook();
     try {
@@ -60,6 +46,7 @@ public class GetDocumentObject {
   }
 
   public List<String> getSheetNames(com.aspose.cells.WorksheetCollection worksheetCollection) {
+    getExcelLicense();
     List<String> sheetNames=new ArrayList<>();
     for (int i = 0; i < worksheetCollection.getCount(); i++) {
       Worksheet worksheet = worksheetCollection.get(i);
@@ -81,6 +68,7 @@ public class GetDocumentObject {
   }
 
   public com.aspose.cells.Worksheet getWorkSheet(byte[] data,int page){
+    getExcelLicense();
     Workbook workbook=getWorkBook(data);
     WorksheetCollection worksheetCollection=getWorksheetCollection(workbook);
     int pageCount=worksheetCollection.getCount();
@@ -91,6 +79,7 @@ public class GetDocumentObject {
   }
 
   public com.aspose.cells.WorksheetCollection getWorksheetCollection(com.aspose.cells.Workbook workbook) {
+    getExcelLicense();
     return workbook.getWorksheets();
   }
 

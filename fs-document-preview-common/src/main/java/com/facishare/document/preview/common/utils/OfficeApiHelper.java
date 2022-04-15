@@ -8,7 +8,12 @@ import com.github.autoconf.ConfigFactory;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -82,6 +87,7 @@ public class OfficeApiHelper {
     }
     return result;
   }
+
 
   public boolean convertExcel2Html(String filePath, int page) throws IOException {
     String params = "path=" + filePath + "&page=" + page;

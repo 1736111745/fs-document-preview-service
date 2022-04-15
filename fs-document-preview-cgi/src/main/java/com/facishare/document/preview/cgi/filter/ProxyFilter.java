@@ -1,6 +1,8 @@
 package com.facishare.document.preview.cgi.filter;
 
 import com.facishare.document.preview.cgi.model.EmployeeInfo;
+import com.fxiaoke.release.FsGrayRelease;
+import com.fxiaoke.release.FsGrayReleaseBiz;
 import com.github.autoconf.ConfigFactory;
 import com.google.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +18,7 @@ import java.util.Set;
 public class ProxyFilter implements Filter {
     private Set<String> eas = new HashSet<>();
     private boolean proxyEnable = false;
+    private FsGrayReleaseBiz gray = FsGrayRelease.getInstance("dps");
 
     public void init(FilterConfig config) throws ServletException {
         ConfigFactory.getConfig("fs-dps-config", conf -> {
@@ -29,7 +32,7 @@ public class ProxyFilter implements Filter {
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws java.io.IOException, ServletException {
         EmployeeInfo employee = getEmployee(request);
-        if (proxyEnable && employee != null && eas.contains(employee.getEa())) {
+        if (proxyEnable && employee != null && gray.isAllow("gray", employee.getEa())) {
                 HttpServletRequest httpReq = (HttpServletRequest) request;
                 String path = httpReq.getRequestURI().substring(httpReq.getContextPath().length());
             try {

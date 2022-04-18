@@ -71,7 +71,7 @@
     <init-param>
       <param-name>targetUri</param-name>
 <!--      <param-value>http://172.31.101.246:48174/dps</param-value>-->
-      <param-value>http://172.31.101.246:48174/dps</param-value>
+      <param-value>http://172.17.4.230:39906/dps</param-value>
     </init-param>
     <init-param>
       <param-name>log</param-name>

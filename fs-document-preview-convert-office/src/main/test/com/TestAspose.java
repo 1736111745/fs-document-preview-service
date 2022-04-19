@@ -1,6 +1,7 @@
 package com;
 
 import com.alibaba.fastjson.JSON;
+import com.facishare.document.preview.common.model.ConvertOldOfficeVersionResult;
 import com.facishare.document.preview.common.model.ConvertResult;
 import com.facishare.document.preview.common.model.PageInfo;
 import com.fxiaoke.common.http.handler.SyncCallback;
@@ -112,9 +113,33 @@ public class TestAspose {
     }
   }
 
+
+  public ConvertOldOfficeVersionResult convertFile(String filePath) throws IOException {
+    ConvertOldOfficeVersionResult result;
+    String params = "path=" + filePath;
+    byte[] data = FileUtils.readFileToByteArray(new File(filePath));
+    Object obj = callApi(officeConvertorServerUrl, "ConvertFileByStream", params, data);
+    if (obj instanceof String) {
+      result = JSON.parseObject((String) obj, ConvertOldOfficeVersionResult.class);
+    } else {
+      result = new ConvertOldOfficeVersionResult();
+      byte[] bytes = (byte[]) obj;
+      result.setErrorMsg("");
+      result.setSuccess(true);
+      String newFilePath = filePath + "x";
+      try {
+        FileUtils.writeByteArrayToFile(new File(newFilePath), bytes);
+      } catch (IOException e) {
+
+      }
+      result.setNewFilePath(newFilePath);
+    }
+    return result;
+  }
+
   @Test
   public void convertOffice2PngTest() throws IOException {
-    String filePath3="C:\\Users\\anyl9356\\Documents\\TestTwo\\test.ppt";
+    String filePath3 = "C:\\Users\\anyl9356\\Documents\\TestTwo\\test.ppt";
     System.out.print(convertOffice2Png(filePath3, 1));
   }
 

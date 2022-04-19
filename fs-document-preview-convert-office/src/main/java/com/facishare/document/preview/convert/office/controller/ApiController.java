@@ -52,7 +52,7 @@ public class ApiController {
   }
 
   @ResponseBody
-  @RequestMapping(value = "/ConvertExcel2HtmlByStream", method = RequestMethod.POST)
+  @RequestMapping(value = "/ConvertExcel2HtmlByStream", method = RequestMethod.POST, produces = "application/json")
   public String ConvertExcel2HtmlByStream(@RequestParam("path") String path, @RequestParam("page") int page, @RequestParam("file") MultipartFile file,
                                           HttpServletResponse response) {
     ConvertResultInfo convertResultInfo;
@@ -78,7 +78,7 @@ public class ApiController {
   }
 
   @ResponseBody
-  @RequestMapping(value = "/ConvertOffice2PdfByStream", method = RequestMethod.POST)
+  @RequestMapping(value = "/ConvertOffice2PdfByStream", method = RequestMethod.POST, produces = "application/json")
   public String ConvertOffice2PdfByStream(@RequestParam("path") String path, @RequestParam("file") MultipartFile file, HttpServletResponse response) {
     ConvertResultInfo convertResultInfo;
     try {
@@ -103,7 +103,7 @@ public class ApiController {
   }
 
   @ResponseBody
-  @RequestMapping(value = "/ConvertFileByStream", method = RequestMethod.POST)
+  @RequestMapping(value = "/ConvertFileByStream", method = RequestMethod.POST, produces = "application/json")
   public String ConvertFileByStream(@RequestParam("path") String path, @RequestParam("file") MultipartFile file, HttpServletResponse response) {
     ConvertResultInfo convertResultInfo;
     try {
@@ -129,7 +129,7 @@ public class ApiController {
 
 
   @ResponseBody
-  @RequestMapping(value = "/ConvertOffice2PngByStream", method = RequestMethod.POST)
+  @RequestMapping(value = "/ConvertOffice2PngByStream", method = RequestMethod.POST, produces = "application/json")
   public String ConvertOffice2PngByStream(@RequestParam("path") String path, @RequestParam("file") MultipartFile file, HttpServletResponse response) {
     ConvertResultInfo convertResultInfo;
     try {
@@ -154,7 +154,7 @@ public class ApiController {
   }
 
   @ResponseBody
-  @RequestMapping(value = "/ConvertOnePageOffice2PngByStream", method = RequestMethod.POST)
+  @RequestMapping(value = "/ConvertOnePageOffice2PngByStream", method = RequestMethod.POST, produces = "application/json")
   public String ConvertOnePageOffice2PngByStream(@RequestParam("path") String path, @RequestParam("page") int page, @RequestParam("file") MultipartFile file,
                                                  HttpServletResponse response) {
     ConvertResultInfo convertResultInfo;
@@ -180,7 +180,7 @@ public class ApiController {
   }
 
   @ResponseBody
-  @RequestMapping(value = "/ConvertOnePageOffice2PdfByStream", method = RequestMethod.POST)
+  @RequestMapping(value = "/ConvertOnePageOffice2PdfByStream", method = RequestMethod.POST, produces = "application/json")
   public String ConvertOnePageOffice2PdfByStream(String path, int page, @RequestParam("file") MultipartFile file, HttpServletResponse response) {
     ConvertResultInfo convertResultInfo;
     try {

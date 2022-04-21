@@ -54,6 +54,7 @@ public class TaskController {
         //gc meta元数据
         previewInfoDao.clean(infos.stream().map(i -> i.getPath()).collect(Collectors.toList()));
       }
+      log.info("gc size :{}", infos.size());
       skip = skip + infos.size();
     } while (size == limit);
     log.info("gc 结束！");

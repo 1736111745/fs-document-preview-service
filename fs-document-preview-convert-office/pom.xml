@@ -106,12 +106,13 @@
     <dependency>
       <groupId>cn.hutool</groupId>
       <artifactId>hutool-core</artifactId>
-      <version>5.7.16</version>
+      <version>5.7.22</version>
     </dependency>
     <dependency>
     <groupId>com.fxiaoke.common</groupId>
     <artifactId>http-spring-support</artifactId>
     </dependency>
+
   </dependencies>
 
 

@@ -12,7 +12,6 @@
   <context:component-scan base-package="com.facishare.document.preview.convert.office">
   </context:component-scan>
   <context:annotation-config/>
-  <mvc:annotation-driven/>
   <mvc:default-servlet-handler/>
 
   <mvc:resources mapping="/dist/**" location="WEB-INF/dist/"/>
@@ -24,4 +23,14 @@
     <property name="maxUploadSize" value="20000000000"/>
     <property name="maxInMemorySize" value="40960"/>
   </bean>
+
+  <mvc:annotation-driven >
+    <!-- 消息转换器 -->
+    <mvc:message-converters>
+      <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+        <property name="supportedMediaTypes" value="application/json;charset=UTF-8"/>
+      </bean>
+    </mvc:message-converters>
+  </mvc:annotation-driven>
+
 </beans>

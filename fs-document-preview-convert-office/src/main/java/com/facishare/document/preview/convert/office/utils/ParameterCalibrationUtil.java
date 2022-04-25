@@ -1,6 +1,7 @@
 package com.facishare.document.preview.convert.office.utils;
 
 import com.facishare.document.preview.convert.office.constant.FileTypeEnum;
+
 import java.io.ByteArrayInputStream;
 
 /**
@@ -14,13 +15,13 @@ import java.io.ByteArrayInputStream;
  */
 public class ParameterCalibrationUtil {
 
-  public static String isDifference(String filePath,ByteArrayInputStream fileStream){
-    String fileTypeName=OfficeFileTypeUtil.getFileType(fileStream);
+  public static FileTypeEnum isDifference(String filePath, ByteArrayInputStream fileStream) {
+    String fileTypeName = OfficeFileTypeUtil.getFileType(fileStream);
     fileStream.reset();
     if (isFormatSupport(fileTypeName)) {
-      return OfficeFileTypeUtil.extName(filePath);
+      return FileTypeEnum.valueOf(OfficeFileTypeUtil.extName(filePath).toUpperCase());
     }
-    return "zip";
+    return FileTypeEnum.valueOf("zip".toUpperCase());
   }
 
   public static boolean isFormatSupport(String fileTypeName) {

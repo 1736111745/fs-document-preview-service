@@ -16,7 +16,7 @@ public enum FileTypeEnum {
   XLS("xls"), XLSX("xlsx"),
   PDF("pdf"),ZIP("zip");
 
-  private String fileTypeName;
+  private final String fileTypeName;
 
   FileTypeEnum(String fileTypeName) {
     this.fileTypeName = fileTypeName;

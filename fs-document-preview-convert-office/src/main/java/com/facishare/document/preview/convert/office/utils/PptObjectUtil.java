@@ -1,14 +1,14 @@
 package com.facishare.document.preview.convert.office.utils;
 
-import com.aspose.slides.IPresentationInfo;
 import com.aspose.slides.License;
 import com.aspose.slides.Presentation;
 import com.aspose.slides.PresentationFactory;
-import com.facishare.document.preview.convert.office.exception.BizException;
+import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
+import com.facishare.document.preview.convert.office.exception.AsposeInstantiationException;
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Andy
@@ -16,47 +16,45 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PptObjectUtil {
 
-  public com.aspose.slides.Presentation getPpt(ByteArrayInputStream fileStream) {
+  public static int getPageCount(ByteArrayInputStream fileStream) throws Exception {
+    return getPageCount(getPpt(fileStream));
+  }
+
+  public static int getPageCount(Presentation ppt) throws Exception {
+    if (ppt == null) {
+      return 0;
+    }
+    int pageCount = ppt.getSlides().size();
+    ppt.dispose();
+    return pageCount;
+  }
+
+  public static Presentation getPpt(ByteArrayInputStream fileStream) throws AsposeInstantiationException {
     getPptLicense();
-    Presentation ppt = null;
+    Presentation ppt;
     try {
       ppt = new Presentation(fileStream);
     } catch (Exception e) {
-      //todo:处理异常，调用加密检查方法
-      log.info("The document is encrypted and cannot be previewed");
-      throw  new BizException("-1","The document is encrypted and cannot be previewed");
+      if (isCheckEncrypt(fileStream)) {
+        throw new AsposeInstantiationException(ErrorInfoEnum.PPT_ENCRYPTION_ERROR, e);
+      }
+      throw new AsposeInstantiationException(ErrorInfoEnum.PPT_INSTANTIATION_ERROR, e);
     }
     return ppt;
   }
 
-  public void getPptLicense() {
-    try(InputStream is = PptObjectUtil.class.getClassLoader().getResourceAsStream("license.xml")) {
+  public static void getPptLicense() throws AsposeInstantiationException {
+    try (InputStream is = PptObjectUtil.class.getClassLoader().getResourceAsStream("license.xml")) {
       License license = new License();
       license.setLicense(is);
     } catch (Exception e) {
-      e.printStackTrace();
+      throw new AsposeInstantiationException(ErrorInfoEnum.ABNORMAL_FILE_SIGNATURE, e);
     }
   }
 
-  @SneakyThrows
-  public boolean isCheckEncrypt(ByteArrayInputStream fileStream){
+  public static boolean isCheckEncrypt(ByteArrayInputStream fileStream) {
     // 如果文件加密 返回true
-    IPresentationInfo presentationInfo=new PresentationFactory().getPresentationInfo(fileStream);
-    if (presentationInfo.isEncrypted())return true;
-    int loadFormat=presentationInfo.getLoadFormat();
-    //如果文件格式不为1-ppt 或 3-pptx 返回true
-    return loadFormat != 255 && loadFormat != 3;
-  }
-
-  public int getPageCount(ByteArrayInputStream fileStream){
-    int pageCount=getPageCount(getPpt(fileStream));
-    return pageCount;
-  }
-
-  public int getPageCount(Presentation ppt){
-    int pageCount=ppt.getSlides().size();
-    ppt.dispose();
-    return pageCount;
+    return new PresentationFactory().getPresentationInfo(fileStream).isEncrypted();
   }
 
 

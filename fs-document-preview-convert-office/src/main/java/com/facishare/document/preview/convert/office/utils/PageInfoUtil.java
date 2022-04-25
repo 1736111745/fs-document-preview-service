@@ -2,6 +2,8 @@ package com.facishare.document.preview.convert.office.utils;
 
 
 import com.facishare.document.preview.common.model.PageInfo;
+import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
+
 import java.util.List;
 
 /**
@@ -9,16 +11,24 @@ import java.util.List;
  */
 public class PageInfoUtil {
 
-  public static PageInfo getFalsePageInfo(String errorMessage){
-    PageInfo pageInfo=new PageInfo();
+  public static PageInfo getPageInfo(ErrorInfoEnum errorMessage) {
+    PageInfo pageInfo = new PageInfo();
+    pageInfo.setSuccess(false);
+    pageInfo.setPageCount(0);
+    pageInfo.setErrorMsg(errorMessage.getErrorMsg());
+    return pageInfo;
+  }
+
+  public static PageInfo getPageInfo(String errorMessage) {
+    PageInfo pageInfo = new PageInfo();
     pageInfo.setSuccess(false);
     pageInfo.setPageCount(0);
     pageInfo.setErrorMsg(errorMessage);
     return pageInfo;
   }
 
-  public static PageInfo getTruePageInfo(int pageCount){
-    PageInfo pageInfo=new PageInfo();
+  public static PageInfo getPageInfo(int pageCount) {
+    PageInfo pageInfo = new PageInfo();
     pageInfo.setSuccess(true);
     pageInfo.setPageCount(pageCount);
     return pageInfo;

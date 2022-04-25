@@ -1,51 +1,30 @@
 package com.facishare.document.preview.convert.office.utils;
 
-import com.aspose.cells.FileFormatInfo;
 import com.aspose.cells.FileFormatUtil;
 import com.aspose.cells.License;
 import com.aspose.cells.Workbook;
 import com.aspose.cells.Worksheet;
 import com.aspose.cells.WorksheetCollection;
+import com.facishare.document.preview.common.model.PageInfo;
+import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
+import com.facishare.document.preview.convert.office.exception.AsposeInstantiationException;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Andy
  */
-@Slf4j
 public class ExcelObjectUtil {
 
-  @SneakyThrows
-  public void getExcelLicense(){
-    try(InputStream is = ExcelObjectUtil.class.getClassLoader().getResourceAsStream("license.xml")){
-      License license = new License();
-      license.setLicense(is);
-    } catch (IOException e) {
-      log.info("We experienced an exception while verifying the Excel file signature",e);
-    }
-  }
 
-  public com.aspose.cells.Workbook getWorkBook(ByteArrayInputStream fileStream){
-    getExcelLicense();
-    Workbook workbook= null;
-    try {
-      workbook = new Workbook(fileStream);
-    } catch (Exception e) {
-      //todo:处理异常，调用加密检查方法
-      log.info("The document is encrypted and cannot be previewed");
-      e.printStackTrace();
-    }
-    return  workbook;
-  }
-
-  public List<String> getSheetNames(com.aspose.cells.Workbook  workbook) {
-    WorksheetCollection worksheetCollection=workbook.getWorksheets();
-    List<String> sheetNames=new ArrayList<>();
+  public static PageInfo getSheetNames(ByteArrayInputStream fileStream) throws Exception {
+    Workbook workbook = getWorkBook(fileStream);
+    WorksheetCollection worksheetCollection = workbook.getWorksheets();
+    List<String> sheetNames = new ArrayList<>();
     for (int i = 0; i < worksheetCollection.getCount(); i++) {
       Worksheet worksheet = worksheetCollection.get(i);
       //获得当前工作表的名称
@@ -62,36 +41,66 @@ public class ExcelObjectUtil {
       sheetName = sheetName + hiddenFlag + activeFlag;
       sheetNames.add(sheetName);
     }
-    return sheetNames;
+    return PageInfoUtil.getExcelPageInfo(getPageCount(workbook), sheetNames);
+
   }
 
-  public com.aspose.cells.Worksheet getWorkSheet(ByteArrayInputStream fileStream,int page) throws Exception {
-    WorksheetCollection worksheetCollection=getWorksheetCollection(fileStream);
-    int pageCount=worksheetCollection.getCount();
-    if (page>pageCount||page<0){
+  public static Workbook getWorkBook(ByteArrayInputStream fileStream) throws AsposeInstantiationException {
+    getExcelLicense();
+    Workbook workbook;
+    try {
+      workbook = new Workbook(fileStream);
+    } catch (Exception e) {
+      if (isCheckEncrypt(fileStream)) {
+        throw new AsposeInstantiationException(ErrorInfoEnum.EXCEL_ENCRYPTION_ERROR, e);
+      }
+      throw new AsposeInstantiationException(ErrorInfoEnum.EXCEL_INSTANTIATION_ERROR, e);
+    }
+    return workbook;
+  }
+
+  public static int getPageCount(Workbook workbook) throws Exception {
+    if (workbook == null) {
+      return 0;
+    }
+    int pageCount = workbook.getWorksheets().getCount();
+    workbook.dispose();
+    return pageCount;
+  }
+
+  public static void getExcelLicense() throws AsposeInstantiationException {
+    try (InputStream is = ExcelObjectUtil.class.getClassLoader().getResourceAsStream("license.xml")) {
+      License license = new License();
+      license.setLicense(is);
+    } catch (IOException e) {
+      throw new AsposeInstantiationException(ErrorInfoEnum.ABNORMAL_FILE_SIGNATURE, e);
+    }
+  }
+
+  public static boolean isCheckEncrypt(ByteArrayInputStream fileStream) throws AsposeInstantiationException {
+    //文件加密返回 true
+    try {
+      return FileFormatUtil.detectFileFormat(fileStream).isEncrypted();
+    } catch (Exception e) {
+      throw new AsposeInstantiationException(ErrorInfoEnum.EXCEL_INSTANTIATION_ERROR, e);
+    }
+  }
+
+  public static Worksheet getWorkSheet(ByteArrayInputStream fileStream, int page) throws Exception {
+    WorksheetCollection worksheetCollection = getWorksheetCollection(fileStream);
+    int pageCount = worksheetCollection.getCount();
+    if (page > pageCount || page < 0) {
       return null;
     }
     return worksheetCollection.get(page);
   }
 
-
-  public com.aspose.cells.WorksheetCollection getWorksheetCollection(ByteArrayInputStream fileStream) throws Exception {
+  public static WorksheetCollection getWorksheetCollection(ByteArrayInputStream fileStream) throws Exception {
     return getWorkBook(fileStream).getWorksheets();
   }
 
-  public int getPageCount(com.aspose.cells.Workbook workbook){
-    int pageCount= workbook.getWorksheets().getCount();
-    workbook.dispose();
-    return pageCount;
+  public static int getPageCount(ByteArrayInputStream fileStream) throws Exception {
+    return getPageCount(getWorkBook(fileStream));
   }
 
-  @SneakyThrows
-  public boolean isCheckEncrypt(ByteArrayInputStream fileStream){
-    FileFormatInfo fileFormatInfo = FileFormatUtil.detectFileFormat(fileStream);
-    boolean encrypted=fileFormatInfo.isEncrypted();
-    int loadFormat =fileFormatInfo.getLoadFormat();
-    // 如果文件加密 返回true
-    if (encrypted) return true;
-    return loadFormat != 5 && loadFormat != 6;
-  }
 }

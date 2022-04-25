@@ -2,10 +2,12 @@ package com.facishare.document.preview.convert.office.utils;
 
 import com.aspose.pdf.Document;
 import com.aspose.pdf.License;
+import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
+import com.facishare.document.preview.convert.office.exception.AsposeInstantiationException;
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Andy
@@ -13,44 +15,37 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PdfObjectUtil {
 
-  public void getPdfLicense() {
-    try (InputStream is = PdfObjectUtil.class.getClassLoader().getResourceAsStream("license.xml")) {
-      License license = new License();
-      license.setLicense(is);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+  public static int getPageCount(ByteArrayInputStream fileStream) throws Exception {
+    return getPageCount(getPdf(fileStream));
   }
 
-  public com.aspose.pdf.Document getPdf(ByteArrayInputStream fileStream) {
-    getPdfLicense();
-    Document pdf = null;
-    try {
-      pdf = new Document(fileStream);
-    } catch (Exception e) {
-      //todo:处理异常，调用加密检查方法
-      log.info("The document is encrypted and cannot be previewed");
-      e.printStackTrace();
+  public static int getPageCount(Document pdf) throws Exception {
+    if (pdf == null) {
+      return 0;
     }
-    return pdf;
-  }
-
-  @SneakyThrows
-  public boolean isCheckEncrypt(Document pdf) {
-    // 如果文件加密 返回true
-    boolean encrypted = pdf.isEncrypted();
-    int loadFormat = pdf.getPdfFormat();
-    pdf.close();
-    if (pdf.isEncrypted()) {
-      return true;
-    }
-    //如果文件格式不为 12-pdf 返回true
-    return loadFormat != 12;
-  }
-
-  public int getPageCount(Document pdf) {
     int pageCount = pdf.getPages().size();
     pdf.close();
     return pageCount;
   }
+
+  public static Document getPdf(ByteArrayInputStream fileStream) throws AsposeInstantiationException {
+    getPdfLicense();
+    Document pdf;
+    try {
+      pdf = new Document(fileStream);
+    } catch (Exception e) {
+      throw new AsposeInstantiationException(ErrorInfoEnum.PDF_ENCRYPTION_ERROR, e);
+    }
+    return pdf;
+  }
+
+  public static void getPdfLicense() throws AsposeInstantiationException {
+    try (InputStream is = PdfObjectUtil.class.getClassLoader().getResourceAsStream("license.xml")) {
+      License license = new License();
+      license.setLicense(is);
+    } catch (Exception e) {
+      throw new AsposeInstantiationException(ErrorInfoEnum.ABNORMAL_FILE_SIGNATURE, e);
+    }
+  }
+
 }

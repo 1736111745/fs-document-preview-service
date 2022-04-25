@@ -1,12 +1,13 @@
 package com.facishare.document.preview.convert.office.exception;
 
-import com.facishare.document.preview.convert.office.exception.impl.CommonEnum;
-import com.facishare.document.preview.convert.office.model.ResultBody;
-import javax.servlet.http.HttpServletRequest;
+import com.facishare.document.preview.common.model.PageInfo;
+import com.facishare.document.preview.convert.office.utils.PageInfoUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author : [Andy]
@@ -23,44 +24,26 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class GlobalExceptionHandler {
 
   /**
-   * 处理自定义的业务异常
-   * @param req
-   * @param e
-   * @return
-   */
-  @ExceptionHandler(value = BizException.class)
-  @ResponseBody
-  public ResultBody bizExceptionHandler(HttpServletRequest req, BizException e){
-    log.error("发生业务异常！原因是：{}",e.getErrorMsg());
-    return ResultBody.error(e.getErrorCode(),e.getErrorMsg());
-  }
-
-  /**
-   * 处理空指针的异常
-   * @param req
-   * @param e
-   * @return
-   */
-  @ExceptionHandler(value =NullPointerException.class)
-  @ResponseBody
-  public ResultBody exceptionHandler(HttpServletRequest req, NullPointerException e){
-    log.error("发生空指针异常！原因是:",e);
-    return ResultBody.error(CommonEnum.BODY_NOT_MATCH);
-  }
-
-
-  /**
    * 处理其他异常
-   * @param req
-   * @param e
+   *
+   * @param exception
    * @return
    */
-  @ExceptionHandler(value =Exception.class)
   @ResponseBody
-  public ResultBody exceptionHandler(HttpServletRequest req, Exception e){
-    log.error("未知异常！原因是:",e);
-    return ResultBody.error(CommonEnum.INTERNAL_SERVER_ERROR);
+  @ExceptionHandler(value = Exception.class)
+  public PageInfo exceptionHandler(HttpServletRequest request, Exception exception) {
+
+    log.error("未知异常！原因是:", exception);
+    return PageInfoUtil.getPageInfo(exception.getMessage());
   }
+
+  @ResponseBody
+  @ExceptionHandler(value = AsposeInstantiationException.class)
+  public PageInfo AsposeInstantiationHandler(HttpServletRequest request, AsposeInstantiationException e) {
+    log.error("Aspose对象实例化错误！原因是:", e);
+    return PageInfoUtil.getPageInfo(e.getErrorMsg());
+  }
+
 }
 
 

@@ -3,7 +3,7 @@ package com.facishare.document.preview.convert.office.utils;
 import com.aspose.pdf.Document;
 import com.aspose.pdf.License;
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
-import com.facishare.document.preview.convert.office.exception.AsposeInstantiationException;
+import com.facishare.document.preview.convert.office.exception.Office2PdfException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayInputStream;
@@ -15,8 +15,8 @@ import java.io.InputStream;
 @Slf4j
 public class PdfObjectUtil {
 
-  public static int getPageCount(ByteArrayInputStream fileStream) throws Exception {
-    return getPageCount(getPdf(fileStream));
+  public static int getPageCount(byte[] fileBate) throws Exception {
+    return getPageCount(getPdf(fileBate));
   }
 
   public static int getPageCount(Document pdf) throws Exception {
@@ -28,23 +28,23 @@ public class PdfObjectUtil {
     return pageCount;
   }
 
-  public static Document getPdf(ByteArrayInputStream fileStream) throws AsposeInstantiationException {
+  public static Document getPdf(byte[] fileBate) throws Office2PdfException {
     getPdfLicense();
     Document pdf;
-    try {
+    try (ByteArrayInputStream fileStream = new ByteArrayInputStream(fileBate)) {
       pdf = new Document(fileStream);
     } catch (Exception e) {
-      throw new AsposeInstantiationException(ErrorInfoEnum.PDF_ENCRYPTION_ERROR, e);
+      throw new Office2PdfException(ErrorInfoEnum.PDF_ENCRYPTION_ERROR, e);
     }
     return pdf;
   }
 
-  public static void getPdfLicense() throws AsposeInstantiationException {
+  public static void getPdfLicense() throws Office2PdfException {
     try (InputStream is = PdfObjectUtil.class.getClassLoader().getResourceAsStream("license.xml")) {
       License license = new License();
       license.setLicense(is);
     } catch (Exception e) {
-      throw new AsposeInstantiationException(ErrorInfoEnum.ABNORMAL_FILE_SIGNATURE, e);
+      throw new Office2PdfException(ErrorInfoEnum.ABNORMAL_FILE_SIGNATURE, e);
     }
   }
 

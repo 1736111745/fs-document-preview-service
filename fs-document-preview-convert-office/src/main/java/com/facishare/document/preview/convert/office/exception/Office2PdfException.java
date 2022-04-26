@@ -15,7 +15,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class AsposeInstantiationException extends RuntimeException {
+public class Office2PdfException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
 
@@ -25,41 +25,42 @@ public class AsposeInstantiationException extends RuntimeException {
   protected String errorCode;
   protected String errorMsg;
 
-  public AsposeInstantiationException() {
+  public Office2PdfException() {
     super();
   }
 
-  public AsposeInstantiationException(ErrorInfoEnum errorInfoEnum) {
-    super(errorInfoEnum.getErrCode());
+  public Office2PdfException(ErrorInfoEnum errorInfoEnum) {
+    super(String.valueOf(errorInfoEnum.getErrCode()));
     this.errorMsg = errorInfoEnum.getErrorMsg();
   }
 
-  public AsposeInstantiationException(ErrorInfoEnum errorInfoEnum, Throwable cause) {
-    super(errorInfoEnum.getErrCode(), cause);
+  public Office2PdfException(ErrorInfoEnum errorInfoEnum, Throwable cause) {
+    super(String.valueOf(errorInfoEnum.getErrCode()), cause);
     this.errorCode = errorInfoEnum.getErrCode();
     this.errorMsg = errorInfoEnum.getErrorMsg();
   }
 
-  public AsposeInstantiationException(String errorMsg) {
+  public Office2PdfException(String errorMsg) {
     super(errorMsg);
     this.errorMsg = errorMsg;
   }
 
-  public AsposeInstantiationException(String errorCode, String errorMsg) {
+  public Office2PdfException(String errorCode, String errorMsg) {
     super(errorCode);
     this.errorCode = errorCode;
     this.errorMsg = errorMsg;
   }
 
-  public AsposeInstantiationException(String errorCode, String errorMsg, Throwable cause) {
+  public Office2PdfException(String errorCode, String errorMsg, Throwable cause) {
     super(cause);
     this.errorCode = errorCode;
     this.errorMsg = errorMsg;
   }
 
-  public AsposeInstantiationException(ErrorInfoEnum errorMsg, Exception cause) {
+  public Office2PdfException(ErrorInfoEnum errorInfoEnum, Exception cause) {
     super(cause);
-    this.errorMsg = errorMsg.getErrorMsg();
+    this.errorCode = errorInfoEnum.getErrCode();
+    this.errorMsg = errorInfoEnum.getErrorMsg();
   }
 
   public String getMessage() {

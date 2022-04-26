@@ -24,7 +24,7 @@
     <property name="maxInMemorySize" value="40960"/>
   </bean>
 
-  <mvc:annotation-driven >
+  <mvc:annotation-driven>
     <!-- 消息转换器 -->
     <mvc:message-converters>
       <bean class="org.springframework.http.converter.StringHttpMessageConverter">
@@ -32,5 +32,17 @@
       </bean>
     </mvc:message-converters>
   </mvc:annotation-driven>
+
+  <!-- @Value -->
+  <bean id="configProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+    <property name="locations">
+      <list>
+        <value>classpath:file.properties</value>
+      </list>
+    </property>
+  </bean>
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+    <property name="properties" ref="configProperties"/>
+  </bean>
 
 </beans>

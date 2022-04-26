@@ -1,8 +1,12 @@
 package com.facishare.document.preview.convert.office.utils;
 
+import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
 import com.facishare.document.preview.convert.office.constant.FileTypeEnum;
+import com.facishare.document.preview.convert.office.exception.Office2PdfException;
+import com.google.common.base.Strings;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 /**
  * @author : [Andy]
@@ -15,13 +19,20 @@ import java.io.ByteArrayInputStream;
  */
 public class ParameterCalibrationUtil {
 
-  public static FileTypeEnum isDifference(String filePath, ByteArrayInputStream fileStream) {
-    String fileTypeName = OfficeFileTypeUtil.getFileType(fileStream);
-    fileStream.reset();
+  public static FileTypeEnum getFileType(String filePath, byte[] fileBate) throws Office2PdfException {
+    String fileTypeName = OfficeFileTypeUtil.getFileType(fileBate);
     if (isFormatSupport(fileTypeName)) {
       return FileTypeEnum.valueOf(OfficeFileTypeUtil.extName(filePath).toUpperCase());
     }
-    return FileTypeEnum.valueOf("zip".toUpperCase());
+    throw new Office2PdfException(ErrorInfoEnum.FILE_TYPES_DO_NOT_MATCH);
+  }
+
+  public static boolean isDifference(String filePath, byte[] fileBate) throws Office2PdfException {
+    String fileTypeName = OfficeFileTypeUtil.getFileType(fileBate);
+    if (isFormatSupport(fileTypeName)) {
+      return true;
+    }
+    throw new Office2PdfException(ErrorInfoEnum.FILE_TYPES_DO_NOT_MATCH);
   }
 
   public static boolean isFormatSupport(String fileTypeName) {
@@ -31,5 +42,19 @@ public class ParameterCalibrationUtil {
     return true;
   }
 
-
+  public static byte[] isNullOrEmpty(String path, MultipartFile file) throws Office2PdfException {
+    if (Strings.isNullOrEmpty(path)) {
+      throw new Office2PdfException(ErrorInfoEnum.FILE_PATH_EMPTY);
+    }
+    byte[] fileBate;
+    try {
+      fileBate = file.getBytes();
+      if (fileBate.length <= 0) {
+        throw new Office2PdfException(ErrorInfoEnum.EMPTY_FILE);
+      }
+    } catch (IOException e) {
+      throw new Office2PdfException(ErrorInfoEnum.FILE_PARAMETER_ERROR);
+    }
+    return fileBate;
+  }
 }

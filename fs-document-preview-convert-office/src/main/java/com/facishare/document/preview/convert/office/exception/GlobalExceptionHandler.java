@@ -1,13 +1,14 @@
 package com.facishare.document.preview.convert.office.exception;
 
+import com.alibaba.fastjson.JSON;
 import com.facishare.document.preview.common.model.PageInfo;
+import com.facishare.document.preview.convert.office.utils.ConvertResultUtil;
 import com.facishare.document.preview.convert.office.utils.PageInfoUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author : [Andy]
@@ -20,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 
 @Slf4j
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
   /**
@@ -29,19 +30,17 @@ public class GlobalExceptionHandler {
    * @param exception
    * @return
    */
-  @ResponseBody
   @ExceptionHandler(value = Exception.class)
-  public PageInfo exceptionHandler(HttpServletRequest request, Exception exception) {
-
+  public PageInfo exceptionHandler(HttpServletResponse response, Exception exception) {
     log.error("未知异常！原因是:", exception);
     return PageInfoUtil.getPageInfo(exception.getMessage());
   }
 
-  @ResponseBody
-  @ExceptionHandler(value = AsposeInstantiationException.class)
-  public PageInfo AsposeInstantiationHandler(HttpServletRequest request, AsposeInstantiationException e) {
+  @ExceptionHandler(value = Office2PdfException.class)
+  public String AsposeInstantiationHandler(HttpServletResponse response, Office2PdfException e) {
     log.error("Aspose对象实例化错误！原因是:", e);
-    return PageInfoUtil.getPageInfo(e.getErrorMsg());
+    response.setStatus(Integer.parseInt(e.errorCode));
+    return JSON.toJSONString(ConvertResultUtil.getConvertResult(e.getErrorMsg()));
   }
 
 }

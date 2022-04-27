@@ -1,24 +1,20 @@
 package com.facishare.document.preview.convert.office.utils;
 
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.util.ZipUtil;
 import com.aspose.words.Document;
 import com.aspose.words.FileFormatUtil;
 import com.aspose.words.ImageSaveOptions;
 import com.aspose.words.License;
 import com.aspose.words.PageSet;
+import com.aspose.words.PdfSaveOptions;
 import com.aspose.words.SaveFormat;
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
 import com.facishare.document.preview.convert.office.exception.Office2PdfException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Paths;
-import java.util.UUID;
 
 /**
  * @author AnDy
@@ -109,12 +105,13 @@ public class WordObjectUtil {
   }
 
   public static byte[] convertWordAllPageToPng(byte[] fileBate, String office2PngTempPath, String office2PngZipTempPath) {
-    office2PngTempPath = String.valueOf(Paths.get(office2PngTempPath, UUID.randomUUID().toString()));
-    office2PngZipTempPath = String.valueOf(Paths.get(office2PngZipTempPath, UUID.randomUUID().toString()));
+    office2PngTempPath = FileProcessingUtil.createDirectory(office2PngTempPath);
+    office2PngZipTempPath = FileProcessingUtil.createDirectory(office2PngZipTempPath);
     Document doc = getWord(fileBate);
-    for (int i = 0; i < getPageCount(doc); i++) {
+    int pageCount = getPageCount(doc);
+    for (int i = 0; i < pageCount; i++) {
       String fileName = office2PngTempPath + "\\" + i + ".png";
-      ImageSaveOptions imageOptions = new com.aspose.words.ImageSaveOptions(com.aspose.words.SaveFormat.PNG);
+      ImageSaveOptions imageOptions = new ImageSaveOptions(SaveFormat.PNG);
       imageOptions.setUseHighQualityRendering(true);
       imageOptions.setPageSet(new PageSet(i));
       try {
@@ -123,25 +120,38 @@ public class WordObjectUtil {
         throw new Office2PdfException(ErrorInfoEnum.WORD_FILE_SAVING_PNG_FAILURE, e);
       }
     }
-    try {
-      new File(office2PngZipTempPath).mkdirs();
+    return FileProcessingUtil.getZipByte(office2PngTempPath, office2PngZipTempPath);
+  }
+
+
+  public static byte[] convertWordOnePageToPng(byte[] fileBate, int page) {
+    Document doc = getWord(fileBate);
+    ImageSaveOptions imageOptions = new ImageSaveOptions(SaveFormat.PNG);
+    imageOptions.setUseHighQualityRendering(true);
+    imageOptions.setPageSet(new PageSet(page));
+    try (ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream()) {
+      doc.save(fileOutputStream, imageOptions);
+      fileBate = fileOutputStream.toByteArray();
     } catch (Exception e) {
-      throw new Office2PdfException(ErrorInfoEnum.UNABLE_CREATE_FOLDER);
+      throw new Office2PdfException(ErrorInfoEnum.PAGE_NUMBER_PARAMETER_ERROR, e);
     }
-    String zipFileName = office2PngZipTempPath + "\\" + UUID.randomUUID() + ".zip";
-    fileBate = FileUtil.readBytes((ZipUtil.zip(office2PngZipTempPath, zipFileName)));
-    deleteTempDirectory(new File(office2PngTempPath));
-    deleteTempDirectory(new File(office2PngZipTempPath));
     return fileBate;
   }
 
-  private static void deleteTempDirectory(File file) {
-    File[] listFile = file.listFiles();
-    if (listFile != null) {
-      for (File temp : listFile) {
-        deleteTempDirectory(temp);
-      }
+  public static byte[] convertWordOnePageToPdf(byte[] fileBate, int page) throws Office2PdfException {
+    Document doc = getWord(fileBate);
+    PdfSaveOptions pdfSaveOptions = new com.aspose.words.PdfSaveOptions();
+    pdfSaveOptions.setPageSet(new PageSet(page));
+    //0 嵌入所有字体 1 嵌入了除标准Windows字体Arial和Times New Roman之外的所有字体  2 不嵌入任何字体。
+    pdfSaveOptions.setFontEmbeddingMode(0);
+    //0 文档的显示方式留给 PDF 查看器。通常，查看器会显示适合页面宽度的文档。 1 使用指定的缩放系数显示页面。 2 显示页面，使其完全可见。 3 适合页面的宽度。 4 适合页面的高度。 5 适合边界框（包含页面上所有可见元素的矩形）。
+    pdfSaveOptions.setZoomBehavior(0);
+    try (ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream()) {
+      doc.save(fileOutputStream, pdfSaveOptions);
+      fileBate = fileOutputStream.toByteArray();
+    } catch (Exception e) {
+      throw new Office2PdfException(ErrorInfoEnum.PAGE_NUMBER_PARAMETER_ERROR, e);
     }
-    file.delete();
+    return fileBate;
   }
 }

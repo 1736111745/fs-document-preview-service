@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * @author : [Andy]
@@ -24,12 +25,6 @@ import javax.servlet.http.HttpServletResponse;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  /**
-   * 处理其他异常
-   *
-   * @param exception
-   * @return
-   */
   @ExceptionHandler(value = Exception.class)
   public PageInfo exceptionHandler(HttpServletResponse response, Exception exception) {
     log.error("未知异常！原因是:", exception);
@@ -38,9 +33,16 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(value = Office2PdfException.class)
   public String AsposeInstantiationHandler(HttpServletResponse response, Office2PdfException e) {
-    log.error("Aspose对象实例化错误！原因是:", e);
+    log.error("文档转换失败！原因是:", e);
     response.setStatus(Integer.parseInt(e.errorCode));
     return JSON.toJSONString(ConvertResultUtil.getConvertResult(e.getErrorMsg()));
+  }
+
+  @ExceptionHandler(value = IOException.class)
+  public String AsposeInstantiationHandler(HttpServletResponse response, IOException e) {
+    log.error("response 输出流错误！原因是:", e);
+    response.setStatus(500);
+    return JSON.toJSONString(ConvertResultUtil.getConvertResult(e.getMessage()));
   }
 
 }

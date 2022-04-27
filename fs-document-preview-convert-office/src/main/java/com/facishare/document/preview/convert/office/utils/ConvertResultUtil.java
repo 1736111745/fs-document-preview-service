@@ -21,11 +21,4 @@ public class ConvertResultUtil {
     convertResult.setErrorMsg(errorInfoEnum.getErrorMsg());
     return convertResult;
   }
-
-  public static ConvertResult getConvertResult() {
-    ConvertResult convertResult = new ConvertResult();
-    convertResult.setSuccess(true);
-    convertResult.setErrorMsg("");
-    return convertResult;
-  }
 }

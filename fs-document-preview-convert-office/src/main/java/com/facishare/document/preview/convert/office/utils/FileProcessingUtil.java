@@ -23,6 +23,10 @@ import java.util.UUID;
  */
 public class FileProcessingUtil {
 
+  private FileProcessingUtil() {
+    throw new Office2PdfException(ErrorInfoEnum.INVALID_REFLECTION_ACCESS);
+  }
+
   public static String getFileType(byte[] fileBate) throws Office2PdfException {
     try (ByteArrayInputStream data = new ByteArrayInputStream(fileBate, 0, 100)) {
       return FileTypeUtil.getType(data);

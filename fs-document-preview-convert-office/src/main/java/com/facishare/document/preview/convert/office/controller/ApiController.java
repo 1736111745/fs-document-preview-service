@@ -6,7 +6,6 @@ import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
 import com.facishare.document.preview.convert.office.constant.FileTypeEnum;
 import com.facishare.document.preview.convert.office.service.ConvertDocumentFormatService;
 import com.facishare.document.preview.convert.office.service.DocumentPageInfoService;
-import com.facishare.document.preview.convert.office.utils.ConvertResultUtil;
 import com.facishare.document.preview.convert.office.utils.PageInfoUtil;
 import com.facishare.document.preview.convert.office.utils.ParameterCalibrationUtil;
 import com.facishare.document.preview.convert.office.utils.ResponseUtil;
@@ -38,7 +37,7 @@ public class ApiController {
 
 
   @PostMapping("/GetPageInfoByStream")
-  public PageInfo GetPageInfoByStream(@RequestParam("path") String path, @RequestParam("file") MultipartFile file) throws Exception {
+  public PageInfo getPageInfoByStream(@RequestParam("path") String path, @RequestParam("file") MultipartFile file) throws Exception {
     /*
      * 使用 try-catch-resources 模式， jvm会自动关闭流，即使发生了异常
      */
@@ -52,65 +51,62 @@ public class ApiController {
   }
 
   @PostMapping(value = "/ConvertExcel2HtmlByStream")
-  public ConvertResult ConvertExcel2HtmlByStream(@RequestParam("path") String path, @RequestParam("page") int page, @RequestParam("file") MultipartFile file,
+  public ConvertResult convertExcel2HtmlByStream(@RequestParam("path") String path, @RequestParam("page") int page, @RequestParam("file") MultipartFile file,
                                                  HttpServletResponse response) throws IOException {
-    if (page == 0) {
-      return ConvertResultUtil.getConvertResult(ErrorInfoEnum.PAGE_NUMBER_PARAMETER_ZERO);
-    }
-    byte[] fileBate = ParameterCalibrationUtil.isNullOrEmpty(path, file);
-    ParameterCalibrationUtil.isDifference(fileBate);
-    ResponseUtil.getResponse(response);
+    byte[] fileBate = ParameterCalibrationUtil.isNullOrEmpty(path, file, page);
+    ParameterCalibrationUtil.getFileType(path, fileBate);
+    ResponseUtil.setResponse(response);
     IOUtils.copy(new ByteArrayInputStream(convertDocumentFormatService.convertOnePageExcelToHtml(fileBate, page - 1)), response.getOutputStream());
     return null;
   }
 
   @PostMapping(value = "/ConvertOffice2PdfByStream")
-  public String ConvertOffice2PdfByStream(@RequestParam("path") String path, @RequestParam("file") MultipartFile file,
+  public String convertOffice2PdfByStream(@RequestParam("path") String path, @RequestParam("file") MultipartFile file,
                                           HttpServletResponse response) throws IOException {
     byte[] fileBate = ParameterCalibrationUtil.isNullOrEmpty(path, file);
     FileTypeEnum fileType = ParameterCalibrationUtil.getFileType(path, fileBate);
-    ResponseUtil.getResponse(response);
+    ResponseUtil.setResponse(response);
     IOUtils.copy(new ByteArrayInputStream(convertDocumentFormatService.convertAllPageWordOrPptToPdf(fileBate, fileType)), response.getOutputStream());
     return null;
   }
 
   @PostMapping(value = "/ConvertFileByStream")
-  public String ConvertFileByStream(@RequestParam("path") String path, @RequestParam("file") MultipartFile file,
+  public String convertFileByStream(@RequestParam("path") String path, @RequestParam("file") MultipartFile file,
                                     HttpServletResponse response) throws IOException {
     byte[] fileBate = ParameterCalibrationUtil.isNullOrEmpty(path, file);
     FileTypeEnum fileType = ParameterCalibrationUtil.getFileType(path, fileBate);
-    ResponseUtil.getResponse(response);
+    ResponseUtil.setResponse(response);
     IOUtils.copy(new ByteArrayInputStream(convertDocumentFormatService.convertDocumentSuffix(fileBate, fileType)), response.getOutputStream());
     return null;
   }
 
   @PostMapping(value = "/ConvertOffice2PngByStream")
-  public String ConvertOffice2PngByStream(@RequestParam("path") String path, @RequestParam("file") MultipartFile file,
+  public String convertOffice2PngByStream(@RequestParam("path") String path, @RequestParam("file") MultipartFile file,
                                           HttpServletResponse response) throws IOException {
     byte[] fileBate = ParameterCalibrationUtil.isNullOrEmpty(path, file);
     FileTypeEnum fileType = ParameterCalibrationUtil.getFileType(path, fileBate);
-    ResponseUtil.getResponse(response);
+    ResponseUtil.setResponse(response);
     IOUtils.copy(new ByteArrayInputStream(convertDocumentFormatService.convertDocumentAllPageToPng(fileBate, fileType)), response.getOutputStream());
     return null;
   }
 
   @PostMapping(value = "/ConvertOnePageOffice2PngByStream")
-  public String ConvertOnePageOffice2PngByStream(@RequestParam("path") String path, @RequestParam("page") int page, @RequestParam("file") MultipartFile file,
+  public String convertOnePageOffice2PngByStream(@RequestParam("path") String path, @RequestParam("page") int page, @RequestParam("file") MultipartFile file,
                                                  HttpServletResponse response) throws IOException {
     byte[] fileBate = ParameterCalibrationUtil.isNullOrEmpty(path, file, page);
     FileTypeEnum fileType = ParameterCalibrationUtil.getFileType(path, fileBate);
-    ResponseUtil.getResponse(response);
+    ResponseUtil.setResponse(response);
     //转图片，所有文档类型下标都是从0开始
     IOUtils.copy(new ByteArrayInputStream(convertDocumentFormatService.convertDocumentOnePageToPng(fileBate, fileType, page - 1)), response.getOutputStream());
     return null;
   }
 
   @PostMapping(value = "/ConvertOnePageOffice2PdfByStream")
-  public String ConvertOnePageOffice2PdfByStream(String path, int page, @RequestParam("file") MultipartFile file,
+  public String convertOnePageOffice2PdfByStream(String path, int page, @RequestParam("file") MultipartFile file,
                                                  HttpServletResponse response) throws IOException {
     byte[] fileBate = ParameterCalibrationUtil.isNullOrEmpty(path, file, page);
     FileTypeEnum fileType = ParameterCalibrationUtil.getFileType(path, fileBate);
-    ResponseUtil.getResponse(response);
+    ResponseUtil.setResponse(response);
     //转pdf，只有Word文档下标从0开始
     IOUtils.copy(new ByteArrayInputStream(convertDocumentFormatService.convertDocumentOnePageToPdf(fileBate, fileType, page)), response.getOutputStream());
     return null;

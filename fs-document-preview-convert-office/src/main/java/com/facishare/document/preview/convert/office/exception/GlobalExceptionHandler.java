@@ -2,11 +2,13 @@ package com.facishare.document.preview.convert.office.exception;
 
 import com.alibaba.fastjson.JSON;
 import com.facishare.document.preview.common.model.PageInfo;
+import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
 import com.facishare.document.preview.convert.office.utils.ConvertResultUtil;
 import com.facishare.document.preview.convert.office.utils.PageInfoUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MultipartException;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -28,21 +30,29 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(value = Exception.class)
   public PageInfo exceptionHandler(HttpServletResponse response, Exception exception) {
     log.error("未知异常！原因是:", exception);
+    response.setStatus(500);
     return PageInfoUtil.getPageInfo(exception.getMessage());
   }
 
   @ExceptionHandler(value = Office2PdfException.class)
-  public String AsposeInstantiationHandler(HttpServletResponse response, Office2PdfException e) {
+  public String asposeInstantiationHandler(HttpServletResponse response, Office2PdfException e) {
     log.error("文档转换失败！原因是:", e);
-    response.setStatus(Integer.parseInt(e.errorCode));
+    response.setStatus(Integer.parseInt(e.getErrorCode()));
     return JSON.toJSONString(ConvertResultUtil.getConvertResult(e.getErrorMsg()));
   }
 
   @ExceptionHandler(value = IOException.class)
-  public String AsposeInstantiationHandler(HttpServletResponse response, IOException e) {
+  public String asposeInstantiationHandler(HttpServletResponse response, IOException e) {
     log.error("response 输出流错误！原因是:", e);
     response.setStatus(500);
     return JSON.toJSONString(ConvertResultUtil.getConvertResult(e.getMessage()));
+  }
+
+  @ExceptionHandler(value = MultipartException.class)
+  public String asposeInstantiationHandler(HttpServletResponse response, MultipartException e) {
+    log.error("请求错误！原因是:{}", e.getMessage());
+    response.setStatus(400);
+    return JSON.toJSONString(ConvertResultUtil.getConvertResult(ErrorInfoEnum.FILE_PARAMETER_NULL));
   }
 
 }

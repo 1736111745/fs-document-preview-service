@@ -21,6 +21,10 @@ import java.io.InputStream;
  */
 public class WordObjectUtil {
 
+  private WordObjectUtil() {
+    throw new Office2PdfException(ErrorInfoEnum.INVALID_REFLECTION_ACCESS);
+  }
+
   public static int getPageCount(byte[] fileBate) {
     return getPageCount(getWord(fileBate));
   }

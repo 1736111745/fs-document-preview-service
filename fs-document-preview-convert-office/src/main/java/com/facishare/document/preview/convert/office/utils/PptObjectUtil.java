@@ -7,7 +7,6 @@ import com.aspose.slides.PresentationFactory;
 import com.aspose.slides.SaveFormat;
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
 import com.facishare.document.preview.convert.office.exception.Office2PdfException;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -21,8 +20,11 @@ import java.io.InputStream;
 /**
  * @author Andy
  */
-@Slf4j
 public class PptObjectUtil {
+
+  private PptObjectUtil() {
+    throw new Office2PdfException(ErrorInfoEnum.INVALID_REFLECTION_ACCESS);
+  }
 
   public static int getPageCount(byte[] fileBate) {
     return getPageCount(getPpt(fileBate));
@@ -86,19 +88,13 @@ public class PptObjectUtil {
 
   public static byte[] convertPptToPptx(byte[] fileBate) {
     Presentation ppt = getPpt(fileBate);
-    ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream();
-    try {
+    try (ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream()) {
       ppt.save(fileOutputStream, SaveFormat.Pptx);
+      fileBate = fileOutputStream.toByteArray();
     } catch (Exception e) {
       throw new Office2PdfException(ErrorInfoEnum.PPT_FILE_SAVING_FAILURE, e);
     } finally {
       ppt.dispose();
-    }
-    fileBate = fileOutputStream.toByteArray();
-    try {
-      fileOutputStream.close();
-    } catch (IOException e) {
-      throw new Office2PdfException(ErrorInfoEnum.STREAM_CLOSING_ANOMALY, e);
     }
     return fileBate;
   }

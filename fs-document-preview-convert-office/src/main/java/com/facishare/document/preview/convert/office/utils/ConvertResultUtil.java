@@ -2,11 +2,16 @@ package com.facishare.document.preview.convert.office.utils;
 
 import com.facishare.document.preview.common.model.ConvertResult;
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
+import com.facishare.document.preview.convert.office.exception.Office2PdfException;
 
 /**
  * @author Andy
  */
 public class ConvertResultUtil {
+
+  private ConvertResultUtil() {
+    throw new Office2PdfException(ErrorInfoEnum.INVALID_REFLECTION_ACCESS);
+  }
 
   public static ConvertResult getConvertResult(String errorMsg) {
     ConvertResult convertResult = new ConvertResult();

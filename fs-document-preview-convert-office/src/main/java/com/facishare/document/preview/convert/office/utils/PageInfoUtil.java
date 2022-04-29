@@ -3,6 +3,7 @@ package com.facishare.document.preview.convert.office.utils;
 
 import com.facishare.document.preview.common.model.PageInfo;
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
+import com.facishare.document.preview.convert.office.exception.Office2PdfException;
 
 import java.util.List;
 
@@ -10,6 +11,10 @@ import java.util.List;
  * @author Andy
  */
 public class PageInfoUtil {
+
+  private PageInfoUtil() {
+    throw new Office2PdfException(ErrorInfoEnum.INVALID_REFLECTION_ACCESS);
+  }
 
   public static PageInfo getPageInfo(ErrorInfoEnum errorMessage) {
     PageInfo pageInfo = new PageInfo();

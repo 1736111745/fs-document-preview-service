@@ -22,15 +22,12 @@ public class Office2PdfException extends RuntimeException {
   /**
    * 错误信息
    */
-  protected String errorCode;
-  protected String errorMsg;
-
-  public Office2PdfException() {
-    super();
-  }
+  private final String errorCode;
+  private final String errorMsg;
 
   public Office2PdfException(ErrorInfoEnum errorInfoEnum) {
     super(String.valueOf(errorInfoEnum.getErrCode()));
+    this.errorCode = errorInfoEnum.getErrCode();
     this.errorMsg = errorInfoEnum.getErrorMsg();
   }
 
@@ -40,22 +37,6 @@ public class Office2PdfException extends RuntimeException {
     this.errorMsg = errorInfoEnum.getErrorMsg();
   }
 
-  public Office2PdfException(String errorMsg) {
-    super(errorMsg);
-    this.errorMsg = errorMsg;
-  }
-
-  public Office2PdfException(String errorCode, String errorMsg) {
-    super(errorCode);
-    this.errorCode = errorCode;
-    this.errorMsg = errorMsg;
-  }
-
-  public Office2PdfException(String errorCode, String errorMsg, Throwable cause) {
-    super(cause);
-    this.errorCode = errorCode;
-    this.errorMsg = errorMsg;
-  }
 
   public Office2PdfException(ErrorInfoEnum errorInfoEnum, Exception cause) {
     super(cause);
@@ -63,10 +44,15 @@ public class Office2PdfException extends RuntimeException {
     this.errorMsg = errorInfoEnum.getErrorMsg();
   }
 
+  @Override
   public String getMessage() {
     return errorMsg;
   }
 
+
+  /*
+   * 避免对api异常进行昂贵且无用的堆栈跟踪
+   */
   @Override
   public Throwable fillInStackTrace() {
     return this;

@@ -20,6 +20,10 @@ import java.nio.file.Paths;
 @Slf4j
 public class PdfObjectUtil {
 
+  private PdfObjectUtil() {
+    throw new Office2PdfException(ErrorInfoEnum.INVALID_REFLECTION_ACCESS);
+  }
+
   public static int getPageCount(byte[] fileBate) {
     return getPageCount(getPdf(fileBate));
   }

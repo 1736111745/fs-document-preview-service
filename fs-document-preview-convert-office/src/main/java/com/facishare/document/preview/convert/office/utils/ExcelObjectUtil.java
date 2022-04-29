@@ -23,7 +23,7 @@ import java.util.List;
  * @author Andy
  */
 public class ExcelObjectUtil {
-  public static PageInfo getSheetNames(byte[] fileBate) throws Exception {
+  public static PageInfo getSheetNames(byte[] fileBate) {
     Workbook workbook = getWorkBook(fileBate);
     WorksheetCollection worksheetCollection = workbook.getWorksheets();
     List<String> sheetNames = new ArrayList<>();
@@ -79,7 +79,7 @@ public class ExcelObjectUtil {
     }
   }
 
-  public static int getPageCount(Workbook workbook) throws Exception {
+  public static int getPageCount(Workbook workbook) {
     if (workbook == null) {
       return 0;
     }
@@ -88,25 +88,19 @@ public class ExcelObjectUtil {
     return pageCount;
   }
 
-  public static int getPageCount(byte[] fileBate) throws Exception {
+  public static int getPageCount(byte[] fileBate) {
     return getPageCount(getWorkBook(fileBate));
   }
 
   public static byte[] convertXlsToXlsx(byte[] fileBate) {
     Workbook workbook = getWorkBook(fileBate);
-    ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream();
-    try {
+    try (ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream()) {
       workbook.save(fileOutputStream, SaveFormat.XLSX);
+      fileBate = fileOutputStream.toByteArray();
     } catch (Exception e) {
       throw new Office2PdfException(ErrorInfoEnum.EXCEL_FILE_SAVING_FAILURE, e);
     } finally {
       workbook.dispose();
-    }
-    fileBate = fileOutputStream.toByteArray();
-    try {
-      fileOutputStream.close();
-    } catch (IOException e) {
-      throw new Office2PdfException(ErrorInfoEnum.STREAM_CLOSING_ANOMALY, e);
     }
     return fileBate;
   }
@@ -117,9 +111,9 @@ public class ExcelObjectUtil {
     WorksheetCollection worksheetCollection = workbook.getWorksheets();
     Worksheet worksheet = getWorkSheet(worksheetCollection, page);
 
-    //获取最大行数
+    //获取最大行数 	包含数据或样式的单元格的最大行索引
     int rows = worksheet.getCells().getMaxRow();
-    //获取有数据的行数 并+10
+    //获取有数据的行数 并+10 包含数据的单元格的最大行索引
     int validRows = worksheet.getCells().getMaxDataRow() + 10;
     // 有数据行数与最大行数比较，取较小的值
     validRows = Math.min(validRows, rows);
@@ -129,21 +123,14 @@ public class ExcelObjectUtil {
     blankRowStart = Math.max(blankRowStart, 0);
     int blankRowEnd = rows - blankRowStart;
     blankRowEnd = Math.max(blankRowEnd, 0);
+
     if (blankRowEnd > 0) {
       // 删除表中多行 blankRowsStart要删除的第一行索引 blankRowEnd要删除的行数
       worksheet.getCells().deleteRows(blankRowStart, blankRowEnd, true);
     }
-    // 总列数
-    int columns = worksheet.getCells().getMaxDisplayRange().getColumnCount();
     // 有效列数
     int validColumns = worksheet.getCells().getMaxDataColumn();
     validColumns = Math.min(validColumns, 1000);
-    if (validColumns > 0 && worksheet.getCells().getMaxColumn() < 16382) {
-      int blankColumStart = validColumns + 1;
-      blankColumStart = blankRowStart < 0 ? 0 : blankColumStart;
-      int blankColumEnd = columns - blankColumStart;
-      blankColumEnd = blankColumEnd < 0 ? 0 : blankRowEnd;
-    }
     if (blankRowEnd > 0) {
       worksheet.getCells().deleteColumns(blankRowStart, blankRowEnd, true);
     }
@@ -156,6 +143,9 @@ public class ExcelObjectUtil {
     worksheetCollection.setActiveSheetIndex(page);
     HtmlSaveOptions saveOptions = new HtmlSaveOptions();
     // 默认为 hidden 隐藏 即 this.p=0
+    // 设置导出时，有无单元格线条 true为有 默认为false
+    saveOptions.setExportGridLines(true);
+    //当宽度为0时是否隐藏 默认为0
     saveOptions.setHiddenColDisplayType(0);
     saveOptions.setHiddenRowDisplayType(0);
     saveOptions.getImageOptions().setCellAutoFit(true);
@@ -163,22 +153,14 @@ public class ExcelObjectUtil {
     saveOptions.setCreateDirectory(true);
     saveOptions.setEnableHTTPCompression(true);
     saveOptions.setExportActiveWorksheetOnly(true);
-    // 将文件输出流与定义的HTML文件格式绑定
-    ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream();
-
-    try {
+    try (ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream()) {
+      // 将文件输出流与定义的HTML文件格式绑定
       workbook.save(fileOutputStream, saveOptions);
+      fileBate = fileOutputStream.toByteArray();
     } catch (Exception e) {
       throw new Office2PdfException(ErrorInfoEnum.EXCEL_FILE_SAVING_FAILURE, e);
-    }
-
-    workbook.dispose();
-    fileBate = fileOutputStream.toByteArray();
-
-    try {
-      fileOutputStream.close();
-    } catch (IOException e) {
-      throw new Office2PdfException(ErrorInfoEnum.STREAM_CLOSING_ANOMALY, e);
+    } finally {
+      workbook.dispose();
     }
     return fileBate;
   }

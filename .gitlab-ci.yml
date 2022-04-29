@@ -1,5 +1,15 @@
-build:
-    script:
-       - pwd
-       - mvn cobertura:cobertura sonar:sonar
-       - mvn clean
+build-job:
+  stage: build
+  except:
+    - tags
+  script:
+    - FORMATTED_VERSION='date +%Y%m%d'
+    - mvn clean test verify sonar:sonar -Dsonar.branch.name=${CI_COMMIT_BRANCH} -Dmaven.test.failure.ignore=true -Dsonar.qualitygate.wait=t
+deploy=job:
+  stage: deploy
+  only:
+    - tags
+  script:
+    - mvn clean deploy -Dmaven.test.skip
+
+

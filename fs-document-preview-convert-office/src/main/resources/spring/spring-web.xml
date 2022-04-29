@@ -33,16 +33,4 @@
     </mvc:message-converters>
   </mvc:annotation-driven>
 
-  <!-- @Value -->
-  <bean id="configProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-    <property name="locations">
-      <list>
-        <value>classpath:file.properties</value>
-      </list>
-    </property>
-  </bean>
-  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
-    <property name="properties" ref="configProperties"/>
-  </bean>
-
 </beans>

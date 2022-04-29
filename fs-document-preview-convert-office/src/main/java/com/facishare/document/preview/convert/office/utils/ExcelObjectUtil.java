@@ -111,16 +111,20 @@ public class ExcelObjectUtil {
     WorksheetCollection worksheetCollection = workbook.getWorksheets();
     Worksheet worksheet = getWorkSheet(worksheetCollection, page);
 
+    Cells cells = worksheet.getCells();
     //获取最大行数 	包含数据或样式的单元格的最大行索引
-    int rows = worksheet.getCells().getMaxRow();
+    int rows = cells.getMaxRow();
     //获取有数据的行数 并+10 包含数据的单元格的最大行索引
-    int validRows = worksheet.getCells().getMaxDataRow() + 10;
+    int validRows = cells.getMaxDataRow() + 10;
     // 有数据行数与最大行数比较，取较小的值
     validRows = Math.min(validRows, rows);
     // 有数据行数与5000相比较，取较小的值
     validRows = Math.min(validRows, 5000);
+
     int blankRowStart = validRows + 1;
+
     blankRowStart = Math.max(blankRowStart, 0);
+
     int blankRowEnd = rows - blankRowStart;
     blankRowEnd = Math.max(blankRowEnd, 0);
 
@@ -131,10 +135,11 @@ public class ExcelObjectUtil {
     // 有效列数
     int validColumns = worksheet.getCells().getMaxDataColumn();
     validColumns = Math.min(validColumns, 1000);
+
     if (blankRowEnd > 0) {
       worksheet.getCells().deleteColumns(blankRowStart, blankRowEnd, true);
     }
-    Cells cells = worksheet.getCells();
+
     for (int col = 0; col < validColumns; col++) {
       //cells.getColumnWidthPixel()获取单元格列的像素
       cells.setColumnWidthPixel(col, (int) (cells.getColumnWidthPixel(col) * 2f));

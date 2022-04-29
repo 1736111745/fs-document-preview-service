@@ -8,8 +8,10 @@ import com.facishare.document.preview.convert.office.utils.ExcelObjectUtil;
 import com.facishare.document.preview.convert.office.utils.PdfObjectUtil;
 import com.facishare.document.preview.convert.office.utils.PptObjectUtil;
 import com.facishare.document.preview.convert.office.utils.WordObjectUtil;
-import org.springframework.beans.factory.annotation.Value;
+import com.github.autoconf.ConfigFactory;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
 
 /**
  * @author Andy
@@ -17,11 +19,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class ConvertDocumentFormatServiceImpl implements ConvertDocumentFormatService {
 
-  @Value("${office2PngTempPath}")
   private String office2PngTempPath;
-
-  @Value("${office2PngZipTempPath}")
   private String office2PngZipTempPath;
+
+  @PostConstruct
+  public void init() {
+    ConfigFactory.getConfig("fs-dps-office2pdf", config -> {
+      office2PngTempPath = config.get("office2PngTempPath");
+      office2PngZipTempPath = config.get("office2PngZipTempPath");
+    });
+  }
 
   public byte[] convertOnePageExcelToHtml(byte[] data, int page) {
     return new ExcelObjectUtil().getHtml(data, page);

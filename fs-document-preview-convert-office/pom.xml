@@ -82,26 +82,28 @@
     </dependency>
 
     <!--添加手动安装的Aspose jar包-->
+
     <dependency>
-      <groupId>io.aspose</groupId>
-      <artifactId>aspose.words</artifactId>
-      <version>21.11</version>
+      <groupId>com.aspose</groupId>
+      <artifactId>aspose-words</artifactId>
+      <version>21.11.0</version>
     </dependency>
     <dependency>
-      <groupId>io.aspose</groupId>
-      <artifactId>aspose.slides</artifactId>
+      <groupId>com.aspose</groupId>
+      <artifactId>aspose-slides</artifactId>
       <version>21.10</version>
     </dependency>
     <dependency>
-      <groupId>io.aspose</groupId>
-      <artifactId>aspose.pdf</artifactId>
+      <groupId>com.aspose</groupId>
+      <artifactId>aspose-pdf</artifactId>
       <version>21.11</version>
     </dependency>
     <dependency>
-      <groupId>io.aspose</groupId>
-      <artifactId>aspose.cells</artifactId>
+      <groupId>com.aspose</groupId>
+      <artifactId>aspose-cells</artifactId>
       <version>21.11</version>
     </dependency>
+
     <!--引入Hutool工具类 用于压缩图片文件夹-->
     <dependency>
       <groupId>cn.hutool</groupId>

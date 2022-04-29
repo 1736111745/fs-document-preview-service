@@ -74,6 +74,12 @@
       <artifactId>fs-document-preview-common</artifactId>
       <version>1.0-SNAPSHOT</version>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>aspose-cells</artifactId>
+          <groupId>aspose-cells</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

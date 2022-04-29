@@ -31,6 +31,12 @@ public class Office2PdfException extends RuntimeException {
     this.errorMsg = errorInfoEnum.getErrorMsg();
   }
 
+  public Office2PdfException(ErrorInfoEnum errorInfoEnum, int errorParameters) {
+    super(String.valueOf(errorInfoEnum.getErrCode()));
+    this.errorCode = errorInfoEnum.getErrCode();
+    this.errorMsg = errorInfoEnum.getErrorMsg() + " 错误的参数是：" + errorParameters;
+  }
+
   public Office2PdfException(ErrorInfoEnum errorInfoEnum, Throwable cause) {
     super(String.valueOf(errorInfoEnum.getErrCode()), cause);
     this.errorCode = errorInfoEnum.getErrCode();

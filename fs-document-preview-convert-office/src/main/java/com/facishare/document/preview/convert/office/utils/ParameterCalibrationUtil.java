@@ -26,8 +26,14 @@ public class ParameterCalibrationUtil {
   }
 
   public static FileTypeEnum getFileType(String filePath, byte[] fileBate) throws Office2PdfException {
-    FileTypeEnum fileTypeName = FileTypeEnum.valueOf(FileProcessingUtil.getFileType(fileBate).toUpperCase());
-    FileTypeEnum fileName = FileTypeEnum.valueOf(FileProcessingUtil.extName(filePath).toUpperCase());
+    FileTypeEnum fileTypeName;
+    FileTypeEnum fileName;
+    try {
+      fileTypeName = FileTypeEnum.valueOf(FileProcessingUtil.getFileType(fileBate).toUpperCase());
+      fileName = FileTypeEnum.valueOf(FileProcessingUtil.extName(filePath).toUpperCase());
+    } catch (Exception e) {
+      throw new Office2PdfException(ErrorInfoEnum.FILE_TYPES_DO_NOT_MATCH, e);
+    }
     if (isFormatSupport(fileTypeName) && !fileName.equals(ZIP)) {
       return fileName;
     }
@@ -56,7 +62,7 @@ public class ParameterCalibrationUtil {
 
   public static byte[] isNullOrEmpty(String path, MultipartFile file, int page) throws Office2PdfException {
     if (page == 0) {
-      throw new Office2PdfException(ErrorInfoEnum.PAGE_NUMBER_PARAMETER_ERROR);
+      throw new Office2PdfException(ErrorInfoEnum.PAGE_NUMBER_PARAMETER_ERROR, page);
     }
     return isNullOrEmpty(path, file);
   }

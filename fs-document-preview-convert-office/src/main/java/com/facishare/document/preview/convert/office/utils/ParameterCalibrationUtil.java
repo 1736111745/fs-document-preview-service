@@ -25,23 +25,14 @@ public class ParameterCalibrationUtil {
     throw new Office2PdfException(ErrorInfoEnum.INVALID_REFLECTION_ACCESS);
   }
 
-  public static FileTypeEnum getFileType(String filePath, byte[] fileBate) throws Office2PdfException {
-    FileTypeEnum fileTypeName;
+  public static FileTypeEnum getFileType(String filePath) throws Office2PdfException {
     FileTypeEnum fileName;
     try {
-      fileTypeName = FileTypeEnum.valueOf(FileProcessingUtil.getFileType(fileBate).toUpperCase());
       fileName = FileTypeEnum.valueOf(FileProcessingUtil.extName(filePath).toUpperCase());
     } catch (Exception e) {
       throw new Office2PdfException(ErrorInfoEnum.FILE_TYPES_DO_NOT_MATCH, e);
     }
-    if (isFormatSupport(fileTypeName) && !fileName.equals(ZIP)) {
-      return fileName;
-    }
-    throw new Office2PdfException(ErrorInfoEnum.FILE_TYPES_DO_NOT_MATCH);
-  }
-
-  public static boolean isFormatSupport(FileTypeEnum fileTypeName) {
-    return FileTypeEnum.getFileTypeName(fileTypeName) != null;
+    return fileName;
   }
 
   public static byte[] isNullOrEmpty(String path, MultipartFile file) throws Office2PdfException {

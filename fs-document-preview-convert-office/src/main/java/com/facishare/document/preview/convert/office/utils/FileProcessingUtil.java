@@ -27,14 +27,6 @@ public class FileProcessingUtil {
     throw new Office2PdfException(ErrorInfoEnum.INVALID_REFLECTION_ACCESS);
   }
 
-  public static String getFileType(byte[] fileBate) throws Office2PdfException {
-    try (ByteArrayInputStream data = new ByteArrayInputStream(fileBate, 0, 100)) {
-      return FileTypeUtil.getType(data);
-    } catch (IOException e) {
-      throw new Office2PdfException(ErrorInfoEnum.STREAM_CLOSING_ANOMALY, e);
-    }
-  }
-
   public static String createDirectory(String filePath) throws Office2PdfException {
     filePath = getRandomFilePath(filePath);
     try {

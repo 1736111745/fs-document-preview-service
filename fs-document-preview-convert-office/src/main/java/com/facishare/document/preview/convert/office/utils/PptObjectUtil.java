@@ -7,16 +7,14 @@ import com.aspose.slides.PresentationFactory;
 import com.aspose.slides.SaveFormat;
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
 import com.facishare.document.preview.convert.office.exception.Office2PdfException;
-
-import java.nio.charset.StandardCharsets;
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import javax.imageio.ImageIO;
 
 /**
  * @author Andy
@@ -55,8 +53,7 @@ public class PptObjectUtil {
   }
 
   public static void getPptLicense() throws Office2PdfException {
-    String licenseStr="<License>\n" + "</License>";
-    try (InputStream is = new ByteArrayInputStream(licenseStr.getBytes(StandardCharsets.UTF_8))) {
+    try (InputStream is = PptObjectUtil.class.getClassLoader().getResourceAsStream("license.xml")) {
       License license = new com.aspose.slides.License();
       license.setLicense(is);
     } catch (Exception e) {

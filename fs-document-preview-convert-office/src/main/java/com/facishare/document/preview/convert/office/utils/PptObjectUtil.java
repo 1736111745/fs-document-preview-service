@@ -8,6 +8,7 @@ import com.aspose.slides.SaveFormat;
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
 import com.facishare.document.preview.convert.office.exception.Office2PdfException;
 
+import java.nio.charset.StandardCharsets;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -54,8 +55,9 @@ public class PptObjectUtil {
   }
 
   public static void getPptLicense() throws Office2PdfException {
-    try (InputStream is = PptObjectUtil.class.getClassLoader().getResourceAsStream("license.xml")) {
-      License license = new License();
+    String licenseStr="<License>\n" + "</License>";
+    try (InputStream is = new ByteArrayInputStream(licenseStr.getBytes(StandardCharsets.UTF_8))) {
+      License license = new com.aspose.slides.License();
       license.setLicense(is);
     } catch (Exception e) {
       throw new Office2PdfException(ErrorInfoEnum.ABNORMAL_FILE_SIGNATURE, e);

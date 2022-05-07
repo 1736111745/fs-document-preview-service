@@ -1,14 +1,9 @@
 package com.facishare.document.preview.convert.office.utils;
 
+import cn.hutool.core.io.file.FileNameUtil;
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
 import com.facishare.document.preview.convert.office.constant.FileTypeEnum;
 import com.facishare.document.preview.convert.office.exception.Office2PdfException;
-import com.google.common.base.Strings;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-
-import static com.facishare.document.preview.convert.office.constant.FileTypeEnum.ZIP;
 
 /**
  * @author : [Andy]
@@ -26,35 +21,30 @@ public class ParameterCalibrationUtil {
   }
 
   public static FileTypeEnum getFileType(String filePath) throws Office2PdfException {
-    FileTypeEnum fileName;
     try {
-      fileName = FileTypeEnum.valueOf(FileProcessingUtil.extName(filePath).toUpperCase());
+      return FileTypeEnum.valueOf(FileNameUtil.extName(filePath).toUpperCase());
     } catch (Exception e) {
       throw new Office2PdfException(ErrorInfoEnum.FILE_TYPES_DO_NOT_MATCH, e);
     }
-    return fileName;
   }
 
-  public static byte[] isNullOrEmpty(String path, MultipartFile file) throws Office2PdfException {
-    if (Strings.isNullOrEmpty(path)) {
-      throw new Office2PdfException(ErrorInfoEnum.FILE_PATH_EMPTY);
-    }
-    byte[] fileBate;
+  public static FileTypeEnum isExcelType(String filePath) throws Office2PdfException {
     try {
-      fileBate = file.getBytes();
-      if (fileBate.length <= 0) {
-        throw new Office2PdfException(ErrorInfoEnum.EMPTY_FILE);
+     FileTypeEnum fileTypeEnum= FileTypeEnum.valueOf(FileNameUtil.extName(filePath).toUpperCase());
+      if ((fileTypeEnum.compareTo(FileTypeEnum.XLS)==0)||(fileTypeEnum.compareTo(FileTypeEnum.XLSX)==0)){
+        return fileTypeEnum;
+      }else {
+        throw new Office2PdfException(ErrorInfoEnum.FILE_TYPES_DO_NOT_MATCH);
       }
-    } catch (IOException e) {
-      throw new Office2PdfException(ErrorInfoEnum.FILE_PARAMETER_ERROR);
+    } catch (Exception e) {
+      throw new Office2PdfException(ErrorInfoEnum.FILE_TYPES_DO_NOT_MATCH, e);
     }
-    return fileBate;
   }
 
-  public static byte[] isNullOrEmpty(String path, MultipartFile file, int page) throws Office2PdfException {
+  public static int isZero(int page) throws Office2PdfException {
     if (page == 0) {
       throw new Office2PdfException(ErrorInfoEnum.PAGE_NUMBER_PARAMETER_ERROR, page);
     }
-    return isNullOrEmpty(path, file);
+    return page;
   }
 }

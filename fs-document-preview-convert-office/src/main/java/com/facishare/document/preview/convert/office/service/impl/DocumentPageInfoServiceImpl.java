@@ -10,6 +10,7 @@ import com.facishare.document.preview.convert.office.utils.PptObjectUtil;
 import com.facishare.document.preview.convert.office.utils.WordObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author Andy
@@ -17,19 +18,18 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class DocumentPageInfoServiceImpl implements DocumentPageInfoService {
-  public PageInfo getPageInfo(byte[] fileBate, FileTypeEnum fileTypeEnum) throws Exception {
+  public PageInfo getPageInfo(MultipartFile file, FileTypeEnum fileTypeEnum) {
     switch (fileTypeEnum) {
       case DOC:
       case DOCX:
-        return PageInfoUtil.getPageInfo(WordObjectUtil.getPageCount(fileBate));
+        return PageInfoUtil.getPageInfo(WordObjectUtil.getPageCount(file));
       case XLS:
       case XLSX:
-        return ExcelObjectUtil.getSheetNames(fileBate);
+        return ExcelObjectUtil.getSheetNames(file);
       case PPT:
       case PPTX:
-        return PageInfoUtil.getPageInfo(PptObjectUtil.getPageCount(fileBate));
-      default:
-        return PageInfoUtil.getPageInfo(PdfObjectUtil.getPageCount(fileBate));
+        return PageInfoUtil.getPageInfo(PptObjectUtil.getPageCount(file));
+      default: return PageInfoUtil.getPageInfo(PdfObjectUtil.getPageCount(file));
     }
   }
 }

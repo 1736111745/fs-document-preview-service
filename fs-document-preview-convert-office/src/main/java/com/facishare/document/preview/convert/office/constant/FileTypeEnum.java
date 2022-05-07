@@ -11,26 +11,13 @@ package com.facishare.document.preview.convert.office.constant;
  */
 public enum FileTypeEnum {
 
-  DOC("doc"), DOCX("docx"), PPT("ppt"), PPTX("pptx"), XLS("xls"), XLSX("xlsx"), PDF("pdf"), ZIP("zip");
+  DOC("doc"), DOCX("docx"), PPT("ppt"), PPTX("pptx"), XLS("xls"), XLSX("xlsx"), PDF("pdf");
 
   private final String fileTypeName;
-
   FileTypeEnum(String fileTypeName) {
     this.fileTypeName = fileTypeName;
   }
-
-  public static String getFileTypeName(FileTypeEnum fileTypeName) {
-    for (FileTypeEnum typeName : FileTypeEnum.values()) {
-      if (typeName.equals(fileTypeName)) {
-        return typeName.fileTypeName;
-      }
-    }
-    return null;
-  }
-
   public String getFileTypeName() {
     return fileTypeName;
   }
-
-
 }

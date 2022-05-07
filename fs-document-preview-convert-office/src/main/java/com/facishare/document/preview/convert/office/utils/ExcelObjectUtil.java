@@ -1,7 +1,6 @@
 package com.facishare.document.preview.convert.office.utils;
 
 import com.aspose.cells.Cells;
-import com.aspose.cells.FileFormatUtil;
 import com.aspose.cells.HtmlSaveOptions;
 import com.aspose.cells.License;
 import com.aspose.cells.SaveFormat;
@@ -12,19 +11,65 @@ import com.facishare.document.preview.common.model.PageInfo;
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
 import com.facishare.document.preview.convert.office.exception.Office2PdfException;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author Andy
  */
 public class ExcelObjectUtil {
-  public static PageInfo getSheetNames(byte[] fileBate) {
-    Workbook workbook = getWorkBook(fileBate);
+
+  /**
+   * 防止反射攻击
+   */
+  private ExcelObjectUtil() {
+    throw new Office2PdfException(ErrorInfoEnum.INVALID_REFLECTION_ACCESS);
+  }
+
+  /*
+    在类加载时 加载Excel签名文件
+   */
+  static {
+    try (InputStream is = ExcelObjectUtil.class.getClassLoader()
+        .getResourceAsStream("license.xml")) {
+      License license = new License();
+      license.setLicense(is);
+    } catch (IOException e) {
+      throw new Office2PdfException(ErrorInfoEnum.ABNORMAL_FILE_SIGNATURE, e);
+    }
+  }
+
+  /**
+   * 获取Excel 文档对象 本类的其他方法都依赖于当前方法
+   */
+  public static Workbook getWorkBook(MultipartFile file) throws Office2PdfException {
+    try (InputStream fileInputStream = file.getInputStream()) {
+      return new Workbook(fileInputStream);
+    } catch (Exception e) {
+      throw new Office2PdfException(ErrorInfoEnum.EXCEL_INSTANTIATION_ERROR, e);
+    }
+  }
+
+  /**
+   * 内部的获取页码的方法 并将Excel对象占用的资源释放
+   */
+
+  public static int getPageCount(Workbook workbook) {
+    try{
+      return workbook.getWorksheets().getCount();
+    }catch (Exception e){
+      throw new Office2PdfException(ErrorInfoEnum.PAGE_NUMBER_PARAMETER_ZERO, e);
+    }finally {
+      workbook.dispose();
+    }
+  }
+
+  public static PageInfo getSheetNames(MultipartFile file) {
+    Workbook workbook = getWorkBook(file);
     WorksheetCollection worksheetCollection = workbook.getWorksheets();
     List<String> sheetNames = new ArrayList<>();
     for (int i = 0; i < worksheetCollection.getCount(); i++) {
@@ -44,73 +89,26 @@ public class ExcelObjectUtil {
       sheetNames.add(sheetName);
     }
     return PageInfoUtil.getExcelPageInfo(getPageCount(workbook), sheetNames);
-
   }
 
-  public static Workbook getWorkBook(byte[] fileBate) throws Office2PdfException {
-    getExcelLicense();
-    Workbook workbook;
-    try (ByteArrayInputStream fileStream = new ByteArrayInputStream(fileBate)) {
-      workbook = new Workbook(fileStream);
-    } catch (Exception e) {
-      if (isCheckEncrypt(fileBate)) {
-        throw new Office2PdfException(ErrorInfoEnum.EXCEL_ENCRYPTION_ERROR, e);
-      }
-      throw new Office2PdfException(ErrorInfoEnum.EXCEL_INSTANTIATION_ERROR, e);
-    }
-    return workbook;
-  }
 
-  public static void getExcelLicense() throws Office2PdfException {
-    try (InputStream is = ExcelObjectUtil.class.getClassLoader().getResourceAsStream("license.xml")) {
-      License license = new License();
-      license.setLicense(is);
-    } catch (IOException e) {
-      throw new Office2PdfException(ErrorInfoEnum.ABNORMAL_FILE_SIGNATURE, e);
-    }
-  }
-
-  public static boolean isCheckEncrypt(byte[] fileBate) throws Office2PdfException {
-    //文件加密返回 true
-    try (ByteArrayInputStream fileStream = new ByteArrayInputStream(fileBate)) {
-      return FileFormatUtil.detectFileFormat(fileStream).isEncrypted();
-    } catch (Exception e) {
-      throw new Office2PdfException(ErrorInfoEnum.EXCEL_INSTANTIATION_ERROR, e);
-    }
-  }
-
-  public static int getPageCount(Workbook workbook) {
-    if (workbook == null) {
-      return 0;
-    }
-    int pageCount = workbook.getWorksheets().getCount();
-    workbook.dispose();
-    return pageCount;
-  }
-
-  public static int getPageCount(byte[] fileBate) {
-    return getPageCount(getWorkBook(fileBate));
-  }
-
-  public static byte[] convertXlsToXlsx(byte[] fileBate) {
-    Workbook workbook = getWorkBook(fileBate);
-    try (ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream()) {
+  public static ByteArrayOutputStream  convertXlsToXlsx(MultipartFile file, ByteArrayOutputStream fileOutputStream) {
+    Workbook workbook = getWorkBook(file);
+    try {
       workbook.save(fileOutputStream, SaveFormat.XLSX);
-      fileBate = fileOutputStream.toByteArray();
+      return fileOutputStream;
     } catch (Exception e) {
       throw new Office2PdfException(ErrorInfoEnum.EXCEL_FILE_SAVING_FAILURE, e);
     } finally {
       workbook.dispose();
     }
-    return fileBate;
   }
 
-  public byte[] getHtml(byte[] fileBate, int page) throws Office2PdfException {
+  public static ByteArrayOutputStream getHtml(MultipartFile file, int page, ByteArrayOutputStream fileOutputStream) throws Office2PdfException {
     //下标从0开始，但要求接收的页码从1开始
-    Workbook workbook = getWorkBook(fileBate);
+    Workbook workbook = getWorkBook(file);
     WorksheetCollection worksheetCollection = workbook.getWorksheets();
     Worksheet worksheet = getWorkSheet(worksheetCollection, page);
-
     Cells cells = worksheet.getCells();
     //获取最大行数 	包含数据或样式的单元格的最大行索引
     int rows = cells.getMaxRow();
@@ -158,19 +156,18 @@ public class ExcelObjectUtil {
     saveOptions.setCreateDirectory(true);
     saveOptions.setEnableHTTPCompression(true);
     saveOptions.setExportActiveWorksheetOnly(true);
-    try (ByteArrayOutputStream fileOutputStream = new ByteArrayOutputStream()) {
-      // 将文件输出流与定义的HTML文件格式绑定
+    try {
       workbook.save(fileOutputStream, saveOptions);
-      fileBate = fileOutputStream.toByteArray();
+      return fileOutputStream;
     } catch (Exception e) {
       throw new Office2PdfException(ErrorInfoEnum.EXCEL_FILE_SAVING_FAILURE, e);
     } finally {
       workbook.dispose();
     }
-    return fileBate;
   }
 
-  public static Worksheet getWorkSheet(WorksheetCollection worksheetCollection, int page) throws Office2PdfException {
+  public static Worksheet getWorkSheet(WorksheetCollection worksheetCollection, int page)
+      throws Office2PdfException {
     Worksheet worksheet;
     try {
       worksheet = worksheetCollection.get(page);

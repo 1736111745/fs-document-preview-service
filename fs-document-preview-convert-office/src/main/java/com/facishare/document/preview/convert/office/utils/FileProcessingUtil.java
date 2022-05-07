@@ -62,10 +62,4 @@ public class FileProcessingUtil {
     }
     return fileBate;
   }
-
-  public static String extName(String fileName) {
-    return FileNameUtil.extName(fileName);
-  }
-
-
 }

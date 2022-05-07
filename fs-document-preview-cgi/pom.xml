@@ -140,6 +140,7 @@
         <dependency>
             <groupId>com.facishare</groupId>
             <artifactId>fs-fsi-proxy</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <artifactId>rpc-trace</artifactId>

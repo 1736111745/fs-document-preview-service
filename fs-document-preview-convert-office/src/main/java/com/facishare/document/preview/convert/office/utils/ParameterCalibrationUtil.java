@@ -34,7 +34,7 @@ public class ParameterCalibrationUtil {
       if ((fileTypeEnum.compareTo(FileTypeEnum.XLS)==0)||(fileTypeEnum.compareTo(FileTypeEnum.XLSX)==0)){
         return fileTypeEnum;
       }else {
-        throw new Office2PdfException(ErrorInfoEnum.FILE_TYPES_DO_NOT_MATCH);
+        throw new Office2PdfException(ErrorInfoEnum.FILE_TYPES_DO_NOT_EXCEL);
       }
     } catch (Exception e) {
       throw new Office2PdfException(ErrorInfoEnum.FILE_TYPES_DO_NOT_MATCH, e);

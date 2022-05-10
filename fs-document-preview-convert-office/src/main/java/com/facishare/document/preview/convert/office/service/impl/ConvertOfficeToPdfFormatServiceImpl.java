@@ -2,6 +2,7 @@ package com.facishare.document.preview.convert.office.service.impl;
 
 import com.aspose.slides.Presentation;
 import com.aspose.words.Document;
+import com.aspose.words.FontSettings;
 import com.aspose.words.LoadOptions;
 import com.aspose.words.PdfSaveOptions;
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
@@ -31,11 +32,13 @@ public class ConvertOfficeToPdfFormatServiceImpl implements ConvertOfficeToPdfFo
 
 
   private String office2PngWordDocumentEncoding;
+  private String office2PdfWordDocumentFontsDirectory;
 
   @PostConstruct
   public void init() {
     ConfigFactory.getConfig("fs-dps-office2pdf", config -> {
       office2PngWordDocumentEncoding=config.get("office2PngWordDocumentEncoding");
+      office2PdfWordDocumentFontsDirectory=config.get("office2PdfWordDocumentFontsDirectory");
     });
   }
 
@@ -101,6 +104,7 @@ public class ConvertOfficeToPdfFormatServiceImpl implements ConvertOfficeToPdfFo
         pdfSaveOptions.setFontEmbeddingMode(0);
         //0 文档的显示方式留给 PDF 查看器。通常，查看器会显示适合页面宽度的文档。 1 使用指定的缩放系数显示页面。 2 显示页面，使其完全可见。 3 适合页面的宽度。 4 适合页面的高度。 5 适合边界框（包含页面上所有可见元素的矩形）。
         pdfSaveOptions.setZoomBehavior(0);
+        FontSettings.getDefaultInstance().setFontsFolder(office2PdfWordDocumentFontsDirectory,true);
         doc.save(outputStream, pdfSaveOptions);
         return outputStream.toByteArray();
       } catch (Exception e) {

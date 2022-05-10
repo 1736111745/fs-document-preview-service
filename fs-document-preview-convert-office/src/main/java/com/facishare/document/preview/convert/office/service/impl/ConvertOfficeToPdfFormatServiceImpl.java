@@ -2,6 +2,7 @@ package com.facishare.document.preview.convert.office.service.impl;
 
 import com.aspose.slides.Presentation;
 import com.aspose.words.Document;
+import com.aspose.words.LoadOptions;
 import com.aspose.words.PdfSaveOptions;
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
 import com.facishare.document.preview.convert.office.constant.FileTypeEnum;
@@ -9,8 +10,11 @@ import com.facishare.document.preview.convert.office.exception.Office2PdfExcepti
 import com.facishare.document.preview.convert.office.service.ConvertOfficeToPdfFormatService;
 import com.facishare.document.preview.convert.office.utils.InitializeAsposePptUtil;
 import com.facishare.document.preview.convert.office.utils.InitializeAsposeWordUtil;
+import com.github.autoconf.ConfigFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import javax.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
 /**
@@ -24,6 +28,16 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ConvertOfficeToPdfFormatServiceImpl implements ConvertOfficeToPdfFormatService {
+
+
+  private String office2PngWordDocumentEncoding;
+
+  @PostConstruct
+  public void init() {
+    ConfigFactory.getConfig("fs-dps-office2pdf", config -> {
+      office2PngWordDocumentEncoding=config.get("office2PngWordDocumentEncoding");
+    });
+  }
 
   @Override
   public byte[] convertAllPageWordOrPptToPdf(InputStream file, FileTypeEnum fileType) {
@@ -76,7 +90,10 @@ public class ConvertOfficeToPdfFormatServiceImpl implements ConvertOfficeToPdfFo
   }
 
   private byte[] convertWordOnePageToPdf(InputStream file,int page){
-      Document doc = InitializeAsposeWordUtil.getWord(file);
+    //设置Word文件的默认编码
+     LoadOptions options=new LoadOptions();
+     options.setEncoding(Charset.forName(office2PngWordDocumentEncoding));
+      Document doc = InitializeAsposeWordUtil.getWord(file,options);
       try(ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
         PdfSaveOptions pdfSaveOptions = new com.aspose.words.PdfSaveOptions();
         pdfSaveOptions.setPageSet(new com.aspose.words.PageSet(page));

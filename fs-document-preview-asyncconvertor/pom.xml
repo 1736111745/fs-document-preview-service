@@ -246,10 +246,10 @@
                     <groupId>org.springframework</groupId>
                     <artifactId>spring</artifactId>
                 </exclusion>
-                <exclusion>
-                    <artifactId>javassist</artifactId>
-                    <groupId>org.javassist</groupId>
-                </exclusion>
+<!--                <exclusion>-->
+<!--                    <artifactId>javassist</artifactId>-->
+<!--                    <groupId>org.javassist</groupId>-->
+<!--                </exclusion>-->
                 <exclusion>
                     <artifactId>rpc-trace</artifactId>
                     <groupId>com.github.colin-lee</groupId>

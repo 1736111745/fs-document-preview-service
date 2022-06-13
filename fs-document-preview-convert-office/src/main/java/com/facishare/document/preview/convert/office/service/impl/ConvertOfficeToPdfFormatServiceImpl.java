@@ -59,7 +59,7 @@ public class ConvertOfficeToPdfFormatServiceImpl implements ConvertOfficeToPdfFo
   private byte[] convertDocToPdf(InputStream file) {
       Document doc = InitializeAsposeWordUtil.getWord(file);
       try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-        doc.save(outputStream, com.aspose.words.SaveFormat.PDF);
+        doc.save(outputStream,com.aspose.words.SaveFormat.PDF);
         return outputStream.toByteArray();
       } catch (Exception e) {
         throw new Office2PdfException(ErrorInfoEnum.WORD_FILE_SAVING_FAILURE, e);

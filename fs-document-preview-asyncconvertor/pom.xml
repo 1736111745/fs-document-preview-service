@@ -490,13 +490,7 @@
         <dependency>
             <groupId>org.zeroturnaround</groupId>
             <artifactId>zt-process-killer</artifactId>
-            <version>1.7</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>org.zeroturnaround</artifactId>
-                    <groupId>zt-exec</groupId>
-                </exclusion>
-            </exclusions>
+            <version>1.10</version>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>

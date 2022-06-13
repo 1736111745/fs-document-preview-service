@@ -1,5 +1,6 @@
 package com.facishare.document.preview.cgi.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Cipher;
@@ -10,6 +11,7 @@ import java.security.SecureRandom;
 /**
  * Created by Aaron on 16/7/4.
  */
+@Slf4j
 public class AES256Utils {
   public static final String aesKey = "nirtHUNF/Ct8J7sf40VaIQui0N5r8gcbxGXKxRhu1C4=";
   public static final String aesIv = "jwNz4Ia8OHVpPyEXIQjJ2g==";
@@ -53,6 +55,7 @@ public class AES256Utils {
       byte[] resultByte = decrypt_c.doFinal(parseHexStr2Byte(source));
       result = new String(resultByte, "utf-8");
     } catch (Throwable e) {
+      log.error("decode token error,source:{}",source,e);
       throw new RuntimeException(e);
     }
     return result;

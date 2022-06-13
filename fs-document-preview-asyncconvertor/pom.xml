@@ -226,6 +226,10 @@
                     <artifactId>protostuff-runtime</artifactId>
                     <groupId>io.protostuff</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>javassist</artifactId>
+                    <groupId>org.javassist</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>

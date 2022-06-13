@@ -37,8 +37,8 @@ public class ConvertOfficeToPdfFormatServiceImpl implements ConvertOfficeToPdfFo
   @PostConstruct
   public void init() {
     ConfigFactory.getConfig("fs-dps-office2pdf", config -> {
-      office2PngWordDocumentEncoding=config.get("office2PngWordDocumentEncoding");
-      office2PdfWordDocumentFontsDirectory=config.get("office2PdfWordDocumentFontsDirectory");
+      office2PngWordDocumentEncoding = config.get("office2PngWordDocumentEncoding");
+      office2PdfWordDocumentFontsDirectory = config.get("office2PdfWordDocumentFontsDirectory");
     });
   }
 
@@ -57,25 +57,31 @@ public class ConvertOfficeToPdfFormatServiceImpl implements ConvertOfficeToPdfFo
   }
 
   private byte[] convertDocToPdf(InputStream file) {
-      Document doc = InitializeAsposeWordUtil.getWord(file);
-      try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-        doc.save(outputStream,com.aspose.words.SaveFormat.PDF);
-        return outputStream.toByteArray();
-      } catch (Exception e) {
-        throw new Office2PdfException(ErrorInfoEnum.WORD_FILE_SAVING_FAILURE, e);
-      }
+    LoadOptions options = new LoadOptions();
+    options.setEncoding(Charset.forName(office2PngWordDocumentEncoding));
+    Document doc = InitializeAsposeWordUtil.getWord(file, options);
+    try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+      PdfSaveOptions pdfSaveOptions = new com.aspose.words.PdfSaveOptions();
+      pdfSaveOptions.setFontEmbeddingMode(0);
+      pdfSaveOptions.setZoomBehavior(0);
+      FontSettings.getDefaultInstance().setFontsFolder(office2PdfWordDocumentFontsDirectory, true);
+      doc.save(outputStream,pdfSaveOptions);
+      return outputStream.toByteArray();
+    } catch (Exception e) {
+      throw new Office2PdfException(ErrorInfoEnum.WORD_FILE_SAVING_FAILURE, e);
+    }
   }
 
   private byte[] convertPptToPdf(InputStream file) {
-      Presentation ppt = InitializeAsposePptUtil.getPpt(file);
-      try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-        ppt.save(outputStream, com.aspose.slides.SaveFormat.Pdf);
-        return outputStream.toByteArray();
-      } catch (Exception e) {
-        throw new Office2PdfException(ErrorInfoEnum.STREAM_CLOSING_ANOMALY, e);
-      } finally {
-        ppt.dispose();
-      }
+    Presentation ppt = InitializeAsposePptUtil.getPpt(file);
+    try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+      ppt.save(outputStream, com.aspose.slides.SaveFormat.Pdf);
+      return outputStream.toByteArray();
+    } catch (Exception e) {
+      throw new Office2PdfException(ErrorInfoEnum.STREAM_CLOSING_ANOMALY, e);
+    } finally {
+      ppt.dispose();
+    }
   }
 
   @Override
@@ -92,30 +98,31 @@ public class ConvertOfficeToPdfFormatServiceImpl implements ConvertOfficeToPdfFo
     }
   }
 
-  private byte[] convertWordOnePageToPdf(InputStream file,int page){
+  private byte[] convertWordOnePageToPdf(InputStream file, int page) {
     //设置Word文件的默认编码
-     LoadOptions options=new LoadOptions();
-     options.setEncoding(Charset.forName(office2PngWordDocumentEncoding));
-      Document doc = InitializeAsposeWordUtil.getWord(file,options);
-      try(ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
-        PdfSaveOptions pdfSaveOptions = new com.aspose.words.PdfSaveOptions();
-        pdfSaveOptions.setPageSet(new com.aspose.words.PageSet(page));
-        //0 嵌入所有字体 1 嵌入了除标准Windows字体Arial和Times New Roman之外的所有字体  2 不嵌入任何字体。
-        pdfSaveOptions.setFontEmbeddingMode(0);
-        //0 文档的显示方式留给 PDF 查看器。通常，查看器会显示适合页面宽度的文档。 1 使用指定的缩放系数显示页面。 2 显示页面，使其完全可见。 3 适合页面的宽度。 4 适合页面的高度。 5 适合边界框（包含页面上所有可见元素的矩形）。
-        pdfSaveOptions.setZoomBehavior(0);
-        FontSettings.getDefaultInstance().setFontsFolder(office2PdfWordDocumentFontsDirectory,true);
-        doc.save(outputStream, pdfSaveOptions);
-        return outputStream.toByteArray();
-      } catch (Exception e) {
-        throw new Office2PdfException(ErrorInfoEnum.PAGE_NUMBER_PARAMETER_ERROR, e);
-      }finally {
-        doc=null;
-      }
+    LoadOptions options = new LoadOptions();
+    options.setEncoding(Charset.forName(office2PngWordDocumentEncoding));
+    Document doc = InitializeAsposeWordUtil.getWord(file, options);
+    try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+      PdfSaveOptions pdfSaveOptions = new com.aspose.words.PdfSaveOptions();
+      pdfSaveOptions.setPageSet(new com.aspose.words.PageSet(page));
+      //0 嵌入所有字体 1 嵌入了除标准Windows字体Arial和Times New Roman之外的所有字体  2 不嵌入任何字体。
+      pdfSaveOptions.setFontEmbeddingMode(0);
+      //0 文档的显示方式留给 PDF 查看器。通常，查看器会显示适合页面宽度的文档。 1 使用指定的缩放系数显示页面。 2 显示页面，使其完全可见。 3 适合页面的宽度。 4 适合页面的高度。 5 适合边界框（包含页面上所有可见元素的矩形）。
+      pdfSaveOptions.setZoomBehavior(0);
+      FontSettings.getDefaultInstance().setFontsFolder(office2PdfWordDocumentFontsDirectory, true);
+      doc.save(outputStream, pdfSaveOptions);
+      return outputStream.toByteArray();
+    } catch (Exception e) {
+      throw new Office2PdfException(ErrorInfoEnum.PAGE_NUMBER_PARAMETER_ERROR, e);
+    } finally {
+      doc = null;
+    }
   }
-  private byte[] convertPptOnePageToPdf(InputStream file,int page){
+
+  private byte[] convertPptOnePageToPdf(InputStream file, int page) {
     Presentation ppt = InitializeAsposePptUtil.getPpt(file);
-    try(ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
+    try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
       int[] page2 = {page};
       ppt.save(outputStream, page2, com.aspose.slides.SaveFormat.Pdf);
       return outputStream.toByteArray();

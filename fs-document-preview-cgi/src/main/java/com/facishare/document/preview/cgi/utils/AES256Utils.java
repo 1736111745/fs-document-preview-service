@@ -1,10 +1,11 @@
 package com.facishare.document.preview.cgi.utils;
 
+import org.apache.commons.codec.binary.Base64;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
-import java.util.Base64;
 
 /**
  * Created by Aaron on 16/7/4.
@@ -16,12 +17,11 @@ public class AES256Utils {
   private static byte[] ivBytes;
   public static Cipher decrypt_c;
   public static Cipher encrypt_c;
-  public static Base64.Decoder decoder = Base64.getDecoder();
 
   static {
     try {
-      keyBytes = decoder.decode(aesKey);
-      ivBytes = decoder.decode(aesIv);
+      keyBytes = Base64.decodeBase64(aesKey);
+      ivBytes = Base64.decodeBase64(aesIv);
       IvParameterSpec iv = new IvParameterSpec(ivBytes);
       decrypt_c = Cipher.getInstance("AES/CBC/PKCS5Padding");
       encrypt_c = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -34,9 +34,8 @@ public class AES256Utils {
   }
 
   public static void main(String[] args) {
-    System.out.println(Base64.getEncoder().encode("com.facishare.fsc.common.utils.AES256Utils".getBytes()));
-    System.out.println(decode("A1A96F88FD9368B762A6E9E987788676238EF79F0D8546F10E5B6E25B9E091E776ADD00876CE6EAC78A0F61FF1836386D89A1728CC9EA902889D74276D563E411" +
-      "E4D3672FF07393086438FEF48E770D2"));
+//    System.out.println(Base64.getEncoder().encode("com.facishare.fsc.common.utils.AES256Utils".getBytes()));
+    System.out.println(Base64.decodeBase64(aesKey).length);
   }
 
   public static String encode(String source) {

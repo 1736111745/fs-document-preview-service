@@ -31,6 +31,9 @@ public class MD5Helper {
       }
     }
     return value;
+  }
 
+  public static void main(String[] args) throws FileNotFoundException {
+    System.out.println(getMd5ByFile(new File("/Users/liuquan/Desktop/验收单-2022-05-11034.pdf")));
   }
 }

@@ -1,12 +1,10 @@
 package com.facishare.document.preview.cgi.utils;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
+import java.util.Base64;
 
 /**
  * Created by Aaron on 16/7/4.
@@ -21,8 +19,8 @@ public class AES256Utils {
 
   static {
     try {
-      keyBytes = (new BASE64Decoder()).decodeBuffer(aesKey);
-      ivBytes = (new BASE64Decoder()).decodeBuffer(aesIv);
+      keyBytes = Base64.getDecoder().decode(aesKey);
+      ivBytes = Base64.getDecoder().decode(aesIv);
       IvParameterSpec iv = new IvParameterSpec(ivBytes);
       decrypt_c = Cipher.getInstance("AES/CBC/PKCS5Padding");
       encrypt_c = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -35,7 +33,7 @@ public class AES256Utils {
   }
 
   public static void main(String[] args) {
-    System.out.println(new BASE64Encoder().encode("com.facishare.fsc.common.utils.AES256Utils".getBytes()));
+    System.out.println(Base64.getEncoder().encode("com.facishare.fsc.common.utils.AES256Utils".getBytes()));
   }
 
   public static String encode(String source) {

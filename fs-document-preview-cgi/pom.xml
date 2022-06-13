@@ -126,6 +126,10 @@
           <groupId>org.javassist</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>javassist-3.14.0-GA</artifactId>
+          <groupId>org.ow2.util.bundles</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>curator-recipes</artifactId>
           <groupId>org.apache.curator</groupId>
         </exclusion>

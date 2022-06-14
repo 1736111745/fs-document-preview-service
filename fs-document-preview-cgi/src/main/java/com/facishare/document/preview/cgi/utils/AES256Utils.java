@@ -35,10 +35,7 @@ public class AES256Utils {
     }
   }
 
-  public static void main(String[] args) {
-//    System.out.println(Base64.getEncoder().encode("com.facishare.fsc.common.utils.AES256Utils".getBytes()));
-    System.out.println(Base64.decodeBase64(aesKey).length);
-  }
+  public static void main(String[] args) {}
 
   public static String encode(String source) {
     try {
@@ -49,13 +46,14 @@ public class AES256Utils {
     }
   }
 
-  public static String decode(String source) {
+  //cipher存在线程安全问题
+  public static synchronized String decode(String source) {
     String result = null;
     try {
       byte[] resultByte = decrypt_c.doFinal(parseHexStr2Byte(source));
       result = new String(resultByte, "utf-8");
     } catch (Throwable e) {
-      log.error("decode token error,source:{}",source,e);
+      log.error("decode token error,source:{}", source, e);
       throw new RuntimeException(e);
     }
     return result;

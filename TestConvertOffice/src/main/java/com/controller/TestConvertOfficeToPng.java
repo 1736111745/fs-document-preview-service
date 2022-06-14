@@ -36,7 +36,7 @@ import java.net.URLEncoder;
 @RequestMapping(value = "/TestConvertOfficeToPng")
 public class TestConvertOfficeToPng {
 
-  private String officeConvertorServerUrl = "http://localhost:8082";
+  private String officeConvertorServerUrl = "http://172.31.101.246:37924";
   @Autowired
   private OkHttpSupport client;
 

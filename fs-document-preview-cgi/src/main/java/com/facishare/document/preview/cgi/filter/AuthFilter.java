@@ -6,9 +6,9 @@ import com.facishare.document.preview.cgi.model.ShareTokenParamInfo;
 import com.facishare.document.preview.cgi.utils.AuthHelper;
 import com.facishare.document.preview.cgi.utils.ShareTokenUtil;
 import com.facishare.document.preview.cgi.utils.UrlParametersHelper;
+import com.fxiaoke.common.Guard;
 import com.github.autoconf.spring.reloadable.ReloadableProperty;
 import com.google.common.base.Strings;
-import com.fxiaoke.common.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -129,7 +129,7 @@ public class AuthFilter extends OncePerRequestFilter {
       return true;
     }
     if (requestUri.startsWith(ctx + "/open/") || requestUri.startsWith(ctx + "/restful/") || requestUri.startsWith(ctx + "/share/") ||
-      requestUri.equals(ctx + "/") || requestUri.contains("ping") || requestUri.contains("/task/")) {
+      requestUri.equals(ctx + "/") || requestUri.contains("ping") || requestUri.contains("/task/") || requestUri.contains("test")) {
       return true;
     } else {
       return false;

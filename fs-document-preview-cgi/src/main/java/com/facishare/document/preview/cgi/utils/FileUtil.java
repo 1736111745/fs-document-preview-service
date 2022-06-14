@@ -41,7 +41,6 @@ public class FileUtil {
     }
   }
 
-
   public static void main(String[] args) {
     deleteEmptyDir("/Users/liuquan/Desktop/123");
   }

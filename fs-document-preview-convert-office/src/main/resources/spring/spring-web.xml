@@ -1,0 +1,36 @@
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd
+     http://www.springframework.org/schema/mvc
+     http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+  <context:component-scan base-package="com.facishare.document.preview.convert.office">
+  </context:component-scan>
+  <context:annotation-config/>
+  <mvc:default-servlet-handler/>
+
+  <mvc:resources mapping="/dist/**" location="WEB-INF/dist/"/>
+  <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+        p:order="1" p:contentType="text/html; charset=UTF-8" p:prefix="/WEB-INF/dist/" p:suffix=".html"/>
+
+  <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    <property name="defaultEncoding" value="UTF-8"/>
+    <property name="maxUploadSize" value="20000000000"/>
+    <property name="maxInMemorySize" value="40960"/>
+  </bean>
+
+  <mvc:annotation-driven>
+    <!-- 消息转换器 -->
+    <mvc:message-converters>
+      <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+        <property name="supportedMediaTypes" value="application/json;charset=UTF-8"/>
+      </bean>
+    </mvc:message-converters>
+  </mvc:annotation-driven>
+
+</beans>

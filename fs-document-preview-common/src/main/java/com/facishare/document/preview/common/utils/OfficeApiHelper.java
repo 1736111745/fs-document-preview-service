@@ -8,7 +8,12 @@ import com.github.autoconf.ConfigFactory;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -83,10 +88,12 @@ public class OfficeApiHelper {
     return result;
   }
 
+
   public boolean convertExcel2Html(String filePath, int page) throws IOException {
     String params = "path=" + filePath + "&page=" + page;
     byte[] data = FileUtils.readFileToByteArray(new File(filePath));
     Object obj = callApi(officeConvertorServerUrl, "ConvertExcel2HtmlByStream", params, data);
+
     if (obj instanceof String) {
       ConvertResult convertResult = JSON.parseObject((String) obj, ConvertResult.class);
       return convertResult.isSuccess();
@@ -105,7 +112,9 @@ public class OfficeApiHelper {
   public boolean convertOffice2Png(String filePath, int page) throws IOException {
     String params = "path=" + filePath + "&page=" + page;
     byte[] data = FileUtils.readFileToByteArray(new File(filePath));
+
     Object obj = callApi(officeConvertorServerUrl, "ConvertOnePageOffice2PngByStream", params, data);
+
     if (obj instanceof String) {
       ConvertResult convertResult = JSON.parseObject((String) obj, ConvertResult.class);
       return convertResult.isSuccess();
@@ -179,7 +188,6 @@ public class OfficeApiHelper {
     return convertOffice2Pdf(ppt2pdfServerUrl, filePath);
   }
 
-
   private Object callApi(String url, String method, String params, byte[] data) {
     Object obj = null;
     Stopwatch stopwatch = Stopwatch.createStarted();
@@ -190,8 +198,7 @@ public class OfficeApiHelper {
     RequestBody fileBody = RequestBody.create(MediaType.parse("application/octet-stream"), data);
     RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
                                                          .addFormDataPart("file", "file", fileBody)
-                                                         .build();
-
+                                                          .build();
 
     Request request = new Request.Builder().url(postUrl).post(requestBody).build();
     try {

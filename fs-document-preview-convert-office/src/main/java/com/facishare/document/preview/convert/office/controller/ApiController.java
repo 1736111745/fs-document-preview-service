@@ -124,7 +124,6 @@ public class ApiController {
   public String convertOnePageOffice2PngByStream(@RequestParam("path") String path, @RequestParam("page") int page, @RequestParam("file") MultipartFile file, HttpServletResponse response){
     FileTypeEnum fileType = ParameterCalibrationUtil.getFileType(path);
     //要求页码不能为0开始，但word ppt  实际页码就是从0开始的，所以要减去1 而pdf是从1开始的，所以要在里面+1
-    page = ParameterCalibrationUtil.isZero(page) - 1;
     ResponseUtil.setResponse(response);
     //转图片，所有文档类型下标都是从0开始
     try (InputStream fileInputStream=file.getInputStream()){

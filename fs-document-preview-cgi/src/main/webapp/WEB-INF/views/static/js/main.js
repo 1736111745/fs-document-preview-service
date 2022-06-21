@@ -121,8 +121,14 @@ $(document).ready(function () {
     if (path != "") {
         var ext = getFileExt(path);
         if (ext == null) {
-            path = path + getFileExt(name);
+            ext = getFileExt(name);
+            //兼容name中有特殊字符
+            if(ext == null || ext == ""){
+                ext = encodeURIComponent(location.search).match(new RegExp("([^\.]+)(\.[a-z]+)"))[2];
+            }
+            path = path + ext;
         }
+
     }
     $("#main").hide();
     if (location.href.indexOf("bysharetoken") > -1) {

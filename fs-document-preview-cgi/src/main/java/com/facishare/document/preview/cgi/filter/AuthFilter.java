@@ -87,7 +87,7 @@ public class AuthFilter extends OncePerRequestFilter {
             }
           } else {
             String profile = System.getProperty("spring.profiles.active");
-            if (!profile.equals("foneshare")) {
+            if (!profile.contains("foneshare")) {
               employeeInfo = new EmployeeInfo();
               employeeInfo.setEa("75138");
               employeeInfo.setEmployeeId(1000);

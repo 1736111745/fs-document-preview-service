@@ -48,12 +48,9 @@ public class ApiController {
 
 
   @PostMapping("/GetPageInfoByStream")
-  public PageInfo getPageInfoByStream(@RequestParam("path") String path, @RequestParam("file") MultipartFile file) {
-    try (InputStream fileInputStream = file.getInputStream()) {
-     return documentPageInfoService.getPageInfo(fileInputStream, ParameterCalibrationUtil.getFileType(path));
-    } catch (IOException e) {
-      throw new Office2PdfException(ErrorInfoEnum.FILE_STREAM_ERROR, e);
-    }
+  public PageInfo getPageInfo(@RequestParam("path") String path, @RequestParam("file") MultipartFile file) {
+    byte[] fileBytes = ParameterCalibrationUtil.isNullOrEmpty(path, file);
+    return documentPageInfoService.getPageInfo(fileBytes, ParameterCalibrationUtil.getFileType(path));
   }
 
   @PostMapping(value = "/ConvertExcel2HtmlByStream")

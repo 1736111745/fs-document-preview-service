@@ -2,8 +2,11 @@ package com.facishare.document.preview.convert.office.utils;
 
 import com.aspose.pdf.Document;
 import com.aspose.pdf.License;
+import com.aspose.pdf.facades.PdfFileInfo;
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
 import com.facishare.document.preview.convert.office.exception.Office2PdfException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -49,4 +52,27 @@ public class InitializeAsposePdfUtil {
       throw new Office2PdfException(ErrorInfoEnum.PDF_INSTANTIATION_ERROR, e);
     }
   }
+
+  public static Document getPdf(byte[] fileBate) throws Office2PdfException {
+    try (ByteArrayInputStream fileStream = new ByteArrayInputStream(fileBate)) {
+      return new Document(fileStream);
+    } catch (Exception e) {
+      if (isCheckEncrypt(fileBate)) {
+        throw new Office2PdfException(ErrorInfoEnum.PDF_ENCRYPTION_ERROR, e);
+      }
+      throw new Office2PdfException(ErrorInfoEnum.PDF_INSTANTIATION_ERROR, e);
+    }
+  }
+
+  public static boolean isCheckEncrypt(byte[] file) {
+    try(ByteArrayInputStream fileStream= new ByteArrayInputStream(file)){
+      try(PdfFileInfo pdfFileInfo = new PdfFileInfo(fileStream)) {
+        return pdfFileInfo.isEncrypted();
+      }
+    } catch (IOException e) {
+      throw new Office2PdfException(ErrorInfoEnum.PDF_INSTANTIATION_ERROR, e);
+    }
+  }
+
+
 }

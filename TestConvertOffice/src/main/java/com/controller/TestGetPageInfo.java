@@ -36,7 +36,7 @@ public class TestGetPageInfo {
   @Autowired
   private OkHttpSupport client;
 
-  private String officeConvertorServerUrl = "http://172.31.101.246:37924";
+  private String officeConvertorServerUrl = "http://localhost:8023";
 
   @ResponseBody
   @RequestMapping(value = "/TestGetWordPageInfo", method = RequestMethod.POST, produces="application/json")

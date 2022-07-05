@@ -8,7 +8,6 @@ public enum ErrorInfoEnum {
   FILE_PATH_EMPTY("400", "文件路径是空的"),
   EMPTY_FILE("400", "文件是空的"),
   FILE_PARAMETER_NULL("400", "文件参数是空的"),
-  FILE_PARAMETER_ERROR("400", "没有获取到正确的文件，可能的错误是网络波动导致文件错误的传递"),
 
   FILE_STREAM_ERROR("400", "没有从文件流中获取到文件数据"),
   RESPONSE_STREAM_ERROR("500", "不能获取获取到Response 流"),

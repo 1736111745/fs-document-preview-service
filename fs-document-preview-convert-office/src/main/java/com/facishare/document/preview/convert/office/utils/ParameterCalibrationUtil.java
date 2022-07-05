@@ -4,6 +4,9 @@ import cn.hutool.core.io.file.FileNameUtil;
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
 import com.facishare.document.preview.convert.office.constant.FileTypeEnum;
 import com.facishare.document.preview.convert.office.exception.Office2PdfException;
+import com.google.common.base.Strings;
+import java.io.IOException;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author : [Andy]
@@ -46,5 +49,20 @@ public class ParameterCalibrationUtil {
       throw new Office2PdfException(ErrorInfoEnum.PAGE_NUMBER_PARAMETER_ERROR, page);
     }
     return page;
+  }
+
+  public static byte[] isNullOrEmpty(String path, MultipartFile file) throws Office2PdfException {
+    if (Strings.isNullOrEmpty(path)) {
+      throw new Office2PdfException(ErrorInfoEnum.FILE_PATH_EMPTY);
+    }
+    try {
+      byte[] fileBytes = file.getBytes();
+      if (fileBytes.length <=50) {
+        throw new Office2PdfException(ErrorInfoEnum.EMPTY_FILE);
+      }
+      return fileBytes;
+    } catch (IOException e) {
+      throw new Office2PdfException(ErrorInfoEnum.FILE_STREAM_ERROR);
+    }
   }
 }

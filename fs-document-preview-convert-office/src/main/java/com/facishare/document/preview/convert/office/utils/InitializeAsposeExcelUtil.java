@@ -1,9 +1,11 @@
 package com.facishare.document.preview.convert.office.utils;
 
+import com.aspose.cells.FileFormatUtil;
 import com.aspose.cells.License;
 import com.aspose.cells.Workbook;
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
 import com.facishare.document.preview.convert.office.exception.Office2PdfException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -42,4 +44,25 @@ public class InitializeAsposeExcelUtil {
       throw new Office2PdfException(ErrorInfoEnum.EXCEL_INSTANTIATION_ERROR, e);
     }
   }
+
+  public static Workbook getWorkBook(byte[] fileBate) throws Office2PdfException {
+    try (ByteArrayInputStream fileStream = new ByteArrayInputStream(fileBate)) {
+      return new Workbook(fileStream);
+    } catch (Exception e) {
+      if (isCheckEncrypt(fileBate)) {
+        throw new Office2PdfException(ErrorInfoEnum.EXCEL_ENCRYPTION_ERROR, e);
+      }
+      throw new Office2PdfException(ErrorInfoEnum.EXCEL_INSTANTIATION_ERROR, e);
+    }
+  }
+
+  public static boolean isCheckEncrypt(byte[] fileBate) throws Office2PdfException {
+    //文件加密返回 true
+    try (ByteArrayInputStream fileStream = new ByteArrayInputStream(fileBate)) {
+      return FileFormatUtil.detectFileFormat(fileStream).isEncrypted();
+    } catch (Exception e) {
+      throw new Office2PdfException(ErrorInfoEnum.EXCEL_INSTANTIATION_ERROR, e);
+    }
+  }
+
 }

@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 public class ConvertDocumentSuffixServiceImpl implements ConvertDocumentSuffixService {
 
   @Override
-  public byte[] convertDocumentSuffix(InputStream file, FileTypeEnum fileType) {
+  public byte[] convertDocumentSuffix(byte[] file, FileTypeEnum fileType) {
     switch (fileType) {
       case DOC:
       case DOCX:
@@ -42,19 +42,17 @@ public class ConvertDocumentSuffixServiceImpl implements ConvertDocumentSuffixSe
         throw new Office2PdfException(ErrorInfoEnum.FILE_TYPES_DO_NOT_MATCH);
     }
   }
-  private byte[] convertDocToDocx(InputStream file) {
+  private byte[] convertDocToDocx(byte[] file) {
       Document doc = InitializeAsposeWordUtil.getWord(file);
       try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
         doc.save(outputStream, com.aspose.words.SaveFormat.DOCX);
         return outputStream.toByteArray();
       } catch (Exception e) {
         throw new Office2PdfException(ErrorInfoEnum.WORD_FILE_SAVING_FAILURE, e);
-      } finally {
-        doc = null;
       }
   }
 
-  private byte[] convertPptToPptx(InputStream file) {
+  private byte[] convertPptToPptx(byte[] file) {
       Presentation ppt = InitializeAsposePptUtil.getPpt(file);
       try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
         ppt.save(outputStream, com.aspose.slides.SaveFormat.Pptx);
@@ -66,7 +64,7 @@ public class ConvertDocumentSuffixServiceImpl implements ConvertDocumentSuffixSe
       }
   }
 
-  private byte[] convertXlsToXlsx(InputStream file) {
+  private byte[] convertXlsToXlsx(byte[] file) {
       Workbook workbook =  InitializeAsposeExcelUtil.getWorkBook(file);
       try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
         workbook.save(outputStream, com.aspose.cells.SaveFormat.XLSX);

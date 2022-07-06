@@ -20,5 +20,5 @@ public interface ConvertDocumentSuffixService {
    * @param fileType 要转换的文档的后缀名
    * @return 成功：返回已经转换好的文档的字节流 失败：返回报错信息（如文件损坏或文件加锁）
    */
-  byte[] convertDocumentSuffix(InputStream file, FileTypeEnum fileType);
+  byte[] convertDocumentSuffix(byte[] file, FileTypeEnum fileType);
 }

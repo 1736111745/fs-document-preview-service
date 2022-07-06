@@ -65,36 +65,53 @@ public class PreviewInfoHelper {
   public PreviewInfoEx getPreviewInfo(EmployeeInfo employeeInfo, String npath, String securityGroup, int width) {
     String ea = employeeInfo.getEa();
     int employeeId = employeeInfo.getEmployeeId();
+    //最终返回的文件预览信息
     PreviewInfoEx previewInfoEx = new PreviewInfoEx();
     try {
       PreviewInfo previewInfo = previewInfoDao.getInfoByPath(ea, npath, width);
       int pageCount;
       List<String> sheetNames;
+      //获取文件后缀
       String extension = FilenameUtils.getExtension(npath).toLowerCase();
       PageInfo pageInfo = new PageInfo();
+      //没有从mongo中获取到预览信息或者预览文件在文件系统中不存在。
       if (previewInfo == null || !FileUtil.exists(previewInfo)) {
         log.info("preview info is null or file not exist! path:{}", npath);
+        //预览文件在文件系统中不存在，但在mongo中存在预览信息，则根据mongo中的预览信息从文件系统中批量删除预览文件
         if (previewInfo != null) {
           previewInfoDao.patchClean(ea, Lists.newArrayList(npath));
           office2PdfTaskDao.deleteTaskInfo(ea, npath);
         }
+        //根据企业账号、企业账号、安全组信息、以及文件的npath，获取文件
         byte[] bytes = fileStorageProxy.GetBytesByPath(npath, ea, employeeId, securityGroup);
+        //获取到原始文件并且文件大小大于0，则进行预览文件的生成
         if (bytes != null && bytes.length > 0) {
+          //如果文件是xls文件并且文大小大于20M，则写入返回结果（不支持预览）
           if (extension.contains("xls") && bytes.length > 1024 * 1024 * 20) {
             previewInfoEx.setSuccess(false);
             previewInfoEx.setPreviewInfo(null);
             previewInfoEx.setErrorMsg("excel文件大于20M，不支持预览！");
-          } else {
+          }
+          //如果不是xls文件，则首先进行文件大小判断是否大于100M
+          else {
+            //如果文件大于100M,则写入返回结果（不支持预览）
             if (bytes.length > 1024 * 1024 * 100) {
               previewInfoEx.setSuccess(false);
               previewInfoEx.setPreviewInfo(null);
               previewInfoEx.setErrorMsg("当前文件大于100M，不支持预览！");
-            } else {
+            }
+            //不是xls文件并且文件大小小于100M
+            else {
+              //从配置中心获取存放文件的路径
               String dataDir = new PathHelper(ea).getDataDir();
+              //生成文件的文件名并加上文件后缀
               String fileName = SampleUUID.getUUID() + "." + extension;
+              //生成存放文件的路径（文件路径+文件名+文件后缀）
               String filePath = FilenameUtils.concat(dataDir, fileName);
+              //将从文件系统中获取到的文件写入到本地文件系统中（根据生成的存放文件的路径）
               FileUtils.writeByteArrayToFile(new File(filePath), bytes);
               log.info("save file to {},npath:{}", filePath, npath);
+
               if (redirectPreviewExtension.indexOf(extension) > -1) {
                 pageInfo.setSuccess(true);
                 pageInfo.setPageCount(1);

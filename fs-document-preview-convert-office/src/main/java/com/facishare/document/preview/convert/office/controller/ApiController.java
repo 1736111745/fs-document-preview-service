@@ -87,17 +87,13 @@ public class ApiController {
 
   @PostMapping(value = "/ConvertFileByStream")
   public String convertFileByStream(@RequestParam("path") String path, @RequestParam("file") MultipartFile file, HttpServletResponse response){
-    FileTypeEnum fileType = ParameterCalibrationUtil.getFileType(path);
+    byte[] fileBytes=ParameterCalibrationUtil.isNullOrEmpty(path,file);
     ResponseUtil.setResponse(response);
-    try (InputStream fileInputStream=file.getInputStream()){
       try (OutputStream outputStream=response.getOutputStream()) {
-        outputStream.write(convertDocumentSuffix.convertDocumentSuffix(fileInputStream, fileType));
+        outputStream.write(convertDocumentSuffix.convertDocumentSuffix(fileBytes, ParameterCalibrationUtil.getFileType(path)));
       } catch (IOException e) {
         throw new Office2PdfException(ErrorInfoEnum.RESPONSE_STREAM_ERROR, e);
       }
-    } catch (IOException e) {
-      throw new Office2PdfException(ErrorInfoEnum.FILE_STREAM_ERROR, e);
-    }
     return null;
   }
 

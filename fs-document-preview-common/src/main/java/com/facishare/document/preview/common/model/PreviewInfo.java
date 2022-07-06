@@ -20,18 +20,29 @@ import java.util.List;
 public class PreviewInfo {
     @Id
     private ObjectId id;
+    //文件路径
     private String path;
     private Date createTime;
     private int createYYMMDD;
+    //企业账号
     private String ea;
+    //总页码
     private int pageCount;
+    //Excel工作表元数据
     private List<String> sheetNames;
+    //文件夹名称
     private String dirName;
+    //文件夹路径
     private String dataDir;
+    //员工账号id
     private long employeeId;
-    private long docSize;//原始大小
+    //文件原始大小
+    private long docSize;
+    //原始文件路径
     private String originalFilePath;//原始文件
     private List<String> filePathList;
-    private int width;//文档页码宽度
-    private int pdfConvertType;//0表示html 1表示image
+    //文档页码宽度
+    private int width;
+    //pdf转换类型，0表示html 1表示image
+    private int pdfConvertType;
 }

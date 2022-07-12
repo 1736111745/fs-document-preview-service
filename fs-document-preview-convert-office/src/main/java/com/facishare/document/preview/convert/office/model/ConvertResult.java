@@ -17,13 +17,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class ConvertResult {
   private boolean success;
   private String errorMsg;
 
-  public ConvertResult(String errorMsg){
+  public ConvertResult(String errorMessage) {
     this.success=false;
-    this.errorMsg=errorMsg;
+    this.errorMsg=errorMessage;
   }
 }

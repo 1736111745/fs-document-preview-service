@@ -46,7 +46,7 @@ public class ParameterCalibrationUtil {
 
   public static int isZero(int page) throws Office2PdfException {
     if (page == 0) {
-      throw new Office2PdfException(ErrorInfoEnum.PAGE_NUMBER_PARAMETER_ERROR, page);
+      throw new Office2PdfException(ErrorInfoEnum.PAGE_NUMBER_PARAMETER_ERROR,page,"页码不能为0");
     }
     return page;
   }

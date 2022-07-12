@@ -35,7 +35,8 @@ import java.net.URLEncoder;
 @RequestMapping(value = "/TestConvertOfficeSuffix")
 public class TestConvertOfficeSuffix {
 
-  private String officeConvertorServerUrl = "http://172.31.101.246:37924";
+//  private String officeConvertorServerUrl = "http://172.31.101.246:37924";
+  private String officeConvertorServerUrl = "http://localhost:8023";
   @Autowired
   private OkHttpSupport client;
 

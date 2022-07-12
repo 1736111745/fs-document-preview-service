@@ -89,8 +89,10 @@ public class ApiController {
   public String convertFileByStream(@RequestParam("path") String path, @RequestParam("file") MultipartFile file, HttpServletResponse response){
     byte[] fileBytes=ParameterCalibrationUtil.isNullOrEmpty(path,file);
     ResponseUtil.setResponse(response);
-      try (OutputStream outputStream=response.getOutputStream()) {
+    try  {
+        OutputStream outputStream=response.getOutputStream();
         outputStream.write(convertDocumentSuffix.convertDocumentSuffix(fileBytes, ParameterCalibrationUtil.getFileType(path)));
+        outputStream.close();
       } catch (IOException e) {
         throw new Office2PdfException(ErrorInfoEnum.RESPONSE_STREAM_ERROR, e);
       }

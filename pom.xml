@@ -8,10 +8,12 @@
         <artifactId>fxiaoke-parent-pom</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
+
     <groupId>com.facishare</groupId>
     <artifactId>fs-document-preview</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+
     <modules>
         <module>fs-document-preview-cgi</module>
         <module>fs-document-preview-api</module>

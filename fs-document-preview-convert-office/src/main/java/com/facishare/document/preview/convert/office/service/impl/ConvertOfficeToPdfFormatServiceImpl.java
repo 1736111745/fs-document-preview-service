@@ -62,7 +62,8 @@ public class ConvertOfficeToPdfFormatServiceImpl implements ConvertOfficeToPdfFo
     Document doc = InitializeAsposeWordUtil.getWord(file, options);
     try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
       PdfSaveOptions pdfSaveOptions = new com.aspose.words.PdfSaveOptions();
-      pdfSaveOptions.setFontEmbeddingMode(0);
+      //不嵌入任何字体
+      pdfSaveOptions.setFontEmbeddingMode(2);
       pdfSaveOptions.setZoomBehavior(0);
       FontSettings.getDefaultInstance().setFontsFolder(office2PdfWordDocumentFontsDirectory, true);
       doc.save(outputStream,pdfSaveOptions);
@@ -78,7 +79,7 @@ public class ConvertOfficeToPdfFormatServiceImpl implements ConvertOfficeToPdfFo
       ppt.save(outputStream, com.aspose.slides.SaveFormat.Pdf);
       return outputStream.toByteArray();
     } catch (Exception e) {
-      throw new Office2PdfException(ErrorInfoEnum.STREAM_CLOSING_ANOMALY, e);
+      throw new Office2PdfException(ErrorInfoEnum.PPT_FILE_SAVING_FAILURE, e);
     } finally {
       ppt.dispose();
     }

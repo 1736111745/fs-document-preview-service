@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 public class ConvertDocumentSuffixServiceImpl implements ConvertDocumentSuffixService {
 
   @Override
-  public byte[] convertDocumentSuffix(byte[] file, FileTypeEnum fileType) {
+  public byte[]  convertDocumentSuffix(byte[] file, FileTypeEnum fileType) {
     switch (fileType) {
       case DOC:
       case DOCX:

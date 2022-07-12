@@ -22,37 +22,50 @@ public class Office2PdfException extends RuntimeException {
   /**
    * 错误信息
    */
-  private final String errorCode;
-  private final String errorMsg;
+  private final int errorCode;
+  private final String errorMessage;
+
+  private final String errorReason;
 
   public Office2PdfException(ErrorInfoEnum errorInfoEnum) {
-    super(String.valueOf(errorInfoEnum.getErrCode()));
+    super(errorInfoEnum.getErrorMessage());
     this.errorCode = errorInfoEnum.getErrCode();
-    this.errorMsg = errorInfoEnum.getErrorMsg();
+    this.errorMessage = errorInfoEnum.getErrorMessage();
+    this.errorReason = errorInfoEnum.getErrorReason();
   }
 
-  public Office2PdfException(ErrorInfoEnum errorInfoEnum, int errorParameters) {
-    super(String.valueOf(errorInfoEnum.getErrCode()));
+  public Office2PdfException(ErrorInfoEnum errorInfoEnum, int errorParameters, String errorReason) {
+    super(errorInfoEnum.getErrorMessage());
     this.errorCode = errorInfoEnum.getErrCode();
-    this.errorMsg = errorInfoEnum.getErrorMsg() + " 错误的参数是：" + errorParameters;
+    this.errorReason = errorReason;
+    this.errorMessage = errorInfoEnum.getErrorMessage() + " 错误的参数是：" + errorParameters;
   }
 
   public Office2PdfException(ErrorInfoEnum errorInfoEnum, Throwable cause) {
-    super(String.valueOf(errorInfoEnum.getErrCode()), cause);
+    super(errorInfoEnum.getErrorMessage(),cause);
     this.errorCode = errorInfoEnum.getErrCode();
-    this.errorMsg = errorInfoEnum.getErrorMsg();
+    this.errorMessage = errorInfoEnum.getErrorMessage();
+    this.errorReason = errorInfoEnum.getErrorReason();
   }
 
 
   public Office2PdfException(ErrorInfoEnum errorInfoEnum, Exception cause) {
     super(cause);
     this.errorCode = errorInfoEnum.getErrCode();
-    this.errorMsg = errorInfoEnum.getErrorMsg();
+    this.errorMessage = errorInfoEnum.getErrorMessage();
+    this.errorReason = errorInfoEnum.getErrorReason();
   }
 
   @Override
   public String getMessage() {
-    return errorMsg;
+    return errorMessage;
+  }
+
+  public int getErrorCode() {
+    return errorCode;
+  }
+  public String getErrorReason() {
+    return errorReason;
   }
 
 

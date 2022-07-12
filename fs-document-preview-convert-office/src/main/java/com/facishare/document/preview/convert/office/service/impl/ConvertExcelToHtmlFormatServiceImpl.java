@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
  * @updateRemark : [将转换为HTML页面的的服务单独拆分为一个服务]
  */
 @Service
-public class ConvertExcelToHtmlFormatServiceImpl implements ConvertExcelToHtmlFormatService {
+public class  ConvertExcelToHtmlFormatServiceImpl implements ConvertExcelToHtmlFormatService {
 
   @Override
   public byte[] convertOnePageExcelToHtml(InputStream file, int page) {

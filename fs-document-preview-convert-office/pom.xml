@@ -108,7 +108,6 @@
       <artifactId>aspose-cells</artifactId>
       <version>21.11</version>
     </dependency>
-
   </dependencies>
 
 </project>

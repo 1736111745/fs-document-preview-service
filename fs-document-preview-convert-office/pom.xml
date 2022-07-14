@@ -10,6 +10,17 @@
   <packaging>war</packaging>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>fs-document-preview-convert-office</artifactId>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <java.version>17</java.version>
+    <jdk.version>17</jdk.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.springframework</groupId>
@@ -101,9 +112,6 @@
       <artifactId>hutool-all</artifactId>
       <version>5.8.4</version>
     </dependency>
-
   </dependencies>
-
-
 
 </project>

@@ -207,7 +207,7 @@ public class OfficeApiHelper {
       if (response.header("Content-Type").contains("json")) {
         obj = response.body().string();
         log.info("response.json:{}", obj);
-      } else {
+      }else {
         obj = response.body().bytes();
       }
     } catch (Exception e) {

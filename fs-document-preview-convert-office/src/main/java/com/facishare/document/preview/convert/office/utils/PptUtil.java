@@ -7,9 +7,13 @@ import com.aspose.slides.PresentationFactory;
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
 import com.facishare.document.preview.convert.office.constant.Office2PdfException;
 import com.facishare.document.preview.convert.office.domain.PageInfo;
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import javax.imageio.ImageIO;
 
 public class PptUtil {
 
@@ -107,6 +111,23 @@ public class PptUtil {
       ppt.dispose();
     }
   }
+
+  public static byte[] convertPptOnePageToPng(InputStream file,int page){
+    Presentation ppt = PptUtil.getPpt(file);
+    Dimension size = new Dimension(1280, 720);
+    com.aspose.slides.ISlide slide = ppt.getSlides().get_Item(page);
+    BufferedImage bufferedImage = slide.getThumbnail(size);
+    try(ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
+      ImageIO.write(bufferedImage, "PNG", outputStream);
+      return outputStream.toByteArray();
+    } catch (IOException e) {
+      throw new Office2PdfException(ErrorInfoEnum.PAGE_NUMBER_PARAMETER_ERROR, e);
+    } finally {
+      bufferedImage.getGraphics().dispose();
+      ppt.dispose();
+    }
+  }
+
 
 
 

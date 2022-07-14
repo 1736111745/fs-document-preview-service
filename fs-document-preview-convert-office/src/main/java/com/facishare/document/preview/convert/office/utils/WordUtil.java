@@ -4,9 +4,12 @@ package com.facishare.document.preview.convert.office.utils;
 import com.aspose.words.Document;
 import com.aspose.words.FileFormatUtil;
 import com.aspose.words.FontSettings;
+import com.aspose.words.ImageSaveOptions;
 import com.aspose.words.License;
 import com.aspose.words.LoadOptions;
+import com.aspose.words.PageSet;
 import com.aspose.words.PdfSaveOptions;
+import com.aspose.words.SaveFormat;
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
 import com.facishare.document.preview.convert.office.constant.Office2PdfException;
 import com.facishare.document.preview.convert.office.domain.PageInfo;
@@ -140,5 +143,16 @@ public class WordUtil {
     }
   }
 
-
+  public static byte[] convertWordOnePageToPng(InputStream file,int page){
+    Document doc =WordUtil.getWord(file);
+    ImageSaveOptions imageOptions = new ImageSaveOptions(SaveFormat.PNG);
+    imageOptions.setUseHighQualityRendering(true);
+    imageOptions.setPageSet(new PageSet(page));
+    try(ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
+      doc.save(outputStream, imageOptions);
+      return outputStream.toByteArray();
+    } catch (Exception e) {
+      throw new Office2PdfException(ErrorInfoEnum.PAGE_NUMBER_PARAMETER_ERROR, e);
+    }
+  }
 }

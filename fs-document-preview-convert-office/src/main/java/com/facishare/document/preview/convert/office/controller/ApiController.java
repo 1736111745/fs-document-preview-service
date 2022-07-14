@@ -41,14 +41,14 @@ public class ApiController {
   }
 
   @PostMapping(value = "/ConvertExcel2HtmlByStream")
-  public ConvertResult convertExcel2HtmlByStream(@RequestParam("path") String path,
-      @RequestParam("page") int page,
-      @RequestParam("file") MultipartFile file, HttpServletResponse response) {
+  public ConvertResult convertExcel2HtmlByStream(@RequestParam("path") String path, @RequestParam("page") int page, @RequestParam("file") MultipartFile file, HttpServletResponse response) {
     ParamCheckUtil.isExcelType(path);
     ResponseUtil.setResponse(response);
     try (InputStream inputStream = file.getInputStream()) {
-      try (OutputStream outputStream = response.getOutputStream()) {
+      try{
+        OutputStream outputStream = response.getOutputStream();
         outputStream.write(ExcelUtil.ExcelToHtml(inputStream, page));
+        outputStream.close();
         return null;
       } catch (Exception e) {
         throw new Office2PdfException(ErrorInfoEnum.RESPONSE_STREAM_ERROR, e);
@@ -64,17 +64,19 @@ public class ApiController {
     FileTypeEnum fileType = ParamCheckUtil.getFileType(path);
     byte[] fileBytes = ParamCheckUtil.getFileBytes(file);
     ResponseUtil.setResponse(response);
-    try (OutputStream outputStream = response.getOutputStream()) {
+    try {
+      OutputStream outputStream = response.getOutputStream();
       switch (fileType) {
         case DOC, DOCX -> outputStream.write(WordUtil.convertDocToDocx(fileBytes));
         case PPT, PPTX -> outputStream.write(PptUtil.convertPptToPptx(fileBytes));
         case XLS, XLSX -> outputStream.write(ExcelUtil.convertXlsToXlsx(fileBytes));
         default -> throw new Office2PdfException(ErrorInfoEnum.FILE_TYPES_DO_NOT_MATCH);
       }
+      outputStream.close();
+      return null;
     } catch (IOException e) {
       throw new Office2PdfException(ErrorInfoEnum.RESPONSE_STREAM_ERROR, e);
     }
-    return null;
   }
 
   @PostMapping(value = "/ConvertOnePageOffice2PdfByStream")
@@ -117,4 +119,28 @@ public class ApiController {
       throw new Office2PdfException(ErrorInfoEnum.FILE_STREAM_ERROR, e);
     }
   }
+
+  @PostMapping(value = "/ConvertOnePageOffice2PngByStream")
+  public String convertOnePageOffice2PngByStream(@RequestParam("path") String path, @RequestParam("page") int page, @RequestParam("file") MultipartFile file, HttpServletResponse response){
+    FileTypeEnum fileType = ParamCheckUtil.getFileType(path);
+    //要求页码不能为0开始，但word ppt  实际页码就是从0开始的，所以要减去1 而pdf是从1开始的，所以要在里面+1
+    ResponseUtil.setResponse(response);
+    //转图片，所有文档类型下标都是从0开始
+    try (InputStream fileInputStream=file.getInputStream()){
+      try (OutputStream outputStream=response.getOutputStream()) {
+        switch (fileType) {
+          case DOC, DOCX -> outputStream.write(WordUtil.convertWordOnePageToPng(fileInputStream, page));
+          case PPT, PPTX -> outputStream.write(PptUtil.convertPptOnePageToPng(fileInputStream, page));
+          case PDF -> outputStream.write(PdfUtil.convertPdfOnePageToPng(fileInputStream, page + 1));
+          default -> throw new Office2PdfException(ErrorInfoEnum.FILE_TYPES_DO_NOT_MATCH);
+        }
+        return null;
+      } catch (IOException e) {
+        throw new Office2PdfException(ErrorInfoEnum.RESPONSE_STREAM_ERROR, e);
+      }
+    } catch (IOException e) {
+      throw new Office2PdfException(ErrorInfoEnum.FILE_STREAM_ERROR, e);
+    }
+  }
+
 }

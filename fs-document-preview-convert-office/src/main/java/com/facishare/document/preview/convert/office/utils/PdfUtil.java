@@ -7,6 +7,7 @@ import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
 import com.facishare.document.preview.convert.office.constant.Office2PdfException;
 import com.facishare.document.preview.convert.office.domain.PageInfo;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -44,6 +45,18 @@ public class PdfUtil {
     }
   }
 
+  /**
+   * 获取PDF 文档对象 本类的其他方法都依赖于当前方法
+   */
+  public static Document getPdf(InputStream file) throws Office2PdfException {
+    try{
+      return new Document(file);
+    } catch (Exception e) {
+      throw new Office2PdfException(ErrorInfoEnum.PDF_INSTANTIATION_ERROR, e);
+    }
+  }
+
+
   public static boolean isCheckEncrypt(byte[] file) {
     try(ByteArrayInputStream fileStream= new ByteArrayInputStream(file)){
       try(PdfFileInfo pdfFileInfo = new PdfFileInfo(fileStream)) {
@@ -64,4 +77,19 @@ public class PdfUtil {
       pdf.close();
     }
   }
+
+  public static byte[] convertPdfOnePageToPng(InputStream file,int page){
+    com.aspose.pdf.Document pdf = PdfUtil.getPdf(file);
+    com.aspose.pdf.devices.Resolution imageResolution = new com.aspose.pdf.devices.Resolution(128);
+    com.aspose.pdf.devices.PngDevice rendererPng = new com.aspose.pdf.devices.PngDevice(imageResolution);
+    try(ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
+      rendererPng.process(pdf.getPages().get_Item(page), outputStream);
+      return outputStream.toByteArray();
+    } catch (Exception e) {
+      throw new Office2PdfException(ErrorInfoEnum.PAGE_NUMBER_PARAMETER_ERROR, e);
+    } finally {
+      pdf.close();
+    }
+  }
+
 }

@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
 
     ConvertResult result = new ConvertResult(e.getErrorMessage());
     if (e.getErrorCode()==400) {
-      log.warn("客户端错误信息打印开始：\n错误码{},\n错误信息{},\n错误原因{}。",e.getErrorCode(),e.getErrorMessage(),e.getErrorReason());
+      log.warn("客户端错误信息打印开始：\n错误码: {} ,\n错误信息: {} ,\n错误原因: {} .",e.getErrorCode(),e.getErrorMessage(),e.getErrorReason(),e);
     }
     if (e.getErrorCode()==500){
       log.error("服务端错误信息打印开始：\n错误码{},错误信息{},\n错误原因{}。",e.getErrorCode(),e.getErrorMessage(),e.getErrorReason());

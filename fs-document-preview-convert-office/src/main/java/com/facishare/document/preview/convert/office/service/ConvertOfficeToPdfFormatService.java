@@ -2,6 +2,7 @@ package com.facishare.document.preview.convert.office.service;
 
 import com.facishare.document.preview.convert.office.constant.FileTypeEnum;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * @author : [Andy]

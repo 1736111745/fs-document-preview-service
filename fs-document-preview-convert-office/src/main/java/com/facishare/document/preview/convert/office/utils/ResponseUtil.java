@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
  * @author Andy
  */
 public class ResponseUtil {
-
   private ResponseUtil() {
     throw new Office2PdfException(ErrorInfoEnum.INVALID_REFLECTION_ACCESS);
   }

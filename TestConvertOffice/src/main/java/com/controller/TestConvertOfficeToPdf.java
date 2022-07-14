@@ -35,7 +35,8 @@ import java.net.URLEncoder;
 @RequestMapping(value = "/TestConvertOfficeToPdf")
 public class TestConvertOfficeToPdf {
 
-  private String officeConvertorServerUrl = "http://172.31.101.246:37924";
+//  private String officeConvertorServerUrl = "http://172.31.101.246:37924";
+  private String officeConvertorServerUrl = "http://localhost:8023";
   @Autowired
   private OkHttpSupport client;
 
@@ -73,6 +74,7 @@ public class TestConvertOfficeToPdf {
       File file = new File(filePath);
       String dir = file.getParent();
       String pdfFileName = page + ".pdf";
+      System.out.println("文件路径:"+pdfFileName);
       File pdfFile = new File(FilenameUtils.concat(dir, pdfFileName));
       FileUtils.writeByteArrayToFile(pdfFile, bytes);
       return true;

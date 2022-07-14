@@ -5,6 +5,7 @@ import com.aspose.words.Document;
 import com.aspose.words.FontSettings;
 import com.aspose.words.LoadOptions;
 import com.aspose.words.PdfSaveOptions;
+import com.facishare.common.fsi.ProtoSerializer.O;
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
 import com.facishare.document.preview.convert.office.constant.FileTypeEnum;
 import com.facishare.document.preview.convert.office.exception.Office2PdfException;
@@ -14,6 +15,7 @@ import com.facishare.document.preview.convert.office.utils.InitializeAsposeWordU
 import com.github.autoconf.ConfigFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import javax.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
@@ -62,8 +64,8 @@ public class ConvertOfficeToPdfFormatServiceImpl implements ConvertOfficeToPdfFo
     Document doc = InitializeAsposeWordUtil.getWord(file, options);
     try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
       PdfSaveOptions pdfSaveOptions = new com.aspose.words.PdfSaveOptions();
-      //不嵌入任何字体
-      pdfSaveOptions.setFontEmbeddingMode(2);
+      //0 嵌入所有字体 1 嵌入了除标准Windows字体Arial和Times New Roman之外的所有字体  2 不嵌入任何字体。
+      pdfSaveOptions.setFontEmbeddingMode(0);
       pdfSaveOptions.setZoomBehavior(0);
       FontSettings.getDefaultInstance().setFontsFolder(office2PdfWordDocumentFontsDirectory, true);
       doc.save(outputStream,pdfSaveOptions);
@@ -108,7 +110,7 @@ public class ConvertOfficeToPdfFormatServiceImpl implements ConvertOfficeToPdfFo
       PdfSaveOptions pdfSaveOptions = new com.aspose.words.PdfSaveOptions();
       pdfSaveOptions.setPageSet(new com.aspose.words.PageSet(page));
       //0 嵌入所有字体 1 嵌入了除标准Windows字体Arial和Times New Roman之外的所有字体  2 不嵌入任何字体。
-      pdfSaveOptions.setFontEmbeddingMode(2);
+      pdfSaveOptions.setFontEmbeddingMode(0);
       //0 文档的显示方式留给 PDF 查看器。通常，查看器会显示适合页面宽度的文档。 1 使用指定的缩放系数显示页面。 2 显示页面，使其完全可见。 3 适合页面的宽度。 4 适合页面的高度。 5 适合边界框（包含页面上所有可见元素的矩形）。
       pdfSaveOptions.setZoomBehavior(0);
       FontSettings.getDefaultInstance().setFontsFolder(office2PdfWordDocumentFontsDirectory, true);

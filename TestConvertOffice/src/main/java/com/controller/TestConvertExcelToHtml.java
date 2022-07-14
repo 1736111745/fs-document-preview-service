@@ -39,8 +39,8 @@ public class TestConvertExcelToHtml {
   @Autowired
   private OkHttpSupport client;
 
-  private String officeConvertorServerUrl = "http://172.31.101.246:37924";
-
+//  private String officeConvertorServerUrl = "http://172.31.101.246:37924";
+  private String officeConvertorServerUrl = "http://localhost:8023";
   @ResponseBody
   @RequestMapping(value = "/TestConvertExcel2Html", method = RequestMethod.POST, produces="application/json")
   public String TestConvertExcel2Html(@RequestParam("path") String path, int page,@RequestParam("file") MultipartFile file) throws IOException {

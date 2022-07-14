@@ -1,8 +1,7 @@
 package com.facishare.document.preview.convert.office.utils;
 
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
-import com.facishare.document.preview.convert.office.exception.Office2PdfException;
-
+import com.facishare.document.preview.convert.office.constant.Office2PdfException;
 import javax.servlet.http.HttpServletResponse;
 
 /**

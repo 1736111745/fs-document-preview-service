@@ -4,27 +4,19 @@ import com.aspose.pdf.Document;
 import com.aspose.pdf.License;
 import com.aspose.pdf.facades.PdfFileInfo;
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
-import com.facishare.document.preview.convert.office.exception.Office2PdfException;
+import com.facishare.document.preview.convert.office.constant.Office2PdfException;
+import com.facishare.document.preview.convert.office.domain.PageInfo;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * @author : [Andy]
- * @version : [v1.0]
- * @description : [在类加载时将Aspose签名文件加载入内存中]
- * @createTime : [2022/5/9 14:54]
- * @updateUser : [Andy]
- * @updateTime : [2022/5/9 14:54]
- * @updateRemark : [重构Aspose签名文件加载方式]
- */
-public class InitializeAsposePdfUtil {
+public class PdfUtil {
 
   /**
    * 防止反射攻击
    */
 
-  private InitializeAsposePdfUtil() {
+  private PdfUtil() {
     throw new Office2PdfException(ErrorInfoEnum.INVALID_REFLECTION_ACCESS);
   }
 
@@ -33,23 +25,11 @@ public class InitializeAsposePdfUtil {
    */
 
   static {
-    try (InputStream is = InitializeAsposePdfUtil.class.getClassLoader()
-        .getResourceAsStream("license.xml")) {
+    try (InputStream is = PdfUtil.class.getClassLoader().getResourceAsStream("license.xml")) {
       License license = new License();
       license.setLicense(is);
     } catch (Exception e) {
       throw new Office2PdfException(ErrorInfoEnum.PDF_ABNORMAL_FILE_SIGNATURE, e);
-    }
-  }
-
-  /**
-   * 获取PDF 文档对象 本类的其他方法都依赖于当前方法
-   */
-  public static Document getPdf(InputStream file) throws Office2PdfException {
-    try{
-      return new Document(file);
-    } catch (Exception e) {
-      throw new Office2PdfException(ErrorInfoEnum.PDF_INSTANTIATION_ERROR, e);
     }
   }
 
@@ -74,5 +54,14 @@ public class InitializeAsposePdfUtil {
     }
   }
 
-
+  public static PageInfo getPdfPageCount(byte[] file) {
+    Document pdf = PdfUtil.getPdf(file);
+    try{
+      return PageInfo.ok(pdf.getPages().size());
+    } catch (Exception e) {
+      throw new Office2PdfException(ErrorInfoEnum.PDF_PAGE_NUMBER_PARAMETER_ZERO, e);
+    }finally {
+      pdf.close();
+    }
+  }
 }

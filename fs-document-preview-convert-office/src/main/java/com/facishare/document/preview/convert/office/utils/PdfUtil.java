@@ -2,6 +2,8 @@ package com.facishare.document.preview.convert.office.utils;
 
 import com.aspose.pdf.Document;
 import com.aspose.pdf.License;
+import com.aspose.pdf.devices.PngDevice;
+import com.aspose.pdf.devices.Resolution;
 import com.aspose.pdf.facades.PdfFileInfo;
 import com.facishare.document.preview.convert.office.constant.ErrorInfoEnum;
 import com.facishare.document.preview.convert.office.constant.Office2PdfException;
@@ -10,6 +12,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class PdfUtil {
 
@@ -91,5 +95,26 @@ public class PdfUtil {
       pdf.close();
     }
   }
+
+  public static byte[] convertPdfAllPageToPng(InputStream file) {
+    String office2PngTempPath = FileProcessingUtil.createDirectory("/opt/office2Png");
+    String office2PngZipTempPath = FileProcessingUtil.createDirectory("/opt/office2PngZip");
+    com.aspose.pdf.Document pdf = PdfUtil.getPdf(file);
+    int pageCount = pdf.getPages().size();
+    Resolution imageResolution = new Resolution(128);
+    PngDevice rendererPng = new PngDevice(imageResolution);
+    try {
+      for (int i = 1; i <= pageCount; i++) {
+        rendererPng.process(pdf.getPages().get_Item(i), Files.newOutputStream(
+            Paths.get(office2PngTempPath + "\\" + i + ".png")));
+      }
+    } catch (Exception e) {
+      throw new Office2PdfException(ErrorInfoEnum.PDF_FILE_SAVING_PNG_FAILURE, e);
+    }finally {
+      pdf.close();
+    }
+    return FileProcessingUtil.getZipByte(office2PngTempPath, office2PngZipTempPath);
+  }
+
 
 }

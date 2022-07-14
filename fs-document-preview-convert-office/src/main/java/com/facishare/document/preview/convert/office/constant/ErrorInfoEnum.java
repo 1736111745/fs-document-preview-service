@@ -37,9 +37,13 @@ public enum ErrorInfoEnum {
   PPT_ABNORMAL_FILE_SIGNATURE(500, "PPT文件签名文件验证异常", "PPT文件签名文件验证异常"),
   PDF_ABNORMAL_FILE_SIGNATURE(500, "PDF文件签名文件验证异常", "PDF文件签名文件验证异常"),
   FILE_PARAMETER_NULL(400, "文件是空的", "ParameterCalibrationUtil工具类参数校验file参数, file.getBytes()不能拿到文件数据"),
-
+  UNABLE_CREATE_FOLDER(500, "预览服务繁忙", "不能在目标路径创建文件夹 可能的错误是目标路径并不存在"),
+  FILE_DELETION_FAILED(500, "预览文件无法删除", "删除目标文件夹失败 可能的错误是目标文件夹被其他程序占用"),
+  FAILED_READ_DATA(500, "无法读取压缩文件", "无法读取压缩文件, 可能的错误是目标文件夹被其他程序占用"),
   STREAM_CLOSING_ANOMALY(500, "预览文件太大啦,无法展示","PPT转换全部页面为PDF时，流关闭异常"),
-
+  WORD_FILE_SAVING_PNG_FAILURE(500, "Word 文件图片预览模式失败","Word 文件转换图片失败 可能的错误是保存的目标并不存在(检查文件路径)"),
+  PPT_FILE_SAVING_PNG_FAILURE(500, "PPT 文件图片预览模式失败", "PPT 文件转换图片失败 可能的错误是保存的目标并不存在(检查文件路径)"),
+  PDF_FILE_SAVING_PNG_FAILURE(500, "PDF 文件图片预览模式失败","PDF 文件转换图片失败 可能的错误是保存的目标并不存在(检查文件路径)"),
 
 
   INVALID_REFLECTION_ACCESS(500, "非法访问", "非法的通过反射访问对象");

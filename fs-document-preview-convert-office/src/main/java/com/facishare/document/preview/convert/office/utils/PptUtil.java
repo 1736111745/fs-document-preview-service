@@ -11,6 +11,7 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
@@ -126,6 +127,30 @@ public class PptUtil {
       bufferedImage.getGraphics().dispose();
       ppt.dispose();
     }
+  }
+
+  public static byte[] convertPptAllPageToPng(InputStream file) {
+    String office2PngTempPath = FileProcessingUtil.createDirectory("/opt/office2Png");
+    String office2PngZipTempPath = FileProcessingUtil.createDirectory("/opt/office2PngZip");
+    Presentation ppt = PptUtil.getPpt(file);
+    BufferedImage bufferedImage=null;
+    try{
+      for (com.aspose.slides.ISlide slide : ppt.getSlides()) {
+        Dimension size = new Dimension(1280, 720);
+        //设置生成图片的大小
+        bufferedImage = slide.getThumbnail(size);
+        File outputFile = new File(office2PngTempPath + "\\" + slide.getSlideNumber() + ".png");
+        ImageIO.write(bufferedImage, "PNG", outputFile);
+      }
+    } catch (IOException e) {
+      throw new Office2PdfException(ErrorInfoEnum.WORD_FILE_SAVING_PNG_FAILURE, e);
+    } finally {
+      if (bufferedImage!=null){
+        bufferedImage.getGraphics().dispose();
+      }
+      ppt.dispose();
+    }
+    return FileProcessingUtil.getZipByte(office2PngTempPath, office2PngZipTempPath);
   }
 
 

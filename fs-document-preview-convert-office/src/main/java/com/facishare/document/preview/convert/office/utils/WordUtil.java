@@ -155,4 +155,28 @@ public class WordUtil {
       throw new Office2PdfException(ErrorInfoEnum.PAGE_NUMBER_PARAMETER_ERROR, e);
     }
   }
+
+  public static byte[] convertWordAllPageToPng(InputStream file) {
+   String office2PngTempPath = FileProcessingUtil.createDirectory("/opt/office2Png");
+   String office2PngZipTempPath = FileProcessingUtil.createDirectory("/opt/office2PngZip");
+    Document doc = WordUtil.getWord(file);
+    try {
+      int pageCount = doc.getPageCount();
+      for (int i = 0; i < pageCount; i++) {
+        String fileName = office2PngTempPath + "\\" + i + ".png";
+        ImageSaveOptions imageOptions = new ImageSaveOptions(com.aspose.words.SaveFormat.PNG);
+        imageOptions.setUseHighQualityRendering(true);
+        imageOptions.setPageSet(new com.aspose.words.PageSet(i));
+        try {
+          doc.save(fileName, imageOptions);
+        } catch (Exception e) {
+          throw new Office2PdfException(ErrorInfoEnum.WORD_FILE_SAVING_PNG_FAILURE, e);
+        }
+      }
+    }catch (Exception e) {
+      throw new Office2PdfException(ErrorInfoEnum.WORD_PAGE_NUMBER_PARAMETER_ZERO, e);
+    }
+    return FileProcessingUtil.getZipByte(office2PngTempPath, office2PngZipTempPath);
+  }
+
 }

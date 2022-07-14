@@ -45,10 +45,8 @@ public class ApiController {
     ParamCheckUtil.isExcelType(path);
     ResponseUtil.setResponse(response);
     try (InputStream inputStream = file.getInputStream()) {
-      try{
-        OutputStream outputStream = response.getOutputStream();
+      try(OutputStream outputStream = response.getOutputStream()){
         outputStream.write(ExcelUtil.ExcelToHtml(inputStream, page));
-        outputStream.close();
         return null;
       } catch (Exception e) {
         throw new Office2PdfException(ErrorInfoEnum.RESPONSE_STREAM_ERROR, e);
@@ -131,8 +129,35 @@ public class ApiController {
         switch (fileType) {
           case DOC, DOCX -> outputStream.write(WordUtil.convertWordOnePageToPng(fileInputStream, page));
           case PPT, PPTX -> outputStream.write(PptUtil.convertPptOnePageToPng(fileInputStream, page));
-          case PDF -> outputStream.write(PdfUtil.convertPdfOnePageToPng(fileInputStream, page + 1));
+          case PDF -> outputStream.write(PdfUtil.convertPdfOnePageToPng(fileInputStream, page+1));
           default -> throw new Office2PdfException(ErrorInfoEnum.FILE_TYPES_DO_NOT_MATCH);
+        }
+        return null;
+      } catch (IOException e) {
+        throw new Office2PdfException(ErrorInfoEnum.RESPONSE_STREAM_ERROR, e);
+      }
+    } catch (IOException e) {
+      throw new Office2PdfException(ErrorInfoEnum.FILE_STREAM_ERROR, e);
+    }
+  }
+
+  @PostMapping(value = "/ConvertOffice2PngByStream")
+  public String convertOffice2PngByStream(@RequestParam("path") String path, @RequestParam("file") MultipartFile file, HttpServletResponse response) {
+    FileTypeEnum fileType = ParamCheckUtil.getFileType(path);
+    ResponseUtil.setResponse(response);
+    try (InputStream fileInputStream=file.getInputStream()){
+      try (OutputStream outputStream=response.getOutputStream()) {
+        switch (fileType) {
+          case DOC:
+          case DOCX:
+           outputStream.write(WordUtil.convertWordAllPageToPng(fileInputStream));break;
+          case PPT:
+          case PPTX:
+            outputStream.write(PptUtil.convertPptAllPageToPng(fileInputStream));break;
+          case PDF:
+            outputStream.write(PdfUtil.convertPdfAllPageToPng(fileInputStream));break;
+          default:
+            throw new Office2PdfException(ErrorInfoEnum.FILE_TYPES_DO_NOT_MATCH);
         }
         return null;
       } catch (IOException e) {

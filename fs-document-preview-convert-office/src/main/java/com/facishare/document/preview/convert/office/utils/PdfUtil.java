@@ -2,6 +2,7 @@ package com.facishare.document.preview.convert.office.utils;
 
 import com.aspose.pdf.Document;
 import com.aspose.pdf.License;
+import com.aspose.pdf.Page;
 import com.aspose.pdf.devices.PngDevice;
 import com.aspose.pdf.devices.Resolution;
 import com.aspose.pdf.facades.PdfFileInfo;
@@ -72,13 +73,10 @@ public class PdfUtil {
   }
 
   public static PageInfo getPdfPageCount(byte[] file) {
-    Document pdf = PdfUtil.getPdf(file);
-    try{
+    try (Document pdf = PdfUtil.getPdf(file)) {
       return PageInfo.ok(pdf.getPages().size());
     } catch (Exception e) {
       throw new Office2PdfException(ErrorInfoEnum.PDF_PAGE_NUMBER_PARAMETER_ZERO, e);
-    }finally {
-      pdf.close();
     }
   }
 
@@ -86,8 +84,8 @@ public class PdfUtil {
     com.aspose.pdf.Document pdf = PdfUtil.getPdf(file);
     com.aspose.pdf.devices.Resolution imageResolution = new com.aspose.pdf.devices.Resolution(128);
     com.aspose.pdf.devices.PngDevice rendererPng = new com.aspose.pdf.devices.PngDevice(imageResolution);
-    try(ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
-      rendererPng.process(pdf.getPages().get_Item(page), outputStream);
+    try(ByteArrayOutputStream outputStream = new ByteArrayOutputStream();Page pdfPage= pdf.getPages().get_Item(page)){
+      rendererPng.process(pdfPage, outputStream);
       return outputStream.toByteArray();
     } catch (Exception e) {
       throw new Office2PdfException(ErrorInfoEnum.PAGE_NUMBER_PARAMETER_ERROR, e);
@@ -103,15 +101,17 @@ public class PdfUtil {
     int pageCount = pdf.getPages().size();
     Resolution imageResolution = new Resolution(128);
     PngDevice rendererPng = new PngDevice(imageResolution);
-    try {
-      for (int i = 1; i <= pageCount; i++) {
-        rendererPng.process(pdf.getPages().get_Item(i), Files.newOutputStream(
-            Paths.get(office2PngTempPath + "\\" + i + ".png")));
+    for (int i = 1; i <= pageCount; i++) {
+      try(Page pdfPage = pdf.getPages().get_Item(i)) {
+          rendererPng.process(pdfPage, Files.newOutputStream(Paths.get(office2PngTempPath + "\\" + i + ".png")));
+      } catch (Exception e) {
+        throw new Office2PdfException(ErrorInfoEnum.PDF_FILE_SAVING_PNG_FAILURE, e);
       }
-    } catch (Exception e) {
-      throw new Office2PdfException(ErrorInfoEnum.PDF_FILE_SAVING_PNG_FAILURE, e);
-    }finally {
+    }
+    try{
       pdf.close();
+    }catch (Exception e){
+      throw new Office2PdfException(ErrorInfoEnum.PDF_CLOSE_EXCEPTION, e);
     }
     return FileProcessingUtil.getZipByte(office2PngTempPath, office2PngZipTempPath);
   }

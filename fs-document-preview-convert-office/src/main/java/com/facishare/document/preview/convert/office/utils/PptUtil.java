@@ -49,7 +49,7 @@ public class PptUtil {
   }
 
   public static Presentation getPpt(InputStream file) throws Office2PdfException {
-    try{
+    try {
       return new Presentation(file);
     } catch (Exception e) {
       throw new Office2PdfException(ErrorInfoEnum.PPT_INSTANTIATION_ERROR, e);
@@ -66,12 +66,12 @@ public class PptUtil {
   }
 
   public static PageInfo getPptPageCount(byte[] file) {
-    Presentation ppt= PptUtil.getPpt(file);
+    Presentation ppt = PptUtil.getPpt(file);
     try {
       return PageInfo.ok(ppt.getSlides().size());
-    } catch (Exception e){
+    } catch (Exception e) {
       throw new Office2PdfException(ErrorInfoEnum.PPT_PAGE_NUMBER_PARAMETER_ZERO, e);
-    }finally {
+    } finally {
       ppt.dispose();
     }
   }
@@ -113,12 +113,12 @@ public class PptUtil {
     }
   }
 
-  public static byte[] convertPptOnePageToPng(InputStream file,int page){
+  public static byte[] convertPptOnePageToPng(InputStream file, int page) {
     Presentation ppt = PptUtil.getPpt(file);
     Dimension size = new Dimension(1280, 720);
     com.aspose.slides.ISlide slide = ppt.getSlides().get_Item(page);
     BufferedImage bufferedImage = slide.getThumbnail(size);
-    try(ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
+    try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
       ImageIO.write(bufferedImage, "PNG", outputStream);
       return outputStream.toByteArray();
     } catch (IOException e) {
@@ -133,10 +133,10 @@ public class PptUtil {
     String office2PngTempPath = FileProcessingUtil.createDirectory("/opt/office2Png");
     String office2PngZipTempPath = FileProcessingUtil.createDirectory("/opt/office2PngZip");
     Presentation ppt = PptUtil.getPpt(file);
-    BufferedImage bufferedImage=null;
-    try{
+    Dimension size = new Dimension(1280, 720);
+    BufferedImage bufferedImage = null;
+    try {
       for (com.aspose.slides.ISlide slide : ppt.getSlides()) {
-        Dimension size = new Dimension(1280, 720);
         //设置生成图片的大小
         bufferedImage = slide.getThumbnail(size);
         File outputFile = new File(office2PngTempPath + "\\" + slide.getSlideNumber() + ".png");
@@ -145,16 +145,11 @@ public class PptUtil {
     } catch (IOException e) {
       throw new Office2PdfException(ErrorInfoEnum.WORD_FILE_SAVING_PNG_FAILURE, e);
     } finally {
-      if (bufferedImage!=null){
+      if (bufferedImage != null) {
         bufferedImage.getGraphics().dispose();
       }
       ppt.dispose();
     }
     return FileProcessingUtil.getZipByte(office2PngTempPath, office2PngZipTempPath);
   }
-
-
-
-
-
 }

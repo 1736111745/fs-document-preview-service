@@ -148,16 +148,10 @@ public class ApiController {
     try (InputStream fileInputStream=file.getInputStream()){
       try (OutputStream outputStream=response.getOutputStream()) {
         switch (fileType) {
-          case DOC:
-          case DOCX:
-           outputStream.write(WordUtil.convertWordAllPageToPng(fileInputStream));break;
-          case PPT:
-          case PPTX:
-            outputStream.write(PptUtil.convertPptAllPageToPng(fileInputStream));break;
-          case PDF:
-            outputStream.write(PdfUtil.convertPdfAllPageToPng(fileInputStream));break;
-          default:
-            throw new Office2PdfException(ErrorInfoEnum.FILE_TYPES_DO_NOT_MATCH);
+          case DOC, DOCX -> outputStream.write(WordUtil.convertWordAllPageToPng(fileInputStream));
+          case PPT, PPTX -> outputStream.write(PptUtil.convertPptAllPageToPng(fileInputStream));
+          case PDF -> outputStream.write(PdfUtil.convertPdfAllPageToPng(fileInputStream));
+          default -> throw new Office2PdfException(ErrorInfoEnum.FILE_TYPES_DO_NOT_MATCH);
         }
         return null;
       } catch (IOException e) {

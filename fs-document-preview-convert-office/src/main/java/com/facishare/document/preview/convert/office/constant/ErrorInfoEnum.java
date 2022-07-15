@@ -46,7 +46,8 @@ public enum ErrorInfoEnum {
   PDF_FILE_SAVING_PNG_FAILURE(500, "PDF 文件图片预览模式失败","PDF 文件转换图片失败 可能的错误是保存的目标并不存在(检查文件路径)"),
 
 
-  INVALID_REFLECTION_ACCESS(500, "非法访问", "非法的通过反射访问对象");
+  INVALID_REFLECTION_ACCESS(500, "非法访问", "非法的通过反射访问对象"),
+  PDF_CLOSE_EXCEPTION(500,"PDF资源释放异常","PDF转图片资源释放异常");
   private final int errorCode;
   private final String errorMessage;
   private final String errorReason;
